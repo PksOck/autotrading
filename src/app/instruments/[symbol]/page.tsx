@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { DataProvenance } from "@/components/stock/data-provenance";
+import { PriceChart } from "@/components/charts/price-chart";
 import { FinancialTrends } from "@/components/stock/financial-trends";
 import { MetricCard } from "@/components/stock/metric-card";
 import { StockHeader } from "@/components/stock/stock-header";
@@ -15,15 +16,17 @@ export function generateStaticParams() { return [{ symbol: "AMZN" }]; }
 export default async function InstrumentPage({ params }: { params: Promise<{ symbol: string }> }) {
   const symbol = normalizeSymbol((await params).symbol);
   try {
-    const [snapshot, financials] = await Promise.all([
+    const [snapshot, financials, priceHistory] = await Promise.all([
       provider.getInstrumentSnapshot(symbol),
       provider.getFinancials(symbol),
+      provider.getPriceHistory(symbol, "MAX"),
     ]);
     const stockMetrics = snapshot.stockMetrics;
     return (
       <main className="page-shell stock-page">
         <StockHeader snapshot={snapshot} stale={isStale(snapshot.asOf, new Date(), 48)} />
         <DataProvenance source={snapshot.source} asOf={snapshot.asOf} />
+        <PriceChart points={priceHistory} currency={snapshot.quoteCurrency} source={snapshot.source} asOf={snapshot.asOf} initialRange="1Y" />
         {stockMetrics ? <section className="data-section"><h2>Market snapshot</h2><dl className="metric-grid">
           <MetricCard label="Market cap" value={stockMetrics.marketCap} unit="currency" currency={snapshot.quoteCurrency} />
           <MetricCard label="Enterprise value" value={stockMetrics.enterpriseValue} unit="currency" currency={snapshot.quoteCurrency} />
