@@ -20,13 +20,13 @@ const searchIndexSchema = z.array(
 );
 
 const stockFixture = fixtureStockSchema.parse(amznFixture);
-const searchIndex = searchIndexSchema.parse(searchIndexFixture);
+export const fixtureSearchIndex = searchIndexSchema.parse(searchIndexFixture);
 
 export class FixtureMarketDataProvider implements MarketDataProvider {
   async searchStocks(query: string): Promise<StockSearchResult[]> {
     const normalizedQuery = query.trim().toLowerCase();
     if (!normalizedQuery) return [];
-    return searchIndex.filter(
+    return fixtureSearchIndex.filter(
       ({ symbol, companyName }) =>
         symbol.toLowerCase().includes(normalizedQuery) ||
         companyName.toLowerCase().includes(normalizedQuery),

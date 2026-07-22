@@ -1,9 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  color-scheme: light dark;
+  color-scheme: light;
   font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  background: #f5f7fb;
+  color: #14213d;
 }
+
+:root.dark { color-scheme: dark; background: #0d1527; color: #edf3ff; }
 
 * {
   box-sizing: border-box;
@@ -13,3 +17,23 @@ body {
   margin: 0;
   min-height: 100vh;
 }
+
+a { color: inherit; }
+.app-header { display: flex; align-items: center; gap: 1.5rem; padding: 1rem max(1rem, calc((100vw - 72rem) / 2)); border-bottom: 1px solid #ccd5e3; }
+.brand { font-weight: 800; text-decoration: none; margin-right: auto; }
+.app-header nav { display: flex; gap: 1rem; }
+.theme-toggle { border: 1px solid currentColor; border-radius: 999px; background: transparent; color: inherit; padding: .55rem .85rem; }
+.page-shell { width: min(72rem, calc(100% - 2rem)); margin: 0 auto; }
+.hero { padding-block: clamp(4rem, 9vw, 8rem); }
+.eyebrow { color: #3562d8; font-weight: 750; text-transform: uppercase; letter-spacing: .08em; }
+h1 { max-width: 14ch; font-size: clamp(2.5rem, 7vw, 5.75rem); line-height: .98; margin: 1rem 0; }
+.lede { max-width: 42rem; font-size: 1.2rem; line-height: 1.6; }
+.search-panel { max-width: 44rem; margin-top: 2rem; padding: 1.25rem; border: 1px solid #ccd5e3; border-radius: 1rem; background: color-mix(in srgb, Canvas 92%, #5d83ee 8%); }
+.search-panel label { display: block; font-weight: 700; margin-bottom: .5rem; }
+.search-panel input { width: 100%; padding: .9rem 1rem; border: 1px solid #98a7bd; border-radius: .65rem; background: Canvas; color: CanvasText; font: inherit; }
+.search-help, .fixture-note { color: #66758b; }
+.search-results { list-style: none; padding: 0; margin-bottom: 0; }
+.search-results a { display: block; padding: .75rem; border-radius: .5rem; text-decoration: none; }
+.search-results a:hover { background: color-mix(in srgb, Canvas 80%, #5d83ee 20%); }
+.app-footer { padding: 2rem max(1rem, calc((100vw - 72rem) / 2)); border-top: 1px solid #ccd5e3; color: #66758b; }
+@media (max-width: 42rem) { .app-header { flex-wrap: wrap; } .theme-toggle { width: 100%; } }
