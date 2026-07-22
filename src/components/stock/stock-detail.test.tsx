@@ -40,9 +40,19 @@ describe("stock detail presentation", () => {
   it("labels financial measures and units", () => {
     render(<FinancialTrends title="Annual financials" periods={financials.annual} currency="USD" unit="millions" />);
     expect(screen.getByRole("heading", { name: "Annual financials" })).toBeInTheDocument();
-    expect(screen.getByText("Revenue")).toBeInTheDocument();
-    expect(screen.getByText("Operating income")).toBeInTheDocument();
-    expect(screen.getByText("Free cash flow")).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "Revenue" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "Operating income" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "Free cash flow" })).toBeInTheDocument();
     expect(screen.getByText(/USD millions/i)).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: /revenue trend.*USD millions/i })).toBeInTheDocument();
+    expect(screen.getByRole("cell", { name: "Not available" })).toBeInTheDocument();
+  });
+
+  it("shows a single fundamentals capability message when financials are unavailable", () => {
+    render(<FinancialTrends title="Annual financials" periods={null} currency="USD" unit="millions" />);
+
+    expect(screen.getAllByText("Fundamentals are not available for this instrument type")).toHaveLength(1);
+    expect(screen.queryByRole("table")).not.toBeInTheDocument();
+    expect(screen.queryByRole("img", { name: /trend/i })).not.toBeInTheDocument();
   });
 });
