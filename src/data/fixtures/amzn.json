@@ -1,0 +1,41 @@
+{
+  "snapshot": {
+    "symbol": "AMZN",
+    "companyName": "Amazon.com, Inc.",
+    "exchange": "NASDAQ",
+    "currency": "USD",
+    "price": 217.35,
+    "dailyChange": 1.2,
+    "dailyChangePercent": 0.0055,
+    "marketCap": 2310000000000,
+    "enterpriseValue": 2370000000000,
+    "peRatio": 42.25,
+    "evToEbitda": 21.5,
+    "fcfYield": null,
+    "source": "Illustrative fixture data",
+    "asOf": "2026-07-22T12:00:00Z"
+  },
+  "financials": {
+    "currency": "USD",
+    "unit": "millions",
+    "source": "Illustrative fixture data",
+    "asOf": "2026-07-22T12:00:00Z",
+    "annual": [
+      { "period": "2023", "revenue": 574785, "operatingIncome": 36852, "freeCashFlow": 36813, "operatingMargin": 0.0641, "dilutedShares": 10492 },
+      { "period": "2024", "revenue": 637959, "operatingIncome": 68593, "freeCashFlow": 38219, "operatingMargin": 0.1075, "dilutedShares": 10608 },
+      { "period": "2025", "revenue": 694200, "operatingIncome": 78200, "freeCashFlow": null, "operatingMargin": 0.1126, "dilutedShares": 10670 }
+    ],
+    "quarterly": [
+      { "period": "2025 Q3", "revenue": 180200, "operatingIncome": 19900, "freeCashFlow": 9200, "operatingMargin": 0.1104, "dilutedShares": 10650 },
+      { "period": "2025 Q4", "revenue": 187400, "operatingIncome": 21300, "freeCashFlow": 10100, "operatingMargin": 0.1137, "dilutedShares": 10670 },
+      { "period": "2026 Q1", "revenue": 192800, "operatingIncome": 22100, "freeCashFlow": 9700, "operatingMargin": 0.1146, "dilutedShares": 10690 },
+      { "period": "2026 Q2", "revenue": 198500, "operatingIncome": 23000, "freeCashFlow": null, "operatingMargin": 0.1159, "dilutedShares": 10710 }
+    ]
+  },
+  "priceHistory": [
+    { "timestamp": "2026-07-22T20:00:00Z", "close": 217.35, "volume": 32100000 },
+    { "timestamp": "2026-07-18T20:00:00Z", "close": 212.42, "volume": 29800000 },
+    { "timestamp": "2026-07-21T20:00:00Z", "close": 216.15, "volume": 30500000 },
+    { "timestamp": "2026-07-21T20:00:00Z", "close": 216.15, "volume": 30500000 }
+  ]
+}
