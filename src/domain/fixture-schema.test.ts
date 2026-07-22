@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
 
-import { fixtureStockSchema } from "./fixture-schema";
+import { fixtureInstrumentSchema } from "./fixture-schema";
 
 const validFixture = {
   snapshot: {
-    symbol: "AMZN", companyName: "Amazon.com, Inc.", exchange: "NASDAQ", currency: "USD",
+    symbol: "AMZN", name: "Amazon.com, Inc.", type: "stock", venue: "NASDAQ", quoteCurrency: "USD",
     price: 217.35, dailyChange: 1.2, dailyChangePercent: 0.0055,
-    marketCap: 2_310_000_000_000, enterpriseValue: 2_370_000_000_000,
-    peRatio: 42.25, evToEbitda: 21.5, fcfYield: null,
+    stockMetrics: { marketCap: 2_310_000_000_000, enterpriseValue: 2_370_000_000_000,
+      peRatio: 42.25, evToEbitda: 21.5, fcfYield: null },
     source: "Illustrative fixture data", asOf: "2026-07-22T12:00:00Z",
   },
   financials: {
@@ -17,18 +17,18 @@ const validFixture = {
   priceHistory: [],
 };
 
-describe("fixtureStockSchema", () => {
+describe("fixtureInstrumentSchema", () => {
   it("accepts explicit null metrics", () => {
-    expect(fixtureStockSchema.parse(validFixture).snapshot.fcfYield).toBeNull();
+    expect(fixtureInstrumentSchema.parse(validFixture).snapshot.stockMetrics?.fcfYield).toBeNull();
   });
 
   it("rejects incomplete data contracts", () => {
-    expect(() => fixtureStockSchema.parse({ symbol: "AMZN", currency: "USD" })).toThrow();
+    expect(() => fixtureInstrumentSchema.parse({ symbol: "AMZN", quoteCurrency: "USD" })).toThrow();
   });
 
   it("rejects timestamps without an ISO-8601 timezone", () => {
     const invalid = structuredClone(validFixture);
     invalid.snapshot.asOf = "2026-07-22 12:00";
-    expect(() => fixtureStockSchema.parse(invalid)).toThrow();
+    expect(() => fixtureInstrumentSchema.parse(invalid)).toThrow();
   });
 });

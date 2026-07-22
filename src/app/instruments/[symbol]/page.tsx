@@ -1,0 +1,43 @@
+import { notFound } from "next/navigation";
+
+import { DataProvenance } from "@/components/stock/data-provenance";
+import { FinancialTrends } from "@/components/stock/financial-trends";
+import { MetricCard } from "@/components/stock/metric-card";
+import { StockHeader } from "@/components/stock/stock-header";
+import { FixtureMarketDataProvider } from "@/data/fixture-provider";
+import { MarketDataNotFoundError } from "@/data/market-data-errors";
+import { isStale, normalizeSymbol } from "@/lib/market-data";
+
+const provider = new FixtureMarketDataProvider();
+
+export function generateStaticParams() { return [{ symbol: "AMZN" }]; }
+
+export default async function InstrumentPage({ params }: { params: Promise<{ symbol: string }> }) {
+  const symbol = normalizeSymbol((await params).symbol);
+  try {
+    const [snapshot, financials] = await Promise.all([
+      provider.getInstrumentSnapshot(symbol),
+      provider.getFinancials(symbol),
+    ]);
+    const stockMetrics = snapshot.stockMetrics;
+    return (
+      <main className="page-shell stock-page">
+        <StockHeader snapshot={snapshot} stale={isStale(snapshot.asOf, new Date(), 48)} />
+        <DataProvenance source={snapshot.source} asOf={snapshot.asOf} />
+        {stockMetrics ? <section className="data-section"><h2>Market snapshot</h2><dl className="metric-grid">
+          <MetricCard label="Market cap" value={stockMetrics.marketCap} unit="currency" currency={snapshot.quoteCurrency} />
+          <MetricCard label="Enterprise value" value={stockMetrics.enterpriseValue} unit="currency" currency={snapshot.quoteCurrency} />
+          <MetricCard label="P/E" value={stockMetrics.peRatio} unit="multiple" currency={snapshot.quoteCurrency} />
+          <MetricCard label="EV/EBITDA" value={stockMetrics.evToEbitda} unit="multiple" currency={snapshot.quoteCurrency} />
+          <MetricCard label="FCF yield" value={stockMetrics.fcfYield} unit="percent" currency={snapshot.quoteCurrency} />
+        </dl></section> : null}
+        <FinancialTrends title="Annual financials" periods={financials.annual} currency={financials.currency} unit={financials.unit} />
+        <FinancialTrends title="Quarterly financials" periods={financials.quarterly} currency={financials.currency} unit={financials.unit} />
+        <section className="limitations"><h2>Risks and limitations</h2><p>Illustrative fixture data can be stale or incomplete. This page is research information, not a recommendation or target price.</p></section>
+      </main>
+    );
+  } catch (error) {
+    if (error instanceof MarketDataNotFoundError) notFound();
+    throw error;
+  }
+}

@@ -2,46 +2,43 @@ import { z } from "zod";
 
 import amznFixture from "@/data/fixtures/amzn.json";
 import searchIndexFixture from "@/data/fixtures/search-index.json";
-import { fixtureStockSchema } from "@/domain/fixture-schema";
+import {
+  fixtureInstrumentSchema,
+  instrumentSearchResultSchema,
+} from "@/domain/fixture-schema";
 import type { FinancialSeries } from "@/domain/financials";
+import type { InstrumentSearchResult, InstrumentSnapshot } from "@/domain/instrument";
 import type { PricePoint, PriceRange } from "@/domain/price-history";
-import type { StockSearchResult, StockSnapshot } from "@/domain/stock";
 import { normalizeSymbol } from "@/lib/market-data";
 
 import { MarketDataNotFoundError } from "./market-data-errors";
 import type { MarketDataProvider } from "./market-data-provider";
 
-const searchIndexSchema = z.array(
-  z.object({
-    symbol: z.string().trim().min(1),
-    companyName: z.string().trim().min(1),
-    exchange: z.string().trim().min(1),
-  }),
-);
+const searchIndexSchema = z.array(instrumentSearchResultSchema);
 
-const stockFixture = fixtureStockSchema.parse(amznFixture);
+const instrumentFixture = fixtureInstrumentSchema.parse(amznFixture);
 export const fixtureSearchIndex = searchIndexSchema.parse(searchIndexFixture);
 
 export class FixtureMarketDataProvider implements MarketDataProvider {
-  async searchStocks(query: string): Promise<StockSearchResult[]> {
+  async searchInstruments(query: string): Promise<InstrumentSearchResult[]> {
     const normalizedQuery = query.trim().toLowerCase();
     if (!normalizedQuery) return [];
     return fixtureSearchIndex.filter(
-      ({ symbol, companyName }) =>
+      ({ symbol, name }) =>
         symbol.toLowerCase().includes(normalizedQuery) ||
-        companyName.toLowerCase().includes(normalizedQuery),
+        name.toLowerCase().includes(normalizedQuery),
     );
   }
 
-  async getStockSnapshot(symbol: string): Promise<StockSnapshot> {
+  async getInstrumentSnapshot(symbol: string): Promise<InstrumentSnapshot> {
     this.assertSupported(symbol);
-    return stockFixture.snapshot;
+    return instrumentFixture.snapshot;
   }
 
   async getPriceHistory(symbol: string, _range: PriceRange): Promise<PricePoint[]> {
     this.assertSupported(symbol);
     const uniqueByTimestamp = new Map(
-      stockFixture.priceHistory.map((point) => [point.timestamp, point]),
+      instrumentFixture.priceHistory.map((point) => [point.timestamp, point]),
     );
     return [...uniqueByTimestamp.values()].sort((a, b) =>
       a.timestamp.localeCompare(b.timestamp),
@@ -50,12 +47,12 @@ export class FixtureMarketDataProvider implements MarketDataProvider {
 
   async getFinancials(symbol: string): Promise<FinancialSeries> {
     this.assertSupported(symbol);
-    return stockFixture.financials;
+    return instrumentFixture.financials;
   }
 
   private assertSupported(symbol: string): void {
     const normalizedSymbol = normalizeSymbol(symbol);
-    if (normalizedSymbol !== stockFixture.snapshot.symbol) {
+    if (normalizedSymbol !== instrumentFixture.snapshot.symbol) {
       throw new MarketDataNotFoundError(normalizedSymbol);
     }
   }

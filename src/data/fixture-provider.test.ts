@@ -6,18 +6,21 @@ import { MarketDataNotFoundError } from "./market-data-errors";
 describe("FixtureMarketDataProvider", () => {
   const provider = new FixtureMarketDataProvider();
 
-  it("searches case-insensitively by company name", async () => {
-    expect(await provider.searchStocks("amazon")).toEqual([
-      expect.objectContaining({ symbol: "AMZN", companyName: "Amazon.com, Inc." }),
-    ]);
+  it("searches case-insensitively by instrument name", async () => {
+    expect((await provider.searchInstruments("amazon"))[0]).toMatchObject({
+      symbol: "AMZN",
+      name: "Amazon.com, Inc.",
+      type: "stock",
+      venue: "NASDAQ",
+    });
   });
 
-  it("normalizes symbols for snapshot lookup", async () => {
-    expect((await provider.getStockSnapshot(" amzn ")).symbol).toBe("AMZN");
+  it("normalizes symbols for instrument snapshot lookup", async () => {
+    expect((await provider.getInstrumentSnapshot(" amzn ")).type).toBe("stock");
   });
 
   it("reports unknown symbols with a typed error", async () => {
-    await expect(provider.getStockSnapshot("NOPE")).rejects.toBeInstanceOf(
+    await expect(provider.getInstrumentSnapshot("NOPE")).rejects.toBeInstanceOf(
       MarketDataNotFoundError,
     );
   });

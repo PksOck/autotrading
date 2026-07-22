@@ -1,23 +1,33 @@
 import { z } from "zod";
 
+import { instrumentTypeSchema } from "./instrument";
+
 const nullableMetricSchema = z.number().finite().nullable();
 const utcTimestampSchema = z.string().datetime({ offset: true });
 
-export const stockSnapshotSchema = z.object({
-  symbol: z.string().trim().min(1),
-  companyName: z.string().trim().min(1),
-  exchange: z.string().trim().min(1),
-  currency: z.string().trim().min(1),
-  price: z.number().positive(),
-  dailyChange: nullableMetricSchema,
-  dailyChangePercent: nullableMetricSchema,
+export const stockMetricsSchema = z.object({
   marketCap: nullableMetricSchema,
   enterpriseValue: nullableMetricSchema,
   peRatio: nullableMetricSchema,
   evToEbitda: nullableMetricSchema,
   fcfYield: nullableMetricSchema,
+});
+
+export const instrumentSearchResultSchema = z.object({
+  symbol: z.string().trim().min(1),
+  name: z.string().trim().min(1),
+  type: instrumentTypeSchema,
+  venue: z.string().trim().min(1),
+});
+
+export const instrumentSnapshotSchema = instrumentSearchResultSchema.extend({
+  quoteCurrency: z.string().trim().min(1),
+  price: z.number().positive(),
+  dailyChange: nullableMetricSchema,
+  dailyChangePercent: nullableMetricSchema,
   source: z.string().trim().min(1),
   asOf: utcTimestampSchema,
+  stockMetrics: stockMetricsSchema.nullable(),
 });
 
 export const financialPeriodSchema = z.object({
@@ -44,10 +54,10 @@ export const pricePointSchema = z.object({
   volume: z.number().nonnegative().nullable(),
 });
 
-export const fixtureStockSchema = z.object({
-  snapshot: stockSnapshotSchema,
+export const fixtureInstrumentSchema = z.object({
+  snapshot: instrumentSnapshotSchema,
   financials: financialSeriesSchema,
   priceHistory: z.array(pricePointSchema),
 });
 
-export type FixtureStock = z.infer<typeof fixtureStockSchema>;
+export type FixtureInstrument = z.infer<typeof fixtureInstrumentSchema>;

@@ -5,11 +5,11 @@ import { describe, expect, it } from "vitest";
 import { StockSearch } from "./stock-search";
 
 const results = [
-  { symbol: "AMZN", companyName: "Amazon.com, Inc.", exchange: "NASDAQ" },
+  { symbol: "AMZN", name: "Amazon.com, Inc.", type: "stock" as const, venue: "NASDAQ" },
 ];
 
 describe("StockSearch", () => {
-  it("links a company-name match to its stock page", async () => {
+  it("links a company-name match to its instrument page", async () => {
     const user = userEvent.setup();
     render(<StockSearch initialResults={results} />);
 
@@ -18,9 +18,9 @@ describe("StockSearch", () => {
       "amazon",
     );
 
-    expect(screen.getByRole("link", { name: /amazon.com/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /amazon/i })).toHaveAttribute(
       "href",
-      "/stocks/AMZN",
+      "/instruments/AMZN",
     );
   });
 

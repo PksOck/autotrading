@@ -2,17 +2,17 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import type { FinancialSeries } from "@/domain/financials";
-import type { StockSnapshot } from "@/domain/stock";
+import type { InstrumentSnapshot } from "@/domain/instrument";
 
 import { FinancialTrends } from "./financial-trends";
 import { MetricCard } from "./metric-card";
 import { StockHeader } from "./stock-header";
 
-const snapshot: StockSnapshot = {
-  symbol: "AMZN", companyName: "Amazon.com, Inc.", exchange: "NASDAQ", currency: "USD",
+const snapshot: InstrumentSnapshot = {
+  symbol: "AMZN", name: "Amazon.com, Inc.", type: "stock", venue: "NASDAQ", quoteCurrency: "USD",
   price: 217.35, dailyChange: 1.2, dailyChangePercent: 0.0055,
-  marketCap: 2_310_000_000_000, enterpriseValue: 2_370_000_000_000,
-  peRatio: 42.25, evToEbitda: 21.5, fcfYield: null,
+  stockMetrics: { marketCap: 2_310_000_000_000, enterpriseValue: 2_370_000_000_000,
+    peRatio: 42.25, evToEbitda: 21.5, fcfYield: null },
   source: "Illustrative fixture data", asOf: "2026-07-22T12:00:00Z",
 };
 
