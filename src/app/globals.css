@@ -50,3 +50,4 @@ h1 { max-width: 14ch; font-size: clamp(2.5rem, 7vw, 5.75rem); line-height: .98; 
 .table-wrap { overflow-x: auto; } table { width: 100%; border-collapse: collapse; } th, td { padding: .85rem; border-bottom: 1px solid #ccd5e3; text-align: right; white-space: nowrap; } th:first-child { text-align: left; }
 .limitations { margin-top: 3rem; padding: 1.5rem; border-radius: 1rem; background: color-mix(in srgb, Canvas 86%, #e3a72f 14%); }
 @media (max-width: 42rem) { .stock-header { align-items: start; flex-direction: column; } .price-block { text-align: left; } }
+.methodology-page { max-width: 54rem; padding-block: 4rem 7rem; }.methodology-page h1 { margin-bottom: 3rem; }.methodology-page section { margin-top: 2.5rem; }.methodology-page p { line-height: 1.7; }
