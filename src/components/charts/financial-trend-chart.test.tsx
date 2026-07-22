@@ -23,9 +23,9 @@ describe("FinancialTrendChart", () => {
       />,
     );
 
-    expect(screen.getByRole("img", { name: /free cash flow trend.*USD millions/i })).toBeInTheDocument();
+    const chart = screen.getByRole("img", { name: /free cash flow trend.*USD millions/i });
+    expect(chart).toHaveAccessibleDescription(/2023: 36\.81K USD millions.*2024: 38\.22K USD millions.*2025: Not available \(gap\)/);
     expect(screen.getByText("Not available")).toBeInTheDocument();
-    expect(screen.getByLabelText(/2025.*not available/i)).toBeInTheDocument();
     expect(screen.queryByText("0", { exact: true })).not.toBeInTheDocument();
   });
 });

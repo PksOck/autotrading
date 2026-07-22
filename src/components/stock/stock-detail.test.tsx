@@ -43,7 +43,7 @@ describe("stock detail presentation", () => {
     expect(screen.getByRole("columnheader", { name: "Revenue" })).toBeInTheDocument();
     expect(screen.getByRole("columnheader", { name: "Operating income" })).toBeInTheDocument();
     expect(screen.getByRole("columnheader", { name: "Free cash flow" })).toBeInTheDocument();
-    expect(screen.getByText(/USD millions/i)).toBeInTheDocument();
+    expect(screen.getByText(/USD millions/i, { selector: "p" })).toBeInTheDocument();
     expect(screen.getByRole("img", { name: /revenue trend.*USD millions/i })).toBeInTheDocument();
     expect(screen.getByRole("cell", { name: "Not available" })).toBeInTheDocument();
   });

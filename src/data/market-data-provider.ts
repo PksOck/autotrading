@@ -6,5 +6,5 @@ export interface MarketDataProvider {
   searchInstruments(query: string): Promise<InstrumentSearchResult[]>;
   getInstrumentSnapshot(symbol: string): Promise<InstrumentSnapshot>;
   getPriceHistory(symbol: string, range: PriceRange): Promise<PricePoint[]>;
-  getFinancials(symbol: string): Promise<FinancialSeries>;
+  getFinancials(symbol: string): Promise<FinancialSeries | null>;
 }

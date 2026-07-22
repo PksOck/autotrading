@@ -56,7 +56,7 @@ export const pricePointSchema = z.object({
 
 export const fixtureInstrumentSchema = z.object({
   snapshot: instrumentSnapshotSchema,
-  financials: financialSeriesSchema,
+  financials: financialSeriesSchema.nullable(),
   priceHistory: z.array(pricePointSchema),
 });
 

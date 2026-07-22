@@ -22,6 +22,16 @@ describe("fixtureInstrumentSchema", () => {
     expect(fixtureInstrumentSchema.parse(validFixture).snapshot.stockMetrics?.fcfYield).toBeNull();
   });
 
+  it("accepts a null financial capability for a non-stock instrument", () => {
+    const nonStockFixture = {
+      ...validFixture,
+      snapshot: { ...validFixture.snapshot, type: "crypto", stockMetrics: null },
+      financials: null,
+    };
+
+    expect(fixtureInstrumentSchema.parse(nonStockFixture).financials).toBeNull();
+  });
+
   it("rejects incomplete data contracts", () => {
     expect(() => fixtureInstrumentSchema.parse({ symbol: "AMZN", quoteCurrency: "USD" })).toThrow();
   });

@@ -34,8 +34,10 @@ export default async function InstrumentPage({ params }: { params: Promise<{ sym
           <MetricCard label="EV/EBITDA" value={stockMetrics.evToEbitda} unit="multiple" currency={snapshot.quoteCurrency} />
           <MetricCard label="FCF yield" value={stockMetrics.fcfYield} unit="percent" currency={snapshot.quoteCurrency} />
         </dl></section> : null}
-        <FinancialTrends title="Annual financials" periods={financials.annual} currency={financials.currency} unit={financials.unit} />
-        <FinancialTrends title="Quarterly financials" periods={financials.quarterly} currency={financials.currency} unit={financials.unit} />
+        {financials ? <>
+          <FinancialTrends title="Annual financials" periods={financials.annual} currency={financials.currency} unit={financials.unit} />
+          <FinancialTrends title="Quarterly financials" periods={financials.quarterly} currency={financials.currency} unit={financials.unit} />
+        </> : <section className="data-section"><h2>Fundamentals</h2><p>Fundamentals are not available for this instrument type</p></section>}
         <section className="limitations"><h2>Risks and limitations</h2><p>Illustrative fixture data can be stale or incomplete. This page is research information, not a recommendation or target price.</p></section>
       </main>
     );

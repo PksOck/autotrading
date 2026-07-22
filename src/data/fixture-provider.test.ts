@@ -27,8 +27,9 @@ describe("FixtureMarketDataProvider", () => {
 
   it("returns three annual and four quarterly periods", async () => {
     const financials = await provider.getFinancials("AMZN");
-    expect(financials.annual).toHaveLength(3);
-    expect(financials.quarterly).toHaveLength(4);
+    expect(financials).not.toBeNull();
+    expect(financials?.annual).toHaveLength(3);
+    expect(financials?.quarterly).toHaveLength(4);
   });
 
   it("returns a deterministic, range-aware five-year price history", async () => {

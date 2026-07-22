@@ -41,7 +41,7 @@ export class FixtureMarketDataProvider implements MarketDataProvider {
     return filterPriceHistory(instrumentFixture.priceHistory, range);
   }
 
-  async getFinancials(symbol: string): Promise<FinancialSeries> {
+  async getFinancials(symbol: string): Promise<FinancialSeries | null> {
     this.assertSupported(symbol);
     return instrumentFixture.financials;
   }
