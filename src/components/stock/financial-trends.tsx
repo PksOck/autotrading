@@ -1,6 +1,6 @@
 import type { FinancialPeriod } from "@/domain/financials";
 import { FinancialTrendChart } from "@/components/charts/financial-trend-chart";
-import { formatCompactNumber, formatPercent } from "@/lib/format";
+import { formatExactNumber, formatPercent } from "@/lib/format";
 
 export function FinancialTrends({ title, periods, currency, unit }: { title: string; periods: FinancialPeriod[] | null; currency: string; unit: string }) {
   if (periods === null) {
@@ -25,7 +25,7 @@ export function FinancialTrends({ title, periods, currency, unit }: { title: str
           <div className="table-wrap"><table>
             <thead><tr><th>Period</th><th>Revenue</th><th>Operating income</th><th>Free cash flow</th><th>Margin</th><th>Diluted shares</th></tr></thead>
             <tbody>{periods.map((period) => <tr key={period.period}>
-              <th>{period.period}</th><td>{formatCompactNumber(period.revenue)}</td><td>{formatCompactNumber(period.operatingIncome)}</td><td>{formatCompactNumber(period.freeCashFlow)}</td><td>{formatPercent(period.operatingMargin)}</td><td>{formatCompactNumber(period.dilutedShares)}</td>
+              <th>{period.period}</th><td>{formatExactNumber(period.revenue)}</td><td>{formatExactNumber(period.operatingIncome)}</td><td>{formatExactNumber(period.freeCashFlow)}</td><td>{formatPercent(period.operatingMargin)}</td><td>{formatExactNumber(period.dilutedShares)}</td>
             </tr>)}</tbody>
           </table></div>
         </>

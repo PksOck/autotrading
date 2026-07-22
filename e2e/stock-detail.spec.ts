@@ -6,6 +6,7 @@ test("legacy stock URLs redirect to the canonical instrument URL", async ({ page
 });
 
 test("instrument charts expose ranges, summaries, theme support, and responsive layout", async ({ page }) => {
+  await page.clock.install({ time: new Date("2026-07-23T20:05:00Z") });
   await page.goto("/instruments/AMZN");
   await expect(page.getByText("$217.35", { exact: true })).toBeVisible();
   await expect(page.getByText("AMZN · NASDAQ · USD", { exact: true })).toBeVisible();
@@ -13,12 +14,12 @@ test("instrument charts expose ranges, summaries, theme support, and responsive 
 
   const provenance = page.getByRole("complementary", { name: "Data provenance" });
   await expect(provenance.getByText("Source: Illustrative fixture data", { exact: true })).toBeVisible();
-  await expect(provenance.locator('time[datetime="2026-07-22T12:00:00Z"]')).toHaveText(
-    "7/22/2026, 12:00:00 PM UTC",
+  await expect(provenance.locator('time[datetime="2026-07-22T20:05:00Z"]')).toHaveText(
+    "7/22/2026, 8:05:00 PM UTC",
   );
 
   await expect(page.getByRole("heading", { name: "Price history" })).toBeVisible();
-  await expect(page.getByText(/observations:/)).toBeVisible();
+  await expect(page.getByText(/1Y · .* observations:.*Change:.*\(.*%\)/)).toBeVisible();
   await expect(page.getByText("Volume shown below price")).toBeVisible();
 
   const chartFrame = page.getByTestId("price-volume-chart-frame");
@@ -36,6 +37,7 @@ test("instrument charts expose ranges, summaries, theme support, and responsive 
     await expect(button).toHaveAttribute("aria-pressed", "true");
     await expect(chartFrame).toBeVisible();
     await expect(chartFrame).toHaveAttribute("data-range", range);
+    await expect(page.getByText(new RegExp(`^${range} · .* observations:.*Change:.*\\(.*%\\)\\.$`))).toBeVisible();
   }
 
   await page.getByRole("button", { name: "Use dark theme" }).click();
@@ -44,4 +46,12 @@ test("instrument charts expose ranges, summaries, theme support, and responsive 
 
   const overflows = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
   expect(overflows).toBe(false);
+});
+
+test("freshness is derived from the browser clock rather than build time", async ({ page }) => {
+  await page.clock.install({ time: new Date("2026-07-24T20:05:00.001Z") });
+
+  await page.goto("/instruments/AMZN");
+
+  await expect(page.getByText("Stale fixture data", { exact: true })).toBeVisible();
 });

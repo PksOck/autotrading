@@ -8,7 +8,9 @@ describe("instrument route boundaries", () => {
   it("uses instrument-neutral loading copy", () => {
     render(<Loading />);
 
-    expect(screen.getByRole("status")).toHaveTextContent("Loading instrument research…");
+    const loadingFrame = screen.getByRole("status", { name: "Loading price history" });
+    expect(loadingFrame).toHaveClass("chart-frame");
+    expect(loadingFrame).toHaveTextContent("Loading price history…");
   });
 
   it("uses instrument-neutral not-found copy", () => {

@@ -33,6 +33,7 @@ describe("FixtureMarketDataProvider", () => {
   });
 
   it("returns a deterministic, range-aware five-year price history", async () => {
+    const snapshot = await provider.getInstrumentSnapshot("AMZN");
     const maximumHistory = await provider.getPriceHistory("AMZN", "MAX");
     const oneMonthHistory = await provider.getPriceHistory("AMZN", "1M");
 
@@ -42,5 +43,8 @@ describe("FixtureMarketDataProvider", () => {
     expect(oneMonthHistory.at(0)?.timestamp).toBe("2026-06-22T20:00:00Z");
     expect(oneMonthHistory.at(-1)?.timestamp).toBe("2026-07-22T20:00:00Z");
     expect(maximumHistory.some(({ volume }) => volume === null)).toBe(true);
+    expect(new Date(maximumHistory.at(-1)!.timestamp).getTime()).toBeLessThanOrEqual(
+      new Date(snapshot.asOf).getTime(),
+    );
   });
 });

@@ -58,6 +58,17 @@ export const fixtureInstrumentSchema = z.object({
   snapshot: instrumentSnapshotSchema,
   financials: financialSeriesSchema.nullable(),
   priceHistory: z.array(pricePointSchema),
+}).superRefine(({ snapshot, priceHistory }, context) => {
+  const snapshotTime = new Date(snapshot.asOf).getTime();
+  priceHistory.forEach((point, index) => {
+    if (new Date(point.timestamp).getTime() > snapshotTime) {
+      context.addIssue({
+        code: "custom",
+        message: "Price history cannot postdate snapshot provenance",
+        path: ["priceHistory", index, "timestamp"],
+      });
+    }
+  });
 });
 
 export type FixtureInstrument = z.infer<typeof fixtureInstrumentSchema>;

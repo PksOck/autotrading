@@ -41,4 +41,19 @@ describe("fixtureInstrumentSchema", () => {
     invalid.snapshot.asOf = "2026-07-22 12:00";
     expect(() => fixtureInstrumentSchema.parse(invalid)).toThrow();
   });
+
+  it("rejects price observations newer than snapshot provenance", () => {
+    const invalid = {
+      ...structuredClone(validFixture),
+      priceHistory: [{
+        timestamp: "2026-07-22T20:00:00Z",
+        close: 217.35,
+        volume: 1_000,
+      }],
+    };
+
+    expect(() => fixtureInstrumentSchema.parse(invalid)).toThrow(
+      /price history cannot postdate snapshot provenance/i,
+    );
+  });
 });

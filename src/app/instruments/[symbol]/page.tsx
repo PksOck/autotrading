@@ -7,7 +7,7 @@ import { MetricCard } from "@/components/stock/metric-card";
 import { StockHeader } from "@/components/stock/stock-header";
 import { FixtureMarketDataProvider } from "@/data/fixture-provider";
 import { MarketDataNotFoundError } from "@/data/market-data-errors";
-import { isStale, normalizeSymbol } from "@/lib/market-data";
+import { normalizeSymbol } from "@/lib/market-data";
 
 const provider = new FixtureMarketDataProvider();
 
@@ -24,7 +24,7 @@ export default async function InstrumentPage({ params }: { params: Promise<{ sym
     const stockMetrics = snapshot.stockMetrics;
     return (
       <main className="page-shell stock-page">
-        <StockHeader snapshot={snapshot} stale={isStale(snapshot.asOf, new Date(), 48)} />
+        <StockHeader snapshot={snapshot} />
         <DataProvenance source={snapshot.source} asOf={snapshot.asOf} />
         <PriceChart points={priceHistory} currency={snapshot.quoteCurrency} source={snapshot.source} asOf={snapshot.asOf} initialRange="1Y" />
         {stockMetrics ? <section className="data-section"><h2>Market snapshot</h2><dl className="metric-grid">

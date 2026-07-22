@@ -1,5 +1,5 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { act, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { FinancialSeries } from "@/domain/financials";
 import type { InstrumentSnapshot } from "@/domain/instrument";
@@ -24,11 +24,22 @@ const financials: FinancialSeries = {
 };
 
 describe("stock detail presentation", () => {
-  it("shows identity, currency, price, and stale status", () => {
-    render(<StockHeader snapshot={snapshot} stale />);
+  afterEach(() => vi.useRealTimers());
+
+  it("calculates freshness at runtime and becomes stale after the exact age boundary", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-07-24T12:00:00Z"));
+
+    render(<StockHeader snapshot={snapshot} />);
     expect(screen.getByRole("heading", { name: /amazon.com, inc./i })).toBeInTheDocument();
     expect(screen.getByText("AMZN · NASDAQ · USD")).toBeInTheDocument();
     expect(screen.getByText("$217.35")).toBeInTheDocument();
+    expect(screen.getByText("Fixture current")).toBeInTheDocument();
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1);
+    });
+
     expect(screen.getByText(/stale fixture data/i)).toBeInTheDocument();
   });
 
@@ -45,6 +56,9 @@ describe("stock detail presentation", () => {
     expect(screen.getByRole("columnheader", { name: "Free cash flow" })).toBeInTheDocument();
     expect(screen.getByText(/USD millions/i, { selector: "p" })).toBeInTheDocument();
     expect(screen.getByRole("img", { name: /revenue trend.*USD millions/i })).toBeInTheDocument();
+    expect(screen.getByRole("cell", { name: "694,200" })).toBeInTheDocument();
+    expect(screen.getByRole("cell", { name: "78,200" })).toBeInTheDocument();
+    expect(screen.getByRole("cell", { name: "10,670" })).toBeInTheDocument();
     expect(screen.getByRole("cell", { name: "Not available" })).toBeInTheDocument();
   });
 

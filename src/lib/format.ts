@@ -30,3 +30,10 @@ export function formatCompactNumber(value: number | null): string {
     maximumFractionDigits: 2,
   }).format(value);
 }
+
+export function formatExactNumber(value: number | null): string {
+  if (value === null) return unavailable;
+  return new Intl.NumberFormat("en-US", {
+    maximumFractionDigits: 20,
+  }).format(value);
+}

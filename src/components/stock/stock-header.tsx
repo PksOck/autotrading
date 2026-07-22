@@ -1,7 +1,9 @@
 import type { InstrumentSnapshot } from "@/domain/instrument";
 import { formatCurrency, formatPercent } from "@/lib/format";
 
-export function StockHeader({ snapshot, stale }: { snapshot: InstrumentSnapshot; stale: boolean }) {
+import { FreshnessStatus } from "./freshness-status";
+
+export function StockHeader({ snapshot }: { snapshot: InstrumentSnapshot }) {
   return (
     <header className="stock-header">
       <div>
@@ -11,7 +13,7 @@ export function StockHeader({ snapshot, stale }: { snapshot: InstrumentSnapshot;
       <div className="price-block">
         <strong>{formatCurrency(snapshot.price, snapshot.quoteCurrency)}</strong>
         <span>{formatCurrency(snapshot.dailyChange, snapshot.quoteCurrency)} · {formatPercent(snapshot.dailyChangePercent)}</span>
-        {stale ? <span className="status stale">Stale fixture data</span> : <span className="status">Fixture current</span>}
+        <FreshnessStatus asOf={snapshot.asOf} />
       </div>
     </header>
   );

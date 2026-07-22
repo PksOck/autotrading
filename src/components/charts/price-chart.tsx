@@ -42,6 +42,9 @@ export function PriceChart({
     [filteredPoints, currency],
   );
   const showVolume = chartData.some((point) => point.volume !== null);
+  const summaryText = summary
+    ? `${range} · ${summary.observationCount} observations: ${formatCurrency(summary.startPrice, currency)} to ${formatCurrency(summary.endPrice, currency)}. Change: ${formatCurrency(summary.absoluteChange, currency)} (${formatPercent(summary.percentChange)}).`
+    : null;
 
   useEffect(() => {
     const element = frameRef.current;
@@ -88,22 +91,21 @@ export function PriceChart({
       </p>
       {summary ? (
         <p className="chart-summary" aria-live="polite">
-          {summary.observationCount} observations: {formatCurrency(summary.startPrice, currency)} to{" "}
-          {formatCurrency(summary.endPrice, currency)} ({formatPercent(summary.percentChange)}).
+          {summaryText}
         </p>
-      ) : (
-        <p className="chart-empty" role="status">No price history available</p>
-      )}
-      {summary ? (
-        <div
-          aria-hidden="true"
-          className="chart-frame"
-          data-range={range}
-          data-testid="price-volume-chart-frame"
-          data-volume={showVolume ? "shown" : "unavailable"}
-          ref={frameRef}
-        />
       ) : null}
+      <div
+        aria-hidden={summary ? "true" : undefined}
+        aria-label={summary ? undefined : "No price history available"}
+        className={summary ? "chart-frame" : "chart-frame chart-empty"}
+        data-range={range}
+        data-testid="price-volume-chart-frame"
+        data-volume={showVolume ? "shown" : "unavailable"}
+        ref={summary ? frameRef : undefined}
+        role={summary ? undefined : "status"}
+      >
+        {summary ? null : "No price history available"}
+      </div>
       <p className="chart-volume">{showVolume ? "Volume shown below price" : "Volume not available"}</p>
     </section>
   );

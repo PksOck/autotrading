@@ -44,7 +44,39 @@ describe("price history transformations", () => {
     expect(filterPriceHistory(points, "1Y").at(0)?.timestamp).toBe(
       "2025-07-31T20:00:00Z",
     );
+    expect(filterPriceHistory(points, "6M").at(0)?.timestamp).toBe(
+      "2026-01-31T20:00:00Z",
+    );
+    expect(filterPriceHistory(points, "5Y").at(0)?.timestamp).toBe(
+      "2021-07-31T20:00:00Z",
+    );
     expect(filterPriceHistory(points, "MAX")).toHaveLength(points.length);
+  });
+
+  it("includes exact end-of-month boundaries for 6M and 5Y", () => {
+    const point = (timestamp: string): PricePoint => ({
+      timestamp,
+      close: 100,
+      volume: null,
+    });
+    const points = [
+      point("2021-08-30T20:00:00Z"),
+      point("2021-08-31T20:00:00Z"),
+      point("2026-02-27T20:00:00Z"),
+      point("2026-02-28T20:00:00Z"),
+      point("2026-08-31T20:00:00Z"),
+    ];
+
+    expect(filterPriceHistory(points, "6M").map(({ timestamp }) => timestamp)).toEqual([
+      "2026-02-28T20:00:00Z",
+      "2026-08-31T20:00:00Z",
+    ]);
+    expect(filterPriceHistory(points, "5Y").map(({ timestamp }) => timestamp)).toEqual([
+      "2021-08-31T20:00:00Z",
+      "2026-02-27T20:00:00Z",
+      "2026-02-28T20:00:00Z",
+      "2026-08-31T20:00:00Z",
+    ]);
   });
 
   it("keeps the final duplicate observation and sorts timestamps ascending", () => {
