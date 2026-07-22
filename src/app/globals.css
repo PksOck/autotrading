@@ -37,3 +37,16 @@ h1 { max-width: 14ch; font-size: clamp(2.5rem, 7vw, 5.75rem); line-height: .98; 
 .search-results a:hover { background: color-mix(in srgb, Canvas 80%, #5d83ee 20%); }
 .app-footer { padding: 2rem max(1rem, calc((100vw - 72rem) / 2)); border-top: 1px solid #ccd5e3; color: #66758b; }
 @media (max-width: 42rem) { .app-header { flex-wrap: wrap; } .theme-toggle { width: 100%; } }
+.stock-page { padding-block: 3rem 6rem; }
+.stock-header { display: flex; justify-content: space-between; align-items: end; gap: 2rem; }
+.stock-header h1 { font-size: clamp(2.5rem, 6vw, 5rem); }
+.price-block { display: grid; gap: .4rem; text-align: right; }
+.price-block strong { font-size: clamp(2rem, 4vw, 3.5rem); }
+.status { color: #267346; font-weight: 700; }.status.stale { color: #b15b00; }
+.provenance { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; margin: 2rem 0; padding: 1rem; border-block: 1px solid #ccd5e3; color: #66758b; }
+.data-section { margin-top: 3rem; }.section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 1rem; padding: 0; }
+.metric-card { padding: 1.25rem; border: 1px solid #ccd5e3; border-radius: .8rem; }.metric-card dt { color: #66758b; }.metric-card dd { margin: .5rem 0; font-size: 1.5rem; font-weight: 800; }
+.table-wrap { overflow-x: auto; } table { width: 100%; border-collapse: collapse; } th, td { padding: .85rem; border-bottom: 1px solid #ccd5e3; text-align: right; white-space: nowrap; } th:first-child { text-align: left; }
+.limitations { margin-top: 3rem; padding: 1.5rem; border-radius: 1rem; background: color-mix(in srgb, Canvas 86%, #e3a72f 14%); }
+@media (max-width: 42rem) { .stock-header { align-items: start; flex-direction: column; } .price-block { text-align: left; } }
