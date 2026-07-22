@@ -1,1 +1,7 @@
-export default function Loading() { return <main className="page-shell stock-page" role="status">Loading stock research…</main>; }
+export default function Loading() {
+  return (
+    <main className="page-shell stock-page" role="status">
+      Loading instrument research…
+    </main>
+  );
+}
