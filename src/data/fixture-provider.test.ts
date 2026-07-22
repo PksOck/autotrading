@@ -31,12 +31,15 @@ describe("FixtureMarketDataProvider", () => {
     expect(financials.quarterly).toHaveLength(4);
   });
 
-  it("deduplicates and sorts price history", async () => {
-    const history = await provider.getPriceHistory("AMZN", "MAX");
-    expect(history.map(({ timestamp }) => timestamp)).toEqual([
-      "2026-07-18T20:00:00Z",
-      "2026-07-21T20:00:00Z",
-      "2026-07-22T20:00:00Z",
-    ]);
+  it("returns a deterministic, range-aware five-year price history", async () => {
+    const maximumHistory = await provider.getPriceHistory("AMZN", "MAX");
+    const oneMonthHistory = await provider.getPriceHistory("AMZN", "1M");
+
+    expect(maximumHistory).toHaveLength(1305);
+    expect(maximumHistory.at(0)?.timestamp).toBe("2021-07-22T20:00:00Z");
+    expect(maximumHistory.at(-1)?.timestamp).toBe("2026-07-22T20:00:00Z");
+    expect(oneMonthHistory.at(0)?.timestamp).toBe("2026-06-22T20:00:00Z");
+    expect(oneMonthHistory.at(-1)?.timestamp).toBe("2026-07-22T20:00:00Z");
+    expect(maximumHistory.some(({ volume }) => volume === null)).toBe(true);
   });
 });

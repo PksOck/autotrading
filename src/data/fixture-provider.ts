@@ -10,6 +10,7 @@ import type { FinancialSeries } from "@/domain/financials";
 import type { InstrumentSearchResult, InstrumentSnapshot } from "@/domain/instrument";
 import type { PricePoint, PriceRange } from "@/domain/price-history";
 import { normalizeSymbol } from "@/lib/market-data";
+import { filterPriceHistory } from "@/lib/price-history";
 
 import { MarketDataNotFoundError } from "./market-data-errors";
 import type { MarketDataProvider } from "./market-data-provider";
@@ -35,14 +36,9 @@ export class FixtureMarketDataProvider implements MarketDataProvider {
     return instrumentFixture.snapshot;
   }
 
-  async getPriceHistory(symbol: string, _range: PriceRange): Promise<PricePoint[]> {
+  async getPriceHistory(symbol: string, range: PriceRange): Promise<PricePoint[]> {
     this.assertSupported(symbol);
-    const uniqueByTimestamp = new Map(
-      instrumentFixture.priceHistory.map((point) => [point.timestamp, point]),
-    );
-    return [...uniqueByTimestamp.values()].sort((a, b) =>
-      a.timestamp.localeCompare(b.timestamp),
-    );
+    return filterPriceHistory(instrumentFixture.priceHistory, range);
   }
 
   async getFinancials(symbol: string): Promise<FinancialSeries> {
