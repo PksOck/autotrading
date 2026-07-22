@@ -94,7 +94,16 @@ export function PriceChart({
       ) : (
         <p className="chart-empty" role="status">No price history available</p>
       )}
-      {summary ? <div aria-hidden="true" className="chart-frame" ref={frameRef} /> : null}
+      {summary ? (
+        <div
+          aria-hidden="true"
+          className="chart-frame"
+          data-range={range}
+          data-testid="price-volume-chart-frame"
+          data-volume={showVolume ? "shown" : "unavailable"}
+          ref={frameRef}
+        />
+      ) : null}
       <p className="chart-volume">{showVolume ? "Volume shown below price" : "Volume not available"}</p>
     </section>
   );
