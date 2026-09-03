@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { FixtureMarketDataProvider } from "./fixture-provider";
 import { MarketDataNotFoundError } from "./market-data-errors";
+import { assertMarketDataContract } from "./provider-contract";
 
 describe("FixtureMarketDataProvider", () => {
   const provider = new FixtureMarketDataProvider();
@@ -30,6 +31,13 @@ describe("FixtureMarketDataProvider", () => {
     expect(financials).not.toBeNull();
     expect(financials?.annual).toHaveLength(3);
     expect(financials?.quarterly).toHaveLength(4);
+  });
+
+  it("satisfies the vendor-neutral market data contract", async () => {
+    await assertMarketDataContract(new FixtureMarketDataProvider(), {
+      supportedSymbol: "AMZN",
+      unsupportedSymbol: "NOPE",
+    });
   });
 
   it("returns a deterministic, range-aware five-year price history", async () => {

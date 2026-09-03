@@ -11,7 +11,7 @@ export default function HomePage() {
         before drawing conclusions.
       </p>
       <StockSearch initialResults={fixtureSearchIndex} />
-      <p className="fixture-note">Current fixture universe: AMZN, AAPL, and MSFT.</p>
+      <p className="fixture-note">Full instrument detail is currently available for AMZN; AAPL and MSFT remain search-only identities.</p>
     </main>
   );
 }

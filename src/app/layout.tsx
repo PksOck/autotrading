@@ -7,8 +7,12 @@ import { AppHeader } from "@/components/layout/app-header";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Stock Research",
-  description: "Fixture-backed stock research with transparent data context.",
+  title: {
+    default: "Northstar Research — transparent stock research",
+    template: "%s · Northstar Research",
+  },
+  description:
+    "Research stocks with context: market snapshots, financial trends, DCF scenarios, and source plus freshness on every figure.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {

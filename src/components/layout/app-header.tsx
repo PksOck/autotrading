@@ -8,6 +8,7 @@ export function AppHeader() {
       <Link className="brand" href="/">Northstar Research</Link>
       <nav aria-label="Primary navigation">
         <Link href="/">Home</Link>
+        <Link href="/watchlist">Watchlist</Link>
         <Link href="/methodology">Methodology</Link>
       </nav>
       <ThemeToggle />

@@ -5,6 +5,8 @@ import { PriceChart } from "@/components/charts/price-chart";
 import { FinancialTrends } from "@/components/stock/financial-trends";
 import { MetricCard } from "@/components/stock/metric-card";
 import { StockHeader } from "@/components/stock/stock-header";
+import { ValuationSection } from "@/components/valuation/valuation-section";
+import { WatchlistButton } from "@/components/watchlist/watchlist-button";
 import { FixtureMarketDataProvider } from "@/data/fixture-provider";
 import { MarketDataNotFoundError } from "@/data/market-data-errors";
 import { normalizeSymbol } from "@/lib/market-data";
@@ -22,9 +24,12 @@ export default async function InstrumentPage({ params }: { params: Promise<{ sym
       provider.getPriceHistory(symbol, "MAX"),
     ]);
     const stockMetrics = snapshot.stockMetrics;
+    const annualPeriods = financials?.annual ?? [];
+    const latestFcfPeriod = [...annualPeriods].reverse().find((period) => period.freeCashFlow !== null);
     return (
       <main className="page-shell stock-page">
         <StockHeader snapshot={snapshot} />
+        <WatchlistButton symbol={snapshot.symbol} />
         <DataProvenance source={snapshot.source} asOf={snapshot.asOf} />
         <PriceChart points={priceHistory} currency={snapshot.quoteCurrency} source={snapshot.source} asOf={snapshot.asOf} initialRange="1Y" />
         {stockMetrics ? <section className="data-section"><h2>Market snapshot</h2><dl className="metric-grid">
@@ -37,6 +42,14 @@ export default async function InstrumentPage({ params }: { params: Promise<{ sym
         {financials ? <>
           <FinancialTrends title="Annual financials" periods={financials.annual} currency={financials.currency} unit={financials.unit} />
           <FinancialTrends title="Quarterly financials" periods={financials.quarterly} currency={financials.currency} unit={financials.unit} />
+          <ValuationSection
+            currency={financials.currency}
+            unit={financials.unit}
+            latestFcf={latestFcfPeriod && latestFcfPeriod.freeCashFlow !== null
+              ? { value: latestFcfPeriod.freeCashFlow, period: latestFcfPeriod.period }
+              : null}
+            dilutedShares={annualPeriods.length > 0 ? annualPeriods[annualPeriods.length - 1].dilutedShares : null}
+          />
         </> : <section className="data-section"><h2>Fundamentals</h2><p>Fundamentals are not available for this instrument type</p></section>}
         <section className="limitations"><h2>Risks and limitations</h2><p>Illustrative fixture data can be stale or incomplete. This page is research information, not a recommendation or target price.</p></section>
       </main>
