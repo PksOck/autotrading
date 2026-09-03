@@ -1,0 +1,9 @@
+node_modules
+.next
+.git
+graphify-out
+test-results
+playwright-report
+*.log
+.env*.local
+.env

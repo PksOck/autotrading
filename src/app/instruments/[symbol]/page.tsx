@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { DataProvenance } from "@/components/stock/data-provenance";
@@ -14,6 +15,16 @@ import { normalizeSymbol } from "@/lib/market-data";
 const provider = new FixtureMarketDataProvider();
 
 export function generateStaticParams() { return [{ symbol: "AMZN" }]; }
+
+export async function generateMetadata({ params }: { params: Promise<{ symbol: string }> }): Promise<Metadata> {
+  const symbol = normalizeSymbol((await params).symbol);
+  try {
+    const snapshot = await provider.getInstrumentSnapshot(symbol);
+    return { title: `${snapshot.symbol} ${snapshot.name}` };
+  } catch {
+    return { title: symbol };
+  }
+}
 
 export default async function InstrumentPage({ params }: { params: Promise<{ symbol: string }> }) {
   const symbol = normalizeSymbol((await params).symbol);

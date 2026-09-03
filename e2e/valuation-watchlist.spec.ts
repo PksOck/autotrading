@@ -5,6 +5,7 @@ test("valuation scenarios recompute and refuse dangerous input", async ({ page }
   await page.goto("/instruments/AMZN");
 
   await expect(page.getByRole("heading", { name: "Valuation scenarios" })).toBeVisible();
+  expect(await page.title()).toContain("AMZN");
   const result = page.getByRole("region", { name: "Valuation result" });
   await expect(result.getByText(/per-share estimate/i)).toBeVisible();
   const before = await result.textContent();
