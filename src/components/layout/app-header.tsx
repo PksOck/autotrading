@@ -9,6 +9,7 @@ export function AppHeader() {
       <nav aria-label="Primary navigation">
         <Link href="/">Home</Link>
         <Link href="/watchlist">Watchlist</Link>
+        <Link href="/paper">Paper</Link>
         <Link href="/methodology">Methodology</Link>
       </nav>
       <ThemeToggle />

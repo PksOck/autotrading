@@ -5,7 +5,8 @@
 3. Milestone 3: deterministic two-stage DCF scenarios and localStorage watchlist (complete; instrument page, `/watchlist`, provider contract suite).
 4. Milestone 4: multi-vendor live layer done (Finnhub prices, FMP fundamentals, AlphaVantage fallback, CoinGecko crypto, FRED macro, quota-aware composite with fixture fallback). Remaining: real key wiring and TTL tuning against quotas.
 5. Milestone 5: quant research core done (`src/quant/` indicators, event-driven backtester with costs, IS/OOS splits, walk-forward folds, deflated-Sharpe guard, SMA-cross vs buy-and-hold on the instrument page).
+6. Milestone 6: forecasting baselines + paper simulator done (`src/quant/features.ts`, `forecast.ts` with naive/SMA/linReg baselines, challenger adapter, promotion gate; `src/paper/` orders, risk engine, portfolio with audit log; Forecast section on instrument page; `/paper` SMA demo route). No live execution.
 
-Forecasting ML, brokers, and execution remain separate future systems.
+ML training pipelines, broker adapters, and real order routing remain separate future systems.
 
 Complete ETF, crypto, and commodity fixtures are deferred work; their availability and financial-data capabilities must be represented explicitly before their instrument pages are enabled.

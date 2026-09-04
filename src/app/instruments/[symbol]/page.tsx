@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { DataProvenance } from "@/components/stock/data-provenance";
 import { PriceChart } from "@/components/charts/price-chart";
 import { BacktestSection, TechnicalsSection } from "@/components/quant/research-sections";
+import { ForecastSection } from "@/components/quant/forecast-section";
 import { FinancialTrends } from "@/components/stock/financial-trends";
 import { MetricCard } from "@/components/stock/metric-card";
 import { StockHeader } from "@/components/stock/stock-header";
@@ -48,6 +49,7 @@ export default async function InstrumentPage({ params }: { params: Promise<{ sym
         <DataProvenance source={snapshot.source} asOf={snapshot.asOf} />
         <PriceChart points={priceHistory} currency={snapshot.quoteCurrency} source={snapshot.source} asOf={snapshot.asOf} initialRange="1Y" />
         <TechnicalsSection summary={technicals} currency={snapshot.quoteCurrency} />
+        <ForecastSection closes={priceHistory.map((point) => point.close)} currency={snapshot.quoteCurrency} />
         {backtest ? <BacktestSection comparison={backtest} /> : null}
         {stockMetrics ? <section className="data-section"><h2>Market snapshot</h2><dl className="metric-grid">
           <MetricCard label="Market cap" value={stockMetrics.marketCap} unit="currency" currency={snapshot.quoteCurrency} />
