@@ -3,16 +3,18 @@ import { notFound } from "next/navigation";
 
 import { DataProvenance } from "@/components/stock/data-provenance";
 import { PriceChart } from "@/components/charts/price-chart";
+import { BacktestSection, TechnicalsSection } from "@/components/quant/research-sections";
 import { FinancialTrends } from "@/components/stock/financial-trends";
 import { MetricCard } from "@/components/stock/metric-card";
 import { StockHeader } from "@/components/stock/stock-header";
 import { ValuationSection } from "@/components/valuation/valuation-section";
 import { WatchlistButton } from "@/components/watchlist/watchlist-button";
-import { FixtureMarketDataProvider } from "@/data/fixture-provider";
 import { MarketDataNotFoundError } from "@/data/market-data-errors";
+import { getMarketDataProvider } from "@/data/live";
 import { normalizeSymbol } from "@/lib/market-data";
+import { compareStrategies, summarizeTechnicals } from "@/quant/research";
 
-const provider = new FixtureMarketDataProvider();
+const provider = getMarketDataProvider();
 
 export function generateStaticParams() { return [{ symbol: "AMZN" }]; }
 
@@ -37,12 +39,16 @@ export default async function InstrumentPage({ params }: { params: Promise<{ sym
     const stockMetrics = snapshot.stockMetrics;
     const annualPeriods = financials?.annual ?? [];
     const latestFcfPeriod = [...annualPeriods].reverse().find((period) => period.freeCashFlow !== null);
+    const technicals = summarizeTechnicals(priceHistory);
+    const backtest = compareStrategies(priceHistory);
     return (
       <main className="page-shell stock-page">
         <StockHeader snapshot={snapshot} />
         <WatchlistButton symbol={snapshot.symbol} />
         <DataProvenance source={snapshot.source} asOf={snapshot.asOf} />
         <PriceChart points={priceHistory} currency={snapshot.quoteCurrency} source={snapshot.source} asOf={snapshot.asOf} initialRange="1Y" />
+        <TechnicalsSection summary={technicals} currency={snapshot.quoteCurrency} />
+        {backtest ? <BacktestSection comparison={backtest} /> : null}
         {stockMetrics ? <section className="data-section"><h2>Market snapshot</h2><dl className="metric-grid">
           <MetricCard label="Market cap" value={stockMetrics.marketCap} unit="currency" currency={snapshot.quoteCurrency} />
           <MetricCard label="Enterprise value" value={stockMetrics.enterpriseValue} unit="currency" currency={snapshot.quoteCurrency} />
