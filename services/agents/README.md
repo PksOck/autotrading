@@ -23,4 +23,12 @@ TEST_DATABASE_URL=postgresql+asyncpg://preza:preza@localhost:5433/preza_test uv 
 uv run arq preza_agents.worker.WorkerSettings
 ```
 
+## Regresijski testi (BL-086)
+
+`tests/regression/` požene pet fiksnih posnetkov (rast in poceni, padec in drago, samo govorica, kratka zgodovina, ETF) in primerja determinističen del zagona z datotekami v `golden/`: besedilo vsakega podatkovnega orodja (kontrolna vsota in prve vrstice), zaporedje korakov, opozorila in kontrolno oceno. Pred nadgradnjo TradingAgents morajo iti skozi (ADR-0003). Po nameravani spremembi:
+
+```bash
+UPDATE_GOLDEN=1 uv run pytest tests/regression   # nato preglej diff v golden/ kot kodo
+```
+
 Pozivi so v angleščini, poročila v jeziku uporabnika (`output_language`, VOICE.md §7).

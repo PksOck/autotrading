@@ -1,0 +1,133 @@
+{
+  "caveats": [],
+  "confidence": "low",
+  "control": {
+    "components": {
+      "risk": -1.0,
+      "technical": -0.5,
+      "valuation": -1.0
+    },
+    "coverage": 1.0,
+    "implied_rating": "Sell",
+    "score": -0.893,
+    "weights": {
+      "risk": 0.15,
+      "technical": 0.15,
+      "valuation": 0.4
+    }
+  },
+  "rating": "Overweight",
+  "reports": [
+    "final_trade_decision",
+    "fundamentals_report",
+    "investment_plan",
+    "market_report",
+    "news_report",
+    "trader_investment_plan"
+  ],
+  "steps": {
+    "analysts": {
+      "fundamentals": [
+        "tool:get_fundamentals(curr_date=2026-10-20)",
+        "report:fundamentals_report"
+      ],
+      "market": [
+        "tool:get_verified_market_snapshot(curr_date=2026-10-20, look_back_days=10)",
+        "report:market_report"
+      ],
+      "news": [
+        "tool:get_news(start_date=2026-10-10, end_date=2026-10-20)",
+        "report:news_report"
+      ]
+    },
+    "sequence": [
+      "bull:debate:investment_debate_state",
+      "bear:debate:investment_debate_state",
+      "research_manager:report:investment_plan",
+      "trader:report:trader_investment_plan",
+      "aggressive:debate:risk_debate_state",
+      "conservative:debate:risk_debate_state",
+      "neutral:debate:risk_debate_state",
+      "portfolio_manager:decision:"
+    ]
+  },
+  "tools": {
+    "get_fundamentals": {
+      "head": [
+        "# Company fundamentals for BOLT",
+        "# Source: finnhub, as of 2026-10-19",
+        "",
+        "Name: Bolt Motors",
+        "ev_ebit: 48.0",
+        "fcf_yield: 0.8"
+      ],
+      "lines": 7,
+      "sha256": "1505be834a69eb00"
+    },
+    "get_global_news": {
+      "head": [
+        "## Market news up to 2026-10-20 (our news store)",
+        "",
+        "- 2026-10-18 09:00 UTC · rss · Fed holds rates steady",
+        "  https://example.com/macro"
+      ],
+      "lines": 4,
+      "sha256": "b239901a1a98f30b"
+    },
+    "get_indicators": {
+      "head": [
+        "## rsi values from 2026-09-20 to 2026-10-20:",
+        "",
+        "2026-10-20: 0.6246545153845168",
+        "2026-10-19: 0.147524309791151",
+        "2026-10-18: N/A: Not a trading day (weekend or holiday)",
+        "2026-10-17: N/A: Not a trading day (weekend or holiday)"
+      ],
+      "lines": 110,
+      "sha256": "14b2524f4107deba"
+    },
+    "get_insider_transactions": {
+      "head": [
+        "## Insider filings (SEC Form 4) for BOLT up to 2026-10-20",
+        "",
+        "No Form 4 filings in our store for the last 30 days."
+      ],
+      "lines": 3,
+      "sha256": "5e9895c77ec6d090"
+    },
+    "get_news": {
+      "head": [
+        "## BOLT news from 2026-09-20 to 2026-10-20 (our news store)",
+        "",
+        "- 2026-10-16 09:00 UTC · press_release · Bolt recalls 40,000 vehicles",
+        "  https://example.com/bolt/2"
+      ],
+      "lines": 4,
+      "sha256": "56573fd46941a72b"
+    },
+    "get_stock_data": {
+      "head": [
+        "# Stock data for BOLT from 2026-09-01 to 2026-10-20",
+        "# Source: ibkr, daily bars as of 2026-10-20",
+        "# Total records: 36",
+        "",
+        "Date,Open,High,Low,Close,Volume",
+        "2026-09-01,119.22,125.97,116.97,121.47,2012000"
+      ],
+      "lines": 41,
+      "sha256": "b0938082900a5729"
+    },
+    "get_verified_market_snapshot": {
+      "head": [
+        "## Verified market data snapshot for BOLT",
+        "",
+        "- Requested analysis date: 2026-10-20",
+        "- Latest trading row used: 2026-10-20",
+        "- Rows after the requested analysis date are excluded before verification.",
+        ""
+      ],
+      "lines": 68,
+      "sha256": "c849b86a02eb26a4"
+    }
+  }
+}

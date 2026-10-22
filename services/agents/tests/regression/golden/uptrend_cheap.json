@@ -1,0 +1,134 @@
+{
+  "caveats": [],
+  "confidence": "normal",
+  "control": {
+    "components": {
+      "risk": 0.549,
+      "technical": 0.5,
+      "valuation": 1.0
+    },
+    "coverage": 1.0,
+    "implied_rating": "Buy",
+    "score": 0.796,
+    "weights": {
+      "risk": 0.15,
+      "technical": 0.15,
+      "valuation": 0.4
+    }
+  },
+  "rating": "Buy",
+  "reports": [
+    "final_trade_decision",
+    "fundamentals_report",
+    "investment_plan",
+    "market_report",
+    "news_report",
+    "trader_investment_plan"
+  ],
+  "steps": {
+    "analysts": {
+      "fundamentals": [
+        "tool:get_fundamentals(curr_date=2026-10-20)",
+        "report:fundamentals_report"
+      ],
+      "market": [
+        "tool:get_verified_market_snapshot(curr_date=2026-10-20, look_back_days=10)",
+        "report:market_report"
+      ],
+      "news": [
+        "tool:get_news(start_date=2026-10-10, end_date=2026-10-20)",
+        "report:news_report"
+      ]
+    },
+    "sequence": [
+      "bull:debate:investment_debate_state",
+      "bear:debate:investment_debate_state",
+      "research_manager:report:investment_plan",
+      "trader:report:trader_investment_plan",
+      "aggressive:debate:risk_debate_state",
+      "conservative:debate:risk_debate_state",
+      "neutral:debate:risk_debate_state",
+      "portfolio_manager:decision:"
+    ]
+  },
+  "tools": {
+    "get_fundamentals": {
+      "head": [
+        "# Company fundamentals for ACME",
+        "# Source: finnhub, as of 2026-10-19",
+        "",
+        "Name: Acme Semiconductor",
+        "ev_ebit: 14.0",
+        "fcf_yield: 5.5"
+      ],
+      "lines": 7,
+      "sha256": "db18354c7680faad"
+    },
+    "get_global_news": {
+      "head": [
+        "## Market news up to 2026-10-20 (our news store)",
+        "",
+        "- 2026-10-18 09:00 UTC · rss · Fed holds rates steady",
+        "  https://example.com/macro"
+      ],
+      "lines": 4,
+      "sha256": "b239901a1a98f30b"
+    },
+    "get_indicators": {
+      "head": [
+        "## rsi values from 2026-09-20 to 2026-10-20:",
+        "",
+        "2026-10-20: 98.6036768977892",
+        "2026-10-19: 98.41114840713658",
+        "2026-10-18: N/A: Not a trading day (weekend or holiday)",
+        "2026-10-17: N/A: Not a trading day (weekend or holiday)"
+      ],
+      "lines": 110,
+      "sha256": "fc9c5f4a0343da52"
+    },
+    "get_insider_transactions": {
+      "head": [
+        "## Insider filings (SEC Form 4) for ACME up to 2026-10-20",
+        "",
+        "- 2026-10-15 09:00 UTC · sec_edgar · Form 4: director buys shares",
+        "  https://example.com/acme/3"
+      ],
+      "lines": 4,
+      "sha256": "4e7c22362eef88f2"
+    },
+    "get_news": {
+      "head": [
+        "## ACME news from 2026-09-20 to 2026-10-20 (our news store)",
+        "",
+        "- 2026-10-17 09:00 UTC · press_release · Acme raises full-year guidance",
+        "  https://example.com/acme/1"
+      ],
+      "lines": 4,
+      "sha256": "d01f75b7b7b6086d"
+    },
+    "get_stock_data": {
+      "head": [
+        "# Stock data for ACME from 2026-09-01 to 2026-10-20",
+        "# Source: ibkr, daily bars as of 2026-10-20",
+        "# Total records: 36",
+        "",
+        "Date,Open,High,Low,Close,Volume",
+        "2026-09-01,171.08,172.58,170.58,171.58,2012000"
+      ],
+      "lines": 41,
+      "sha256": "7fdfc687ab637d1b"
+    },
+    "get_verified_market_snapshot": {
+      "head": [
+        "## Verified market data snapshot for ACME",
+        "",
+        "- Requested analysis date: 2026-10-20",
+        "- Latest trading row used: 2026-10-20",
+        "- Rows after the requested analysis date are excluded before verification.",
+        ""
+      ],
+      "lines": 68,
+      "sha256": "7f62658fc7c5dff1"
+    }
+  }
+}

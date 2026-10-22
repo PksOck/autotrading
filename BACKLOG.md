@@ -103,7 +103,7 @@
 | BL-083 | ETF analitik (profil sklada, prekrivanje skozi ETF-je, dva klica vlog; ADR-0011) | research §5.5 | done |
 | BL-084 | (odloženo) `claude_runner` samo, če se kasneje odločiš za Claude Agent SDK | PLAN §4 | later |
 | BL-085 | SCR-06 Analiza | DESIGN §4 | done |
-| BL-086 | Regresijski testi agentov na 5 fiksnih posnetkih | research §3.1 | later |
+| BL-086 | Regresijski testi agentov na 5 fiksnih posnetkih (sintetični; resnične dodaj po BL-059/066/091) | research §3.1 | done |
 | BL-087 | Znanje za agente: prepis izbranih Vibe-Trading skills v `services/agents/knowledge/` | research §3.2 | later |
 | BL-088 | Dodatna analitika: dividende/odkupi in relativno vrednotenje (multiplikatorji računa koda) | research/trading-list §2 | later |
 | BL-090 | Ročni predlog → standardna/globoka analiza: hipoteza uporabnika v kontekstu, izrecna potrditev/ovržba v izhodu (hitra in standardna globina že delujeta v M2) | DESIGN §11 | done |

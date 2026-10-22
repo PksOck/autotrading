@@ -1,0 +1,96 @@
+{
+  "caveats": [],
+  "control": {
+    "components": {
+      "risk": 0.453,
+      "technical": 0.5,
+      "valuation": null
+    },
+    "coverage": 0.429,
+    "implied_rating": "Overweight",
+    "score": 0.477,
+    "weights": {
+      "risk": 0.15,
+      "technical": 0.15,
+      "valuation": 0.4
+    }
+  },
+  "rating": "Overweight",
+  "reports": {
+    "exposure_report": {
+      "head": [
+        "### Prekrivanje s portfeljem",
+        "- Delež sklada v portfelju: 0,0 %",
+        "- Delež največjih pozicij, ki jih že imaš: 76,9 %",
+        "- NVDA: 22,0 % sklada, v portfelju 6,0 %",
+        "- ASML.AS: 8,0 % sklada, v portfelju 4,0 %"
+      ],
+      "lines": 5,
+      "sha256": "51906505db0c5e64"
+    },
+    "final_trade_decision": {
+      "head": [
+        "### Končna odločitev",
+        "**Rating**: Overweight",
+        "",
+        "Prekrivanje je majhno."
+      ],
+      "lines": 4,
+      "sha256": "a9efa757bca90c4c"
+    },
+    "market_report": {
+      "head": [
+        "### Tehnična slika",
+        "- Cena: 10,97",
+        "- SMA50 / SMA200: 10,83 / 10,15",
+        "- RSI(14): 84,1",
+        "- ATR(14): 0,15",
+        "- Sprememba 3 mesece: 1,0 %"
+      ],
+      "lines": 9,
+      "sha256": "f9df7b58f3bdada5"
+    },
+    "news_report": {
+      "head": [
+        "### Tema in makro",
+        "Polprevodniki rastejo z naložbami v AI.",
+        "",
+        "**Gonila**",
+        "- AI"
+      ],
+      "lines": 5,
+      "sha256": "5f36cada93edbbb4"
+    },
+    "profile_report": {
+      "head": [
+        "### Profil sklada",
+        "- Stroški (TER): 0,35 %",
+        "- Kategorija: Technology",
+        "- Delitev dobička: akumulacijski",
+        "",
+        "**Največje pozicije** (pokrijejo 39,0 % sklada)"
+      ],
+      "lines": 14,
+      "sha256": "0f6cf715e661baba"
+    }
+  },
+  "steps": {
+    "analysts": {
+      "exposure": [
+        "report:exposure_report"
+      ],
+      "market": [
+        "report:market_report"
+      ],
+      "news": [
+        "report:news_report"
+      ],
+      "profile": [
+        "report:profile_report"
+      ]
+    },
+    "sequence": [
+      "portfolio_manager:decision:"
+    ]
+  }
+}
