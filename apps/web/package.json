@@ -11,6 +11,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "i18n:check": "node scripts/check-messages.mjs",
+    "gen:indicator-fixture": "node scripts/gen-indicator-fixture.mjs",
     "gen:api": "openapi-typescript ../../services/api/openapi.json -o lib/api/schema.d.ts"
   },
   "dependencies": {

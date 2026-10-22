@@ -1,0 +1,26 @@
+# Entry rules (research §5.3, BL-060). Thresholds are defaults; change them here, not in code.
+# Every change is versioned with `version` so signal outcomes can be compared per configuration.
+version: 1
+zone_half_width_atr: 0.5      # entry zone = anchor ± this × ATR(14)
+near_atr: 2.0                 # "near" when the price is within this many ATR above the zone
+stop_below_zone_atr: 1.5      # suggested thesis stop below the zone
+pullback:
+  rsi_max: 40                 # price above (or rising) SMA200, at/below SMA50, RSI(14) below this
+  sma200_rising_lookback: 20
+support:
+  atr_mult: 1.0               # price within this × ATR of SMA200 or the 52-week swing low
+drawdown:
+  stock_pct: 15               # from the 52-week high
+  etf_pct: 8
+overreaction:
+  z_max: -2.0                 # daily move ≤ −2σ ...
+  materiality_max: 0.5        # ... on an event the triage rated as not material
+  days: 5
+insider:
+  min_filings: 2              # Form 4 purchases by several insiders
+  days: 30
+valuation:
+  min_cheap_share: 0.5        # share of valuation bands below their 5-year median
+ladder:
+  weights: [0.4, 0.3, 0.3]
+  step_atr: 1.0               # distance between ladder levels
