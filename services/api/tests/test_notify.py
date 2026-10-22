@@ -10,7 +10,7 @@ from sqlalchemy import func, select
 
 from preza.cli.telegram_bot import handle_update, parse_predlog
 from preza.config import Settings
-from preza.models import Instrument, Proposal, Signal
+from preza.models import EntryCandidate, Instrument, Proposal, Signal
 from preza.notify.models import Notification
 from preza.notify.service import handle_callback, morning_digest, notify_new_signals
 from preza.notify.telegram import (
@@ -196,6 +196,7 @@ async def seed_signal(
     status: str = "new",
     hours_ago: float = 1,
     rumor: bool = False,
+    zone: tuple[str, str, str] | None = None,
 ) -> uuid.UUID:
     from preza.db import get_sessionmaker
 
@@ -218,6 +219,9 @@ async def seed_signal(
             status=status,
             created_at=NOON - timedelta(hours=hours_ago),
         )
+        if zone:
+            signal.source = "rule"
+            signal.entry_low, signal.entry_high, signal.stop = (Decimal(z) for z in zone)
         session.add(signal)
         await session.commit()
         return signal.id
@@ -242,6 +246,77 @@ async def test_notify_sends_once(api: tuple[httpx.AsyncClient, FakeRouter]) -> N
     assert len(outbox.texts) == 1 and outbox.texts[0].startswith("AAA · Katalizator")
     markup = outbox.requests[0]["reply_markup"]["inline_keyboard"][0]
     assert markup[1]["callback_data"].startswith("w:")
+
+
+def test_format_signal_entry_zone_line() -> None:
+    kw: dict[str, Any] = {"zone": (906.77, 929.63), "stop": 872.48}
+    sl = format_signal("AAA", "entry", "Padec je začasen.", 0.5, False, "http://x", "sl", **kw)
+    lines = sl.split("\n")
+    assert lines[1] == "Cona 906,77\u2013929,63 · stop 872,48" and len(lines) <= 5
+    en = format_signal("AAA", "entry", "Temporary dip.", 0.5, False, "http://x", "en", **kw)
+    assert en.split("\n")[1] == "Zone 906.77\u2013929.63 · stop 872.48"
+    other = format_signal("AAA", "catalyst", "x", 0.8, False, "", "en", **kw)
+    assert "Zone" not in other
+
+
+@pytest.mark.db
+async def test_entry_below_threshold_sent_with_zone_catalyst_not(
+    api: tuple[httpx.AsyncClient, FakeRouter],
+) -> None:
+    from preza.db import get_sessionmaker
+
+    await seed_signal("ENT", 0.5, kind="entry", zone=("906.77", "929.63", "872.48"))
+    await seed_signal("CAT", 0.5)  # catalyst below threshold
+    outbox = Outbox()
+    async with get_sessionmaker()() as session:
+        assert await notify_new_signals(session, outbox.client, CHAT, settings(), NOON) == 1
+        await session.commit()
+    assert len(outbox.texts) == 1 and outbox.texts[0].startswith("ENT · Vstop")
+    assert "Cona 906,77\u2013929,63 · stop 872,48" in outbox.texts[0]
+
+
+@pytest.mark.db
+async def test_digest_lists_entries_in_zone(api: tuple[httpx.AsyncClient, FakeRouter]) -> None:
+    from preza.db import get_sessionmaker
+
+    await seed_signal("AAA", 0.8)
+    async with get_sessionmaker()() as session:
+        for symbol, state, cause, rules in [
+            ("ZZ1", "in_zone", "market", [{"r": 1}]),
+            ("ZZ2", "below", None, [{"r": 1}, {"r": 2}]),
+            ("ZZ3", "near", "sector", [{"r": 1}]),
+            ("ZZ4", "in_zone", "sector", []),
+        ]:
+            instrument = Instrument(symbol=symbol, exchange="X", source="test")
+            session.add(instrument)
+            await session.flush()
+            session.add(
+                EntryCandidate(
+                    instrument_id=instrument.id,
+                    as_of=NOON.date(),
+                    price=Decimal("10"),
+                    rules=rules,
+                    state=state,
+                    cause=cause,
+                    source="test",
+                )
+            )
+        await session.commit()
+    outbox = Outbox()
+    async with get_sessionmaker()() as session:
+        await morning_digest(session, outbox.client, CHAT, settings(), NOON)
+        await session.commit()
+    lines = outbox.texts[0].split("\n")
+    i = lines.index("Vstopi")
+    assert lines[i + 1 : i + 3] == [
+        "ZZ2 · pod cono · čaka na analizo",
+        "ZZ1 · v coni · trg",
+    ]
+    assert lines[i + 3].startswith("Odpri:") and "ZZ3" not in outbox.texts[0]
+    en = Outbox()
+    async with get_sessionmaker()() as session:
+        await morning_digest(session, en.client, CHAT, settings(default_locale="en"), NOON)
+    assert "Entries" in en.texts[0] and "ZZ2 · below zone · awaiting analysis" in en.texts[0]
 
 
 @pytest.mark.db

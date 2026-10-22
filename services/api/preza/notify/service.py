@@ -9,7 +9,7 @@ from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from preza.config import Settings, get_settings
-from preza.models import Signal
+from preza.models import EntryCandidate, Signal
 from preza.notify.models import Notification
 from preza.notify.telegram import (
     Decision,
@@ -28,10 +28,37 @@ log = logging.getLogger(__name__)
 DIGEST_LIMIT = 10
 
 
+ALWAYS_NOTIFY_KINDS = ("entry", "thesis_break")  # already filtered by rules and dip analysis
+ENTRY_LIMIT = 5
+STATE_WORDS = {
+    "sl": {"in_zone": "v coni", "below": "pod cono"},
+    "en": {"in_zone": "in zone", "below": "below zone"},
+}
+CAUSE_WORDS = {
+    "sl": {
+        "market": "trg",
+        "sector": "sektor",
+        "transient": "začasno",
+        "fundamental": "temeljno",
+        None: "čaka na analizo",
+    },
+    "en": {
+        "market": "market",
+        "sector": "sector",
+        "transient": "transient",
+        "fundamental": "fundamental",
+        None: "awaiting analysis",
+    },
+}
+
+
 def _candidates(settings: Settings, now: datetime) -> Any:
     return (
         Signal.status.in_(("new", "watching")),
-        Signal.strength >= settings.radar_notify_threshold,
+        or_(
+            Signal.kind.in_(ALWAYS_NOTIFY_KINDS),
+            Signal.strength >= settings.radar_notify_threshold,
+        ),
         Signal.created_at >= now - timedelta(hours=24),
     )
 
@@ -87,6 +114,12 @@ async def notify_new_signals(
                 signal.is_rumor,
                 link,
                 settings.default_locale,
+                zone=(
+                    (float(signal.entry_low), float(signal.entry_high))
+                    if signal.entry_low is not None and signal.entry_high is not None
+                    else None
+                ),
+                stop=float(signal.stop) if signal.stop is not None else None,
             )
             try:
                 buttons = signal_buttons(signal.id, settings.default_locale, settings.app_base_url)
@@ -123,16 +156,26 @@ async def morning_digest(
             .order_by(Signal.strength.desc())
         )
     )
-    if not rows:
+    entries = list(
+        await session.scalars(
+            select(EntryCandidate).where(
+                EntryCandidate.state.in_(("in_zone", "below")),
+                func.jsonb_array_length(EntryCandidate.rules) > 0,
+            )
+        )
+    )
+    entries.sort(key=lambda e: (-len(e.rules), e.instrument.symbol))
+    entries = entries[:ENTRY_LIMIT]
+    if not rows and not entries:
         return 0
     top = rows[:DIGEST_LIMIT]
     count = len(rows)
     if locale == "sl":
         head = f"Jutranji povzetek · {count} {'signal' if count == 1 else 'signalov'}"
-        strength_label, open_label = "Moč", "Odpri"
+        strength_label, open_label, entries_title = "Moč", "Odpri", "Vstopi"
     else:
         head = f"Morning digest · {count} {'signal' if count == 1 else 'signals'}"
-        strength_label, open_label = "Strength", "Open"
+        strength_label, open_label, entries_title = "Strength", "Open", "Entries"
     lines = [head]
     for signal, _ in top:
         prefix = {"sl": "Nepotrjeno. ", "en": "Unconfirmed. "}[locale] if signal.is_rumor else ""
@@ -140,6 +183,12 @@ async def morning_digest(
             f"{prefix}{signal.instrument.symbol} · {kind_label(signal.kind, locale)} · "
             f"{strength_label} {fmt_num(float(signal.strength), locale)}"
         )
+    if entries:
+        lines.append(entries_title)
+        for entry in entries:
+            state = STATE_WORDS[locale].get(entry.state or "", entry.state or "")
+            cause = CAUSE_WORDS[locale].get(entry.cause, entry.cause or "")
+            lines.append(f"{entry.instrument.symbol} · {state} · {cause}")
     lines.append(f"{open_label}: {settings.app_base_url.rstrip('/')}/signals")
     await client.send_message(chat_id, "\n".join(lines))
     for signal, notification in top:

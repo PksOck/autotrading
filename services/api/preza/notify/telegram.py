@@ -105,6 +105,8 @@ STRENGTH_LABEL = {"sl": "Moč", "en": "Strength"}
 OPEN_LABEL = {"sl": "Odpri", "en": "Open"}
 WATCH_LABEL = {"sl": "Spremljaj", "en": "Watch"}
 DISMISS_LABEL = {"sl": "Zavrzi", "en": "Dismiss"}
+ZONE_LABEL = {"sl": "Cona", "en": "Zone"}
+STOP_LABEL = {"sl": "stop", "en": "stop"}
 MAX_RATIONALE = 220
 
 
@@ -136,14 +138,23 @@ def format_signal(
     is_rumor: bool,
     url: str,
     locale: str,
+    *,
+    zone: tuple[float, float] | None = None,
+    stop: float | None = None,
 ) -> str:
-    """At most 4 lines: header, rationale and strength, link."""
+    """At most 5 lines: header, zone and stop (entry only), rationale and strength, link."""
     lang = _lang(locale)
     head = f"{html.escape(signal_symbol, quote=False)} · {kind_label(kind, lang)}"
     if is_rumor:
         head = f"{RUMOR_PREFIX[lang]} {head}"
     body = f"{_clean(rationale, MAX_RATIONALE)} {STRENGTH_LABEL[lang]} {fmt_num(strength, lang)}"
-    lines = [head, body]
+    lines = [head]
+    if kind == "entry" and zone is not None:
+        zone_text = f"{ZONE_LABEL[lang]} {fmt_num(zone[0], lang)}\u2013{fmt_num(zone[1], lang)}"
+        if stop is not None:
+            zone_text += f" · {STOP_LABEL[lang]} {fmt_num(stop, lang)}"
+        lines.append(zone_text)
+    lines.append(body)
     if url:
         lines.append(f"{OPEN_LABEL[lang]}: {html.escape(url, quote=False)}")
     return "\n".join(lines)
