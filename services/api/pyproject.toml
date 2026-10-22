@@ -14,6 +14,9 @@ dependencies = [
   "arq>=0.26",
   "redis>=5.2",
   "httpx>=0.28",
+  "defusedxml>=0.7.1",
+  "pyyaml>=6.0.3",
+  "ib-async>=2.1",
 ]
 
 [dependency-groups]
@@ -22,6 +25,8 @@ dev = [
   "pytest-asyncio>=0.24",
   "ruff>=0.8",
   "mypy>=1.13",
+  "types-pyyaml>=6.0.12.20260906",
+  "types-defusedxml>=0.7.0.20260504",
 ]
 
 [build-system]
@@ -48,3 +53,4 @@ files = ["preza"]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
 testpaths = ["tests"]
+markers = ["db: needs TEST_DATABASE_URL (real Postgres)"]

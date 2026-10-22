@@ -41,16 +41,286 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/instruments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search */
+        get: operations["search_instruments_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/instruments/{symbol}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Detail */
+        get: operations["detail_instruments__symbol__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/instruments/{symbol}/bars": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Bars */
+        get: operations["bars_instruments__symbol__bars_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/portfolio": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Portfolio */
+        get: operations["portfolio_portfolio_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/portfolio/sync": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Sync */
+        post: operations["sync_portfolio_sync_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/watchlist": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Items */
+        get: operations["list_items_watchlist_get"];
+        put?: never;
+        /** Add */
+        post: operations["add_watchlist_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/watchlist/{item_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove */
+        delete: operations["remove_watchlist__item_id__delete"];
+        options?: never;
+        head?: never;
+        /** Update */
+        patch: operations["update_watchlist__item_id__patch"];
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** BarOut */
+        BarOut: {
+            /**
+             * Day
+             * Format: date
+             */
+            day: string;
+            /** Open */
+            open: number;
+            /** High */
+            high: number;
+            /** Low */
+            low: number;
+            /** Close */
+            close: number;
+            /** Volume */
+            volume?: number | null;
+        };
+        /** BarsOut */
+        BarsOut: {
+            /** Symbol */
+            symbol: string;
+            /** Bars */
+            bars: components["schemas"]["BarOut"][];
+            provenance: components["schemas"]["Provenance"] | null;
+        };
+        /** CashIn */
+        CashIn: {
+            /** Account Id */
+            account_id: string;
+            /** Currency */
+            currency: string;
+            /** Amount */
+            amount: number;
+            /**
+             * Report Date
+             * Format: date
+             */
+            report_date: string;
+        };
+        /** HTTPValidationError */
+        HTTPValidationError: {
+            /** Detail */
+            detail?: components["schemas"]["ValidationError"][];
+        };
         /** Health */
         Health: {
             /** Status */
             status: string;
             /** Version */
             version: string;
+        };
+        /** InstrumentDetail */
+        InstrumentDetail: {
+            /** Symbol */
+            symbol: string;
+            /** Name */
+            name: string | null;
+            kind: components["schemas"]["InstrumentKind"];
+            /** Exchange */
+            exchange: string | null;
+            /** Currency */
+            currency: string | null;
+            /** Isin */
+            isin: string | null;
+            /** Ucits */
+            ucits: boolean;
+            /** Tradable For User */
+            tradable_for_user: boolean;
+            /** Last Close */
+            last_close?: number | null;
+            /** Change Pct */
+            change_pct?: number | null;
+            provenance?: components["schemas"]["Provenance"] | null;
+        };
+        /**
+         * InstrumentKind
+         * @enum {string}
+         */
+        InstrumentKind: "stock" | "etf" | "unknown";
+        /** InstrumentOut */
+        InstrumentOut: {
+            /** Symbol */
+            symbol: string;
+            /** Name */
+            name: string | null;
+            kind: components["schemas"]["InstrumentKind"];
+            /** Exchange */
+            exchange: string | null;
+            /** Currency */
+            currency: string | null;
+            /** Isin */
+            isin: string | null;
+            /** Ucits */
+            ucits: boolean;
+            /** Tradable For User */
+            tradable_for_user: boolean;
+        };
+        /** PortfolioOut */
+        PortfolioOut: {
+            /** As Of */
+            as_of: string | null;
+            /** Base Currency */
+            base_currency: string;
+            /** Total Value */
+            total_value: number | null;
+            /** Positions */
+            positions: components["schemas"]["PositionOut"][];
+            /** Cash */
+            cash: components["schemas"]["CashIn"][];
+            last_sync: components["schemas"]["SyncInfo"] | null;
+            /** Source */
+            source: string | null;
+        };
+        /** PositionOut */
+        PositionOut: {
+            /** Symbol */
+            symbol: string;
+            /** Name */
+            name: string | null;
+            kind: components["schemas"]["InstrumentKind"];
+            /** Currency */
+            currency: string;
+            /** Quantity */
+            quantity: number;
+            /** Avg Cost */
+            avg_cost: number | null;
+            /** Market Price */
+            market_price: number | null;
+            /** Market Value */
+            market_value: number | null;
+            /** Unrealized Pnl */
+            unrealized_pnl: number | null;
+            /** Weight Pct */
+            weight_pct: number | null;
+        };
+        /** Provenance */
+        Provenance: {
+            /** Source */
+            source: string;
+            /**
+             * As Of
+             * Format: date-time
+             */
+            as_of: string;
+            /**
+             * Stale
+             * @default false
+             */
+            stale: boolean;
+        };
+        /** Queued */
+        Queued: {
+            /** Job Id */
+            job_id: string;
         };
         /**
          * ServiceId
@@ -71,6 +341,17 @@ export interface components {
             /** Detail */
             detail?: string | null;
         };
+        /** SyncInfo */
+        SyncInfo: {
+            /** Kind */
+            kind: string;
+            /** Status */
+            status: string;
+            /** Finished At */
+            finished_at: string | null;
+            /** Detail */
+            detail: string | null;
+        };
         /** SystemStatus */
         SystemStatus: {
             /**
@@ -80,6 +361,98 @@ export interface components {
             as_of: string;
             /** Services */
             services: components["schemas"]["ServiceStatus"][];
+        };
+        /** ValidationError */
+        ValidationError: {
+            /** Location */
+            loc: (string | number)[];
+            /** Message */
+            msg: string;
+            /** Error Type */
+            type: string;
+            /** Input */
+            input?: unknown;
+            /** Context */
+            ctx?: Record<string, never>;
+        };
+        /**
+         * WatchTier
+         * @enum {string}
+         */
+        WatchTier: "active" | "reserve";
+        /** WatchlistCreate */
+        WatchlistCreate: {
+            /** Symbol */
+            symbol: string;
+            /** @default active */
+            tier: components["schemas"]["WatchTier"];
+            /**
+             * Source
+             * @default manual
+             */
+            source: string;
+            /** Tags */
+            tags?: string[];
+            /** Note */
+            note?: string | null;
+            /** Target Price */
+            target_price?: number | string | null;
+            /** Alert Below */
+            alert_below?: number | string | null;
+            /** Alert Above */
+            alert_above?: number | string | null;
+        };
+        /** WatchlistOut */
+        WatchlistOut: {
+            /** Id */
+            id: number;
+            /** Symbol */
+            symbol: string;
+            /** Name */
+            name: string | null;
+            kind: components["schemas"]["InstrumentKind"];
+            tier: components["schemas"]["WatchTier"];
+            /** Source */
+            source: string;
+            /** Tags */
+            tags: string[];
+            /** Note */
+            note: string | null;
+            /** Target Price */
+            target_price: number | null;
+            /** Alert Below */
+            alert_below: number | null;
+            /** Alert Above */
+            alert_above: number | null;
+            /**
+             * Added At
+             * Format: date-time
+             */
+            added_at: string;
+            /** Added Price */
+            added_price: number | null;
+            /** Last Close */
+            last_close: number | null;
+            /** Since Added Pct */
+            since_added_pct: number | null;
+            /** Reviewed At */
+            reviewed_at: string | null;
+        };
+        /** WatchlistUpdate */
+        WatchlistUpdate: {
+            tier?: components["schemas"]["WatchTier"] | null;
+            /** Tags */
+            tags?: string[] | null;
+            /** Note */
+            note?: string | null;
+            /** Target Price */
+            target_price?: number | string | null;
+            /** Alert Below */
+            alert_below?: number | string | null;
+            /** Alert Above */
+            alert_above?: number | string | null;
+            /** Reviewed */
+            reviewed?: boolean | null;
         };
     };
     responses: never;
@@ -126,6 +499,259 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SystemStatus"];
+                };
+            };
+        };
+    };
+    search_instruments_get: {
+        parameters: {
+            query: {
+                q: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InstrumentOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    detail_instruments__symbol__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                symbol: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InstrumentDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    bars_instruments__symbol__bars_get: {
+        parameters: {
+            query?: {
+                range?: string;
+                refresh?: boolean;
+            };
+            header?: never;
+            path: {
+                symbol: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BarsOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    portfolio_portfolio_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PortfolioOut"];
+                };
+            };
+        };
+    };
+    sync_portfolio_sync_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Queued"];
+                };
+            };
+        };
+    };
+    list_items_watchlist_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WatchlistOut"][];
+                };
+            };
+        };
+    };
+    add_watchlist_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WatchlistCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WatchlistOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    remove_watchlist__item_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                item_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_watchlist__item_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                item_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WatchlistUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WatchlistOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

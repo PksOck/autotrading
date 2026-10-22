@@ -1,0 +1,22 @@
+{
+  "chart": {
+    "result": [
+      {
+        "meta": {"currency": "USD", "symbol": "MSFT", "exchangeName": "NMS", "gmtoffset": -14400},
+        "timestamp": [1760967000, 1761053400, 1761139800, 1761226200],
+        "indicators": {
+          "quote": [
+            {
+              "open": [410.1, 408.0, null, 405.2],
+              "high": [412.5, 409.9, null, 407.8],
+              "low": [407.2, 404.1, null, 403.6],
+              "close": [408.4, 405.0, null, 406.8],
+              "volume": [21000000, 25500000, null, 19800000]
+            }
+          ]
+        }
+      }
+    ],
+    "error": null
+  }
+}

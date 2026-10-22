@@ -1,0 +1,20 @@
+<FlexQueryResponse queryName="preza" type="AF">
+  <FlexStatements count="1">
+    <FlexStatement accountId="U0000001" fromDate="20261021" toDate="20261021" period="LastBusinessDay" whenGenerated="20261022;060012">
+      <OpenPositions>
+        <OpenPosition accountId="U0000001" currency="USD" assetCategory="STK" subCategory="COMMON" symbol="MSFT" description="MICROSOFT CORP" conid="272093" isin="US5949181045" listingExchange="NASDAQ" reportDate="20261021" position="25" markPrice="405.0" positionValue="10125" costBasisPrice="331.2" fifoPnlUnrealized="1845" fxRateToBase="0.92" levelOfDetail="SUMMARY" />
+        <OpenPosition accountId="U0000001" currency="USD" assetCategory="STK" subCategory="ETF" symbol="VWRA" description="VANGUARD FTSE ALL-WORLD USDA" conid="999001" isin="IE00BK5BQT80" listingExchange="LSEETF" reportDate="20261021" position="180" markPrice="137.9" positionValue="24822" costBasisPrice="118.4" fifoPnlUnrealized="3510" fxRateToBase="0.92" levelOfDetail="SUMMARY" />
+        <OpenPosition accountId="U0000001" currency="USD" assetCategory="STK" subCategory="ETF" symbol="VWRA" conid="999001" reportDate="20261021" position="100" levelOfDetail="LOT" />
+      </OpenPositions>
+      <Trades>
+        <Trade accountId="U0000001" currency="USD" assetCategory="STK" symbol="MSFT" conid="272093" tradeID="7001" tradeDate="20261003" buySell="BUY" quantity="5" tradePrice="401.5" ibCommission="-1.0" />
+        <Trade accountId="U0000001" currency="USD" assetCategory="OPT" symbol="MSFT 261120C00450000" tradeID="7002" tradeDate="20261003" buySell="BUY" quantity="1" tradePrice="5.1" />
+      </Trades>
+      <CashReport>
+        <CashReportCurrency accountId="U0000001" currency="BASE_SUMMARY" endingCash="2500" />
+        <CashReportCurrency accountId="U0000001" currency="USD" endingCash="1800.55" />
+        <CashReportCurrency accountId="U0000001" currency="EUR" endingCash="640" />
+      </CashReport>
+    </FlexStatement>
+  </FlexStatements>
+</FlexQueryResponse>

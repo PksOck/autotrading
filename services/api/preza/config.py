@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     litellm_master_key: str | None = None
     ollama_base_url: str = "http://localhost:11434"
 
+    ib_gateway_enabled: bool = False
     ib_gateway_host: str = "localhost"
     ib_gateway_port: int = 4001
     ibkr_flex_token: str | None = None
@@ -27,6 +28,11 @@ class Settings(BaseSettings):
     telegram_bot_token: str | None = None
 
     status_timeout_s: float = Field(default=2.0, gt=0)
+
+    base_currency: str = "EUR"
+    bars_lookback_days: int = Field(default=800, gt=30)
+    yahoo_enabled: bool = True
+    stooq_enabled: bool = True
 
 
 @lru_cache

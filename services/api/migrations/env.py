@@ -5,6 +5,7 @@ import asyncio
 from alembic import context
 from sqlalchemy.ext.asyncio import create_async_engine
 
+import preza.models  # noqa: F401  (registers tables on Base.metadata)
 from preza.config import get_settings
 from preza.db import Base
 

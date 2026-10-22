@@ -16,8 +16,18 @@ depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:
-    op.execute("CREATE EXTENSION IF NOT EXISTS timescaledb")
-    op.execute("CREATE EXTENSION IF NOT EXISTS vector")
+    # Production runs timescaledb-ha (both extensions). Plain Postgres (local tests)
+    # skips them; later migrations check pg_extension before using either.
+    for extension in ("timescaledb", "vector"):
+        op.execute(
+            f"""
+            DO $$ BEGIN
+              IF EXISTS (SELECT 1 FROM pg_available_extensions WHERE name = '{extension}') THEN
+                CREATE EXTENSION IF NOT EXISTS {extension};
+              END IF;
+            END $$;
+            """
+        )
 
 
 def downgrade() -> None:
