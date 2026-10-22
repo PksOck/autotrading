@@ -4,6 +4,26 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 
 ---
 
+## S-003 · 2026-10-22 · M1 v oblaku, brez uporabnika
+
+**Cilj:** nadaljevati samostojno (uporabnik ne more poganjati na svojem računalniku).
+
+**Odločitve (uporabnik):** Claude ni v cevovodu (brez API), `cloud-deep` = MiniMax z rezervo OpenCode Go. OpenCode Go modeli so javni. Tailscale je na vseh napravah. Ollama modele uporabnik določi kasneje. Za manjše naloge uporabljam manjše subagente (Sonnet, Haiku).
+
+**Narejeno (M1):**
+- API: pogodba virov + skupni testni nabor, usmerjevalnik s kvotami in rezervo (IB Gateway → Yahoo → Stooq), IBKR Flex odjemalec in parser (ponovni poskusi ob 1019, omrežne napake kot FlexError), tabele in migracija 0002 (hypertable na Timescale), UCITS seznam, `/instruments`, `/bars`, `/portfolio`, `/portfolio/sync`, `/watchlist`, arq opravila (Flex 05:15 UTC, sveče 21:30 UTC), demo podatki (`seed_demo`).
+- Web: Portfelj (toplotni zemljevid, tabela, gotovina, sinhronizacija, stanje zadnje sinhronizacije), Watchlista (dve ravni, opombe, od dodaje, razveljavitev), Instrument (sveče, SMA50/200, volumen, RSI, ATR, 52-t. vrh/dno, lokaliziran graf), kukalo, predogled in ⌘K na pravem API.
+- Testi: API 30 (vključno z integracijskimi na Postgres in preizkusom na TimescaleDB), web 11 enotskih, e2e 11 (Sonnet subagent je dodal 5 in našel napako v ⌘K, popravljeno).
+- Preverjeno: migracije na TimescaleDB (hypertable), pot API → Redis → worker, napaka pri Flex sinhronizaciji se zapiše in prikaže.
+
+**Omejitve okolja (ne repoja):** omrežna politika blokira opencode.ai, api.minimax.io, sec.gov, stooq.com, Yahoo in ghcr.io bloke; Docker Hub omejuje (429), Googlov mirror deluje; build kontejnerji nimajo proxyja, zato slik API/web tu ni bilo mogoče zgraditi. Živih podatkov tu ni bilo, testi uporabljajo ročno sestavljene posnetke formatov.
+
+**Odprto:** BL-023 živi IB Gateway, BL-027 ETF holdings, BL-011 imena modelov, celoten `docker compose up` na tvojem strežniku (BL-160).
+
+**Naslednji korak:** M2 Radar.
+
+---
+
 ## S-002 · 2026-10-22 · Napreden UX, ročni predlogi, M0
 
 **Cilj:** odločitve iz pregleda prototipov, napreden React UX, ročni predlogi, mejnik M0.

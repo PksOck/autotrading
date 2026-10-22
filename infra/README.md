@@ -1,9 +1,9 @@
 # infra: Docker Compose in konfiguracija
 
 ```bash
-cp ../.env.example ../.env            # izpolni vrednosti
-docker compose up -d --build          # jedro: postgres, redis, litellm, api, worker, web
-docker compose --profile broker up -d # + IB Gateway (M1, Read-Only API)
+cp ../.env.example ../.env                                   # izpolni vrednosti
+docker compose --env-file ../.env up -d --build              # jedro: postgres, redis, litellm, api, worker, web
+docker compose --env-file ../.env --profile broker up -d     # + IB Gateway (Read-Only API), nato IB_GATEWAY_ENABLED=true
 docker compose logs -f api
 ```
 

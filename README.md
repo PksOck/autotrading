@@ -4,15 +4,18 @@
 
 Interna platforma za **zaznavanje naložbenih priložnosti** v ameriških delnicah in ETF-jih. Spremlja novice, filinge in špekulacije, prepoznava dobre (ponovne) vstopne točke za dolgoročne pozicije in s pomočjo AI agentov pripravi utemeljeno analizo. Odločitev in naročilo pri Interactive Brokers ostaneta vedno tvoja.
 
-**Stanje:** mejnik **M0 (temelji)** je zgrajen: lupina UI z gibanjem, ⌘K, kukalom in ročnimi predlogi, FastAPI s stanjem servisov, Docker Compose, LiteLLM vloge, CI. Podatki na Pregledu so še vzorčni (M1). Prejšnja Next.js aplikacija je na veji [`legacy`](https://github.com/PksOck/autotrading/tree/legacy).
+**Stanje:** mejnika **M0** in **M1** sta zgrajena (portfelj iz IBKR Flex, dnevne sveče, watchlista, stran instrumenta). Naslednji je M2 Radar. Podrobnosti v [SESSIONS.md](./SESSIONS.md).
+
+M0: : lupina UI z gibanjem, ⌘K, kukalom in ročnimi predlogi, FastAPI s stanjem servisov, Docker Compose, LiteLLM vloge, CI. Podatki na Pregledu so še vzorčni (M1). Prejšnja Next.js aplikacija je na veji [`legacy`](https://github.com/PksOck/autotrading/tree/legacy).
 
 ## Hiter zagon
 
 ```bash
 # celoten sklad (Docker)
 cp .env.example .env              # izpolni POSTGRES_PASSWORD, LITELLM_MASTER_KEY, OLLAMA_BASE_URL ...
-docker compose -f infra/docker-compose.yml up -d --build
-# → http://127.0.0.1:3000
+docker compose -f infra/docker-compose.yml --env-file .env up -d --build
+docker compose -f infra/docker-compose.yml --env-file .env exec api python -m preza.cli.load_universe
+# → http://127.0.0.1:3000 (prek Tailscale: http://<ime-strežnika>:3000 z WEB_BIND=0.0.0.0 samo na tailnet vmesniku)
 
 # razvoj brez Dockerja
 cd services/api && uv sync && uv run uvicorn preza.main:app --reload    # :8000
