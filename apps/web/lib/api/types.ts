@@ -33,3 +33,5 @@ export type AnalysisOut = S["AnalysisOut"];
 export type AnalysisStep = S["AnalysisStepOut"];
 export type AnalysisStatus = S["AnalysisStatus"];
 export type AnalysisCreate = Pick<S["AnalysisCreate"], "symbol"> & Partial<Omit<S["AnalysisCreate"], "symbol">>;
+export type DecisionCard = NonNullable<AnalysisOut["card"]>;
+export type AnalysisQuota = S["AnalysisQuota"];

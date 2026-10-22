@@ -109,7 +109,7 @@
 | BL-090 | Ročni predlog → standardna/globoka analiza: hipoteza uporabnika v kontekstu, izrecna potrditev/ovržba v izhodu (hitra in standardna globina že delujeta v M2) | DESIGN §11 | done |
 | BL-091 | Preveri Yahoo `funds_data` za UCITS kotacije (LSE, Xetra) na pravem omrežju: TER, top pozicije, sektorji | ADR-0011 | next |
 | BL-092 | Živi preizkus globoke analize prek LiteLLM (`cloud-quick`/`cloud-deep` z OpenCode Go/MiniMax): klici orodij, čas in cena enega zagona | ADR-0011 | next |
-| BL-093 | Dnevni limit globokih analiz (`DEEP_DAILY_LIMIT`, privzeto 6, `GET /analyses/quota`, 429 `daily_limit_reached`; globok predlog nad limitom dobi samo hitro presojo) in prikaz porabe na SCR-06 | research/trading-list §4 | doing |
+| BL-093 | Dnevni limit globokih analiz (`DEEP_DAILY_LIMIT`, privzeto 6, `GET /analyses/quota`, 429 `daily_limit_reached`; globok predlog nad limitom dobi samo hitro presojo) in prikaz porabe na SCR-06 | research/trading-list §4 | done |
 | BL-089 | Shema odločitve: sprožilci ocene (→ trditve teze), `delta_note` proti prejšnji analizi, prepričanje, razred velikosti, deterministična kontrolna ocena | research/trading-list §3 | done |
 
 ## M5: Teze + uspešnost

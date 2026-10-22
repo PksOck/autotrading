@@ -609,7 +609,9 @@
       "no_fundamentals": "No fundamentals",
       "short_history": "Short price history",
       "no_profile": "No ETF profile",
-      "hypothesis_unchecked": "Hypothesis not checked"
+      "hypothesis_unchecked": "Hypothesis not checked",
+      "control_disagrees": "Check disagrees with the agents",
+      "card_incomplete": "Incomplete decision card"
     },
     "caveatHint": "Caveats of this analysis",
     "opinion": "This is the agents' opinion, not an instruction. The rating places no order and creates no signal. You decide.",
@@ -665,7 +667,9 @@
       "button": "Deep analysis",
       "starting": "Starting …",
       "notFound": "This instrument cannot be analyzed because it is not in the database.",
-      "failed": "The analysis could not be started. Try again in a moment."
+      "failed": "The analysis could not be started. Try again in a moment.",
+      "limitReached": "The daily limit is reached. New deep analyses can start tomorrow.",
+      "quota": "Today {used} of {limit}"
     },
     "latest": {
       "title": "Latest deep analyses",
@@ -680,7 +684,48 @@
       "title": "Your hypothesis",
       "note": "The hypothesis check is the agents' opinion, not a fact."
     },
-    "openAnalysis": "Open analysis"
+    "openAnalysis": "Open analysis",
+    "card": {
+      "title": "Decision card",
+      "note": "A guide for judgment, not an order. Size and rating are suggestions; you decide.",
+      "control": "Check against the agents",
+      "agents": "Agents",
+      "implied": "Deterministic check",
+      "noScore": "The check could not be computed.",
+      "coverage": "based on {pct}% of the weights",
+      "weight": "weight {pct}%",
+      "components": {
+        "quality": "Business quality",
+        "valuation": "Valuation",
+        "technical": "Technicals",
+        "risk": "Risk"
+      },
+      "noData": "no data",
+      "lowConfidence": "The deterministic check disagrees with the agents' rating. Judge with more care and read the reports.",
+      "conviction": "Conviction",
+      "convictionValue": "{n}/10",
+      "size": "Size guide",
+      "sizes": {
+        "none": "No addition",
+        "small": "Small",
+        "normal": "Normal",
+        "increased": "Increased"
+      },
+      "range": {
+        "none": "do not add",
+        "small": "under 2% of the portfolio",
+        "normal": "2–4% of the portfolio",
+        "increased": "4–6% of the portfolio"
+      },
+      "sizeNote": "A guide, not an order.",
+      "noSize": "no data",
+      "upgrade": "Upgrade if",
+      "downgrade": "Downgrade if",
+      "none": "No conditions given.",
+      "delta": "Since the last analysis",
+      "previous": "Previous analysis: {rating}, {date}"
+    },
+    "quota": "Today {used} of {limit}"
   },
   "agents": {
     "system": "System",

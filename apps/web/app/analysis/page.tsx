@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
+import { AnalysisQuotaLine } from "@/components/analysis/AnalysisQuotaLine";
 import { AnalysisRunList } from "@/components/analysis/AnalysisRunList";
 import { PageHeader } from "@/components/common/PageHeader";
 
@@ -9,6 +10,7 @@ export default async function AnalysesPage() {
   return (
     <>
       <PageHeader title={t("title")} kicker="SCR-06" description={t("subtitle")} />
+      <AnalysisQuotaLine />
       <section className="card overflow-hidden" aria-label={t("indexLabel")}>
         <AnalysisRunList />
       </section>

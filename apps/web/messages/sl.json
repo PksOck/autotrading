@@ -609,7 +609,9 @@
       "no_fundamentals": "Brez temeljnih podatkov",
       "short_history": "Kratka zgodovina cen",
       "no_profile": "Brez profila ETF-ja",
-      "hypothesis_unchecked": "Hipoteze ni bilo mogoče preveriti"
+      "hypothesis_unchecked": "Hipoteze ni bilo mogoče preveriti",
+      "control_disagrees": "Kontrola se ne ujema z agenti",
+      "card_incomplete": "Nepopolna kartica odločitve"
     },
     "caveatHint": "Opozorila te analize",
     "opinion": "To je mnenje agentov, ne navodilo. Ocena ne odda naročila in ne ustvari signala. Odločiš ti.",
@@ -665,7 +667,9 @@
       "button": "Globoka analiza",
       "starting": "Zaganjam …",
       "notFound": "Instrumenta ni mogoče analizirati, ker ga ni v bazi.",
-      "failed": "Analize ni bilo mogoče zagnati. Poskusi znova čez trenutek."
+      "failed": "Analize ni bilo mogoče zagnati. Poskusi znova čez trenutek.",
+      "limitReached": "Dnevna omejitev je dosežena. Nove globoke analize se lahko zaženejo jutri.",
+      "quota": "Danes {used} od {limit}"
     },
     "latest": {
       "title": "Zadnje globoke analize",
@@ -680,7 +684,48 @@
       "title": "Tvoja hipoteza",
       "note": "Preverjanje hipoteze je mnenje agentov, ne dejstvo."
     },
-    "openAnalysis": "Odpri analizo"
+    "openAnalysis": "Odpri analizo",
+    "card": {
+      "title": "Kartica odločitve",
+      "note": "Vodilo za presojo, ne naročilo. Velikost in ocena sta predlog; odločiš ti.",
+      "control": "Kontrola proti agentom",
+      "agents": "Agenti",
+      "implied": "Deterministična kontrola",
+      "noScore": "Kontrole ni mogoče izračunati.",
+      "coverage": "na podlagi {pct} % uteži",
+      "weight": "utež {pct} %",
+      "components": {
+        "quality": "Kakovost poslovanja",
+        "valuation": "Vrednotenje",
+        "technical": "Tehnika",
+        "risk": "Tveganje"
+      },
+      "noData": "ni podatka",
+      "lowConfidence": "Deterministična kontrola se ne ujema z oceno agentov. Presodi previdneje in preveri poročila.",
+      "conviction": "Prepričanje",
+      "convictionValue": "{n}/10",
+      "size": "Okvirna velikost",
+      "sizes": {
+        "none": "Brez dodajanja",
+        "small": "Majhna",
+        "normal": "Običajna",
+        "increased": "Povečana"
+      },
+      "range": {
+        "none": "ne dodajaj",
+        "small": "pod 2 % portfelja",
+        "normal": "2–4 % portfelja",
+        "increased": "4–6 % portfelja"
+      },
+      "sizeNote": "Okvir, ne ukaz.",
+      "noSize": "ni podatka",
+      "upgrade": "Nadgradi, če",
+      "downgrade": "Znižaj, če",
+      "none": "Brez navedenih pogojev.",
+      "delta": "Od zadnje analize",
+      "previous": "Prejšnja analiza: {rating}, {date}"
+    },
+    "quota": "Danes {used} od {limit}"
   },
   "agents": {
     "system": "Sistem",

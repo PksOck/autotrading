@@ -15,6 +15,14 @@ test("analysis: finished ASML run shows decision, rating and expandable report",
   await expect(decision.getByRole("heading", { name: "Končna odločitev" })).toBeVisible();
   await expect(decision).toContainText("Povečaj pozicijo postopoma");
   await expect(page.getByText("mnenje agentov")).toBeVisible();
+  const card = page.getByTestId("decision-card");
+  await expect(card.getByRole("heading", { name: "Kartica odločitve" })).toBeVisible();
+  await expect(card.getByTestId("conviction")).toHaveText("6/10");
+  await expect(card.getByTestId("size-class")).toContainText("2–4 % portfelja");
+  await expect(card.getByText("na podlagi 100 % uteži")).toBeVisible();
+  await expect(card.getByText("Nadgradi, če")).toBeVisible();
+  await expect(card.getByText("Znižaj, če")).toBeVisible();
+  await expect(card.getByTestId("low-confidence")).toHaveCount(0);
 
   const timeline = page.getByTestId("agent-timeline");
   await expect(timeline.getByRole("heading", { name: "Debata" })).toBeVisible();
@@ -32,6 +40,7 @@ test("analysis: running NVDA run shows live state and its 8 steps", async ({ pag
   await expect(page.getByTestId("phase-live")).toBeVisible();
   await expect(page.getByTestId("agent-timeline")).toHaveAttribute("data-step-count", "8");
   await expect(page.getByTestId("decision-panel")).toContainText("Odločitev bo na voljo");
+  await expect(page.getByTestId("decision-card")).toHaveCount(0);
 });
 
 test("analysis: instrument page lists runs and offers deep analysis", async ({ page }, info) => {
@@ -41,6 +50,7 @@ test("analysis: instrument page lists runs and offers deep analysis", async ({ p
   await expect(latest.getByText("Povečaj")).toBeVisible();
   await page.goto("/analysis");
   await expect(page.getByRole("link", { name: /ASML/ })).toBeVisible();
+  await expect(page.getByTestId("analysis-quota")).toHaveText(/Danes \d+ od \d+/);
   if (info.project.name === "phone") return;
   await page.goto("/i/EQQQ");
   await expect(page.getByRole("button", { name: "Globoka analiza" })).toBeEnabled();

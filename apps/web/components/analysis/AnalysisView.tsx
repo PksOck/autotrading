@@ -4,6 +4,7 @@ import { useFormatter, useTranslations } from "next-intl";
 import Link from "next/link";
 import { AgentTimeline } from "@/components/analysis/AgentTimeline";
 import { AnalysisStatusPill } from "@/components/analysis/AnalysisStatusPill";
+import { DecisionCardPanel } from "@/components/analysis/DecisionCardPanel";
 import { RatingPill } from "@/components/analysis/RatingPill";
 import { Markdown } from "@/components/common/Markdown";
 import { ApiError } from "@/lib/api/client";
@@ -127,6 +128,8 @@ export function AnalysisView({ runId }: { runId: string }) {
           </>
         )}
       </section>
+
+      {run.card && <DecisionCardPanel card={run.card} />}
 
       <AgentTimeline steps={steps} status={run.status} connected={connected} />
     </div>

@@ -7,6 +7,7 @@ import { ApiError, api } from "./client";
 import type {
   AnalysisCreate,
   AnalysisOut,
+  AnalysisQuota,
   AnalysisStatus,
   AnalysisStep,
   AnalysisSummary,
@@ -42,6 +43,7 @@ export const keys = {
   proposals: ["proposals"] as const,
   analyses: (symbol?: string) => ["analyses", symbol ?? "all"] as const,
   analysis: (id: string) => ["analysis", id] as const,
+  analysisQuota: ["analyses-quota"] as const,
 };
 
 export const useSystemStatus = () =>
@@ -187,11 +189,20 @@ export const useAnalysis = (id: string) =>
     retry: false,
   });
 
+/** Daily deep-analysis limit (BL-093); limit 0 means unlimited. */
+export const useAnalysisQuota = () =>
+  useQuery({ queryKey: keys.analysisQuota, queryFn: () => api.get<AnalysisQuota>("/analyses/quota"), staleTime: 30_000 });
+
+export const quotaReached = (q: AnalysisQuota | undefined) => !!q && q.limit > 0 && q.used >= q.limit;
+
 export function useCreateAnalysis() {
   const client = useQueryClient();
   return useMutation({
     mutationFn: (data: AnalysisCreate) => api.send<AnalysisSummary>("/analyses", "POST", data),
-    onSuccess: () => client.invalidateQueries({ queryKey: ["analyses"] }),
+    onSettled: () => {
+      void client.invalidateQueries({ queryKey: ["analyses"] });
+      void client.invalidateQueries({ queryKey: keys.analysisQuota });
+    },
   });
 }
 
