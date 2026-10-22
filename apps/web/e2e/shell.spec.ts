@@ -55,7 +55,7 @@ test("manual proposal with undo", async ({ page }, info) => {
   await page.getByRole("button", { name: "Pošlji v analizo" }).click();
   await expect(page.getByText("Predlog NVDA, AMD je v vrsti")).toBeVisible();
   await page.goto("/proposals");
-  await expect(page.getByText("Padec po poročilu je pretiran.")).toBeVisible();
+  await expect(page.getByText("Padec po poročilu je pretiran.").first()).toBeVisible();
 });
 
 test("phone layout uses bottom navigation", async ({ page }, info) => {

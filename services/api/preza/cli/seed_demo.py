@@ -375,10 +375,11 @@ def demo_fundamentals(symbol: str, today: date) -> tuple[dict[str, float], dict[
 
 async def seed_entries() -> None:
     from preza.entries.service import rebuild_entries
-    from preza.models import EntryCandidate, Fundamentals
+    from preza.models import EntryCandidate, Fundamentals, Signal
 
     async with get_sessionmaker()() as session:
         await session.execute(delete(EntryCandidate))
+        await session.execute(delete(Signal).where(Signal.source == "rule"))
         today = date.today()
         for symbol, *_ in STOCKS:
             instrument = await session.scalar(select(Instrument).where(Instrument.symbol == symbol))

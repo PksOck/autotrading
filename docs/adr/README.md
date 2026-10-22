@@ -14,6 +14,7 @@ Format: `ADR-xxxx-kratek-naslov.md`, statusi: `predlagano` · `sprejeto` · `zam
 | [ADR-0007](./ADR-0007-telegram-obvestila.md) | Obvestila prek Telegrama | sprejeto |
 | [ADR-0008](./ADR-0008-instrumenti-ucits.md) | Instrumenti: ameriške delnice + UCITS ETF-ji | sprejeto |
 | [ADR-0009](./ADR-0009-napredni-ux-motion.md) | Napreden UX: gibanje, povezani pogledi, pregledi | sprejeto |
+| [ADR-0010](./ADR-0010-vstopi-pravila-ta-lib.md) | Vstopi: pravila s TA-Lib, signal samo z nedotaknjeno tezo | sprejeto |
 
 ## Predloga
 

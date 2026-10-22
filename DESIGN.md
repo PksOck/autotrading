@@ -119,7 +119,7 @@ Osnova je **shadcn/ui** (Radix): Button, Tabs, Dialog, DropdownMenu, Tooltip, Ta
 |---|---|---|---|---|
 | SCR-01 | Pregled | `/` | novo danes (signali), stanje portfelja, opozorila, poraba LLM, uspešnost na kratko | M1→M3 |
 | SCR-02 | Radar | `/radar?view=discover\|watchlist\|portfolio` | tok dogodkov, filtri (tip, govorica, ocena), trije pogledi | M2 |
-| SCR-03 | Vstopi | `/entries?view=…` | kandidati, razdalja do cone, vzrok padca, teza, lestvica | M3 |
+| SCR-03 | Vstopi | `/entries?view=all\|portfolio\|watchlist&symbol=…` | zemljevid vstopov (OV-05), kandidati s filtri (kandidati, v coni, blizu, vse), cona in stop (CMP-07), vzrok padca (CMP-10), sprožena pravila, pasovi vrednotenja, lestvica z zneskom (CMP-15) | M3 |
 | SCR-04 | Signali | `/signals` | nabiralnik, statusi, filtri, množična dejanja | M2 |
 | SCR-05 | Instrument | `/i/[symbol]` | graf, ključni podatki ali ETF profil, signali, analize, teze | M1→M4 |
 | SCR-06 | Analiza | `/analysis/[runId]` | debata agentov v živo, končna odločitev, stroški | M4 |
@@ -130,7 +130,7 @@ Osnova je **shadcn/ui** (Radix): Button, Tabs, Dialog, DropdownMenu, Tooltip, Ta
 | SCR-11 | Nastavitve | `/settings` | jezik, tema, univerzum, pragovi, LLM vloge in proračun, Telegram, povezave | M0→ |
 | SCR-12 | Predlogi | `/proposals` | tvoji ročni predlogi, stanje analize, izid (§11) | M2→M4 |
 
-Na platnu so narisani: SCR-01, 02, 03, 05, 06, 07, 11 in tabla tokenov. Od M0 naprej je **vir resnice React aplikacija** (`apps/web`, živi primeri na `/ux`); nove zaslone gradimo neposredno v kodi. CMP-22 Trail, OV-05 in OV-06 nastanejo skupaj s svojimi zasloni (M3, M1).
+Na platnu so narisani: SCR-01, 02, 03, 05, 06, 07, 11 in tabla tokenov. Od M0 naprej je **vir resnice React aplikacija** (`apps/web`, živi primeri na `/ux`); nove zaslone gradimo neposredno v kodi. CMP-22 Trail in OV-06 nastaneta skupaj s svojima zaslonoma. OV-05 je izveden v `components/entries/EntryMap.tsx`: x je razdalja do cone v ATR (os se prilagodi podatkom), y je delež ugodnih pasov vrednotenja, črtkan krog pomeni, da vrednotenja ni (npr. ETF); prekrivajoče točke se razmaknejo navpično.
 
 ## 5. Stanja (obvezna za vsak zaslon)
 

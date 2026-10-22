@@ -188,7 +188,7 @@ async def evaluate_instrument(
     candidate.updated_at = datetime.now(UTC)
     ladder = (
         build_ladder(
-            candidate.zone_high,
+            min(candidate.zone_high, candidate.price),  # no limit above the market
             candidate.atr,
             candidate.stop,
             rules.ladder.weights,

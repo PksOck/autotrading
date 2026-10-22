@@ -3,6 +3,8 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "./client";
 import type {
+  EntryOut,
+  EntryView,
   BarsOut,
   EventOut,
   ProposalCreate,
@@ -29,6 +31,7 @@ export const keys = {
   search: (q: string) => ["search", q] as const,
   radar: (view: RadarView, minScore: number) => ["radar", view, minScore] as const,
   signals: (status: SignalStatus | "all") => ["signals", status] as const,
+  entries: (view: EntryView) => ["entries", view] as const,
   proposals: ["proposals"] as const,
 };
 
@@ -99,6 +102,14 @@ export const useRadarEvents = (view: RadarView, minScore: number) =>
     queryKey: keys.radar(view, minScore),
     queryFn: () => api.get<EventOut[]>(`/radar/events?view=${view}&min_score=${minScore}`),
     refetchInterval: 60_000,
+    placeholderData: keepPreviousData,
+  });
+
+export const useEntries = (view: EntryView) =>
+  useQuery({
+    queryKey: keys.entries(view),
+    queryFn: () => api.get<EntryOut[]>(`/entries?view=${view}`),
+    refetchInterval: 5 * 60_000,
     placeholderData: keepPreviousData,
   });
 

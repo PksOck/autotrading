@@ -4,6 +4,29 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 
 ---
 
+## S-004 · 2026-10-22 · Prevodi in M3 Vstopi
+
+**Cilj:** BL-055 in mejnik M3 (samostojno, uporabnik ne more poganjati na svojem računalniku).
+
+**Narejeno:**
+- BL-055: povzetki dogodkov in razlogi signalov se prevedejo v jezik uporabnika (`local-fast`, en klic za do 8 povzetkov). Angleški izvirnik ostane kanoničen, prevod ima oznako "prevedeno" in izvirnik ob prehodu z miško. Telegram uporablja prevod.
+- BL-060: pravila vstopov v `rules.yaml`, indikatorji s TA-Lib, test enakosti s trading-signals (Haiku subagent je pripravil posnetek).
+- BL-061: pasovi vrednotenja (P/E, EV/EBIT, FCF donos proti 5 letom) iz Finnhuba in DCF iz veje `legacy` (Sonnet subagent).
+- BL-062: `dip_analyst` (vzrok padca, `local-reason` → `cloud-quick`), dnevni tek vstopov ob 22:00 UTC, signal `entry` samo z nedotaknjeno tezo, `thesis_break` za temeljni vzrok pri poziciji.
+- BL-063: lestvica postopnega nakupa (40/30/30, koraki po 1 ATR, nikoli nad trgom ali pod stopom).
+- BL-064: SCR-03 Vstopi z zemljevidom vstopov (OV-05), cono in stopom (CMP-07), vzrokom (CMP-10), pravili, vrednotenjem in lestvico z zneskom (CMP-15). Preverjeno na namizju, telefonu in v temni temi.
+- BL-065: izidi signalov po 1/5/20/60 dneh z alfo, MFE in MAE (Sonnet subagent), `/entries/outcomes`.
+- Demo: vstopi z demo vrednotenjem in demo vzroki; ponovni seed zamenja demo Radar in vstope.
+- Testi: API 151, web 11 enotskih, e2e 13.
+
+**Odločitve:** ADR-0010 (TA-Lib, pravila kot konfiguracija, politika signalov za vstope).
+
+**Odprto:** BL-066 polja Finnhuba na pravem omrežju; BL-059 viri novic; BL-023 živi IB Gateway; BL-160 zagon na tvojem strežniku.
+
+**Naslednji korak:** M4 Globoka analiza (TradingAgents) ali manjše naloge BL-068 do BL-070.
+
+---
+
 ## S-003 · 2026-10-22 · M1 in M2 v oblaku, brez uporabnika
 
 **Cilj:** nadaljevati samostojno (uporabnik ne more poganjati na svojem računalniku).

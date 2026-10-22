@@ -144,7 +144,8 @@
       "sector": "Sector",
       "transient": "Transient",
       "fundamental": "Fundamental",
-      "unknown": "Unknown"
+      "unknown": "Unknown",
+      "pending": "Awaiting analysis"
     },
     "thesisIntact": "Thesis intact",
     "ladder": "Scaled entry",
@@ -464,5 +465,100 @@
     "running": "Analyzing",
     "openSignal": "Open signal",
     "submitError": "The proposal could not be submitted."
+  },
+  "entriesPage": {
+    "title": "Entries",
+    "subtitle": "Quality positions at a good price, and why they fell. Code computes zones and the ladder; the model judges the cause.",
+    "views": {
+      "all": "All",
+      "portfolio": "Portfolio",
+      "watchlist": "Watchlist"
+    },
+    "filters": {
+      "active": "Candidates",
+      "reach": "In zone",
+      "near": "Near",
+      "all": "All"
+    },
+    "state": {
+      "in_zone": "In zone",
+      "below": "Below zone",
+      "near": "{atr} ATR to zone",
+      "far": "{atr} ATR to zone"
+    },
+    "held": "held",
+    "watched": "watchlist",
+    "listLabel": "Entry candidates",
+    "detailLabel": "Entry details",
+    "pick": "Pick a candidate.",
+    "empty": {
+      "active": "No rule produced a candidate. Rules run every weekday after the close.",
+      "reach": "No price is in its entry zone right now.",
+      "near": "No price is near its entry zone.",
+      "all": "No price data for the portfolio and watchlist."
+    },
+    "thesisBroken": "Thesis broken",
+    "analysisPending": "The cause has not been assessed yet (local model unavailable or analysis queued).",
+    "noDip": "No dip to explain. The zone shows the level being waited for (SMA200).",
+    "rulesTitle": "Rules triggered",
+    "valuationTitle": "Valuation against 5-year history",
+    "openSignal": "Open signal",
+    "analyze": "Propose analysis",
+    "openInstrument": "Open instrument",
+    "rules": {
+      "none": "No rule triggered.",
+      "pullback": {
+        "name": "Pullback in trend",
+        "detail": "price below SMA50 ({sma50}), RSI {rsi}"
+      },
+      "support": {
+        "name": "Support test",
+        "detail": "near level {level}"
+      },
+      "drawdown": {
+        "name": "Drawdown",
+        "detail": "{drawdown} % from the 52-week high"
+      },
+      "overreaction": {
+        "name": "Overreaction",
+        "detail": "{z} σ move on a minor news item"
+      },
+      "insider": {
+        "name": "Insider buying",
+        "detail": "{filings} purchases in 30 days"
+      },
+      "valuation": {
+        "name": "Valuation",
+        "detail": "{share} % of metrics below their 5-year median"
+      }
+    },
+    "valuation": {
+      "pe": "P/E",
+      "ev_ebit": "EV/EBIT",
+      "fcf_yield": "FCF yield (%)",
+      "median": "median",
+      "cheap": "cheap",
+      "rich": "richer",
+      "none": "No valuation data (Finnhub).",
+      "etf": "No company valuation for ETFs.",
+      "note": "Grey band: 20th–80th percentile of the last 5 years."
+    },
+    "ladder": {
+      "level": "Level",
+      "share": "Share",
+      "limit": "Limit",
+      "quantity": "Shares",
+      "budget": "Amount",
+      "none": "No ladder (zone or ATR missing).",
+      "note": "Suggested limit orders in 1 ATR steps above the stop. You place orders yourself."
+    },
+    "map": {
+      "label": "Entry map",
+      "target": "target area",
+      "x": "ATR to zone",
+      "cheap": "cheap",
+      "rich": "rich",
+      "caption": "Left is closer to the zone, higher is cheaper. Size shows the number of rules, colour the cause. Dashed circle: no valuation data."
+    }
   }
 }

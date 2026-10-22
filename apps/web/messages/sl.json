@@ -144,7 +144,8 @@
       "sector": "Sektor",
       "transient": "Začasno",
       "fundamental": "Temeljno",
-      "unknown": "Neznano"
+      "unknown": "Neznano",
+      "pending": "Čaka na analizo"
     },
     "thesisIntact": "Teza drži",
     "ladder": "Postopni nakup",
@@ -464,5 +465,100 @@
     "running": "Analiza teče",
     "openSignal": "Odpri signal",
     "submitError": "Predloga ni bilo mogoče oddati."
+  },
+  "entriesPage": {
+    "title": "Vstopi",
+    "subtitle": "Kakovostne pozicije na dobri ceni in razlog, zakaj so padle. Cone in lestvico izračuna koda, vzrok oceni model.",
+    "views": {
+      "all": "Vse",
+      "portfolio": "Portfelj",
+      "watchlist": "Watchlista"
+    },
+    "filters": {
+      "active": "Kandidati",
+      "reach": "V coni",
+      "near": "Blizu",
+      "all": "Vse"
+    },
+    "state": {
+      "in_zone": "V coni",
+      "below": "Pod cono",
+      "near": "{atr} ATR do cone",
+      "far": "{atr} ATR do cone"
+    },
+    "held": "v portfelju",
+    "watched": "na watchlisti",
+    "listLabel": "Kandidati za vstop",
+    "detailLabel": "Podrobnosti vstopa",
+    "pick": "Izberi kandidata.",
+    "empty": {
+      "active": "Nobeno pravilo ni sprožilo kandidata. Pravila se preverijo vsak delavnik po zaprtju borze.",
+      "reach": "Nobena cena trenutno ni v vstopni coni.",
+      "near": "Nobena cena ni blizu vstopne cone.",
+      "all": "Ni podatkov o cenah za portfelj in watchlisto."
+    },
+    "thesisBroken": "Teza ne drži",
+    "analysisPending": "Vzrok padca še ni ocenjen (lokalni model ni dosegljiv ali analiza čaka v vrsti).",
+    "noDip": "Ni padca, ki bi ga bilo treba pojasniti. Cona prikazuje raven, na katero čakamo (SMA200).",
+    "rulesTitle": "Sprožena pravila",
+    "valuationTitle": "Vrednotenje proti 5-letni zgodovini",
+    "openSignal": "Odpri signal",
+    "analyze": "Predlagaj analizo",
+    "openInstrument": "Odpri instrument",
+    "rules": {
+      "none": "Nobeno pravilo ni sproženo.",
+      "pullback": {
+        "name": "Popravek v trendu",
+        "detail": "cena pod SMA50 ({sma50}), RSI {rsi}"
+      },
+      "support": {
+        "name": "Test podpore",
+        "detail": "blizu ravni {level}"
+      },
+      "drawdown": {
+        "name": "Padec od vrha",
+        "detail": "{drawdown} % od 52-tedenskega vrha"
+      },
+      "overreaction": {
+        "name": "Pretiran odziv",
+        "detail": "premik {z} σ ob manj pomembni novici"
+      },
+      "insider": {
+        "name": "Nakupi insiderjev",
+        "detail": "{filings} nakupov v 30 dneh"
+      },
+      "valuation": {
+        "name": "Vrednotenje",
+        "detail": "{share} % kazalnikov pod 5-letno mediano"
+      }
+    },
+    "valuation": {
+      "pe": "P/E",
+      "ev_ebit": "EV/EBIT",
+      "fcf_yield": "FCF donos (%)",
+      "median": "mediana",
+      "cheap": "ugodno",
+      "rich": "dražje",
+      "none": "Ni podatkov o vrednotenju (Finnhub).",
+      "etf": "Za ETF-je ni vrednotenja podjetja.",
+      "note": "Siv pas: 20.–80. percentil zadnjih 5 let."
+    },
+    "ladder": {
+      "level": "Raven",
+      "share": "Delež",
+      "limit": "Limit",
+      "quantity": "Kosov",
+      "budget": "Znesek",
+      "none": "Lestvica ni na voljo (manjka cona ali ATR).",
+      "note": "Predlog limit naročil v korakih po 1 ATR nad stopom. Naročila oddaš sam."
+    },
+    "map": {
+      "label": "Zemljevid vstopov",
+      "target": "ciljno območje",
+      "x": "ATR do cone",
+      "cheap": "ugodno",
+      "rich": "drago",
+      "caption": "Levo je bližje coni, zgoraj je ugodnejše vrednotenje. Velikost kaže število pravil, barva vzrok padca. Črtkan krog: ni podatkov o vrednotenju."
+    }
   }
 }

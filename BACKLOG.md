@@ -85,7 +85,12 @@
 | BL-061 | Pasovi vrednotenja (P/E, EV/EBIT, FCF yield proti 5-letni mediani), DCF prepis iz legacy | research §5.3 | done |
 | BL-062 | `dip_analyst`: vzrok padca (trg / sektor / začasno / temeljno), `local-reason` → `cloud-quick` | research §5.3 | done |
 | BL-063 | Lestvica postopnega nakupa (ATR) | CMP-15 | done |
-| BL-064 | SCR-03 Vstopi | DESIGN §4 | doing |
+| BL-064 | SCR-03 Vstopi | DESIGN §4 | done |
+| BL-066 | Preveri polja Finnhub `/stock/metric` na pravem omrežju (P/E, EV/EBIT, P/FCF serije) in dopolni zgodovino EV/EBIT | ADR-0010 | next |
+| BL-067 | `dip_analyst`: primerjava s sektorskim ETF-jem (ne samo s SPY), sektor iz profila instrumenta | research §5.3 | later |
+| BL-068 | Vstopi v Telegramu: obvestilo ob novem signalu `entry` in vrstica v jutranjem povzetku | ADR-0007 | later |
+| BL-069 | Instrument (SCR-05): cona, stop in raven lestvice na grafu (CMP-07 na CMP-13) | DESIGN §4 | later |
+| BL-070 | Pregled (SCR-01): kartica "V coni" z zemljevidom vstopov v malem | DESIGN §10 | later |
 | BL-065 | `signal_outcome`: nočni izračun donosa po 1/5/20/60 dneh in alfe | research §5.8 | done |
 
 ## M4: Globoka analiza

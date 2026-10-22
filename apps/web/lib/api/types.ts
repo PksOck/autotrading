@@ -25,3 +25,6 @@ export type SignalOut = S["SignalOut"];
 export type SignalStatus = S["SignalStatus"];
 export type ProposalOut = S["ProposalOut"];
 export type ProposalCreate = Pick<S["ProposalCreate"], "symbols"> & Partial<Omit<S["ProposalCreate"], "symbols">>;
+export type EntryOut = S["EntryOut"];
+export type EntryView = S["EntryView"];
+export type OutcomeStat = S["OutcomeStat"];
