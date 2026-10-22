@@ -1,0 +1,35 @@
+[
+  {
+    "category": "company",
+    "datetime": 1792576800,
+    "headline": "Contoso beats estimates on cloud demand",
+    "id": 900001,
+    "image": "https://img.example.com/1.jpg",
+    "related": "CTSO",
+    "source": "Example Wire",
+    "summary": "Contoso reported quarterly revenue above expectations.",
+    "url": "https://news.example.com/contoso-beats"
+  },
+  {
+    "category": "company",
+    "datetime": 1792400000,
+    "headline": "Chipmakers rally as Fabrikam and Contoso guide higher",
+    "id": 900002,
+    "image": "",
+    "related": "FBK,CTSO",
+    "source": "Example Wire",
+    "summary": "",
+    "url": "https://news.example.com/chip-rally"
+  },
+  {
+    "category": "company",
+    "datetime": 1791000000,
+    "headline": "Untagged older article",
+    "id": 900003,
+    "image": "",
+    "related": "",
+    "source": "Example Wire",
+    "summary": "Related field is empty, so the fallback symbol applies.",
+    "url": "https://news.example.com/untagged"
+  }
+]

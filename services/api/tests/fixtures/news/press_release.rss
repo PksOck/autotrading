@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Example Newswire</title>
+    <link>https://newswire.example.com</link>
+    <description>Public company news</description>
+    <item>
+      <title>Contoso Corp. Announces Third Quarter Results</title>
+      <link>https://newswire.example.com/news/2026/10/21/contoso-q3</link>
+      <guid isPermaLink="false">pr-20261021-0001</guid>
+      <pubDate>Wed, 21 Oct 2026 12:30:00 GMT</pubDate>
+      <description><![CDATA[<p>SEATTLE, Oct. 21, 2026 (GLOBE NEWSWIRE) -- Contoso Corp. (NASDAQ: CTSO) today
+      reported <b>record</b> revenue.</p><p>Also see Fabrikam (NYSE:FBK) and partner (Nasdaq: ctso).</p>]]></description>
+    </item>
+    <item>
+      <title>Northwind Mining Files Technical Report &amp; Updates Outlook</title>
+      <link>https://newswire.example.com/news/2026/10/20/northwind</link>
+      <guid isPermaLink="false">pr-20261020-0042</guid>
+      <pubDate>Tue, 20 Oct 2026 08:00:00 -0400</pubDate>
+      <description>&lt;p&gt;Northwind Mining (NYSE American: NWM) said &amp;amp; confirmed guidance.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Item without a date</title>
+      <link>https://newswire.example.com/news/undated</link>
+      <description>No pubDate here.</description>
+    </item>
+    <item>
+      <link>https://newswire.example.com/news/untitled</link>
+      <pubDate>Tue, 20 Oct 2026 09:00:00 GMT</pubDate>
+    </item>
+  </channel>
+</rss>

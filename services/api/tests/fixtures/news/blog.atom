@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Example Company Blog</title>
+  <id>urn:example:blog</id>
+  <updated>2026-10-21T10:00:00Z</updated>
+  <entry>
+    <title>Adatum Launches New Product Line</title>
+    <link rel="alternate" href="https://blog.example.com/adatum-launch"/>
+    <id>urn:example:blog:101</id>
+    <published>2026-10-21T09:15:00Z</published>
+    <updated>2026-10-21T10:00:00Z</updated>
+    <summary type="html">&lt;div&gt;Adatum (NYSE: ADT) unveiled   a new line.&lt;br/&gt;Shipping next month.&lt;/div&gt;</summary>
+  </entry>
+  <entry>
+    <title>Older post</title>
+    <link href="https://blog.example.com/older"/>
+    <id>urn:example:blog:99</id>
+    <updated>2026-10-01T09:00:00+02:00</updated>
+    <content type="html">&lt;p&gt;Nothing to see.&lt;/p&gt;</content>
+  </entry>
+</feed>
