@@ -3,7 +3,7 @@
 **Statusi:** `next` (naslednje) · `doing` (v delu) · `done` · `blocked` (z razlogom) · `later`
 **Pravila:**
 - ID je stalen in se ne uporabi ponovno.
-- Nova naloga dobi naslednji prost ID v razponu svojega mejnika (PLAN.md §6).
+- Nova naloga dobi naslednji prost ID v razponu svojega mejnika (PLAN.md §6). Ko je razpon poln, dobi naslednji prost ID od BL-160 naprej.
 - Vsaka naloga navede reference (`SCR`, `CMP`, `ADR`) in definicijo končanega.
 
 ---
@@ -17,18 +17,19 @@
 | BL-003 | UI prototipi na Artifact platnu: tokeni, SCR-01, 02, 03, 05, 06, 07, 11 (kopija v `design/canvas/`) | DESIGN §4 | done |
 | BL-004 | Pregled prototipov z uporabnikom in popravki (komentarji na platnu) | BL-003 | done |
 | BL-005 | Prototipi še za SCR-04, 08, 09, 10, 12 + mobilna različica SCR-01/02 (zdaj neposredno v React, ne na platnu) | DESIGN §4 | later |
-| BL-006 | `infra/docker-compose.yml`: postgres (Timescale + pgvector), redis, litellm, api, worker, web; `.env.example` | ADR-0001 | next |
-| BL-007 | `apps/web`: Next.js 15 + Tailwind 4 + shadcn/ui, tokeni iz DESIGN §2 kot CSS spremenljivke, `data-theme` preklop | DESIGN §2 | next |
-| BL-008 | i18n: next-intl, `messages/sl.json` + `en.json`, preklop SL/EN, CI preverjanje manjkajočih ključev | ADR-0005, VOICE §6 | next |
-| BL-009 | CMP-01 AppShell + CMP-02 SystemStatus (prazni podatki) | DESIGN §3 | next |
-| BL-010 | `services/api`: FastAPI okostje, SQLAlchemy 2, Alembic, `/health`, OpenAPI → `openapi-typescript` | ADR-0002 | next |
-| BL-011 | LiteLLM `config.yaml`: 5 vlog, proračuni, fallbacki; test klica vsake vloge | ADR-0004 | next |
+| BL-006 | `infra/docker-compose.yml`: postgres (Timescale + pgvector), redis, litellm, api, worker, web; `.env.example` | ADR-0001 | done |
+| BL-007 | `apps/web`: Next.js 15 + Tailwind 4 + shadcn/ui, tokeni iz DESIGN §2 kot CSS spremenljivke, `data-theme` preklop | DESIGN §2 | done |
+| BL-008 | i18n: next-intl, `messages/sl.json` + `en.json`, preklop SL/EN, CI preverjanje manjkajočih ključev | ADR-0005, VOICE §6 | done |
+| BL-009 | CMP-01 AppShell + CMP-02 SystemStatus (prazni podatki) | DESIGN §3 | done |
+| BL-010 | `services/api`: FastAPI okostje, SQLAlchemy 2, Alembic, `/health`, OpenAPI → `openapi-typescript` | ADR-0002 | done |
+| BL-011 | LiteLLM `config.yaml`: 5 vlog, proračuni, fallbacki; test klica vsake vloge (konfiguracija narejena, živi test na tvojem strežniku) | ADR-0004 | doing |
 | BL-012 | Ollama na GPU napravi: potrdi model (Qwen ~27B Q4), dodaj embed model, izmeri hitrost triaže (novic/min) | PLAN §4 | next |
 | BL-013 | Preveri Claude Pro Agent SDK kredit (višina, aktivacija) in ChatGPT prijavo za TradingAgents | PLAN §4 | next |
-| BL-014 | CI (GitHub Actions): ruff, mypy, pytest, eslint, tsc, vitest, i18n ključi | AGENTS §4 | next |
-| BL-015 | `NOTICE` datoteka in predloga glave za prevzeto kodo | AGENTS §4 | next |
+| BL-014 | CI (GitHub Actions): ruff, mypy, pytest, eslint, tsc, vitest, i18n ključi | AGENTS §4 | done |
+| BL-015 | `NOTICE` datoteka in predloga glave za prevzeto kodo | AGENTS §4 | done |
 | BL-016 | Tailscale na strežniku, HTTPS (Tailscale cert), dostop s telefona | ADR-0001 | next |
-| BL-019 | UX temelji: motion tokeni, MO-01–MO-10 primitivi, ⌘K (CMP-23), kukalo (CMP-21), EntityLink + HoverPreview, AnimatedNumber, Treemap, PulseTimeline, Funnel, RegimeStrip, Sparkline; stran `/ux` z vzorčnimi podatki | ADR-0009, DESIGN §8–§10 | next |
+| BL-019 | UX temelji: motion tokeni, MO-01–MO-10 primitivi, ⌘K (CMP-23), kukalo (CMP-21), EntityLink + HoverPreview, AnimatedNumber, Treemap, PulseTimeline, Funnel, RegimeStrip, Sparkline; stran `/ux` z vzorčnimi podatki | ADR-0009, DESIGN §8–§10 | done |
+| BL-160 | Uporabniški pregled M0 lupine na tvojem strežniku (docker compose up) in popravki UX | S-002 | next |
 | BL-017 | Varnostne kopije: nočni `pg_dump` v ločen disk | ADR-0001 | later |
 | BL-018 | Preveri dostopnost instrumentov za EU malega vlagatelja pri IBKR (PRIIPs/KID): ameriški ETF-ji niso na voljo, univerzum ETF = UCITS (LSE/Xetra), valute USD/EUR/GBP | ADR-0008 | done |
 

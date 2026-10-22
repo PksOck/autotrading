@@ -1,0 +1,119 @@
+# Preža: lokalni sklad (ADR-0001). Zagon: cp ../.env.example ../.env && docker compose up -d
+# Profili: privzeto jedro; `--profile broker` doda IB Gateway (M1).
+name: preza
+
+x-api-env: &api-env
+  APP_ENV: ${APP_ENV:-production}
+  DATABASE_URL: postgresql+asyncpg://preza:${POSTGRES_PASSWORD:?nastavi POSTGRES_PASSWORD v .env}@postgres:5432/preza
+  REDIS_URL: redis://redis:6379/0
+  LITELLM_BASE_URL: http://litellm:4000
+  LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:?nastavi LITELLM_MASTER_KEY v .env}
+  OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+  IB_GATEWAY_HOST: ib-gateway
+  IB_GATEWAY_PORT: ${IB_GATEWAY_PORT:-4003}
+  IBKR_FLEX_TOKEN: ${IBKR_FLEX_TOKEN:-}
+  IBKR_FLEX_QUERY_ID: ${IBKR_FLEX_QUERY_ID:-}
+  TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+
+services:
+  postgres:
+    image: timescale/timescaledb-ha:pg17
+    environment:
+      POSTGRES_USER: preza
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?nastavi POSTGRES_PASSWORD v .env}
+      POSTGRES_DB: preza
+    volumes:
+      - pgdata:/home/postgres/pgdata/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U preza -d preza"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  litellm:
+    image: ghcr.io/berriai/litellm:main-stable
+    command: ["--config", "/app/config.yaml", "--port", "4000"]
+    environment:
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      LOCAL_MODEL: ${LOCAL_MODEL:-ollama_chat/qwen3.8:27b}
+      EMBED_MODEL: ${EMBED_MODEL:-ollama/bge-m3}
+      OPENCODE_API_KEY: ${OPENCODE_API_KEY:-}
+      OPENCODE_QUICK_MODEL: ${OPENCODE_QUICK_MODEL:-openai/glm-5.2}
+      OPENCODE_DEEP_MODEL: ${OPENCODE_DEEP_MODEL:-openai/kimi-k3}
+    volumes:
+      - ./litellm/config.yaml:/app/config.yaml:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+
+  api:
+    build: ../services/api
+    command: ["sh", "-c", "alembic upgrade head && uvicorn preza.main:app --host 0.0.0.0 --port 8000"]
+    environment: *api-env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  worker:
+    build: ../services/api
+    command: ["arq", "preza.worker.WorkerSettings"]
+    environment: *api-env
+    depends_on:
+      api: { condition: service_healthy }
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ..
+      dockerfile: apps/web/Dockerfile
+    environment:
+      API_URL: http://api:8000
+    ports:
+      # Samo lokalno in prek Tailscale (ADR-0001). Nikoli 0.0.0.0 na javnem omrežju.
+      - "${WEB_BIND:-127.0.0.1}:3000:3000"
+    depends_on:
+      api: { condition: service_healthy }
+    restart: unless-stopped
+
+  ib-gateway:
+    profiles: ["broker"]
+    image: ghcr.io/gnzsnz/ib-gateway:stable
+    environment:
+      TWS_USERID: ${IB_GATEWAY_USER:-}
+      TWS_PASSWORD: ${IB_GATEWAY_PASSWORD:-}
+      TRADING_MODE: ${IB_GATEWAY_TRADING_MODE:-live}
+      READ_ONLY_API: "yes" # ADR-0006: do mejnika M7 samo branje
+      TWOFA_TIMEOUT_ACTION: restart
+      RELOGIN_AFTER_TWOFA_TIMEOUT: "yes"
+      AUTO_RESTART_TIME: "11:59 PM"
+      TIME_ZONE: Europe/Ljubljana
+    restart: unless-stopped
+    # Brez objavljenih portov: dostop samo iz notranjega omrežja (api, worker).
+
+  # claude-runner (M4, BL-084) in notify (M2, BL-051) se dodata v svojih mejnikih.
+
+volumes:
+  pgdata:
+  redisdata:

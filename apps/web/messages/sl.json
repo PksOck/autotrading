@@ -13,7 +13,10 @@
     "options": "Opcije",
     "trackRecord": "Uspešnost",
     "settings": "Nastavitve",
-    "more": "Več"
+    "more": "Več",
+    "proposals": "Predlogi",
+    "ux": "Oblikovni sistem",
+    "mainLabel": "Glavni meni"
   },
   "view": {
     "discover": "Novi predlogi",
@@ -148,7 +151,146 @@
     "flex": "IBKR Flex",
     "ollama": "Lokalni model",
     "litellm": "LLM usmerjevalnik",
-    "budget": "Poraba LLM"
+    "api": "API",
+    "postgres": "Baza",
+    "redis": "Vrsta",
+    "ib_gateway": "IB Gateway",
+    "ibkr_flex": "IBKR Flex",
+    "telegram": "Telegram",
+    "state": {
+      "up": "deluje",
+      "degraded": "delno",
+      "down": "ne deluje",
+      "unconfigured": "ni nastavljeno"
+    },
+    "unreachable": "API ni dosegljiv",
+    "statusLabel": "Stanje sistema"
   },
-  "disclaimer": "Raziskovalni pripomoček, ne naložbeni nasvet. Odločitev je tvoja."
+  "disclaimer": "Raziskovalni pripomoček, ne naložbeni nasvet. Odločitev je tvoja.",
+  "header": {
+    "search": "Išči ali ukaz",
+    "propose": "Predlog",
+    "focus": "Fokus: {symbol}",
+    "clearFocus": "Odstrani fokus",
+    "sample": "Vzorčni podatki"
+  },
+  "command": {
+    "placeholder": "Išči simbol, zaslon ali dejanje",
+    "empty": "Ni zadetkov.",
+    "groupNav": "Pojdi na",
+    "groupActions": "Dejanja",
+    "groupInstruments": "Instrumenti",
+    "proposeQuery": "Predlagaj {query} v analizo",
+    "propose": "Nov predlog za analizo",
+    "toggleTheme": "Preklopi temo",
+    "switchLocale": "Preklopi jezik (SL/EN)",
+    "focusOn": "Fokus na {symbol}",
+    "shortcuts": "Bližnjice: ⌘K iskanje · g o/r/e/s/p pojdi na · + nov predlog"
+  },
+  "peek": {
+    "label": "Predogled",
+    "close": "Zapri predogled",
+    "back": "Nazaj",
+    "open": "Odpri zaslon",
+    "lastSignal": "Zadnji signal",
+    "thesis": "Teza",
+    "weight": "Teža v portfelju",
+    "notHeld": "ni v portfelju",
+    "notFound": "Entitete ni mogoče najti."
+  },
+  "proposal": {
+    "title": "Nov predlog za analizo",
+    "intro": "Predlagaj instrument ali hipotezo. Agenti tvojo hipotezo preverijo z dokazi, ne privzamejo je.",
+    "symbols": "Simbol(i)",
+    "symbolsHint": "npr. MSFT, ASML. Lahko jih prepoznamo tudi iz prilepljenega besedila.",
+    "hypothesis": "Hipoteza",
+    "hypothesisHint": "Zakaj te zanima? Kaj pričakuješ?",
+    "source": "Vir (povezava ali besedilo novice)",
+    "direction": "Smer",
+    "up": "Gor",
+    "down": "Dol",
+    "unsure": "Ne vem",
+    "horizon": "Horizont",
+    "depth": {
+      "label": "Globina analize",
+      "quick": "Hitro",
+      "quickHint": "lokalni model · ~1 min · 0 $",
+      "standard": "Standardno",
+      "standardHint": "OpenCode · ~3 min",
+      "deep": "Globoko",
+      "deepHint": "vsi agenti + Claude · porabi kredit"
+    },
+    "saveTo": {
+      "label": "Shrani",
+      "active": "na watchlisto",
+      "reserve": "v zalogo idej",
+      "once": "samo enkratna analiza"
+    },
+    "submit": "Pošlji v analizo",
+    "submitted": "Predlog {symbols} je v vrsti",
+    "previewNote": "Predogled: oddaja v analizo bo aktivna v M2 (BL-053). Predlog je shranjen lokalno.",
+    "undo": "Razveljavi",
+    "undone": "Predlog umaknjen",
+    "required": "Vnesi vsaj en simbol.",
+    "listTitle": "Tvoji predlogi",
+    "listEmpty": "Še nimaš predlogov. Gumb + Predlog je vedno v glavi.",
+    "status": {
+      "draft": "osnutek",
+      "queued": "v vrsti",
+      "running": "v analizi",
+      "done": "končano"
+    }
+  },
+  "overview": {
+    "title": "Pregled",
+    "regime": "Tržni režim",
+    "treemap": "Portfelj danes",
+    "treemapHint": "Ploščina je teža, barva dnevna sprememba. Klik odpre predogled.",
+    "pulse": "Utrip Radarja, 7 dni",
+    "pulseHint": "Pika je dogodek: velikost ocena, črtkano govorica.",
+    "funnel": "Lijak signalov, 30 dni",
+    "newToday": "Novo danes",
+    "portfolioValue": "Vrednost portfelja",
+    "today": "danes"
+  },
+  "funnel": {
+    "news": "Novice",
+    "events": "Dogodki",
+    "aboveThreshold": "Nad pragom",
+    "signals": "Signali",
+    "accepted": "Sprejeti"
+  },
+  "regime": {
+    "risk_on": "Ugodno",
+    "neutral": "Nevtralno",
+    "risk_off": "Previdno"
+  },
+  "planned": {
+    "title": "Zaslon je v pripravi",
+    "body": "{screen} pride v mejniku {milestone}. Načrt: BACKLOG.md.",
+    "back": "Nazaj na Pregled"
+  },
+  "ux": {
+    "title": "Oblikovni sistem",
+    "intro": "Živi primeri tokenov, gibanja (MO-xx) in povezovanja (LX-xx) iz DESIGN.md.",
+    "change": "Spremeni vrednost",
+    "addEvent": "Dodaj dogodek",
+    "removeEvent": "Odstrani",
+    "expand": "Razširi",
+    "collapse": "Skrči",
+    "toast": "Pokaži obvestilo z razveljavitvijo",
+    "dismissed": "Signal zavrnjen",
+    "reduced": "Gibanje se samodejno zmanjša, če ima naprava vklopljeno nastavitev za manj gibanja.",
+    "demo": {
+      "tokens": "Tokeni",
+      "liveList": "Živi seznam",
+      "slider": "Drsni indikator",
+      "shared": "Deljeni prehod",
+      "undoEntities": "Razveljavi in entitete",
+      "sharedDetail": "Cona 402–410 $ · tezni stop 371 $ · moč 0,72"
+    }
+  },
+  "instrument": {
+    "stock": "Delnica"
+  }
 }

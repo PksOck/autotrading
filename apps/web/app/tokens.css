@@ -1,0 +1,84 @@
+/* Design tokens (DESIGN.md §2, §8.1). Source of truth for colors and motion in CSS. */
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f5f6f8;
+  --surface: #ffffff;
+  --surface-2: #eef0f4;
+  --border: #dce0e6;
+  --text: #15181e;
+  --text-2: #454d59;
+  --text-3: #5b6472;
+  --accent: #3d4ed6;
+  --accent-soft: #e7eafb;
+  --on-accent: #ffffff;
+  --pos: #0b5e47;
+  --pos-soft: #e2f3ec;
+  --neg: #b9440f;
+  --neg-soft: #fbeae2;
+  --warn: #8f5a00;
+  --warn-soft: #fbf0da;
+  --rumor: #7139d6;
+  --rumor-soft: #efe7fc;
+  --shadow-float: 0 8px 24px rgb(0 0 0 / 0.12);
+}
+
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0d1015;
+    --surface: #141920;
+    --surface-2: #1b212a;
+    --border: #29303b;
+    --text: #e7eaef;
+    --text-2: #afb7c3;
+    --text-3: #8c96a5;
+    --accent: #8e9cff;
+    --accent-soft: #222a4f;
+    --on-accent: #0d1015;
+    --pos: #4fe3b4;
+    --pos-soft: #13302a;
+    --neg: #e8794a;
+    --neg-soft: #3a1f16;
+    --warn: #e9b949;
+    --warn-soft: #33290f;
+    --rumor: #b99af5;
+    --rumor-soft: #2a2142;
+    --shadow-float: 0 8px 24px rgb(0 0 0 / 0.5);
+  }
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0d1015;
+  --surface: #141920;
+  --surface-2: #1b212a;
+  --border: #29303b;
+  --text: #e7eaef;
+  --text-2: #afb7c3;
+  --text-3: #8c96a5;
+  --accent: #8e9cff;
+  --accent-soft: #222a4f;
+  --on-accent: #0d1015;
+  --pos: #4fe3b4;
+  --pos-soft: #13302a;
+  --neg: #e8794a;
+  --neg-soft: #3a1f16;
+  --warn: #e9b949;
+  --warn-soft: #33290f;
+  --rumor: #b99af5;
+  --rumor-soft: #2a2142;
+  --shadow-float: 0 8px 24px rgb(0 0 0 / 0.5);
+}
+
+:root {
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+  --dur-slow: 320ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+}

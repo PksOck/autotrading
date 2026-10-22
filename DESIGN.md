@@ -130,7 +130,7 @@ Osnova je **shadcn/ui** (Radix): Button, Tabs, Dialog, DropdownMenu, Tooltip, Ta
 | SCR-11 | Nastavitve | `/settings` | jezik, tema, univerzum, pragovi, LLM vloge in proračun, Telegram, povezave | M0→ |
 | SCR-12 | Predlogi | `/proposals` | tvoji ročni predlogi, stanje analize, izid (§11) | M2→M4 |
 
-Na platnu so narisani: SCR-01, 02, 03, 05, 06, 07, 11 in tabla tokenov. SCR-04, 08, 09, 10 sledijo istim vzorcem (BL-005).
+Na platnu so narisani: SCR-01, 02, 03, 05, 06, 07, 11 in tabla tokenov. Od M0 naprej je **vir resnice React aplikacija** (`apps/web`, živi primeri na `/ux`); nove zaslone gradimo neposredno v kodi. CMP-22 Trail, OV-05 in OV-06 nastanejo skupaj s svojimi zasloni (M3, M1).
 
 ## 5. Stanja (obvezna za vsak zaslon)
 

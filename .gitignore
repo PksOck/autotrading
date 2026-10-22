@@ -27,3 +27,9 @@ data/
 .idea/
 .vscode/*
 !.vscode/extensions.json
+
+# Next.js / Playwright
+next-env.d.ts
+*.tsbuildinfo
+test-results/
+playwright-report/

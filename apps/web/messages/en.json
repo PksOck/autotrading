@@ -13,7 +13,10 @@
     "options": "Options",
     "trackRecord": "Track record",
     "settings": "Settings",
-    "more": "More"
+    "more": "More",
+    "proposals": "Proposals",
+    "ux": "Design system",
+    "mainLabel": "Main menu"
   },
   "view": {
     "discover": "Discover",
@@ -148,7 +151,146 @@
     "flex": "IBKR Flex",
     "ollama": "Local model",
     "litellm": "LLM router",
-    "budget": "LLM usage"
+    "api": "API",
+    "postgres": "Database",
+    "redis": "Queue",
+    "ib_gateway": "IB Gateway",
+    "ibkr_flex": "IBKR Flex",
+    "telegram": "Telegram",
+    "state": {
+      "up": "up",
+      "degraded": "degraded",
+      "down": "down",
+      "unconfigured": "not configured"
+    },
+    "unreachable": "API unreachable",
+    "statusLabel": "System status"
   },
-  "disclaimer": "Research aid, not investment advice. The decision is yours."
+  "disclaimer": "Research aid, not investment advice. The decision is yours.",
+  "header": {
+    "search": "Search or command",
+    "propose": "Propose",
+    "focus": "Focus: {symbol}",
+    "clearFocus": "Clear focus",
+    "sample": "Sample data"
+  },
+  "command": {
+    "placeholder": "Search a symbol, screen or action",
+    "empty": "No results.",
+    "groupNav": "Go to",
+    "groupActions": "Actions",
+    "groupInstruments": "Instruments",
+    "proposeQuery": "Propose {query} for analysis",
+    "propose": "New proposal for analysis",
+    "toggleTheme": "Toggle theme",
+    "switchLocale": "Switch language (SL/EN)",
+    "focusOn": "Focus on {symbol}",
+    "shortcuts": "Shortcuts: ⌘K search · g o/r/e/s/p go to · + new proposal"
+  },
+  "peek": {
+    "label": "Preview",
+    "close": "Close preview",
+    "back": "Back",
+    "open": "Open screen",
+    "lastSignal": "Latest signal",
+    "thesis": "Thesis",
+    "weight": "Portfolio weight",
+    "notHeld": "not held",
+    "notFound": "Entity not found."
+  },
+  "proposal": {
+    "title": "New proposal for analysis",
+    "intro": "Propose an instrument or a hypothesis. Agents test your hypothesis against evidence instead of assuming it.",
+    "symbols": "Symbol(s)",
+    "symbolsHint": "e.g. MSFT, ASML. They can also be detected from pasted text.",
+    "hypothesis": "Hypothesis",
+    "hypothesisHint": "Why are you interested? What do you expect?",
+    "source": "Source (link or news text)",
+    "direction": "Direction",
+    "up": "Up",
+    "down": "Down",
+    "unsure": "Not sure",
+    "horizon": "Horizon",
+    "depth": {
+      "label": "Analysis depth",
+      "quick": "Quick",
+      "quickHint": "local model · ~1 min · $0",
+      "standard": "Standard",
+      "standardHint": "OpenCode · ~3 min",
+      "deep": "Deep",
+      "deepHint": "all agents + Claude · uses credit"
+    },
+    "saveTo": {
+      "label": "Save",
+      "active": "to watchlist",
+      "reserve": "to idea reserve",
+      "once": "one-off analysis only"
+    },
+    "submit": "Send to analysis",
+    "submitted": "Proposal {symbols} is queued",
+    "previewNote": "Preview: submission to analysis goes live in M2 (BL-053). The proposal is stored locally.",
+    "undo": "Undo",
+    "undone": "Proposal withdrawn",
+    "required": "Enter at least one symbol.",
+    "listTitle": "Your proposals",
+    "listEmpty": "No proposals yet. The + Propose button is always in the header.",
+    "status": {
+      "draft": "draft",
+      "queued": "queued",
+      "running": "analyzing",
+      "done": "done"
+    }
+  },
+  "overview": {
+    "title": "Overview",
+    "regime": "Market regime",
+    "treemap": "Portfolio today",
+    "treemapHint": "Area is weight, color is daily change. Click opens a preview.",
+    "pulse": "Radar pulse, 7 days",
+    "pulseHint": "Each dot is an event: size is score, dashed is rumor.",
+    "funnel": "Signal funnel, 30 days",
+    "newToday": "New today",
+    "portfolioValue": "Portfolio value",
+    "today": "today"
+  },
+  "funnel": {
+    "news": "News",
+    "events": "Events",
+    "aboveThreshold": "Above threshold",
+    "signals": "Signals",
+    "accepted": "Accepted"
+  },
+  "regime": {
+    "risk_on": "Favorable",
+    "neutral": "Neutral",
+    "risk_off": "Cautious"
+  },
+  "planned": {
+    "title": "Screen in progress",
+    "body": "{screen} arrives in milestone {milestone}. Plan: BACKLOG.md.",
+    "back": "Back to Overview"
+  },
+  "ux": {
+    "title": "Design system",
+    "intro": "Live examples of tokens, motion (MO-xx) and linking (LX-xx) from DESIGN.md.",
+    "change": "Change value",
+    "addEvent": "Add event",
+    "removeEvent": "Remove",
+    "expand": "Expand",
+    "collapse": "Collapse",
+    "toast": "Show notification with undo",
+    "dismissed": "Signal dismissed",
+    "reduced": "Motion is reduced automatically when the device asks for less motion.",
+    "demo": {
+      "tokens": "Tokens",
+      "liveList": "Live list",
+      "slider": "Sliding indicator",
+      "shared": "Shared transition",
+      "undoEntities": "Undo and entities",
+      "sharedDetail": "Zone $402–410 · thesis stop $371 · strength 0.72"
+    }
+  },
+  "instrument": {
+    "stock": "Stock"
+  }
 }

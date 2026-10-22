@@ -25,7 +25,7 @@
 
 | Podatek | `sl` | `en` | Opomba |
 |---|---|---|---|
-| število | 1.234,56 | 1,234.56 | `Intl.NumberFormat(locale)` |
+| število | 1.234,56 | 1,234.56 | `Intl.NumberFormat(locale)` z `useGrouping: "always"` (brez tega Node in brskalnik različno ločita 4-mestna števila) |
 | odstotek | +4,2 % | +4.2% | vedno predznak pri spremembah |
 | cena USD | 184,20 $ | $184.20 | valuta instrumenta, ne preračunavamo samodejno |
 | velike vrednosti | 1,2 mrd $ | $1.2B | kompaktni zapis |

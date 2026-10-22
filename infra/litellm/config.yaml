@@ -1,0 +1,53 @@
+# LLM vloge (ADR-0004). Koda kliče samo imena vlog, nikoli ponudnikov.
+# Modele zamenjaš v .env (LOCAL_MODEL, OPENCODE_*_MODEL) brez spremembe kode.
+# Imena modelov OpenCode Go preveri na https://opencode.ai/zen/go/v1/models (BL-011).
+
+model_list:
+  # --- lokalno (GPU naprava v LAN, Ollama) ---
+  - model_name: embed
+    litellm_params:
+      model: os.environ/EMBED_MODEL
+      api_base: os.environ/OLLAMA_BASE_URL
+
+  - model_name: local-fast
+    litellm_params:
+      model: os.environ/LOCAL_MODEL # Qwen 3.8 27B, 4-bit
+      api_base: os.environ/OLLAMA_BASE_URL
+      think: false
+      timeout: 120
+
+  - model_name: local-reason
+    litellm_params:
+      model: os.environ/LOCAL_MODEL
+      api_base: os.environ/OLLAMA_BASE_URL
+      think: true
+      timeout: 300
+
+  # --- oblak: OpenCode Go (OpenAI-kompatibilen) ---
+  - model_name: cloud-quick
+    litellm_params:
+      model: os.environ/OPENCODE_QUICK_MODEL
+      api_base: https://opencode.ai/zen/go/v1
+      api_key: os.environ/OPENCODE_API_KEY
+
+  # cloud-deep: v M4 je prvi ponudnik claude-runner (Claude Agent SDK, OpenAI-kompatibilen
+  # vmesnik), ta vnos pa ostane kot fallback.
+  - model_name: cloud-deep
+    litellm_params:
+      model: os.environ/OPENCODE_DEEP_MODEL
+      api_base: https://opencode.ai/zen/go/v1
+      api_key: os.environ/OPENCODE_API_KEY
+
+router_settings:
+  fallbacks:
+    - cloud-deep: ["cloud-quick"]
+    - cloud-quick: ["local-reason"]
+    - local-fast: ["cloud-quick"]
+  num_retries: 1
+
+litellm_settings:
+  drop_params: true
+  request_timeout: 300
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY

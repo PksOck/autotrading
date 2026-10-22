@@ -6,7 +6,7 @@ Ključne knjižnice so v Pythonu: TradingAgents (LangGraph), ib_async, TA-Lib, C
 
 ## Odločitev
 - **Backend:** Python 3.12, FastAPI, SQLAlchemy 2, Alembic, arq (vrste na Redisu), Pydantic v2.
-- **Frontend:** Next.js 15 (App Router), React 19, Tailwind 4, shadcn/ui, TanStack Query, lightweight-charts, trading-signals, next-intl.
+- **Frontend:** Next.js 16 (App Router), React 19, Tailwind 4, shadcn/ui, TanStack Query, lightweight-charts, trading-signals, next-intl.
 - **Pogodba:** OpenAPI iz FastAPI → generirani TS tipi (`openapi-typescript`).
 - **Baza:** Postgres 16 + TimescaleDB (svečke) + pgvector (novice).
 
