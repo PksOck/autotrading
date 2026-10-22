@@ -162,6 +162,109 @@ export interface paths {
         patch: operations["update_watchlist__item_id__patch"];
         trace?: never;
     };
+    "/radar/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Events */
+        get: operations["events_radar_events_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/radar/events/{event_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Event */
+        get: operations["event_radar_events__event_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/signals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Signals */
+        get: operations["list_signals_signals_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/signals/{signal_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Signal */
+        patch: operations["update_signal_signals__signal_id__patch"];
+        trace?: never;
+    };
+    "/proposals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List All */
+        get: operations["list_all_proposals_get"];
+        put?: never;
+        /** Create */
+        post: operations["create_proposals_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/proposals/{proposal_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get One */
+        get: operations["get_one_proposals__proposal_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -206,6 +309,88 @@ export interface components {
              */
             report_date: string;
         };
+        /**
+         * Direction
+         * @enum {string}
+         */
+        Direction: "up" | "down" | "neutral";
+        /** EventOut */
+        EventOut: {
+            /** Id */
+            id: number;
+            /** Title */
+            title: string;
+            /** Summary */
+            summary: string | null;
+            /** Symbols */
+            symbols: string[];
+            event_type: components["schemas"]["EventType"] | null;
+            /** Is Rumor */
+            is_rumor: boolean;
+            /** Sentiment */
+            sentiment: number | null;
+            /** Materiality */
+            materiality: number | null;
+            /** Novelty */
+            novelty: number | null;
+            /** Attention */
+            attention: number | null;
+            /** Reaction Z */
+            reaction_z: number | null;
+            /** Score */
+            score: number | null;
+            status: components["schemas"]["EventStatus"];
+            /**
+             * First Seen At
+             * Format: date-time
+             */
+            first_seen_at: string;
+            /**
+             * Last Seen At
+             * Format: date-time
+             */
+            last_seen_at: string;
+            /** Sources */
+            sources?: components["schemas"]["EventSource"][];
+        };
+        /** EventSource */
+        EventSource: {
+            /** Title */
+            title: string;
+            /** Url */
+            url: string;
+            /** Source */
+            source: string;
+            /**
+             * Published At
+             * Format: date-time
+             */
+            published_at: string;
+        };
+        /**
+         * EventStatus
+         * @enum {string}
+         */
+        EventStatus: "new" | "below_threshold" | "signalled" | "dismissed";
+        /**
+         * EventType
+         * @enum {string}
+         */
+        EventType: "earnings" | "guidance" | "merger" | "filing" | "insider" | "analyst" | "product" | "regulatory" | "legal" | "macro" | "rumor" | "other";
+        /** EvidenceRef */
+        EvidenceRef: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "news" | "filing" | "event" | "indicator" | "analysis";
+            /** Label */
+            label: string;
+            /** Url */
+            url?: string | null;
+            /** Ref Id */
+            ref_id?: string | null;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -218,6 +403,11 @@ export interface components {
             /** Version */
             version: string;
         };
+        /**
+         * Horizon
+         * @enum {string}
+         */
+        Horizon: "days" | "weeks" | "months" | "years";
         /** InstrumentDetail */
         InstrumentDetail: {
             /** Symbol */
@@ -304,6 +494,94 @@ export interface components {
             /** Change Pct */
             change_pct?: number | null;
         };
+        /** ProposalCreate */
+        ProposalCreate: {
+            /** Symbols */
+            symbols: string[];
+            /**
+             * Hypothesis
+             * @default
+             */
+            hypothesis: string;
+            /**
+             * Source Text
+             * @default
+             */
+            source_text: string;
+            /**
+             * Direction
+             * @default unsure
+             * @enum {string}
+             */
+            direction: "up" | "down" | "unsure";
+            /** @default months */
+            horizon: components["schemas"]["Horizon"];
+            /** @default quick */
+            depth: components["schemas"]["ProposalDepth"];
+            /**
+             * Save To
+             * @default reserve
+             * @enum {string}
+             */
+            save_to: "active" | "reserve" | "once";
+        };
+        /**
+         * ProposalDepth
+         * @enum {string}
+         */
+        ProposalDepth: "quick" | "standard" | "deep";
+        /** ProposalOut */
+        ProposalOut: {
+            /** Symbols */
+            symbols: string[];
+            /**
+             * Hypothesis
+             * @default
+             */
+            hypothesis: string;
+            /**
+             * Source Text
+             * @default
+             */
+            source_text: string;
+            /**
+             * Direction
+             * @default unsure
+             * @enum {string}
+             */
+            direction: "up" | "down" | "unsure";
+            /** @default months */
+            horizon: components["schemas"]["Horizon"];
+            /** @default quick */
+            depth: components["schemas"]["ProposalDepth"];
+            /**
+             * Save To
+             * @default reserve
+             * @enum {string}
+             */
+            save_to: "active" | "reserve" | "once";
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "queued" | "running" | "done" | "failed";
+            /** Verdict */
+            verdict: string | null;
+            /** Signal Id */
+            signal_id: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Finished At */
+            finished_at: string | null;
+        };
         /** Provenance */
         Provenance: {
             /** Source */
@@ -325,6 +603,11 @@ export interface components {
             job_id: string;
         };
         /**
+         * RadarView
+         * @enum {string}
+         */
+        RadarView: "discover" | "watchlist" | "portfolio";
+        /**
          * ServiceId
          * @enum {string}
          */
@@ -342,6 +625,71 @@ export interface components {
             latency_ms?: number | null;
             /** Detail */
             detail?: string | null;
+        };
+        /**
+         * SignalKind
+         * @enum {string}
+         */
+        SignalKind: "catalyst" | "entry" | "exit_warning" | "thesis_break" | "options_idea";
+        /** SignalOut */
+        SignalOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Symbol */
+            symbol: string;
+            kind: components["schemas"]["SignalKind"];
+            source: components["schemas"]["SignalSource"];
+            direction: components["schemas"]["Direction"];
+            horizon: components["schemas"]["Horizon"];
+            /** Strength */
+            strength: number;
+            /** Confidence */
+            confidence: number | null;
+            /** Entry Low */
+            entry_low: number | null;
+            /** Entry High */
+            entry_high: number | null;
+            /** Stop */
+            stop: number | null;
+            /** Target */
+            target: number | null;
+            /** Rationale */
+            rationale: string;
+            /** Evidence */
+            evidence: components["schemas"]["EvidenceRef"][];
+            /** Is Rumor */
+            is_rumor: boolean;
+            status: components["schemas"]["SignalStatus"];
+            /** Event Id */
+            event_id: number | null;
+            /** Proposal Id */
+            proposal_id: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Expires At */
+            expires_at: string | null;
+        };
+        /**
+         * SignalSource
+         * @enum {string}
+         */
+        SignalSource: "rule" | "radar" | "agent" | "manual";
+        /**
+         * SignalStatus
+         * @enum {string}
+         */
+        SignalStatus: "new" | "watching" | "accepted" | "dismissed" | "expired";
+        /** SignalUpdate */
+        SignalUpdate: {
+            status: components["schemas"]["SignalStatus"];
+            /** Reason */
+            reason?: string | null;
         };
         /** SyncInfo */
         SyncInfo: {
@@ -745,6 +1093,222 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["WatchlistOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    events_radar_events_get: {
+        parameters: {
+            query?: {
+                view?: components["schemas"]["RadarView"];
+                min_score?: number;
+                days?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EventOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    event_radar_events__event_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                event_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EventOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_signals_signals_get: {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["SignalStatus"] | null;
+                kind?: components["schemas"]["SignalKind"] | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SignalOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_signal_signals__signal_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                signal_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SignalUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SignalOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_all_proposals_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalOut"][];
+                };
+            };
+        };
+    };
+    create_proposals_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProposalCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_one_proposals__proposal_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                proposal_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalOut"];
                 };
             };
             /** @description Validation Error */

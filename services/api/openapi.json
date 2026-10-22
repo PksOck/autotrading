@@ -391,6 +391,357 @@
           }
         }
       }
+    },
+    "/radar/events": {
+      "get": {
+        "tags": [
+          "radar"
+        ],
+        "summary": "Events",
+        "operationId": "events_radar_events_get",
+        "parameters": [
+          {
+            "name": "view",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/RadarView",
+              "default": "discover"
+            }
+          },
+          {
+            "name": "min_score",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "maximum": 1,
+              "minimum": 0,
+              "default": 0.0,
+              "title": "Min Score"
+            }
+          },
+          {
+            "name": "days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 60,
+              "minimum": 1,
+              "default": 7,
+              "title": "Days"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EventOut"
+                  },
+                  "title": "Response Events Radar Events Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/radar/events/{event_id}": {
+      "get": {
+        "tags": [
+          "radar"
+        ],
+        "summary": "Event",
+        "operationId": "event_radar_events__event_id__get",
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Event Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/signals": {
+      "get": {
+        "tags": [
+          "signals"
+        ],
+        "summary": "List Signals",
+        "operationId": "list_signals_signals_get",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/SignalStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "kind",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/SignalKind"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Kind"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 100,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SignalOut"
+                  },
+                  "title": "Response List Signals Signals Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/signals/{signal_id}": {
+      "patch": {
+        "tags": [
+          "signals"
+        ],
+        "summary": "Update Signal",
+        "operationId": "update_signal_signals__signal_id__patch",
+        "parameters": [
+          {
+            "name": "signal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Signal Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignalUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignalOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/proposals": {
+      "get": {
+        "tags": [
+          "proposals"
+        ],
+        "summary": "List All",
+        "operationId": "list_all_proposals_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ProposalOut"
+                  },
+                  "type": "array",
+                  "title": "Response List All Proposals Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "proposals"
+        ],
+        "summary": "Create",
+        "operationId": "create_proposals_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProposalCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProposalOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/proposals/{proposal_id}": {
+      "get": {
+        "tags": [
+          "proposals"
+        ],
+        "summary": "Get One",
+        "operationId": "get_one_proposals__proposal_id__get",
+        "parameters": [
+          {
+            "name": "proposal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Proposal Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProposalOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -502,6 +853,268 @@
         ],
         "title": "CashIn"
       },
+      "Direction": {
+        "type": "string",
+        "enum": [
+          "up",
+          "down",
+          "neutral"
+        ],
+        "title": "Direction"
+      },
+      "EventOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary"
+          },
+          "symbols": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Symbols"
+          },
+          "event_type": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EventType"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "is_rumor": {
+            "type": "boolean",
+            "title": "Is Rumor"
+          },
+          "sentiment": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sentiment"
+          },
+          "materiality": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Materiality"
+          },
+          "novelty": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Novelty"
+          },
+          "attention": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attention"
+          },
+          "reaction_z": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reaction Z"
+          },
+          "score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score"
+          },
+          "status": {
+            "$ref": "#/components/schemas/EventStatus"
+          },
+          "first_seen_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "First Seen At"
+          },
+          "last_seen_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Last Seen At"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/EventSource"
+            },
+            "type": "array",
+            "title": "Sources"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "summary",
+          "symbols",
+          "event_type",
+          "is_rumor",
+          "sentiment",
+          "materiality",
+          "novelty",
+          "attention",
+          "reaction_z",
+          "score",
+          "status",
+          "first_seen_at",
+          "last_seen_at"
+        ],
+        "title": "EventOut"
+      },
+      "EventSource": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "published_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Published At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "url",
+          "source",
+          "published_at"
+        ],
+        "title": "EventSource"
+      },
+      "EventStatus": {
+        "type": "string",
+        "enum": [
+          "new",
+          "below_threshold",
+          "signalled",
+          "dismissed"
+        ],
+        "title": "EventStatus"
+      },
+      "EventType": {
+        "type": "string",
+        "enum": [
+          "earnings",
+          "guidance",
+          "merger",
+          "filing",
+          "insider",
+          "analyst",
+          "product",
+          "regulatory",
+          "legal",
+          "macro",
+          "rumor",
+          "other"
+        ],
+        "title": "EventType"
+      },
+      "EvidenceRef": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "news",
+              "filing",
+              "event",
+              "indicator",
+              "analysis"
+            ],
+            "title": "Kind"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "ref_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ref Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "label"
+        ],
+        "title": "EvidenceRef"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -532,6 +1145,16 @@
           "version"
         ],
         "title": "Health"
+      },
+      "Horizon": {
+        "type": "string",
+        "enum": [
+          "days",
+          "weeks",
+          "months",
+          "years"
+        ],
+        "title": "Horizon"
       },
       "InstrumentDetail": {
         "properties": {
@@ -911,6 +1534,192 @@
         ],
         "title": "PositionOut"
       },
+      "ProposalCreate": {
+        "properties": {
+          "symbols": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 8,
+            "minItems": 1,
+            "title": "Symbols"
+          },
+          "hypothesis": {
+            "type": "string",
+            "maxLength": 4000,
+            "title": "Hypothesis",
+            "default": ""
+          },
+          "source_text": {
+            "type": "string",
+            "maxLength": 20000,
+            "title": "Source Text",
+            "default": ""
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "up",
+              "down",
+              "unsure"
+            ],
+            "title": "Direction",
+            "default": "unsure"
+          },
+          "horizon": {
+            "$ref": "#/components/schemas/Horizon",
+            "default": "months"
+          },
+          "depth": {
+            "$ref": "#/components/schemas/ProposalDepth",
+            "default": "quick"
+          },
+          "save_to": {
+            "type": "string",
+            "enum": [
+              "active",
+              "reserve",
+              "once"
+            ],
+            "title": "Save To",
+            "default": "reserve"
+          }
+        },
+        "type": "object",
+        "required": [
+          "symbols"
+        ],
+        "title": "ProposalCreate"
+      },
+      "ProposalDepth": {
+        "type": "string",
+        "enum": [
+          "quick",
+          "standard",
+          "deep"
+        ],
+        "title": "ProposalDepth"
+      },
+      "ProposalOut": {
+        "properties": {
+          "symbols": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 8,
+            "minItems": 1,
+            "title": "Symbols"
+          },
+          "hypothesis": {
+            "type": "string",
+            "maxLength": 4000,
+            "title": "Hypothesis",
+            "default": ""
+          },
+          "source_text": {
+            "type": "string",
+            "maxLength": 20000,
+            "title": "Source Text",
+            "default": ""
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "up",
+              "down",
+              "unsure"
+            ],
+            "title": "Direction",
+            "default": "unsure"
+          },
+          "horizon": {
+            "$ref": "#/components/schemas/Horizon",
+            "default": "months"
+          },
+          "depth": {
+            "$ref": "#/components/schemas/ProposalDepth",
+            "default": "quick"
+          },
+          "save_to": {
+            "type": "string",
+            "enum": [
+              "active",
+              "reserve",
+              "once"
+            ],
+            "title": "Save To",
+            "default": "reserve"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "queued",
+              "running",
+              "done",
+              "failed"
+            ],
+            "title": "Status"
+          },
+          "verdict": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verdict"
+          },
+          "signal_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Signal Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "symbols",
+          "id",
+          "status",
+          "verdict",
+          "signal_id",
+          "created_at",
+          "finished_at"
+        ],
+        "title": "ProposalOut"
+      },
       "Provenance": {
         "properties": {
           "source": {
@@ -947,6 +1756,15 @@
           "job_id"
         ],
         "title": "Queued"
+      },
+      "RadarView": {
+        "type": "string",
+        "enum": [
+          "discover",
+          "watchlist",
+          "portfolio"
+        ],
+        "title": "RadarView"
       },
       "ServiceId": {
         "type": "string",
@@ -1009,6 +1827,228 @@
           "state"
         ],
         "title": "ServiceStatus"
+      },
+      "SignalKind": {
+        "type": "string",
+        "enum": [
+          "catalyst",
+          "entry",
+          "exit_warning",
+          "thesis_break",
+          "options_idea"
+        ],
+        "title": "SignalKind"
+      },
+      "SignalOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "symbol": {
+            "type": "string",
+            "title": "Symbol"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/SignalKind"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SignalSource"
+          },
+          "direction": {
+            "$ref": "#/components/schemas/Direction"
+          },
+          "horizon": {
+            "$ref": "#/components/schemas/Horizon"
+          },
+          "strength": {
+            "type": "number",
+            "title": "Strength"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "entry_low": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entry Low"
+          },
+          "entry_high": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entry High"
+          },
+          "stop": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stop"
+          },
+          "target": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target"
+          },
+          "rationale": {
+            "type": "string",
+            "title": "Rationale"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/EvidenceRef"
+            },
+            "type": "array",
+            "title": "Evidence"
+          },
+          "is_rumor": {
+            "type": "boolean",
+            "title": "Is Rumor"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SignalStatus"
+          },
+          "event_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Event Id"
+          },
+          "proposal_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Proposal Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "symbol",
+          "kind",
+          "source",
+          "direction",
+          "horizon",
+          "strength",
+          "confidence",
+          "entry_low",
+          "entry_high",
+          "stop",
+          "target",
+          "rationale",
+          "evidence",
+          "is_rumor",
+          "status",
+          "event_id",
+          "proposal_id",
+          "created_at",
+          "expires_at"
+        ],
+        "title": "SignalOut"
+      },
+      "SignalSource": {
+        "type": "string",
+        "enum": [
+          "rule",
+          "radar",
+          "agent",
+          "manual"
+        ],
+        "title": "SignalSource"
+      },
+      "SignalStatus": {
+        "type": "string",
+        "enum": [
+          "new",
+          "watching",
+          "accepted",
+          "dismissed",
+          "expired"
+        ],
+        "title": "SignalStatus"
+      },
+      "SignalUpdate": {
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/SignalStatus"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "title": "SignalUpdate"
       },
       "SyncInfo": {
         "properties": {

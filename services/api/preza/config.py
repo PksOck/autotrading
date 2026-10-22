@@ -34,6 +34,12 @@ class Settings(BaseSettings):
     yahoo_enabled: bool = True
     stooq_enabled: bool = True
 
+    rss_enabled: bool = True
+    finnhub_api_key: str | None = None
+    sec_edgar_user_agent: str | None = None
+    radar_signal_threshold: float = Field(default=0.6, ge=0, le=1)
+    radar_notify_threshold: float = Field(default=0.7, ge=0, le=1)
+
 
 @lru_cache
 def get_settings() -> Settings:
