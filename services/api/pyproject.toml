@@ -17,6 +17,8 @@ dependencies = [
   "defusedxml>=0.7.1",
   "pyyaml>=6.0.3",
   "ib-async>=2.1",
+  "ta-lib>=0.6.5",
+  "numpy>=2.1",
 ]
 
 [dependency-groups]

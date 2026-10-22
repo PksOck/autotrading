@@ -275,3 +275,78 @@ class Signal(Base):
     expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     instrument: Mapped[Instrument] = relationship(lazy="joined")
+
+
+class EntryCandidate(Base):
+    """Current entry assessment per instrument (M3, research §5.3). Rebuilt daily after close.
+
+    Numbers (zone, stop, ladder, distances) are computed by code; `cause` and `dip_rationale`
+    come from `dip_analyst` and are interpretation only.
+    """
+
+    __tablename__ = "entry_candidate"
+
+    instrument_id: Mapped[int] = mapped_column(
+        ForeignKey("instrument.id", ondelete="CASCADE"), primary_key=True
+    )
+    as_of: Mapped[date] = mapped_column(Date)
+    price: Mapped[Decimal] = mapped_column(PRICE)
+    rules: Mapped[list[dict[str, Any]]] = mapped_column(JSONB, default=list)
+    zone_low: Mapped[Decimal | None] = mapped_column(PRICE)
+    zone_high: Mapped[Decimal | None] = mapped_column(PRICE)
+    stop: Mapped[Decimal | None] = mapped_column(PRICE)
+    atr: Mapped[Decimal | None] = mapped_column(PRICE)
+    distance_atr: Mapped[Decimal | None] = mapped_column(Numeric(10, 4))
+    drawdown_pct: Mapped[Decimal | None] = mapped_column(Numeric(10, 4))
+    valuation: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
+    ladder: Mapped[list[dict[str, Any]]] = mapped_column(JSONB, default=list)
+    cause: Mapped[str | None] = mapped_column(String(12))
+    thesis_intact: Mapped[bool | None] = mapped_column(Boolean)
+    dip_rationale: Mapped[str | None] = mapped_column(Text)
+    dip_evidence: Mapped[list[dict[str, Any]]] = mapped_column(JSONB, default=list)
+    dip_model: Mapped[str | None] = mapped_column(String(64))
+    analyzed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    signal_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("signal.id", ondelete="SET NULL")
+    )
+    source: Mapped[str] = mapped_column(String(32))
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+    instrument: Mapped[Instrument] = relationship(lazy="joined")
+
+
+class Fundamentals(Base):
+    """Valuation metrics snapshot with history for valuation bands (BL-061)."""
+
+    __tablename__ = "fundamentals"
+
+    instrument_id: Mapped[int] = mapped_column(
+        ForeignKey("instrument.id", ondelete="CASCADE"), primary_key=True
+    )
+    as_of: Mapped[date] = mapped_column(Date)
+    metrics: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
+    history: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
+    source: Mapped[str] = mapped_column(String(32))
+    fetched_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class SignalOutcome(Base):
+    """Return of a signal after N trading days and alpha against a benchmark (BL-065)."""
+
+    __tablename__ = "signal_outcome"
+
+    signal_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("signal.id", ondelete="CASCADE"), primary_key=True
+    )
+    horizon_days: Mapped[int] = mapped_column(Integer, primary_key=True)
+    start_day: Mapped[date] = mapped_column(Date)
+    end_day: Mapped[date] = mapped_column(Date)
+    start_price: Mapped[Decimal] = mapped_column(PRICE)
+    end_price: Mapped[Decimal] = mapped_column(PRICE)
+    return_pct: Mapped[Decimal] = mapped_column(Numeric(12, 4))
+    benchmark: Mapped[str | None] = mapped_column(String(20))
+    benchmark_return_pct: Mapped[Decimal | None] = mapped_column(Numeric(12, 4))
+    alpha_pct: Mapped[Decimal | None] = mapped_column(Numeric(12, 4))
+    mfe_pct: Mapped[Decimal] = mapped_column(Numeric(12, 4))
+    mae_pct: Mapped[Decimal] = mapped_column(Numeric(12, 4))
+    computed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
