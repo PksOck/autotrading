@@ -1,7 +1,7 @@
 "use client";
 
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { api } from "./client";
+import { ApiError, api } from "./client";
 import type {
   EntryOut,
   EntryView,
@@ -111,6 +111,22 @@ export const useEntries = (view: EntryView) =>
     queryFn: () => api.get<EntryOut[]>(`/entries?view=${view}`),
     refetchInterval: 5 * 60_000,
     placeholderData: keepPreviousData,
+  });
+
+/** Entry candidate for one instrument; 404 means "no zone" and resolves to null. */
+export const useEntry = (symbol: string) =>
+  useQuery({
+    queryKey: ["entry", symbol] as const,
+    queryFn: async () => {
+      try {
+        return await api.get<EntryOut>(`/entries/${encodeURIComponent(symbol)}`);
+      } catch (error) {
+        if (error instanceof ApiError && error.status === 404) return null;
+        throw error;
+      }
+    },
+    retry: false,
+    refetchInterval: 5 * 60_000,
   });
 
 export const useSignals = (status: SignalStatus | "all") =>

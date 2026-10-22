@@ -422,7 +422,12 @@
     "ucits": "UCITS",
     "chartSummary": "Cena {symbol} v obdobju {range}: zadnje zaprtje {close}, sprememba {change}.",
     "price": "Cena",
-    "volume": "Volumen"
+    "volume": "Volumen",
+    "entryToggle": "Cona",
+    "entryZone": "Vstopna cona",
+    "entryStop": "Stop",
+    "entryOpen": "Odpri v Vstopih",
+    "entryCauseLabel": "Vzrok padca"
   },
   "signalsPage": {
     "title": "Signali",

@@ -3,12 +3,15 @@
 import { motion } from "motion/react";
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { AnimatedNumber } from "@/components/common/AnimatedNumber";
 import { ProvenanceTag } from "@/components/common/ProvenanceTag";
-import { PriceChart } from "@/components/instrument/PriceChart";
+import { CauseBadge } from "@/components/entries/CauseBadge";
+import { EntryZoneBar } from "@/components/entries/EntryZoneBar";
+import { PriceChart, type EntryLevels } from "@/components/instrument/PriceChart";
 import { WatchButton } from "@/components/watchlist/WatchButton";
 import { ApiError } from "@/lib/api/client";
-import { useBars, useInstrument } from "@/lib/api/hooks";
+import { useBars, useEntry, useInstrument } from "@/lib/api/hooks";
 import type { BarsRange } from "@/lib/api/types";
 import { cn } from "@/lib/cn";
 import { formatChange, formatMoney, formatNumber } from "@/lib/format";
@@ -16,6 +19,13 @@ import { computeIndicators } from "@/lib/indicators";
 import { spring } from "@/lib/motion";
 import { useAppLocale } from "@/lib/use-app-locale";
 import { openProposalComposer } from "@/stores/proposals";
+
+const STATE_STYLE: Record<string, string> = {
+  in_zone: "bg-pos-soft text-pos",
+  below: "bg-warn-soft text-warn",
+  near: "bg-accent-soft text-accent",
+  far: "bg-surface-2 text-text-3",
+};
 
 const RANGES: BarsRange[] = ["1m", "3m", "1y", "2y", "5y"];
 // SMA200 needs history before the visible window: always load at least two years.
@@ -29,12 +39,29 @@ export function InstrumentView({ symbol }: { symbol: string }) {
   const [range, setRange] = useState<BarsRange>("1y");
   const instrument = useInstrument(symbol);
   const bars = useBars(symbol, LOAD[range]);
+  const entryQuery = useEntry(symbol);
+  const entry = entryQuery.data ?? null;
+  const [showZone, setShowZone] = useState(true);
 
   const all = useMemo(
     () => (bars.data?.bars ?? []).map((b) => ({ ...b, day: b.day })),
     [bars.data],
   );
   const indicators = useMemo(() => computeIndicators(all), [all]);
+  const entryLevels = useMemo<EntryLevels | null>(() => {
+    if (!entry || entry.zone_low == null || entry.zone_high == null) return null;
+    return {
+      zoneLow: Number(entry.zone_low),
+      zoneHigh: Number(entry.zone_high),
+      stop: entry.stop == null ? null : Number(entry.stop),
+      ladder: (entry.ladder ?? []).map((l) => Number(l.price)),
+      labels: {
+        zone: t("instrumentPage.entryToggle"),
+        stop: t("instrumentPage.entryStop"),
+      },
+    };
+  }, [entry, t]);
+
   const from = Math.max(0, all.length - VISIBLE_DAYS[range]);
   const visible = all.slice(from);
 
@@ -130,6 +157,20 @@ export function InstrumentView({ symbol }: { symbol: string }) {
             <div className="flex flex-wrap gap-3 text-xs text-text-2">
               <span className="inline-flex items-center gap-1.5"><span className="h-0.5 w-3.5 bg-accent" />SMA50</span>
               <span className="inline-flex items-center gap-1.5"><span className="h-0.5 w-3.5 bg-warn" />SMA200</span>
+              {entryLevels && (
+                <button
+                  type="button"
+                  aria-pressed={showZone}
+                  onClick={() => setShowZone((v) => !v)}
+                  className={cn(
+                    "inline-flex h-6 items-center gap-1.5 rounded-full px-2.5 text-xs font-medium",
+                    showZone ? "bg-pos-soft text-pos" : "bg-surface-2 text-text-2",
+                  )}
+                >
+                  <span className={cn("h-0.5 w-3 border-t-2 border-dashed", showZone ? "border-pos" : "border-text-3")} />
+                  {t("instrumentPage.entryToggle")}
+                </button>
+              )}
               {rangeChange !== null && <span className={cn("num", rangeChange >= 0 ? "text-pos" : "text-neg")}>{formatChange(locale, rangeChange)}</span>}
             </div>
           </div>
@@ -137,6 +178,7 @@ export function InstrumentView({ symbol }: { symbol: string }) {
             <div className="h-[360px] animate-pulse rounded-md bg-surface-2" />
           ) : visible.length ? (
             <PriceChart
+              entry={showZone ? entryLevels : null}
               locale={locale}
               bars={visible}
               sma50={indicators.sma50.slice(from)}
@@ -154,6 +196,35 @@ export function InstrumentView({ symbol }: { symbol: string }) {
         </section>
 
         <aside className="flex flex-col gap-6">
+          {entry && entryLevels && (
+            <section className="card flex flex-col gap-3 p-4" aria-label={t("instrumentPage.entryZone")}>
+              <div className="flex items-center justify-between gap-2">
+                <h2 className="text-base font-semibold">{t("instrumentPage.entryZone")}</h2>
+                {entry.state && (
+                  <span className={cn("rounded-full px-2 text-xs leading-5 font-medium", STATE_STYLE[entry.state] ?? STATE_STYLE.far)}>
+                    {t(`entriesPage.state.${entry.state}`, {
+                      atr: formatNumber(locale, Math.abs(Number(entry.distance_atr ?? 0)), 1),
+                    })}
+                  </span>
+                )}
+              </div>
+              <EntryZoneBar
+                price={Number(entry.price)}
+                zoneLow={entryLevels.zoneLow}
+                zoneHigh={entryLevels.zoneHigh}
+                stop={entryLevels.stop}
+              />
+              {entry.rules.length > 0 && (
+                <div className="flex items-center gap-2 text-[13px] text-text-2">
+                  <span>{t("instrumentPage.entryCauseLabel")}</span>
+                  <CauseBadge cause={entry.cause} />
+                </div>
+              )}
+              <Link href={`/entries?symbol=${encodeURIComponent(symbol)}`} className="text-[13px] font-medium text-accent hover:underline">
+                {t("instrumentPage.entryOpen")} →
+              </Link>
+            </section>
+          )}
           <section className="card p-4">
             <h2 className="mb-3 text-base font-semibold">{t("instrumentPage.stats")}</h2>
             <dl className="grid grid-cols-2 gap-x-4 gap-y-3">

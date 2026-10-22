@@ -422,7 +422,12 @@
     "ucits": "UCITS",
     "chartSummary": "{symbol} over {range}: last close {close}, change {change}.",
     "price": "Price",
-    "volume": "Volume"
+    "volume": "Volume",
+    "entryToggle": "Zone",
+    "entryZone": "Entry zone",
+    "entryStop": "Stop",
+    "entryOpen": "Open in Entries",
+    "entryCauseLabel": "Cause of the drop"
   },
   "signalsPage": {
     "title": "Signals",
