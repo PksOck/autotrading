@@ -1,4 +1,7 @@
-"""Write the OpenAPI schema (run: python -m preza.cli.export_openapi <path>) used to generate apps/web/lib/api/schema.d.ts."""
+"""Write the OpenAPI schema used to generate apps/web/lib/api/schema.d.ts.
+
+Run: python -m preza.cli.export_openapi <path>
+"""
 
 import json
 import sys
