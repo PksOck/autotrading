@@ -1,6 +1,8 @@
 # Zasnova rešitve: kaj prevzamemo in kako gradimo
 
 **Datum:** 2026-10-22
+> **Opomba S-003:** Claude ni več v cevovodu. Kjer ta dokument omenja Claude za `cloud-deep`, velja MiniMax z rezervo OpenCode Go (PLAN.md §4, ADR-0004).
+
 **Nadgrajuje:** [`platforma-analiza-in-nacrt.md`](./2026-10-22-analiza-kandidatov.md) (splošna analiza kandidatov). Ta dokument je **izvedbena zasnova**.
 
 ---

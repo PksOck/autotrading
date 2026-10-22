@@ -218,7 +218,7 @@
       "standard": "Standard",
       "standardHint": "OpenCode · ~3 min",
       "deep": "Deep",
-      "deepHint": "all agents + Claude · uses credit"
+      "deepHint": "all agents + MiniMax · uses daily budget"
     },
     "saveTo": {
       "label": "Save",

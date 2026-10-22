@@ -30,9 +30,15 @@ model_list:
       api_base: https://opencode.ai/zen/go/v1
       api_key: os.environ/OPENCODE_API_KEY
 
-  # cloud-deep: v M4 je prvi ponudnik claude-runner (Claude Agent SDK, OpenAI-kompatibilen
-  # vmesnik), ta vnos pa ostane kot fallback.
+  # --- oblak: MiniMax (OpenAI-kompatibilen) za globoke odločitve ---
   - model_name: cloud-deep
+    litellm_params:
+      model: os.environ/MINIMAX_MODEL
+      api_base: https://api.minimax.io/v1
+      api_key: os.environ/MINIMAX_API_KEY
+
+  # rezerva za cloud-deep, ko MiniMax ni dosegljiv ali je proračun porabljen
+  - model_name: cloud-deep-backup
     litellm_params:
       model: os.environ/OPENCODE_DEEP_MODEL
       api_base: https://opencode.ai/zen/go/v1
@@ -40,7 +46,7 @@ model_list:
 
 router_settings:
   fallbacks:
-    - cloud-deep: ["cloud-quick"]
+    - cloud-deep: ["cloud-deep-backup", "cloud-quick"]
     - cloud-quick: ["local-reason"]
     - local-fast: ["cloud-quick"]
   num_retries: 1

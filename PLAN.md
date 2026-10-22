@@ -12,7 +12,8 @@ Zaznati **(a) priložnost iz novic, filingov in špekulacij** ter **(b) dobro (p
 |---|---|
 | Gostovanje | Docker Compose lokalno, dostop prek Tailscale ([ADR-0001](./docs/adr/ADR-0001-docker-lokalno.md)) |
 | Lokalni LLM | ločena naprava v LAN, **24 GB VRAM**, Ollama, **Qwen 3.8 27B, 4-bitna kvantizacija** (potrjeno) |
-| Oblačni LLM | **Claude Pro** (Agent SDK kredit), **OpenAI** naročnina (ChatGPT prijava), **OpenCode** naročnina. API ključev zaenkrat ni |
+| Oblačni LLM | **MiniMax** (API ključ), **OpenCode Go** (javni modeli, API ključ), **OpenAI** naročnina (ChatGPT prijava v TradingAgents). **Claude ni v avtomatiziranem cevovodu** (brez API, potrjeno v S-003) |
+| Omrežje | Tailscale je nameščen na vseh napravah (strežnik, GPU naprava, telefon) |
 | Broker | IBKR PRO: Flex Web Service + IB Gateway (Read-Only API) + ib_async |
 | Univerzum | trije pogledi: **Novi predlogi** (S&P 500 + Nasdaq 100 + izbrani ETF-ji), **Watchlista**, **Portfelj** |
 | Obvestila | Telegram bot (long polling, brez javnega webhooka) |
@@ -30,9 +31,9 @@ Zaznati **(a) priložnost iz novic, filingov in špekulacij** ter **(b) dobro (p
                                             │
      ┌──────────────┬──────────────┬────────┼─────────────┬───────────────┐
      ▼              ▼              ▼        ▼             ▼               ▼
- postgres        redis          worker   claude_runner   broker          notify
+ postgres        redis          worker   (rezerva)       broker          notify
  Timescale       vrste,         (arq)    Agent SDK       ib_async ─►     Telegram
- pgvector        pub/sub        ingest,  (Claude Pro)    ib-gateway      bot
+ pgvector        pub/sub        ingest,                  ib-gateway      bot
                                 radar,                   (read-only)
                                 agenti
                                    │
@@ -50,15 +51,10 @@ Odločitve: [ADR-0002](./docs/adr/ADR-0002-python-backend-nextjs-frontend.md) (s
 | `embed` | Ollama `bge-m3` ali `nomic-embed-text` (~1 GB VRAM) | vektorji novic, grozdenje | vse novice |
 | `local-fast` | Ollama Qwen 3.8 27B (4-bit), *brez razmišljanja* | triaža novic (JSON), tikerji, tip dogodka, sentiment, povzetek | stotine na dan |
 | `local-reason` | isti model, *z razmišljanjem* | prvi prehod analize vzroka padca, ETF tema, prevodi povzetkov | desetine na dan |
-| `cloud-quick` | OpenCode Go (GLM / Kimi / DeepSeek) | analitiki in debata v TradingAgents | nekaj zagonov na dan |
-| `cloud-deep` | OpenAI prek ChatGPT prijave (TradingAgents), **Claude** prek Agent SDK (naši agenti) | končne odločitve, opcijski strateg, tedenski pregled tez | omejeno s krediti |
+| `cloud-quick` | OpenCode Go (GLM / Kimi / DeepSeek, javni seznam na `/models`) | analitiki in debata v TradingAgents | nekaj zagonov na dan |
+| `cloud-deep` | **MiniMax** (OpenAI-kompatibilen API) → rezerva OpenCode Go (najmočnejši model) | končne odločitve, opcijski strateg, tedenski pregled tez | dnevni proračun |
 
-**Claude Pro je redek vir.** Agent SDK kredit za Pro je po tretjih virih okoli 20 $/mes. (preveri v računu, BL-013). Uporabimo ga samo za:
-1. tedenski pregled tez portfelja (M5);
-2. končno odločitev za največ 2 do 3 najmočnejše eskalacije na teden;
-3. opcijskega stratega (M6).
-
-Ko kredit poide, LiteLLM preklopi na `cloud-deep` prek OpenAI.
+TradingAgents lahko za `deep` uporabi tudi ChatGPT naročnino (njihova prijava "Sign in with ChatGPT"), kar je izbira v nastavitvah analize (M4). Claude ostaja izven sistema. `services/claude_runner` je odložen in se doda samo, če se kasneje odločiš za Claude Agent SDK.
 
 **Opomba o VRAM:** 27B Q4 zasede ~16 do 18 GB. Ob embed modelu ostane ~5 GB za kontekst, zato je vzporednost 1 do 2 zahtevi. Če triaža ne dohaja (S&P 500 ustvari veliko novic), dodamo manjši model iste družine za `local-fast` (BL-012).
 
@@ -69,7 +65,7 @@ Ko kredit poide, LiteLLM preklopi na `cloud-deep` prek OpenAI.
 2. **Radar** (`services/api/radar`): normalizacija → embed → grozdenje v dogodke → triaža (`local-fast`) → deterministični kontekst (odziv cene, pozornost) → ocena priložnosti → eskalacija → signal `catalyst` → Telegram.
 3. **Vstopi** (`services/api/entries`): pravila (trend, pullback, podpora, padec od vrha, pasovi vrednotenja, insiderji) → `dip_analyst` (`local-reason` → `cloud-quick` pri dvomu) → signal `entry` ali `thesis_break` → lestvica postopnega nakupa.
 4. **Globoka analiza** (`services/agents/deep_research`): TradingAgents (delnice), naš ETF analitik (ETF), SSE v UI.
-5. **Teze** (`services/agents/thesis_tracker`): tedenski pregled prek Claude.
+5. **Teze** (`services/agents/thesis_tracker`): tedenski pregled prek `cloud-deep`.
 6. **Opcije** (`services/api/options` + `services/agents/options_strategist`): CSP, covered call, call spread, protective put. Izračuni so deterministični.
 7. **Izidi** (`services/api/signals/outcomes.py`): donos po 1, 5, 20 in 60 dneh, alfa, kalibracija.
 
@@ -81,7 +77,7 @@ Ko kredit poide, LiteLLM preklopi na `cloud-deep` prek OpenAI.
 | **M1** | Podatki + portfelj | Flex in EOD svečke v bazi. SCR-08 Portfelj in SCR-05 Instrument (osnova) delujeta. Watchlista v bazi | BL-020–BL-039 |
 | **M2** | Radar | dogodki za tri poglede, triaža lokalno, ocena, SCR-02 in SCR-04, Telegram obvestila | BL-040–BL-059 |
 | **M3** | Vstopi | pravila, `dip_analyst`, SCR-03, lestvica, beleženje izidov | BL-060–BL-079 |
-| **M4** | Globoka analiza | TradingAgents adapter, ETF analitik, claude_runner, SCR-06 v živo | BL-080–BL-099 |
+| **M4** | Globoka analiza | TradingAgents adapter, ETF analitik, SCR-06 v živo | BL-080–BL-099 |
 | **M5** | Teze + uspešnost | SCR-09, SCR-10, kalibracija uteži | BL-100–BL-119 |
 | **M6** | Opcije | veriga, payoff, strateg, SCR-07 | BL-120–BL-139 |
 | **M7** | Naročila s potrditvijo | osnutki naročil, varovala, najprej paper račun | BL-140–BL-159 |

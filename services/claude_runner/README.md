@@ -1,9 +1,5 @@
-# services/claude_runner: Claude Agent SDK
+# services/claude_runner (odloženo)
 
-Majhen servis, ki izvaja naloge vloge `cloud-deep` prek **Claude Agent SDK** z naročniško prijavo (Claude Pro, ločen mesečni Agent SDK kredit).
+Claude **ni** v avtomatiziranem cevovodu (odločitev S-003). Vloga `cloud-deep` uporablja MiniMax z rezervo OpenCode Go (ADR-0004).
 
-- Vhod: opravilo iz Redis vrste (poziv, shema izhoda, kontekst).
-- Izhod: validiran JSON + poraba (tokeni, ocenjen strošek).
-- Števec kredita: ko je mesečni kredit porabljen, servis zavrne opravilo in LiteLLM fallback preusmeri na OpenAI.
-
-Ref: PLAN.md §4, ADR-0004, BL-013, BL-084.
+Ta mapa ostaja kot rezervirano mesto: če se kasneje odločiš za Claude Agent SDK z naročnino, se tu doda majhen servis z OpenAI-kompatibilnim vmesnikom, ki ga LiteLLM uporabi kot dodatnega ponudnika za `cloud-deep` (BL-084).

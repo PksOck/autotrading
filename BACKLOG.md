@@ -24,10 +24,10 @@
 | BL-010 | `services/api`: FastAPI okostje, SQLAlchemy 2, Alembic, `/health`, OpenAPI → `openapi-typescript` | ADR-0002 | done |
 | BL-011 | LiteLLM `config.yaml`: 5 vlog, proračuni, fallbacki; test klica vsake vloge (konfiguracija narejena, živi test na tvojem strežniku) | ADR-0004 | doing |
 | BL-012 | Ollama na GPU napravi: potrdi model (Qwen ~27B Q4), dodaj embed model, izmeri hitrost triaže (novic/min) | PLAN §4 | next |
-| BL-013 | Preveri Claude Pro Agent SDK kredit (višina, aktivacija) in ChatGPT prijavo za TradingAgents | PLAN §4 | next |
+| BL-013 | ~~Claude Pro Agent SDK~~ Claude ni v cevovodu (S-003). Namesto tega: MiniMax API ključ in izbira modela za `cloud-deep` | PLAN §4 | next |
 | BL-014 | CI (GitHub Actions): ruff, mypy, pytest, eslint, tsc, vitest, i18n ključi | AGENTS §4 | done |
 | BL-015 | `NOTICE` datoteka in predloga glave za prevzeto kodo | AGENTS §4 | done |
-| BL-016 | Tailscale na strežniku, HTTPS (Tailscale cert), dostop s telefona | ADR-0001 | next |
+| BL-016 | Tailscale na strežniku, HTTPS (Tailscale cert), dostop s telefona (Tailscale je že nameščen na vseh napravah) | ADR-0001 | next |
 | BL-019 | UX temelji: motion tokeni, MO-01–MO-10 primitivi, ⌘K (CMP-23), kukalo (CMP-21), EntityLink + HoverPreview, AnimatedNumber, Treemap, PulseTimeline, Funnel, RegimeStrip, Sparkline; stran `/ux` z vzorčnimi podatki | ADR-0009, DESIGN §8–§10 | done |
 | BL-160 | Uporabniški pregled M0 lupine na tvojem strežniku (docker compose up) in popravki UX | S-002 | next |
 | BL-017 | Varnostne kopije: nočni `pg_dump` v ločen disk | ADR-0001 | later |
@@ -91,7 +91,7 @@
 | BL-081 | `vendor_local`: TradingAgents bere iz naše baze | research §3.1 | later |
 | BL-082 | Worker + Redis pub/sub + SSE → CMP-12 AgentTimeline | research §3.1 | later |
 | BL-083 | ETF analitik (LangGraph) | research §5.5 | later |
-| BL-084 | `claude_runner`: Claude Agent SDK servis, števec kredita | PLAN §4 | later |
+| BL-084 | (odloženo) `claude_runner` samo, če se kasneje odločiš za Claude Agent SDK | PLAN §4 | later |
 | BL-085 | SCR-06 Analiza | DESIGN §4 | later |
 | BL-086 | Regresijski testi agentov na 5 fiksnih posnetkih | research §3.1 | later |
 | BL-087 | Znanje za agente: prepis izbranih Vibe-Trading skills v `services/agents/knowledge/` | research §3.2 | later |

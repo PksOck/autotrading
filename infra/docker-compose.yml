@@ -54,6 +54,8 @@ services:
       OPENCODE_API_KEY: ${OPENCODE_API_KEY:-}
       OPENCODE_QUICK_MODEL: ${OPENCODE_QUICK_MODEL:-openai/glm-5.2}
       OPENCODE_DEEP_MODEL: ${OPENCODE_DEEP_MODEL:-openai/kimi-k3}
+      MINIMAX_API_KEY: ${MINIMAX_API_KEY:-}
+      MINIMAX_MODEL: ${MINIMAX_MODEL:-openai/MiniMax-M3}
     volumes:
       - ./litellm/config.yaml:/app/config.yaml:ro
     extra_hosts:
