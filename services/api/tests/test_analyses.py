@@ -37,7 +37,8 @@ async def test_create_list_and_get(api: Any, monkeypatch: pytest.MonkeyPatch) ->
     assert run["symbol"] == "ASML" and run["status"] == "queued"
     assert queued == [("deep_analysis", f"analysis:{run['id']}", "arq:agents")]
 
-    assert (await client.post("/analyses", json={"symbol": "VWRA"})).status_code == 422
+    etf = await client.post("/analyses", json={"symbol": "VWRA"})
+    assert etf.status_code == 202 and etf.json()["engine"] == "etf"
     assert (await client.post("/analyses", json={"symbol": "NOPE"})).status_code == 404
 
     listed = (await client.get("/analyses", params={"symbol": "ASML"})).json()

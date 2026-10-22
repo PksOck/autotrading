@@ -94,11 +94,9 @@ async def create_analysis(
     instrument = await find_by_symbol(session, body.symbol.upper())
     if instrument is None:
         raise HTTPException(404, detail="instrument_not_found")
-    if instrument.kind == "etf":
-        raise HTTPException(422, detail="etf_analyst_pending")  # BL-083
     run = AnalysisRun(
         instrument_id=instrument.id,
-        engine="tradingagents",
+        engine="etf" if instrument.kind == "etf" else "tradingagents",
         trade_date=body.trade_date or datetime.now(UTC).date(),
         locale=settings.default_locale,
         hypothesis=body.hypothesis,

@@ -13,12 +13,13 @@ ADR-0003 določa TradingAgents kot odvisnost z zaklenjeno verzijo. v0.7.0 ni na 
 - **Številke:** tržni analitik dobi TradingAgentsov deterministični "verified snapshot" (stockstats na naših svečah). Prikazane številke na SCR-06 pridejo iz posnetka, ne iz besedila agentov.
 - **Pravilo govoric:** ocena Kupi ali Povečaj, ko so v posnetku samo govorice brez uradnega vira, dobi opozorilo `rumor_only`. Globoka analiza ne ustvari signala; oceno in poročilo vidiš, odločiš ti (ADR-0006).
 - **Živi prikaz:** delavec vsakih 0,5 s zapiše nove korake (`analysis_step`), API jih streže kot SSE (`/analyses/{id}/events`) z branjem tabele in podpira `Last-Event-ID`. Redis pub/sub iz BL-082 ni potreben: en uporabnik, en zagon naenkrat, zakasnitev 1 s je sprejemljiva, ponovni priklop pa deluje brez dodatne logike.
+- **ETF analitik (BL-083):** za `kind = etf` API ustvari zagon z `engine = "etf"`. To ni LangGraph graf, ampak preprost async cevovod v istem delavcu. Deterministična koda izračuna dejstva: profil sklada (TER, indeks, distribucija, top pozicije, sektorji), tehnično sliko s TA-Lib, utež v portfelju in prekrivanje z obstoječimi pozicijami. Prekrivanje se računa "skozi" ETF-je v portfelju po top pozicijah. Nato dva klica vlog: `cloud-quick` povzame temo in gonila, `cloud-deep` da oceno z utemeljitvijo. Profil sklada osveži tedenski cron `refresh_etf_profiles` (Yahoo `funds_data`, samo za ETF-je v portfelju in na seznamu opazovanja) v tabelo `etf_profile`. Brez profila dobi zagon opozorilo `no_profile`.
 - **Odpornost:** TradingAgentsove SQLite kontrolne točke (`checkpoint_enabled`) v `AGENTS_HOME` nadaljujejo prekinjen zagon. Zagon, shranjen ob nedosegljivem Redisu, vsakih 5 minut pobere `sweep_runs`.
 
 ## Posledice
 - Preusmeritev neposrednih klicev je vezana na notranjost v0.7.0. Test `tests/test_deep_run.py` požene cel graf s skriptiranim modelom na fiksnem posnetku in pade, če nova verzija klic premakne ali če kaj uide na Yahoo.
 - Docker gradi `agents` iz korena repozitorija (potrebuje `services/api`) in potrebuje `git`.
-- ETF analitik (BL-083) še ni narejen; API do takrat ETF zavrne z `etf_analyst_pending`.
+- Yahoo `funds_data` za UCITS kotacije (LSE, Xetra) še ni preverjen na pravem omrežju. Top pozicije pokrijejo le del sklada (`holdings_coverage`), zato je prekrivanje spodnja meja.
 
 ## Zavrnjene možnosti
 - **TradingAgents v API sliki:** podvoji velikost slike in veže API na pandas 3 in LangGraph.

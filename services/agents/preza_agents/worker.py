@@ -13,10 +13,10 @@ import logging
 import os
 import queue
 import uuid
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
-from typing import Any, ClassVar
+from typing import Any, ClassVar, cast
 
 from arq import cron
 from arq.connections import RedisSettings
@@ -25,11 +25,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from preza.config import Settings, get_settings
 from preza.db import get_sessionmaker
+from preza.llm.client import LiteLlmClient, Role
 from preza.models import AnalysisRun, AnalysisStep
 from preza.queue import AGENTS_QUEUE
 from preza_agents.deep_research import adapter
 from preza_agents.deep_research.snapshot import build_snapshot
 from preza_agents.deep_research.timeline import Step
+from preza_agents.etf_analyst.analyst import run_etf
+from preza_agents.etf_analyst.context import build_etf_facts
+from preza_agents.etf_analyst.profile import fetch_profile, store_profile, user_etfs
 
 log = logging.getLogger(__name__)
 
@@ -105,13 +109,33 @@ async def deep_analysis(
 
         steps: queue.SimpleQueue[Step] = queue.SimpleQueue()
         steps.put(Step(agent="system", kind="status", title="started"))
-        config = adapter.build_config(deep_settings(settings), run.locale)
-        run_deep = (
-            functools.partial(adapter.run_deep, graph_factory=graph_factory)
-            if graph_factory
-            else adapter.run_deep
-        )
-        task = asyncio.create_task(asyncio.to_thread(run_deep, snapshot, config, steps.put))
+        deep = deep_settings(settings)
+        extra: list[str] = []
+        work: Awaitable[adapter.DeepResult]
+        if run.engine == "etf":
+            facts = await build_etf_facts(session, run.instrument, snapshot, settings.base_currency)
+            if facts.profile is None:
+                extra.append("no_profile")
+            llm = ctx.get("llm") or LiteLlmClient(
+                settings.litellm_base_url, settings.litellm_master_key
+            )
+            work = run_etf(
+                llm,
+                facts,
+                run.locale,
+                steps.put,
+                cast(Role, deep.quick_role),
+                cast(Role, deep.deep_role),
+            )
+        else:
+            config = adapter.build_config(deep, run.locale)
+            run_deep = (
+                functools.partial(adapter.run_deep, graph_factory=graph_factory)
+                if graph_factory
+                else adapter.run_deep
+            )
+            work = asyncio.to_thread(run_deep, snapshot, config, steps.put)
+        task = asyncio.ensure_future(work)
         while not task.done():
             seq = await _flush(session, run.id, steps, seq)
             await asyncio.wait({task}, timeout=FLUSH_S)
@@ -132,7 +156,10 @@ async def deep_analysis(
         run.decision = result.decision
         run.reports = result.reports
         run.models = result.models
-        run.caveats = adapter.caveats(snapshot, result.rating)
+        found = adapter.caveats(snapshot, result.rating)
+        if run.engine == "etf":  # a fund has no company fundamentals to miss
+            found = [c for c in found if c != "no_fundamentals"]
+        run.caveats = found + extra
         run.status = "done"
         run.finished_at = _utcnow()
         await session.commit()
@@ -157,6 +184,25 @@ async def sweep_runs(ctx: dict[str, Any]) -> int:
     return len(stuck)
 
 
+async def refresh_etf_profiles(ctx: dict[str, Any]) -> int:
+    """Weekly fund profiles (TER, holdings, sectors) for held and watched ETFs."""
+    if not get_settings().yahoo_enabled:
+        return 0
+    today = _utcnow().date()
+    stored = 0
+    async with get_sessionmaker()() as session:
+        for instrument in await user_etfs(session):
+            try:
+                profile = await asyncio.to_thread(fetch_profile, instrument, today)
+            except Exception:  # one fund without data must not stop the others
+                log.warning("etf profile %s failed", instrument.symbol, exc_info=True)
+                continue
+            await store_profile(session, instrument, profile)
+            stored += 1
+        await session.commit()
+    return stored
+
+
 async def startup(ctx: dict[str, Any]) -> None:
     settings = get_settings()
     # TradingAgents' OpenAI-compatible client reads its key from this variable.
@@ -166,8 +212,11 @@ async def startup(ctx: dict[str, Any]) -> None:
 
 
 class WorkerSettings:
-    functions: ClassVar[list[Any]] = [deep_analysis, sweep_runs]
-    cron_jobs: ClassVar[list[Any]] = [cron(sweep_runs, minute=set(range(0, 60, 5)))]
+    functions: ClassVar[list[Any]] = [deep_analysis, sweep_runs, refresh_etf_profiles]
+    cron_jobs: ClassVar[list[Any]] = [
+        cron(sweep_runs, minute=set(range(0, 60, 5))),
+        cron(refresh_etf_profiles, weekday="sun", hour=5, minute=17),
+    ]
     on_startup = startup
     queue_name = AGENTS_QUEUE
     max_jobs = 1  # one GPU and two subscriptions: runs queue up instead of competing

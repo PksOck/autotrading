@@ -48,7 +48,7 @@ plugins = ["pydantic.mypy"]
 files = ["preza_agents"]
 
 [[tool.mypy.overrides]]
-module = ["tradingagents.*", "stockstats.*", "langchain_core.*"]
+module = ["tradingagents.*", "stockstats.*", "langchain_core.*", "yfinance.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

@@ -407,3 +407,31 @@ class AnalysisStep(Base):
     title: Mapped[str | None] = mapped_column(String(200))
     content: Mapped[str] = mapped_column(Text, default="")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class EtfProfile(Base):
+    """What an ETF holds, for the ETF analyst and look-through exposure (BL-083).
+
+    Weights are fractions (0.05 = 5 %). Providers publish only the top holdings, so
+    `holdings_coverage` says how much of the fund the list explains.
+    """
+
+    __tablename__ = "etf_profile"
+
+    instrument_id: Mapped[int] = mapped_column(
+        ForeignKey("instrument.id", ondelete="CASCADE"), primary_key=True
+    )
+    as_of: Mapped[date] = mapped_column(Date)
+    ter: Mapped[Decimal | None] = mapped_column(Numeric(8, 6))
+    aum: Mapped[Decimal | None] = mapped_column(Numeric(20, 2))
+    aum_currency: Mapped[str | None] = mapped_column(String(3))
+    index_name: Mapped[str | None] = mapped_column(String(200))
+    distribution: Mapped[str | None] = mapped_column(String(4))
+    holdings: Mapped[list[dict[str, Any]]] = mapped_column(JSONB, default=list)
+    holdings_coverage: Mapped[Decimal | None] = mapped_column(Numeric(6, 4))
+    sectors: Mapped[dict[str, float]] = mapped_column(JSONB, default=dict)
+    countries: Mapped[dict[str, float]] = mapped_column(JSONB, default=dict)
+    source: Mapped[str] = mapped_column(String(32))
+    fetched_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+    instrument: Mapped[Instrument] = relationship(lazy="joined")

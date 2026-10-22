@@ -18,6 +18,7 @@ from preza.models import AnalysisRun, AnalysisStep, Bar, Instrument, NewsItem
 from preza_agents import worker
 from tests.conftest import make_snapshot
 from tests.fake_llm import FakeChat, FakeClient
+from tests.fake_role_llm import FakeRoleLlm
 
 API_ROOT = Path(__file__).parents[2] / "api"
 TEST_DB = os.environ.get("TEST_DATABASE_URL")
@@ -120,3 +121,51 @@ async def test_deep_analysis_job(session, monkeypatch: pytest.MonkeyPatch) -> No
 
     # A finished run is not run again.
     assert await worker.deep_analysis({}, str(run.id)) == "done"
+
+
+async def test_etf_analysis_job(session) -> None:  # type: ignore[no-untyped-def]
+    fixture = make_snapshot()
+    instrument = Instrument(
+        symbol="SEMI",
+        name="iShares MSCI Global Semiconductors UCITS ETF (Acc)",
+        kind="etf",
+        exchange="LSEETF",
+        currency="USD",
+        source="test",
+    )
+    session.add(instrument)
+    await session.flush()
+    for bar in fixture.bars:
+        session.add(
+            Bar(
+                instrument_id=instrument.id,
+                day=bar.day,
+                open=bar.open,
+                high=bar.high,
+                low=bar.low,
+                close=bar.close,
+                volume=bar.volume,
+                source="ibkr",
+            )
+        )
+    run = AnalysisRun(
+        instrument_id=instrument.id, engine="etf", trade_date=date(2026, 10, 20), locale="sl"
+    )
+    session.add(run)
+    await session.commit()
+
+    llm = FakeRoleLlm(rating="Hold")
+    assert await worker.deep_analysis({"llm": llm}, str(run.id)) == "done"
+
+    await session.refresh(run)
+    assert run.rating == "Hold"
+    assert "no_profile" in run.caveats and "no_fundamentals" not in run.caveats
+    assert len(llm.calls) == 2
+    titles = list(
+        await session.scalars(
+            select(AnalysisStep.title)
+            .where(AnalysisStep.run_id == run.id)
+            .order_by(AnalysisStep.seq)
+        )
+    )
+    assert titles[0] == "started" and titles[-1] == "done"
