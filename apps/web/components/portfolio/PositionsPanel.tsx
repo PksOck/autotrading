@@ -64,6 +64,11 @@ export function PositionsPanel() {
         <div className="mt-1 flex flex-wrap gap-2 text-xs text-text-3">
           {portfolio.as_of && <span>{t("portfolio.asOf", { date: format.dateTime(new Date(portfolio.as_of), { dateStyle: "medium" }) })}</span>}
           <span>· {syncLine}</span>
+          {portfolio.last_sync?.status === "failed" && (
+            <span role="status" className="rounded-full bg-neg-soft px-1.5 leading-5 font-medium text-neg">
+              {t("portfolio.lastSyncFailed", { detail: portfolio.last_sync.detail ?? "" })}
+            </span>
+          )}
           {portfolio.source === "demo" && (
             <span className="rounded-full bg-warn-soft px-1.5 leading-5 font-medium text-warn">{t("provenance.demo")}</span>
           )}

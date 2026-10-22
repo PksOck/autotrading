@@ -81,3 +81,13 @@ async def test_client_gives_up_on_real_errors() -> None:
 
 async def _noop() -> None:
     return None
+
+
+async def test_network_failure_is_a_flex_error() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        raise httpx.ConnectError("unreachable")
+
+    client = FlexClient("t", "q", httpx.AsyncClient(transport=httpx.MockTransport(handler)))
+    with pytest.raises(FlexError) as info:
+        await client.fetch()
+    assert info.value.code == "network"

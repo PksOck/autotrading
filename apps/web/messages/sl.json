@@ -154,7 +154,8 @@
       "pnl": "Nerealiziran P/L",
       "today": "Danes"
     },
-    "byKind": "Po vrsti"
+    "byKind": "Po vrsti",
+    "lastSyncFailed": "Zadnja sinhronizacija ni uspela ({detail})"
   },
   "etf": {
     "overlap": "Prekrivanje s portfeljem",

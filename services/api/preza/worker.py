@@ -26,7 +26,7 @@ async def sync_flex(ctx: dict[str, Any]) -> str:
             statement = await FlexClient(
                 settings.ibkr_flex_token, settings.ibkr_flex_query_id
             ).fetch()
-        except (FlexError, OSError) as exc:
+        except FlexError as exc:
             await record_sync(session, "flex", "failed", str(exc))
             await session.commit()
             raise

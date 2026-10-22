@@ -154,7 +154,8 @@
       "pnl": "Unrealized P/L",
       "today": "Today"
     },
-    "byKind": "By type"
+    "byKind": "By type",
+    "lastSyncFailed": "Last sync failed ({detail})"
   },
   "etf": {
     "overlap": "Overlap with portfolio",

@@ -169,24 +169,25 @@ class FlexClient:
         self._base_url = base_url
         self._sleep = sleep
 
+    async def _get(self, endpoint: str, query: str) -> str:
+        """Every network or HTTP failure becomes a FlexError, so callers audit one error type."""
+        try:
+            response = await self._client.get(
+                f"{self._base_url}/{endpoint}", params={"t": self._token, "q": query, "v": "3"}
+            )
+            response.raise_for_status()
+        except httpx.HTTPError as exc:
+            raise FlexError("network", type(exc).__name__) from exc
+        return response.text
+
     async def fetch(self, attempts: int = 8, first_wait: float = 5.0) -> FlexStatement:
-        response = await self._client.get(
-            f"{self._base_url}/SendRequest",
-            params={"t": self._token, "q": self._query_id, "v": "3"},
-        )
-        response.raise_for_status()
-        reference = parse_send_request(response.text)
+        reference = parse_send_request(await self._get("SendRequest", self._query_id))
 
         wait = first_wait
         for _ in range(attempts):
             await self._sleep(wait)
-            response = await self._client.get(
-                f"{self._base_url}/GetStatement",
-                params={"t": self._token, "q": reference, "v": "3"},
-            )
-            response.raise_for_status()
             try:
-                return parse_statement(response.text)
+                return parse_statement(await self._get("GetStatement", reference))
             except FlexError as exc:
                 if exc.code not in IN_PROGRESS_CODES:
                     raise
