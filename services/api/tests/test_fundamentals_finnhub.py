@@ -30,6 +30,8 @@ async def test_fetch_parses_fixture() -> None:
     assert snap.metrics["pe"] == 31.2
     assert snap.metrics["fcf_yield"] == pytest.approx(100 / 29.4)
     assert snap.metrics["ev_ebit"] == pytest.approx(2960000 / 123000)
+    assert snap.metrics["roe_pct"] == 52.1 and snap.metrics["debt_to_equity"] == 0.28
+    assert snap.metrics["dividend_yield_pct"] == 0.95 and snap.metrics["payout_ratio_pct"] == 33.0
     pe = snap.history["pe"]
     assert len(pe) == 10 and pe == sorted(pe) and pe[0] == (date(2023, 6, 30), 30.3)
     fcf = snap.history["fcf_yield"]

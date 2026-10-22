@@ -127,7 +127,25 @@ def parse_metric(symbol: str, payload: dict[str, Any], as_of: date) -> Fundament
     return FundamentalsSnapshot(
         symbol=symbol.upper(),
         as_of=as_of,
-        metrics={"pe": pe, "ev_ebit": ev_ebit, "fcf_yield": fcf_yield},
+        metrics={
+            "pe": pe,
+            "ev_ebit": ev_ebit,
+            "fcf_yield": fcf_yield,
+            # Quality and payout (BL-088); Finnhub reports these in percent.
+            "roe_pct": _first(metric, "roeTTM", "roeRfy"),
+            "gross_margin_pct": _first(metric, "grossMarginTTM", "grossMarginAnnual"),
+            "net_margin_pct": _first(metric, "netProfitMarginTTM", "netProfitMarginAnnual"),
+            "revenue_growth_pct": _first(
+                metric, "revenueGrowthTTMYoy", "revenueGrowthQuarterlyYoy"
+            ),
+            "debt_to_equity": _first(
+                metric, "totalDebt/totalEquityQuarterly", "totalDebt/totalEquityAnnual"
+            ),
+            "dividend_yield_pct": _first(
+                metric, "dividendYieldIndicatedAnnual", "currentDividendYieldTTM"
+            ),
+            "payout_ratio_pct": _first(metric, "payoutRatioTTM", "payoutRatioAnnual"),
+        },
         history={
             "pe": as_list(pe_hist),
             "ev_ebit": as_list(ev_ebit_hist),

@@ -85,7 +85,15 @@ def uptrend_cheap() -> DataSnapshot:
         as_of=AS_OF,
         bars=bars(320, 100, 0.25, 4, 2.0),
         bars_source="ibkr",
-        fundamentals={"pe": 18.0, "ev_ebit": 14.0, "fcf_yield": 5.5},
+        fundamentals={
+            "pe": 18.0,
+            "ev_ebit": 14.0,
+            "fcf_yield": 5.5,
+            "roe_pct": 24.0,
+            "net_margin_pct": 18.0,
+            "revenue_growth_pct": 9.0,
+            "debt_to_equity": 0.4,
+        },
         fundamentals_source="finnhub",
         fundamentals_as_of=AS_OF - timedelta(days=1),
         fundamentals_history={
@@ -111,7 +119,15 @@ def downtrend_expensive() -> DataSnapshot:
         as_of=AS_OF,
         bars=bars(320, 220, -0.35, 6, 9.0),
         bars_source="ibkr",
-        fundamentals={"pe": 61.0, "ev_ebit": 48.0, "fcf_yield": 0.8},
+        fundamentals={
+            "pe": 61.0,
+            "ev_ebit": 48.0,
+            "fcf_yield": 0.8,
+            "roe_pct": 4.0,
+            "net_margin_pct": 2.0,
+            "revenue_growth_pct": -6.0,
+            "debt_to_equity": 2.6,
+        },
         fundamentals_source="finnhub",
         fundamentals_as_of=AS_OF - timedelta(days=1),
         fundamentals_history={

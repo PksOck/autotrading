@@ -9,7 +9,14 @@
     "marketCapitalization": 2925000.0,
     "enterpriseValue": 2960000.0,
     "ebitTTM": 123000.0,
-    "52WeekHigh": 237.23
+    "52WeekHigh": 237.23,
+    "roeTTM": 52.1,
+    "grossMarginTTM": 51.3,
+    "netProfitMarginTTM": 26.8,
+    "revenueGrowthTTMYoy": 12.4,
+    "totalDebt/totalEquityQuarterly": 0.28,
+    "dividendYieldIndicatedAnnual": 0.95,
+    "payoutRatioTTM": 33.0
   },
   "series": {
     "quarterly": {

@@ -86,7 +86,7 @@
 | BL-062 | `dip_analyst`: vzrok padca (trg / sektor / začasno / temeljno), `local-reason` → `cloud-quick` | research §5.3 | done |
 | BL-063 | Lestvica postopnega nakupa (ATR) | CMP-15 | done |
 | BL-064 | SCR-03 Vstopi | DESIGN §4 | done |
-| BL-066 | Preveri polja Finnhub `/stock/metric` na pravem omrežju (P/E, EV/EBIT, P/FCF serije) in dopolni zgodovino EV/EBIT | ADR-0010 | next |
+| BL-066 | Preveri polja Finnhub `/stock/metric` na pravem omrežju (P/E, EV/EBIT, P/FCF serije, ROE, marže, rast, dolg, dividende) in dopolni zgodovino EV/EBIT | ADR-0010 | next |
 | BL-067 | `dip_analyst`: primerjava s sektorskim ETF-jem (ne samo s SPY), sektor iz profila instrumenta | research §5.3 | later |
 | BL-068 | Vstopi v Telegramu: obvestilo ob novem signalu `entry` in vrstica v jutranjem povzetku | ADR-0007 | done |
 | BL-069 | Instrument (SCR-05): cona, stop in raven lestvice na grafu (CMP-07 na CMP-13) | DESIGN §4 | done |
@@ -105,7 +105,8 @@
 | BL-085 | SCR-06 Analiza | DESIGN §4 | done |
 | BL-086 | Regresijski testi agentov na 5 fiksnih posnetkih (sintetični; resnične dodaj po BL-059/066/091) | research §3.1 | done |
 | BL-087 | Znanje za agente: prepis izbranih Vibe-Trading skills v `services/agents/knowledge/` | research §3.2 | later |
-| BL-088 | Dodatna analitika: dividende/odkupi in relativno vrednotenje (multiplikatorji računa koda) | research/trading-list §2 | later |
+| BL-088 | Dodatna analitika: kakovost (ROE, marže, rast, dolg) in dividende iz Finnhuba, ocena kakovosti v kontrolni oceni | research/trading-list §2 | done |
+| BL-094 | Relativno vrednotenje proti sorodnim podjetjem (Finnhub `/stock/peers`) in odkupi delnic (sprememba števila delnic) | research/trading-list §2 | later |
 | BL-090 | Ročni predlog → standardna/globoka analiza: hipoteza uporabnika v kontekstu, izrecna potrditev/ovržba v izhodu (hitra in standardna globina že delujeta v M2) | DESIGN §11 | done |
 | BL-091 | Preveri Yahoo `funds_data` za UCITS kotacije (LSE, Xetra) na pravem omrežju: TER, top pozicije, sektorji | ADR-0011 | next |
 | BL-092 | Živi preizkus globoke analize prek LiteLLM (`cloud-quick`/`cloud-deep` z OpenCode Go/MiniMax): klici orodij, čas in cena enega zagona | ADR-0011 | next |

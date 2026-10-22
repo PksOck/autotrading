@@ -36,9 +36,9 @@ def test_valuation_against_own_history() -> None:
 
 def test_control_score_without_fundamental_history() -> None:
     control = control_score(make_snapshot())  # the fixture has metrics, no history
-    assert control.components["valuation"] is None
+    assert control.components["valuation"] is None and control.components["quality"] is None
     assert control.components["technical"] is not None and control.components["risk"] is not None
-    assert control.coverage == round(0.30 / 0.70, 3)
+    assert control.coverage == round(0.30 / 0.70, 3)  # technical and risk of four weights
     assert control.score is not None and control.implied_rating == implied_rating(control.score)
     # The bar after the run date is ignored: the fixture's look-ahead close of 1.00
     # would make the risk component -1.

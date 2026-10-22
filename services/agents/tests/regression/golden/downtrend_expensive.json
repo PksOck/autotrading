@@ -3,17 +3,19 @@
   "confidence": "low",
   "control": {
     "components": {
+      "quality": -0.5,
       "risk": -1.0,
       "technical": -0.5,
       "valuation": -1.0
     },
     "coverage": 1.0,
     "implied_rating": "Sell",
-    "score": -0.893,
+    "score": -0.714,
     "weights": {
+      "quality": 0.25,
       "risk": 0.15,
       "technical": 0.15,
-      "valuation": 0.4
+      "valuation": 0.15
     }
   },
   "rating": "Overweight",
@@ -58,11 +60,11 @@
         "# Source: finnhub, as of 2026-10-19",
         "",
         "Name: Bolt Motors",
-        "ev_ebit: 48.0",
-        "fcf_yield: 0.8"
+        "debt_to_equity: 2.6",
+        "ev_ebit: 48.0"
       ],
-      "lines": 7,
-      "sha256": "1505be834a69eb00"
+      "lines": 11,
+      "sha256": "722cb0628504a81a"
     },
     "get_global_news": {
       "head": [

@@ -6,6 +6,7 @@
   "confidence": "normal",
   "control": {
     "components": {
+      "quality": null,
       "risk": null,
       "technical": null,
       "valuation": null
@@ -14,9 +15,10 @@
     "implied_rating": null,
     "score": null,
     "weights": {
+      "quality": 0.25,
       "risk": 0.15,
       "technical": 0.15,
-      "valuation": 0.4
+      "valuation": 0.15
     }
   },
   "rating": "Hold",

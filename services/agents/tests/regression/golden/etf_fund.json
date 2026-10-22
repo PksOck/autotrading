@@ -2,6 +2,7 @@
   "caveats": [],
   "control": {
     "components": {
+      "quality": null,
       "risk": 0.453,
       "technical": 0.5,
       "valuation": null
@@ -10,9 +11,10 @@
     "implied_rating": "Overweight",
     "score": 0.477,
     "weights": {
+      "quality": 0.25,
       "risk": 0.15,
       "technical": 0.15,
-      "valuation": 0.4
+      "valuation": 0.15
     }
   },
   "rating": "Overweight",

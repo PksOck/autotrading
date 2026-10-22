@@ -1,11 +1,11 @@
 """Decision card after a deep run (BL-089, research/trading-list §3).
 
-Two halves. Code computes a control score from the snapshot (valuation against the
-company's own history, trend, risk) and from it an implied rating, the confidence and
-the size class. The model reads the finished reports and writes what it is good at:
-the conditions that would change the rating, its conviction and what changed since
-the previous run. A large gap between the agents' rating and the control score lowers
-the confidence and caps the size; it never changes the rating itself.
+Two halves. Code computes a control score from the snapshot (business quality,
+valuation against the company's own history, trend, risk) and from it an implied
+rating, the confidence and the size class. The model reads the finished reports and
+writes what it is good at: the conditions that would change the rating, its conviction
+and what changed since the previous run. A large gap between the agents' rating and
+the control score lowers the confidence and caps the size; it never changes the rating.
 """
 
 from __future__ import annotations
@@ -16,15 +16,17 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 from preza.domain.analysis import ControlScore, DecisionCard, PreviousRun
+from preza.domain.quality import quality_score
 from preza.domain.valuation import HIGHER_IS_CHEAPER, valuation_bands
 from preza.entries.indicators import compute, last
 from preza.llm.client import Llm, Role
 from preza_agents.deep_research.snapshot import DataSnapshot
 
-# The research weights fundamentals 25 % and relative value 15 %. Our only fundamental
-# input so far is valuation against own history, so it carries both until BL-088
-# brings quality metrics. "Other" (10 %) has no deterministic input yet.
-WEIGHTS = {"valuation": 0.40, "technical": 0.15, "risk": 0.15}
+# Research weights: fundamentals 25 %, relative value 15 %, technicals 15 %, risk 15 %.
+# Fundamentals are business quality (returns, margins, growth, debt); relative value is
+# valuation against the company's own history. "Other" (10 %) has no deterministic
+# input yet. Weights are renormalised over the components that have data.
+WEIGHTS = {"quality": 0.25, "valuation": 0.15, "technical": 0.15, "risk": 0.15}
 RATINGS = ("Sell", "Underweight", "Hold", "Overweight", "Buy")
 BULLISH = {"Buy", "Overweight"}
 MIN_COVERAGE = 0.3
@@ -97,7 +99,12 @@ def implied_rating(score: float) -> str:
 
 def control_score(snapshot: DataSnapshot) -> ControlScore:
     technical, risk = technical_and_risk(snapshot)
-    components = {"valuation": valuation_component(snapshot), "technical": technical, "risk": risk}
+    components = {
+        "quality": quality_score(snapshot.fundamentals or {}),
+        "valuation": valuation_component(snapshot),
+        "technical": technical,
+        "risk": risk,
+    }
     present = {k: v for k, v in components.items() if v is not None}
     total = sum(WEIGHTS.values())
     coverage = sum(WEIGHTS[k] for k in present) / total
