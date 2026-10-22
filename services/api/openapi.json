@@ -742,6 +742,140 @@
           }
         }
       }
+    },
+    "/entries": {
+      "get": {
+        "tags": [
+          "entries"
+        ],
+        "summary": "List Entries",
+        "operationId": "list_entries_entries_get",
+        "parameters": [
+          {
+            "name": "view",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/EntryView",
+              "default": "all"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EntryOut"
+                  },
+                  "title": "Response List Entries Entries Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/entries/outcomes": {
+      "get": {
+        "tags": [
+          "entries"
+        ],
+        "summary": "Outcomes",
+        "operationId": "outcomes_entries_outcomes_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/OutcomeStat"
+                  },
+                  "type": "array",
+                  "title": "Response Outcomes Entries Outcomes Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/entries/{symbol}": {
+      "get": {
+        "tags": [
+          "entries"
+        ],
+        "summary": "Entry",
+        "operationId": "entry_entries__symbol__get",
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Symbol"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntryOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/entries/refresh": {
+      "post": {
+        "tags": [
+          "entries"
+        ],
+        "summary": "Refresh",
+        "operationId": "refresh_entries_refresh_post",
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Queued"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -861,6 +995,287 @@
           "neutral"
         ],
         "title": "Direction"
+      },
+      "EntryOut": {
+        "properties": {
+          "symbol": {
+            "type": "string",
+            "title": "Symbol"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency"
+          },
+          "held": {
+            "type": "boolean",
+            "title": "Held"
+          },
+          "watched": {
+            "type": "boolean",
+            "title": "Watched"
+          },
+          "as_of": {
+            "type": "string",
+            "format": "date",
+            "title": "As Of"
+          },
+          "price": {
+            "type": "number",
+            "title": "Price"
+          },
+          "state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "State"
+          },
+          "anchor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Anchor"
+          },
+          "rules": {
+            "items": {
+              "$ref": "#/components/schemas/RuleHitOut"
+            },
+            "type": "array",
+            "title": "Rules"
+          },
+          "zone_low": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Zone Low"
+          },
+          "zone_high": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Zone High"
+          },
+          "stop": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stop"
+          },
+          "atr": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Atr"
+          },
+          "distance_atr": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Distance Atr"
+          },
+          "drawdown_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Drawdown Pct"
+          },
+          "valuation": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Valuation"
+          },
+          "ladder": {
+            "items": {
+              "$ref": "#/components/schemas/LadderLevelOut"
+            },
+            "type": "array",
+            "title": "Ladder"
+          },
+          "cause": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cause"
+          },
+          "thesis_intact": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Thesis Intact"
+          },
+          "dip_rationale": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dip Rationale"
+          },
+          "dip_evidence": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Dip Evidence"
+          },
+          "dip_model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dip Model"
+          },
+          "analyzed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Analyzed At"
+          },
+          "signal_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Signal Id"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "symbol",
+          "name",
+          "kind",
+          "currency",
+          "held",
+          "watched",
+          "as_of",
+          "price",
+          "state",
+          "anchor",
+          "rules",
+          "zone_low",
+          "zone_high",
+          "stop",
+          "atr",
+          "distance_atr",
+          "drawdown_pct",
+          "cause",
+          "thesis_intact",
+          "dip_rationale",
+          "dip_model",
+          "analyzed_at",
+          "signal_id",
+          "source",
+          "updated_at"
+        ],
+        "title": "EntryOut"
+      },
+      "EntryView": {
+        "type": "string",
+        "enum": [
+          "all",
+          "portfolio",
+          "watchlist"
+        ],
+        "title": "EntryView"
       },
       "EventOut": {
         "properties": {
@@ -1354,6 +1769,74 @@
         ],
         "title": "InstrumentOut"
       },
+      "LadderLevelOut": {
+        "properties": {
+          "price": {
+            "type": "number",
+            "title": "Price"
+          },
+          "weight": {
+            "type": "number",
+            "title": "Weight"
+          }
+        },
+        "type": "object",
+        "required": [
+          "price",
+          "weight"
+        ],
+        "title": "LadderLevelOut"
+      },
+      "OutcomeStat": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "horizon_days": {
+            "type": "integer",
+            "title": "Horizon Days"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          },
+          "hit_rate": {
+            "type": "string",
+            "title": "Hit Rate"
+          },
+          "avg_return_pct": {
+            "type": "string",
+            "title": "Avg Return Pct"
+          },
+          "avg_alpha_pct": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Alpha Pct"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "source",
+          "horizon_days",
+          "count",
+          "hit_rate",
+          "avg_return_pct",
+          "avg_alpha_pct"
+        ],
+        "title": "OutcomeStat"
+      },
       "PortfolioOut": {
         "properties": {
           "as_of": {
@@ -1772,6 +2255,27 @@
           "portfolio"
         ],
         "title": "RadarView"
+      },
+      "RuleHitOut": {
+        "properties": {
+          "rule": {
+            "type": "string",
+            "title": "Rule"
+          },
+          "values": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Values"
+          }
+        },
+        "type": "object",
+        "required": [
+          "rule",
+          "values"
+        ],
+        "title": "RuleHitOut"
       },
       "ServiceId": {
         "type": "string",

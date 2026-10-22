@@ -323,9 +323,83 @@ async def seed_radar() -> None:
     print(f"demo radar: {result.events} events, {result.signals} signals")
 
 
+DEMO_CAUSES = {"ORCL": "transient", "ASML": "sector", "NVDA": "fundamental"}
+DEMO_DIP_TEXT = {
+    "market": "Padec sledi širšemu trgu; o podjetju ni novic, ki bi spremenile dolgoročno sliko.",
+    "sector": "Padel je celoten sektor polprevodnikov; podjetje samo ni poročalo slabših številk.",
+    "transient": "Padec je povezan z enkratnim dogodkom; napoved in naročila ostajajo enaki.",
+    "fundamental": "Demo: padec spremlja trajno nižja marža, kar spreminja dolgoročno sliko.",
+}
+
+
+class DemoDip:
+    """Stands in for `dip_analyst` so SCR-03 can be demoed without a model."""
+
+    async def embed(self, texts: list[str]) -> list[list[float]]:
+        return []
+
+    async def complete_json(self, role, system, user, schema):  # type: ignore[no-untyped-def]
+        import json
+
+        from preza.entries.dip import DipCause, DipVerdict
+        from preza.llm.client import LlmResult
+
+        symbol = json.loads(user)["instrument"]["symbol"]
+        cause = DipCause(DEMO_CAUSES.get(symbol, "market"))
+        verdict = DipVerdict(
+            cause=cause,
+            thesis_intact=cause != DipCause.FUNDAMENTAL,
+            confidence=0.6,
+            rationale=DEMO_DIP_TEXT[cause.value],
+        )
+        return LlmResult(value=verdict, model="demo-dip", prompt_tokens=0, completion_tokens=0)
+
+
+def demo_fundamentals(symbol: str, today: date) -> tuple[dict[str, float], dict[str, list]]:  # type: ignore[type-arg]
+    """Five years of quarterly P/E and FCF yield around a symbol-specific median."""
+    rng = random.Random(f"fund-{symbol}")
+    pe_mid, fcf_mid = rng.uniform(18, 40), rng.uniform(2, 5)
+    history: dict[str, list] = {"pe": [], "fcf_yield": []}  # type: ignore[type-arg]
+    for q in range(20, 0, -1):
+        day = (today - timedelta(days=91 * q)).isoformat()
+        history["pe"].append([day, round(pe_mid * rng.uniform(0.75, 1.25), 2)])
+        history["fcf_yield"].append([day, round(fcf_mid * rng.uniform(0.75, 1.25), 2)])
+    cheap = rng.random() < 0.6
+    current = {
+        "pe": round(pe_mid * (0.85 if cheap else 1.15), 2),
+        "fcf_yield": round(fcf_mid * (1.15 if cheap else 0.85), 2),
+        "ev_ebit": None,
+    }
+    return current, history  # type: ignore[return-value]
+
+
+async def seed_entries() -> None:
+    from preza.entries.service import rebuild_entries
+    from preza.models import EntryCandidate, Fundamentals
+
+    async with get_sessionmaker()() as session:
+        await session.execute(delete(EntryCandidate))
+        today = date.today()
+        for symbol, *_ in STOCKS:
+            instrument = await session.scalar(select(Instrument).where(Instrument.symbol == symbol))
+            if instrument is None:
+                continue
+            current, history = demo_fundamentals(symbol, today)
+            row = await session.get(Fundamentals, instrument.id) or Fundamentals(
+                instrument_id=instrument.id
+            )
+            row.as_of, row.metrics, row.history, row.source = today, current, history, SOURCE
+            session.add(row)
+        await session.flush()
+        run = await rebuild_entries(session, DemoDip(), "sl")
+        await session.commit()
+    print(f"demo entries: {run.evaluated} evaluated, {run.active} active, {run.signals} signals")
+
+
 async def seed_all() -> None:
     await main()
     await seed_radar()
+    await seed_entries()
 
 
 if __name__ == "__main__":

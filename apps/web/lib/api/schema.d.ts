@@ -265,6 +265,74 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/entries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Entries */
+        get: operations["list_entries_entries_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/entries/outcomes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Outcomes */
+        get: operations["outcomes_entries_outcomes_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/entries/{symbol}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Entry */
+        get: operations["entry_entries__symbol__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/entries/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Refresh */
+        post: operations["refresh_entries_refresh_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -314,6 +382,80 @@ export interface components {
          * @enum {string}
          */
         Direction: "up" | "down" | "neutral";
+        /** EntryOut */
+        EntryOut: {
+            /** Symbol */
+            symbol: string;
+            /** Name */
+            name: string | null;
+            /** Kind */
+            kind: string;
+            /** Currency */
+            currency: string | null;
+            /** Held */
+            held: boolean;
+            /** Watched */
+            watched: boolean;
+            /**
+             * As Of
+             * Format: date
+             */
+            as_of: string;
+            /** Price */
+            price: number;
+            /** State */
+            state: string | null;
+            /** Anchor */
+            anchor: string | null;
+            /** Rules */
+            rules: components["schemas"]["RuleHitOut"][];
+            /** Zone Low */
+            zone_low: number | null;
+            /** Zone High */
+            zone_high: number | null;
+            /** Stop */
+            stop: number | null;
+            /** Atr */
+            atr: number | null;
+            /** Distance Atr */
+            distance_atr: number | null;
+            /** Drawdown Pct */
+            drawdown_pct: number | null;
+            /** Valuation */
+            valuation?: {
+                [key: string]: unknown;
+            };
+            /** Ladder */
+            ladder?: components["schemas"]["LadderLevelOut"][];
+            /** Cause */
+            cause: string | null;
+            /** Thesis Intact */
+            thesis_intact: boolean | null;
+            /** Dip Rationale */
+            dip_rationale: string | null;
+            /** Dip Evidence */
+            dip_evidence?: {
+                [key: string]: unknown;
+            }[];
+            /** Dip Model */
+            dip_model: string | null;
+            /** Analyzed At */
+            analyzed_at: string | null;
+            /** Signal Id */
+            signal_id: string | null;
+            /** Source */
+            source: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /**
+         * EntryView
+         * @enum {string}
+         */
+        EntryView: "all" | "portfolio" | "watchlist";
         /** EventOut */
         EventOut: {
             /** Id */
@@ -457,6 +599,30 @@ export interface components {
             ucits: boolean;
             /** Tradable For User */
             tradable_for_user: boolean;
+        };
+        /** LadderLevelOut */
+        LadderLevelOut: {
+            /** Price */
+            price: number;
+            /** Weight */
+            weight: number;
+        };
+        /** OutcomeStat */
+        OutcomeStat: {
+            /** Kind */
+            kind: string;
+            /** Source */
+            source: string;
+            /** Horizon Days */
+            horizon_days: number;
+            /** Count */
+            count: number;
+            /** Hit Rate */
+            hit_rate: string;
+            /** Avg Return Pct */
+            avg_return_pct: string;
+            /** Avg Alpha Pct */
+            avg_alpha_pct: string | null;
         };
         /** PortfolioOut */
         PortfolioOut: {
@@ -611,6 +777,15 @@ export interface components {
          * @enum {string}
          */
         RadarView: "discover" | "watchlist" | "portfolio";
+        /** RuleHitOut */
+        RuleHitOut: {
+            /** Rule */
+            rule: string;
+            /** Values */
+            values: {
+                [key: string]: number;
+            };
+        };
         /**
          * ServiceId
          * @enum {string}
@@ -1326,6 +1501,108 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_entries_entries_get: {
+        parameters: {
+            query?: {
+                view?: components["schemas"]["EntryView"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EntryOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    outcomes_entries_outcomes_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OutcomeStat"][];
+                };
+            };
+        };
+    };
+    entry_entries__symbol__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                symbol: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EntryOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    refresh_entries_refresh_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Queued"];
                 };
             };
         };

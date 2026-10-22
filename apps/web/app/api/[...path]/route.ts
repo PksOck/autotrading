@@ -6,7 +6,7 @@ import type { NextRequest } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-const ALLOWED = new Set(["system", "instruments", "portfolio", "watchlist", "radar", "signals", "proposals"]);
+const ALLOWED = new Set(["system", "instruments", "portfolio", "watchlist", "radar", "signals", "proposals", "entries"]);
 
 async function forward(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
   const { path } = await params;

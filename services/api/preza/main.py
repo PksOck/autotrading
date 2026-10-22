@@ -1,7 +1,16 @@
 from fastapi import FastAPI
 
 from preza import __version__
-from preza.routes import instruments, portfolio, proposals, radar, signals, system, watchlist
+from preza.routes import (
+    entries,
+    instruments,
+    portfolio,
+    proposals,
+    radar,
+    signals,
+    system,
+    watchlist,
+)
 
 
 def create_app() -> FastAPI:
@@ -13,6 +22,7 @@ def create_app() -> FastAPI:
     app.include_router(radar.router)
     app.include_router(signals.router)
     app.include_router(proposals.router)
+    app.include_router(entries.router)
     return app
 
 

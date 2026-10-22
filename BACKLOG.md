@@ -81,12 +81,12 @@
 
 | ID | Naloga | Ref | Status |
 |---|---|---|---|
-| BL-060 | Pravila vstopov (TA-Lib) kot konfiguracija + test enakosti s trading-signals | research §5.3 | later |
-| BL-061 | Pasovi vrednotenja (P/E, EV/EBIT, FCF yield proti 5-letni mediani), DCF prepis iz legacy | research §5.3 | later |
-| BL-062 | `dip_analyst`: vzrok padca (trg / sektor / začasno / temeljno), `local-reason` → `cloud-quick` | research §5.3 | later |
-| BL-063 | Lestvica postopnega nakupa (ATR) | CMP-15 | later |
-| BL-064 | SCR-03 Vstopi | DESIGN §4 | later |
-| BL-065 | `signal_outcome`: nočni izračun donosa po 1/5/20/60 dneh in alfe | research §5.8 | later |
+| BL-060 | Pravila vstopov (TA-Lib) kot konfiguracija + test enakosti s trading-signals | research §5.3 | done |
+| BL-061 | Pasovi vrednotenja (P/E, EV/EBIT, FCF yield proti 5-letni mediani), DCF prepis iz legacy | research §5.3 | done |
+| BL-062 | `dip_analyst`: vzrok padca (trg / sektor / začasno / temeljno), `local-reason` → `cloud-quick` | research §5.3 | done |
+| BL-063 | Lestvica postopnega nakupa (ATR) | CMP-15 | done |
+| BL-064 | SCR-03 Vstopi | DESIGN §4 | doing |
+| BL-065 | `signal_outcome`: nočni izračun donosa po 1/5/20/60 dneh in alfe | research §5.8 | done |
 
 ## M4: Globoka analiza
 

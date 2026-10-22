@@ -15,6 +15,9 @@ from preza.broker.flex import FlexClient, FlexError
 from preza.config import get_settings
 from preza.db import get_sessionmaker
 from preza.deps import get_bars_service
+from preza.domain.market import InstrumentKind
+from preza.entries.service import rebuild_entries
+from preza.fundamentals.finnhub import FinnhubFundamentals, FundamentalsUnavailableError
 from preza.ingest.edgar import parse_company_tickers
 from preza.ingest.factory import build_sources
 from preza.llm.client import LiteLlmClient, LlmUnavailableError
@@ -23,6 +26,9 @@ from preza.notify.service import morning_digest, notify_new_signals
 from preza.notify.telegram import TelegramClient
 from preza.proposals.analyze import analyze_proposal
 from preza.radar.pipeline import run_radar
+from preza.services.fundamentals import refresh_fundamentals
+from preza.services.instruments import find_by_symbol, get_or_create
+from preza.services.outcomes import compute_outcomes
 from preza.services.portfolio import record_sync, store_statement
 from preza.services.radar_views import user_symbols
 
@@ -147,6 +153,66 @@ async def analyze_proposal_job(ctx: dict[str, Any], proposal_id: str) -> str:
         return proposal.status
 
 
+async def _benchmark_bars(session: Any) -> None:
+    """The benchmark is reference data only, not something the user can trade (UCITS)."""
+    symbol = get_settings().benchmark_symbol
+    benchmark = await find_by_symbol(session, symbol)
+    if benchmark is None:
+        benchmark = await get_or_create(
+            session, symbol=symbol, source="benchmark", kind=InstrumentKind.ETF
+        )
+        benchmark.tradable_for_user = False
+    await get_bars_service().refresh(session, benchmark)
+
+
+async def entries(ctx: dict[str, Any]) -> str:
+    """Entry candidates after the US close and the bars refresh (M3)."""
+    settings = get_settings()
+    async with get_sessionmaker()() as session:
+        await _benchmark_bars(session)
+        run = await rebuild_entries(
+            session, llm_client(), settings.default_locale, settings.benchmark_symbol
+        )
+        await record_sync(
+            session,
+            "entries",
+            "failed" if run.errors and not run.evaluated else "ok",
+            f"evaluated={run.evaluated} active={run.active} analyzed={run.analyzed} "
+            f"signals={run.signals} errors={run.errors}",
+        )
+        await session.commit()
+    return f"evaluated={run.evaluated} active={run.active} signals={run.signals}"
+
+
+async def fundamentals(ctx: dict[str, Any]) -> str:
+    """Weekly valuation metrics for held and watched stocks (BL-061)."""
+    settings = get_settings()
+    if not settings.finnhub_api_key:
+        return "unconfigured"
+    client = FinnhubFundamentals(settings.finnhub_api_key)
+    ok = failed = 0
+    async with get_sessionmaker()() as session:
+        held, watched = await user_symbols(session)
+        for symbol in sorted(held | watched):
+            instrument = await find_by_symbol(session, symbol)
+            if instrument is None:
+                continue
+            try:
+                ok += await refresh_fundamentals(session, instrument, client) is not None
+            except FundamentalsUnavailableError as exc:
+                failed += 1
+                log.warning("fundamentals %s: %s", symbol, exc)
+            await session.commit()
+    return f"ok={ok} failed={failed}"
+
+
+async def outcomes(ctx: dict[str, Any]) -> str:
+    async with get_sessionmaker()() as session:
+        inserted = await compute_outcomes(session, get_settings().benchmark_symbol)
+        await session.commit()
+    return f"inserted={inserted}"
+
+
 async def _telegram_job(job: Any) -> str:
     settings = get_settings()
     if not (settings.telegram_bot_token and settings.telegram_chat_id):
@@ -178,6 +244,9 @@ class WorkerSettings:
         sweep_proposals,
         notify,
         digest,
+        entries,
+        fundamentals,
+        outcomes,
     ]
     cron_jobs: ClassVar[list[Any]] = [
         cron(sync_flex, hour={5}, minute={15}),  # after IBKR prepares the previous day (~07:15 CET)
@@ -186,5 +255,8 @@ class WorkerSettings:
         cron(sweep_proposals, minute={5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 0}),
         cron(notify, minute=set(range(0, 60, 5))),  # every 5 minutes
         cron(digest, hour={5}, minute={30}),  # 07:30 Ljubljana in summer, 06:30 in winter
+        cron(entries, weekday={0, 1, 2, 3, 4}, hour={22}, minute={0}),  # after refresh_bars
+        cron(outcomes, weekday={0, 1, 2, 3, 4}, hour={22}, minute={40}),
+        cron(fundamentals, weekday={6}, hour={6}, minute={10}),  # Sundays
     ]
     redis_settings = RedisSettings.from_dsn(get_settings().redis_url)

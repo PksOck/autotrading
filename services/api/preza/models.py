@@ -292,6 +292,8 @@ class EntryCandidate(Base):
     as_of: Mapped[date] = mapped_column(Date)
     price: Mapped[Decimal] = mapped_column(PRICE)
     rules: Mapped[list[dict[str, Any]]] = mapped_column(JSONB, default=list)
+    state: Mapped[str | None] = mapped_column(String(8))
+    anchor: Mapped[str | None] = mapped_column(String(12))
     zone_low: Mapped[Decimal | None] = mapped_column(PRICE)
     zone_high: Mapped[Decimal | None] = mapped_column(PRICE)
     stop: Mapped[Decimal | None] = mapped_column(PRICE)

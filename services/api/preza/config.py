@@ -42,6 +42,8 @@ class Settings(BaseSettings):
     radar_signal_threshold: float = Field(default=0.6, ge=0, le=1)
     radar_notify_threshold: float = Field(default=0.7, ge=0, le=1)
 
+    benchmark_symbol: str = "SPY"  # entries (move vs market) and signal outcomes (alpha)
+
 
 @lru_cache
 def get_settings() -> Settings:

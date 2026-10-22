@@ -36,6 +36,8 @@ def upgrade() -> None:
         sa.Column("as_of", sa.Date(), nullable=False),
         sa.Column("price", sa.Numeric(precision=20, scale=6), nullable=False),
         sa.Column("rules", postgresql.JSONB(astext_type=sa.Text()), nullable=False),
+        sa.Column("state", sa.String(length=8), nullable=True),
+        sa.Column("anchor", sa.String(length=12), nullable=True),
         sa.Column("zone_low", sa.Numeric(precision=20, scale=6), nullable=True),
         sa.Column("zone_high", sa.Numeric(precision=20, scale=6), nullable=True),
         sa.Column("stop", sa.Numeric(precision=20, scale=6), nullable=True),
