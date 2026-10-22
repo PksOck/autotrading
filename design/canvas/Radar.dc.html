@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<title>Preža · Radar</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.t-light{--bg:#F5F6F8;--surface:#FFFFFF;--surface-2:#EEF0F4;--border:#DCE0E6;--text:#15181E;--text-2:#454D59;--text-3:#5B6472;--accent:#3D4ED6;--accent-soft:#E7EAFB;--on-accent:#FFFFFF;--pos:#0B5E47;--pos-soft:#E2F3EC;--neg:#B9440F;--neg-soft:#FBEAE2;--warn:#8F5A00;--warn-soft:#FBF0DA;--rumor:#7139D6;--rumor-soft:#EFE7FC}
+.t-dark{--bg:#0D1015;--surface:#141920;--surface-2:#1B212A;--border:#29303B;--text:#E7EAEF;--text-2:#AFB7C3;--text-3:#8C96A5;--accent:#8E9CFF;--accent-soft:#222A4F;--on-accent:#0D1015;--pos:#4FE3B4;--pos-soft:#13302A;--neg:#E8794A;--neg-soft:#3A1F16;--warn:#E9B949;--warn-soft:#33290F;--rumor:#B99AF5;--rumor-soft:#2A2142}
+.app{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:14px;line-height:22px;min-height:100vh;display:flex;flex-wrap:wrap;align-items:stretch}
+a{color:var(--accent)}a:hover{color:var(--text)}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.nav a{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 12px;border-radius:8px;color:var(--text-2);text-decoration:none}
+.nav a:hover{background:var(--surface-2);color:var(--text)}
+.nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:500}
+.nav a.soon{color:var(--text-3)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:1px 8px;border-radius:999px;font-size:12px;line-height:20px;font-weight:500;white-space:nowrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:40px;padding:0 14px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);font:inherit;font-weight:500;cursor:pointer;text-decoration:none}
+.btn:hover{background:var(--surface-2);color:var(--text)}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn-primary:hover{background:var(--accent);color:var(--on-accent);opacity:.9}
+.iconbtn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text-2);cursor:pointer}
+.seg{min-width:44px;min-height:36px;border:0;border-radius:6px;background:transparent;color:var(--text-2);font:inherit;font-weight:500;cursor:pointer}
+.seg.on{background:var(--surface);color:var(--text);box-shadow:0 0 0 1px var(--border)}
+.search:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.lbl{font-size:12px;line-height:16px;font-weight:500;letter-spacing:.02em;color:var(--text-3)}
+.tab{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border:0;border-bottom:2px solid transparent;background:transparent;color:var(--text-2);font:inherit;font-weight:500;cursor:pointer}
+.tab.on{color:var(--accent);border-bottom-color:var(--accent)}
+.fchip{min-height:36px;padding:0 12px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--text-2);font:inherit;font-size:13px;cursor:pointer}
+.fchip.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:500}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;width:100%;padding:14px 16px;border:0;border-top:1px solid var(--border);background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.row:hover{background:var(--surface-2)}
+.row.sel{background:var(--accent-soft)}
+</style>
+</helmet>
+<div class="app {{themeClass}}">
+
+<nav aria-label="{{t.mainNav}}" style="flex: 1 1 232px; box-sizing: border-box; padding: 20px 12px; border-right: 1px solid var(--border); background: var(--surface); display: flex; flex-direction: column; gap: 4px">
+<div style="display: flex; align-items: center; gap: 10px; padding: 4px 12px 20px">
+<svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><path d="M14 3a11 11 0 1 0 11 11" fill="none" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round"></path><path d="M14 8.5a5.5 5.5 0 1 0 5.5 5.5" fill="none" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round" opacity=".55"></path><circle cx="22.5" cy="5.5" r="2.6" fill="var(--accent)"></circle></svg>
+<div style="font-size: 18px; font-weight: 600; letter-spacing: -.01em">Preža</div>
+</div>
+<div class="nav" style="display: flex; flex-direction: column; gap: 2px">
+<a href="Main.dc.html">{{t.nav.overview}}</a>
+<a class="on" href="Radar.dc.html" aria-current="page">{{t.nav.radar}}</a>
+<a href="Entries.dc.html">{{t.nav.entries}}</a>
+<a class="soon" href="#" title="{{t.soon}}">{{t.nav.signals}}</a>
+<a class="soon" href="#" title="{{t.soon}}">{{t.nav.portfolio}}</a>
+<a class="soon" href="#" title="{{t.soon}}">{{t.nav.theses}}</a>
+<a href="Options.dc.html">{{t.nav.options}}</a>
+<a class="soon" href="#" title="{{t.soon}}">{{t.nav.track}}</a>
+<a href="Settings.dc.html">{{t.nav.settings}}</a>
+</div>
+<div style="margin-top: auto; padding: 16px 12px 0; font-size: 12px; line-height: 18px; color: var(--text-3)">{{t.disclaimer}}</div>
+</nav>
+
+<div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+<header style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 12px 24px; border-bottom: 1px solid var(--border); background: var(--surface)">
+<label class="search" style="flex: 1 1 240px; display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-2); color: var(--text-3)">
+<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.6"></circle><path d="M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>
+<input type="search" aria-label="{{t.search}}" placeholder="{{t.search}}" style="flex: 1; min-width: 0; border: 0; outline: none; background: transparent; color: var(--text); font: inherit">
+<span class="mono" style="font-size: 12px; color: var(--text-3)">⌘K</span>
+</label>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 14px; font-size: 12px; color: var(--text-2)">
+<span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 50%; background: var(--pos)"></span>{{t.st.gw}}</span>
+<span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 50%; background: var(--pos)"></span>{{t.st.flex}}</span>
+<span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 50%; background: var(--pos)"></span>{{t.st.llm}}</span>
+</div>
+<span class="chip" style="background: var(--warn-soft); color: var(--warn)">{{t.sample}}</span>
+<div role="group" aria-label="{{t.langLabel}}" style="display: flex; gap: 2px; padding: 2px; border-radius: 8px; background: var(--surface-2)">
+<button class="seg {{slCls}}" aria-pressed="{{isSl}}" onClick="{{setSl}}">SL</button>
+<button class="seg {{enCls}}" aria-pressed="{{isEn}}" onClick="{{setEn}}">EN</button>
+</div>
+<button class="iconbtn" aria-label="{{t.toggleTheme}}" onClick="{{toggleTheme}}">
+<sc-if value="{{isDark}}" hint-placeholder-val="{{ false }}">
+<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="3.6" fill="none" stroke="currentColor" stroke-width="1.6"></circle><path d="M9 1.5v2M9 14.5v2M1.5 9h2M14.5 9h2M3.7 3.7l1.4 1.4M12.9 12.9l1.4 1.4M3.7 14.3l1.4-1.4M12.9 5.1l1.4-1.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>
+</sc-if>
+<sc-if value="{{isLight}}" hint-placeholder-val="{{ true }}">
+<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M15 11.2A6.5 6.5 0 0 1 6.8 3a6.5 6.5 0 1 0 8.2 8.2z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path></svg>
+</sc-if>
+</button>
+</header>
+
+<main style="padding: 28px 24px 40px; display: flex; flex-direction: column; gap: 20px; max-width: 1280px; width: 100%; box-sizing: border-box">
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px">
+<div>
+<h1 style="margin: 0; font-size: 28px; line-height: 34px; font-weight: 600">Radar</h1>
+<p style="margin: 6px 0 0; color: var(--text-2)">{{t.subtitle}}</p>
+</div>
+<div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-3)"><span style="width: 8px; height: 8px; border-radius: 50%; background: var(--pos)"></span>{{t.live}}</div>
+</div>
+
+<div role="tablist" aria-label="{{t.viewsLabel}}" style="display: flex; flex-wrap: wrap; border-bottom: 1px solid var(--border)">
+<sc-for list="{{tabs}}" as="tb" hint-placeholder-count="3">
+<button role="tab" class="tab {{tb.cls}}" aria-selected="{{tb.on}}" onClick="{{tb.pick}}">{{tb.label}} <span class="mono chip" style="background: var(--surface-2); color: var(--text-2)">{{tb.count}}</span></button>
+</sc-for>
+</div>
+<p style="margin: -8px 0 0; font-size: 13px; color: var(--text-3)">{{viewHint}}</p>
+
+<div role="group" aria-label="{{t.filtersLabel}}" style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
+<sc-for list="{{filters}}" as="f" hint-placeholder-count="6">
+<button class="fchip {{f.cls}}" aria-pressed="{{f.on}}" onClick="{{f.pick}}">{{f.label}}</button>
+</sc-for>
+<span style="margin-left: auto; font-size: 13px; color: var(--text-2)">{{t.threshold}} <span class="mono" style="color: var(--text)">{{thr}}</span></span>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+<section class="card" aria-label="{{t.listLabel}}" style="flex: 999 1 560px; min-width: 0; overflow: hidden">
+<div style="display: flex; gap: 14px; padding: 10px 16px; background: var(--surface-2)">
+<span class="lbl" style="width: 56px">{{t.time}}</span><span class="lbl" style="flex: 1">{{t.event}}</span><span class="lbl" style="width: 140px">{{t.score}}</span><span class="lbl" style="width: 84px; text-align: right">{{t.reaction}}</span>
+</div>
+<sc-for list="{{events}}" as="e" hint-placeholder-count="5">
+<button class="row {{e.cls}}" aria-pressed="{{e.on}}" onClick="{{e.pick}}">
+<span class="mono" style="width: 56px; font-size: 13px; color: var(--text-3)">{{e.time}}</span>
+<span style="flex: 1 1 280px; min-width: 0; display: flex; flex-direction: column; gap: 4px">
+<span style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+<span class="mono" style="font-weight: 500">{{e.sym}}</span>
+<span class="chip" style="background: var(--surface-2); color: var(--text-2)">{{e.type}}</span>
+<span class="chip" style="background: {{e.badgeBg}}; color: {{e.badgeFg}}; border: 1px {{e.badgeBorder}} {{e.badgeFg}}">{{e.badge}}</span>
+</span>
+<span style="color: var(--text)">{{e.title}}</span>
+<span style="font-size: 12px; color: var(--text-3)">{{e.sources}}</span>
+</span>
+<span style="width: 140px; display: flex; align-items: center; gap: 8px"><span style="flex: 1; height: 6px; border-radius: 3px; background: var(--surface-2)"><span style="display: block; height: 6px; border-radius: 3px; background: {{e.scoreColor}}; width: {{e.scorePct}}"></span></span><span class="mono" style="font-size: 13px">{{e.score}}</span></span>
+<span class="mono" style="width: 84px; text-align: right; font-size: 13px; color: {{e.reactColor}}">{{e.react}}</span>
+</button>
+</sc-for>
+</section>
+
+<aside class="card" aria-label="{{t.detailLabel}}" style="flex: 1 1 340px; min-width: 0; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+<a class="mono" href="Instrument.dc.html" style="font-size: 18px; font-weight: 500; text-decoration: none; color: var(--text)">{{d.sym}}</a>
+<span class="chip" style="background: {{d.badgeBg}}; color: {{d.badgeFg}}; border: 1px {{d.badgeBorder}} {{d.badgeFg}}">{{d.badge}}</span>
+<span style="margin-left: auto; font-size: 12px; color: var(--text-3)">{{d.time}}</span>
+</div>
+<h2 style="margin: 0; font-size: 16px; line-height: 24px; font-weight: 600">{{d.title}}</h2>
+<p style="margin: 0; color: var(--text-2)">{{d.summary}}</p>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+<div><div class="lbl">{{t.materiality}}</div><div class="mono">{{d.mat}}</div></div>
+<div><div class="lbl">{{t.novelty}}</div><div class="mono">{{d.nov}}</div></div>
+<div><div class="lbl">{{t.attention}}</div><div class="mono">{{d.att}}</div></div>
+<div><div class="lbl">{{t.reactionZ}}</div><div class="mono" style="color: {{d.reactColor}}">{{d.react}}</div></div>
+</div>
+<div style="padding: 12px; border-radius: 8px; background: var(--surface-2); font-size: 13px; line-height: 20px"><span class="lbl">{{t.escalation}}</span><div style="color: var(--text-2); margin-top: 4px">{{d.esc}}</div></div>
+<div>
+<div class="lbl" style="margin-bottom: 6px">{{t.sourcesLabel}}</div>
+<ul style="margin: 0; padding-left: 18px; font-size: 13px; line-height: 22px; color: var(--text-2)">
+<sc-for list="{{d.links}}" as="l" hint-placeholder-count="2"><li><a href="#">{{l}}</a></li></sc-for>
+</ul>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<a class="btn btn-primary" href="Analysis.dc.html">{{t.analyze}}</a>
+<button class="btn">{{t.watch}}</button>
+<button class="btn">{{t.dismiss}}</button>
+</div>
+</aside>
+</div>
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"lang":{"editor":"enum","options":["sl","en"],"default":"sl"},"$preview":{"width":1440,"height":1080}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { view: 'discover', sel: 0, filter: 'all' }; }
+  renderVals() {
+    const theme = this.state.theme || this.props.theme || 'light';
+    const lang = this.state.lang || this.props.lang || 'sl';
+    const L = lang === 'sl' ? 0 : 1;
+    const loc = lang === 'sl' ? 'sl-SI' : 'en-US';
+    const num = (n, d) => n.toLocaleString(loc, { minimumFractionDigits: d, maximumFractionDigits: d });
+    const pct = (n) => (n >= 0 ? '▲ +' : '▼ −') + num(Math.abs(n), 1) + (lang === 'sl' ? ' %' : '%');
+    const T = {
+      sl: {
+        mainNav: 'Glavni meni', soon: 'Prototip sledi (BL-005)', search: 'Išči simbol ali podjetje', sample: 'Vzorčni podatki', toggleTheme: 'Preklopi temo', langLabel: 'Jezik',
+        nav: { overview: 'Pregled', radar: 'Radar', entries: 'Vstopi', signals: 'Signali', portfolio: 'Portfelj', theses: 'Teze', options: 'Opcije', track: 'Uspešnost', settings: 'Nastavitve' },
+        st: { gw: 'IB Gateway', flex: 'Flex 06:00', llm: 'Lokalni model' },
+        disclaimer: 'Raziskovalni pripomoček, ne naložbeni nasvet. Odločitev je tvoja.',
+        subtitle: 'Dogodki iz novic, filingov in špekulacij, razvrščeni po oceni priložnosti.', live: 'Zadnja posodobitev pred 3 min',
+        viewsLabel: 'Pogledi', filtersLabel: 'Filtri', listLabel: 'Dogodki', detailLabel: 'Podrobnosti dogodka',
+        threshold: 'Prag ocene', time: 'Čas', event: 'Dogodek', score: 'Ocena', reaction: 'Odziv',
+        materiality: 'Pomembnost', novelty: 'Novost', attention: 'Pozornost', reactionZ: 'Odziv cene (z)', escalation: 'Eskalacija', sourcesLabel: 'Viri',
+        analyze: 'Analiziraj', watch: 'Spremljaj', dismiss: 'Zavrzi',
+        views: { discover: 'Novi predlogi', watchlist: 'Watchlista', portfolio: 'Portfelj' },
+        hints: { discover: 'S&P 500, Nasdaq 100 in izbrani UCITS ETF-ji, ki jih še nimaš.', watchlist: 'Instrumenti na tvoji watchlisti (9).', portfolio: 'Pozicije pri IBKR (14), sinhronizirano ob 06:00.' },
+        f: { all: 'Vsi', earnings: 'Poročila', filing: 'Filingi', insider: 'Insiderji', analyst: 'Analitiki', macro: 'Makro', rumor: 'Govorice' },
+        confirmed: 'Potrjeno', rumor: 'Nepotrjeno'
+      },
+      en: {
+        mainNav: 'Main menu', soon: 'Prototype to follow (BL-005)', search: 'Search symbol or company', sample: 'Sample data', toggleTheme: 'Toggle theme', langLabel: 'Language',
+        nav: { overview: 'Overview', radar: 'Radar', entries: 'Entries', signals: 'Signals', portfolio: 'Portfolio', theses: 'Theses', options: 'Options', track: 'Track record', settings: 'Settings' },
+        st: { gw: 'IB Gateway', flex: 'Flex 06:00', llm: 'Local model' },
+        disclaimer: 'Research aid, not investment advice. The decision is yours.',
+        subtitle: 'Events from news, filings and speculation, ranked by opportunity score.', live: 'Last update 3 min ago',
+        viewsLabel: 'Views', filtersLabel: 'Filters', listLabel: 'Events', detailLabel: 'Event details',
+        threshold: 'Score threshold', time: 'Time', event: 'Event', score: 'Score', reaction: 'Reaction',
+        materiality: 'Materiality', novelty: 'Novelty', attention: 'Attention', reactionZ: 'Price reaction (z)', escalation: 'Escalation', sourcesLabel: 'Sources',
+        analyze: 'Analyze', watch: 'Watch', dismiss: 'Dismiss',
+        views: { discover: 'Discover', watchlist: 'Watchlist', portfolio: 'Portfolio' },
+        hints: { discover: 'S&P 500, Nasdaq 100 and selected UCITS ETFs you do not hold yet.', watchlist: 'Instruments on your watchlist (9).', portfolio: 'Positions at IBKR (14), synced at 06:00.' },
+        f: { all: 'All', earnings: 'Earnings', filing: 'Filings', insider: 'Insiders', analyst: 'Analysts', macro: 'Macro', rumor: 'Rumors' },
+        confirmed: 'Confirmed', rumor: 'Unconfirmed'
+      }
+    };
+    const t = T[lang];
+    const TYPES = { earnings: ['Poročilo', 'Earnings'], filing: ['Filing', 'Filing'], insider: ['Insiderji', 'Insiders'], analyst: ['Analitik', 'Analyst'], macro: ['Makro', 'Macro'], rumor: ['Govorica', 'Rumor'], holdings: ['Sestava ETF', 'ETF holdings'], calendar: ['Koledar', 'Calendar'], sector: ['Sektor', 'Sector'] };
+    const DATA = {
+      discover: [
+        { time: '09:42', sym: 'CRWD', type: 'earnings', rumor: false, score: 0.74, react: 6.2, z: 2.8, mat: 0.8, nov: 0.9, att: 3.4,
+          title: ['Dvig letne napovedi prihodkov nad pričakovanja', 'Full-year revenue guidance raised above expectations'],
+          summary: ['Podjetje je zvišalo letno napoved. Odziv cene je močan, a pod zgodovinskim povprečjem za podobne dogodke.', 'The company raised full-year guidance. The reaction is strong but below the historical average for similar events.'],
+          src: ['4 viri · 8-K, Finnhub, PR Newswire', '4 sources · 8-K, Finnhub, PR Newswire'], esc: ['Hitra ocena (OpenCode GLM): katalizator, horizont tedni. Predlog za globoko analizo.', 'Quick review (OpenCode GLM): catalyst, horizon weeks. Suggested for deep analysis.'], links: ['SEC 8-K, 22. 10. 2026', 'PR Newswire', 'Finnhub'] },
+        { time: '09:15', sym: 'KSTL', type: 'rumor', rumor: true, score: 0.42, react: 3.1, z: 1.4, mat: 0.6, nov: 0.7, att: 8.1,
+          title: ['Ugibanja o prevzemu (fiktivno podjetje)', 'Takeover speculation (fictional company)'],
+          summary: ['Omembe na Redditu in StockTwits so 8× nad 30-dnevnim povprečjem. Uradnega vira ni. Signal ostane "spremljaj" do 8-K ali uradnega sporočila.', 'Mentions on Reddit and StockTwits are 8× the 30-day average. No official source. The signal stays "watch" until an 8-K or press release.'],
+          src: ['2 vira · Reddit, StockTwits', '2 sources · Reddit, StockTwits'], esc: ['Ni eskalirano: govorica. Samodejna nadgradnja ob uradni potrditvi.', 'Not escalated: rumor. Upgrades automatically on official confirmation.'], links: ['Reddit r/stocks', 'StockTwits $KSTL'] },
+        { time: '07:58', sym: 'SMH', type: 'holdings', rumor: false, score: 0.71, react: 1.2, z: 0.9, mat: 0.7, nov: 0.8, att: 1.6,
+          title: ['Trije največji držatelji ETF-ja so zvišali napovedi', 'Three largest ETF holdings raised guidance'],
+          summary: ['Skupna utež treh podjetij v ETF-ju je 31 %. Odziv ETF-ja je zmeren glede na spremembo napovedi.', 'The three companies make up 31% of the ETF. The ETF reaction is moderate relative to the guidance change.'],
+          src: ['3 viri · 8-K ×3', '3 sources · 8-K ×3'], esc: ['ETF analitik (lokalni model): katalizator, prekrivanje s portfeljem 4 %.', 'ETF analyst (local model): catalyst, portfolio overlap 4%.'], links: ['SEC 8-K (3)', 'VanEck holdings CSV'] },
+        { time: '08:30', sym: 'UBER', type: 'analyst', rumor: false, score: 0.55, react: 1.8, z: 1.1, mat: 0.5, nov: 0.6, att: 1.3,
+          title: ['Dve banki dvignili oceno na Kupi', 'Two banks upgraded to Buy'],
+          summary: ['Dvig ocen sledi izboljšani marži. Brez novih temeljnih podatkov.', 'Upgrades follow improved margins. No new fundamental data.'],
+          src: ['2 vira · Finnhub', '2 sources · Finnhub'], esc: ['Pod pragom za oblak. Zapisano v dnevnik.', 'Below cloud threshold. Logged.'], links: ['Finnhub: analyst actions'] },
+        { time: '22:10', sym: 'ORCL', type: 'insider', rumor: false, score: 0.61, react: -0.4, z: -0.3, mat: 0.6, nov: 0.9, att: 1.0,
+          title: ['Form 4: nakupi treh insiderjev v 10 dneh', 'Form 4: purchases by three insiders in 10 days'],
+          summary: ['Nakupi (ne opcije, ne prodaje) treh direktorjev. Cena je 12 % pod 52-tedenskim vrhom.', 'Open-market purchases (not options, not sales) by three directors. Price is 12% below the 52-week high.'],
+          src: ['3 viri · SEC Form 4', '3 sources · SEC Form 4'], esc: ['Predano modulu Vstopi: kandidat za vstopno točko.', 'Passed to Entries: entry point candidate.'], links: ['SEC Form 4 (3)'] }
+      ],
+      watchlist: [
+        { time: '10:05', sym: 'MSFT', type: 'sector', rumor: false, score: 0.48, react: -2.1, z: -1.6, mat: 0.4, nov: 0.5, att: 1.2,
+          title: ['Padec sektorja programske opreme po makro podatkih', 'Software sector drop after macro data'],
+          summary: ['Padec je skupen sektorju (IGV −2,4 %). Brez novic, specifičnih za podjetje. Cena se približuje vstopni coni.', 'The drop is sector-wide (IGV −2.4%). No company-specific news. Price approaching entry zone.'],
+          src: ['FRED, IBKR svečke', 'FRED, IBKR bars'], esc: ['Vstopi: vzrok "sektor", teza drži.', 'Entries: cause "sector", thesis intact.'], links: ['BLS CPI', 'IBKR (zakasnjeno)'] },
+        { time: '09:30', sym: 'V', type: 'filing', rumor: false, score: 0.52, react: -1.6, z: -1.2, mat: 0.6, nov: 0.4, att: 1.8,
+          title: ['Nadaljevanje regulatornega postopka (10-Q opomba)', 'Ongoing regulatory proceeding (10-Q note)'],
+          summary: ['Opomba v 10-Q navaja nadaljevanje postopka. Novost je nizka, ker je postopek znan.', 'A 10-Q note mentions the ongoing proceeding. Novelty is low because the case is known.'],
+          src: ['SEC 10-Q', 'SEC 10-Q'], esc: ['Dip analitik (lokalni model): začasno, teza drži.', 'Dip analyst (local model): transient, thesis intact.'], links: ['SEC 10-Q'] },
+        { time: '07:00', sym: 'NVDA', type: 'calendar', rumor: false, score: 0.30, react: 0.3, z: 0.2, mat: 0.3, nov: 0.2, att: 1.1,
+          title: ['Poročilo čez 6 dni', 'Earnings in 6 days'],
+          summary: ['Opomnik iz koledarja poročil.', 'Earnings calendar reminder.'],
+          src: ['Finnhub koledar', 'Finnhub calendar'], esc: ['Ni potrebno.', 'Not needed.'], links: ['Finnhub calendar'] }
+      ],
+      portfolio: [
+        { time: '08:10', sym: 'IUES', type: 'macro', rumor: false, score: 0.66, react: -1.4, z: -1.3, mat: 0.7, nov: 0.6, att: 1.1,
+          title: ['Cena nafte tretji teden pod 70 $', 'Oil price below $70 for a third week'],
+          summary: ['Trditev teze "nafta nad 70 $" ne drži več 3 tedne. Ustvarjen signal "zlom teze".', 'Thesis claim "oil above $70" has failed for 3 weeks. Thesis break signal created.'],
+          src: ['FRED, EIA', 'FRED, EIA'], esc: ['Pregled teze (Claude) je na čakalni vrsti za nedeljo.', 'Thesis review (Claude) queued for Sunday.'], links: ['FRED DCOILWTICO', 'EIA'] },
+        { time: '07:40', sym: 'ASML', type: 'filing', rumor: false, score: 0.58, react: 2.3, z: 1.7, mat: 0.6, nov: 0.7, att: 1.4,
+          title: ['Rekordna naročila pri dobavitelju v verigi', 'Record orders at a supply-chain peer'],
+          summary: ['Dobavitelj v isti verigi poroča rekordna naročila. Posreden pozitiven signal za tezo.', 'A supply-chain peer reports record orders. An indirect positive for the thesis.'],
+          src: ['2 vira', '2 sources'], esc: ['Teza: trditev "rast naročil" okrepljena.', 'Thesis: claim "order growth" strengthened.'], links: ['Sporočilo za javnost', 'Finnhub'] },
+        { time: '07:00', sym: 'AMZN', type: 'calendar', rumor: false, score: 0.40, react: 1.1, z: 0.7, mat: 0.4, nov: 0.3, att: 1.5,
+          title: ['Poročilo jutri po zaprtju', 'Earnings tomorrow after close'],
+          summary: ['6,2 % portfelja. Opcijska ideja: zaščitni put je na voljo v modulu Opcije.', '6.2% of portfolio. Options idea: a protective put is available in Options.'],
+          src: ['Finnhub koledar', 'Finnhub calendar'], esc: ['Opcijski strateg: predlog pripravljen.', 'Options strategist: proposal ready.'], links: ['Finnhub calendar'] }
+      ]
+    };
+    const view = this.state.view;
+    const filter = this.state.filter;
+    const filtered = DATA[view].filter((e) => filter === 'all' || e.type === filter || (filter === 'rumor' && e.rumor));
+    const list = filtered.length ? filtered : DATA[view];
+    const sel = Math.min(this.state.sel, list.length - 1);
+    const fmtEvent = (e, i) => ({
+      time: e.time, sym: e.sym, type: TYPES[e.type][L], title: e.title[L], sources: e.src[L],
+      badge: e.rumor ? t.rumor : t.confirmed, badgeBg: e.rumor ? 'var(--rumor-soft)' : 'var(--pos-soft)', badgeFg: e.rumor ? 'var(--rumor)' : 'var(--pos)', badgeBorder: e.rumor ? 'dashed' : 'solid',
+      score: num(e.score, 2), scorePct: Math.round(e.score * 100) + '%', scoreColor: e.score >= 0.6 ? 'var(--accent)' : 'var(--text-3)',
+      react: pct(e.react), reactColor: e.react >= 0 ? 'var(--pos)' : 'var(--neg)',
+      cls: i === sel ? 'sel' : '', on: i === sel, pick: () => this.setState({ sel: i })
+    });
+    const events = list.map(fmtEvent);
+    const e = list[sel];
+    const d = Object.assign(fmtEvent(e, sel), {
+      summary: e.summary[L], esc: e.esc[L], links: e.links,
+      mat: num(e.mat, 2), nov: num(e.nov, 2), att: num(e.att, 1) + '×', react: (e.z >= 0 ? '+' : '−') + num(Math.abs(e.z), 1) + ' σ'
+    });
+    const tabs = ['discover', 'watchlist', 'portfolio'].map((v) => ({ label: t.views[v], count: String(DATA[v].length), on: v === view, cls: v === view ? 'on' : '', pick: () => this.setState({ view: v, sel: 0, filter: 'all' }) }));
+    const filters = ['all', 'earnings', 'filing', 'insider', 'analyst', 'macro', 'rumor'].map((f) => ({ label: t.f[f], on: f === filter, cls: f === filter ? 'on' : '', pick: () => this.setState({ filter: f, sel: 0 }) }));
+    return {
+      t, tabs, filters, events, d, viewHint: t.hints[view], thr: num(0.6, 2),
+      themeClass: 't-' + theme, isDark: theme === 'dark', isLight: theme !== 'dark',
+      isSl: lang === 'sl', isEn: lang === 'en', slCls: lang === 'sl' ? 'on' : '', enCls: lang === 'en' ? 'on' : '',
+      toggleTheme: () => this.setState({ theme: theme === 'dark' ? 'light' : 'dark' }),
+      setSl: () => this.setState({ lang: 'sl' }), setEn: () => this.setState({ lang: 'en' })
+    };
+  }
+}
+</script>
+</body>
+</html>

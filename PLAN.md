@@ -18,7 +18,8 @@ Zaznati **(a) priložnost iz novic, filingov in špekulacij** ter **(b) dobro (p
 | Obvestila | Telegram bot (long polling, brez javnega webhooka) |
 | Jezik | slovenščina privzeto, preklop na angleščino (next-intl) ([ADR-0005](./docs/adr/ADR-0005-i18n-sl-privzeto.md)) |
 | Tema | svetla in temna, privzeto po sistemu |
-| Prejšnja koda | veja `legacy` (samo za branje) |
+| Prejšnja koda | veja `legacy` (samo za branje). Stari PHP projekt `trading-list` je vir izkušenj, ne predloga ([prevzem](./docs/research/2026-10-22-trading-list-prevzem.md)) |
+| Instrumenti | ameriške delnice + **UCITS ETF-ji** (EU mali vlagatelj pri IBKR ne more kupiti ameriških ETF-jev zaradi PRIIPs/KID, preveri BL-018) |
 
 ## 3. Arhitektura
 

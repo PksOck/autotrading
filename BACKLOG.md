@@ -14,7 +14,7 @@
 |---|---|---|---|
 | BL-001 | Pravila projekta: BRAND, VOICE, DESIGN, PLAN, BACKLOG, SESSIONS, AGENTS, ADR-ji | S-001 | done |
 | BL-002 | Struktura monorepa z README v vsaki mapi, veja `legacy` | S-001 | done |
-| BL-003 | UI prototipi na Artifact platnu: tokeni, SCR-01, 02, 03, 05, 06, 07, 11 | DESIGN §4 | done |
+| BL-003 | UI prototipi na Artifact platnu: tokeni, SCR-01, 02, 03, 05, 06, 07, 11 (kopija v `design/canvas/`) | DESIGN §4 | done |
 | BL-004 | Pregled prototipov z uporabnikom in popravki (komentarji na platnu) | BL-003 | next |
 | BL-005 | Prototipi še za SCR-04 Signali, SCR-08 Portfelj, SCR-09 Teze, SCR-10 Uspešnost + mobilna različica SCR-01/02 | DESIGN §4 | next |
 | BL-006 | `infra/docker-compose.yml`: postgres (Timescale + pgvector), redis, litellm, api, worker, web; `.env.example` | ADR-0001 | next |
@@ -29,6 +29,7 @@
 | BL-015 | `NOTICE` datoteka in predloga glave za prevzeto kodo | AGENTS §4 | next |
 | BL-016 | Tailscale na strežniku, HTTPS (Tailscale cert), dostop s telefona | ADR-0001 | next |
 | BL-017 | Varnostne kopije: nočni `pg_dump` v ločen disk | ADR-0001 | later |
+| BL-018 | Preveri dostopnost instrumentov za EU malega vlagatelja pri IBKR (PRIIPs/KID): ameriški ETF-ji niso na voljo, univerzum ETF = UCITS (LSE/Xetra), valute USD/EUR/GBP | PLAN §2 | next |
 
 ## M1: Podatki + portfelj
 
@@ -46,6 +47,8 @@
 | BL-029 | SCR-05 Instrument: CMP-13 PriceChart (lightweight-charts + trading-signals), ključni podatki, CMP-08 | DESIGN §4 | next |
 | BL-030 | Watchlista: dodaj/odstrani, skupine | SCR-05 | next |
 | BL-031 | Iskanje ⌘K (simbol, ime) | CMP-01 | next |
+| BL-032 | Model watchliste: raven (aktivna / zaloga), vir ideje, oznake, cena in datum dodaje, donos od dodaje, cenovna opozorila, pregledano | research/trading-list §1 | next |
+| BL-033 | (neobvezno) Uvoz idej in tez iz `trading-list` (MySQL izvoz) | research/trading-list §1 | later |
 
 ## M2: Radar
 
@@ -88,6 +91,8 @@
 | BL-085 | SCR-06 Analiza | DESIGN §4 | later |
 | BL-086 | Regresijski testi agentov na 5 fiksnih posnetkih | research §3.1 | later |
 | BL-087 | Znanje za agente: prepis izbranih Vibe-Trading skills v `services/agents/knowledge/` | research §3.2 | later |
+| BL-088 | Dodatna analitika: dividende/odkupi in relativno vrednotenje (multiplikatorji računa koda) | research/trading-list §2 | later |
+| BL-089 | Shema odločitve: sprožilci ocene (→ trditve teze), `delta_note` proti prejšnji analizi, prepričanje, razred velikosti, deterministična kontrolna ocena | research/trading-list §3 | later |
 
 ## M5: Teze + uspešnost
 

@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<title>Preža · Analiza</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.t-light{--bg:#F5F6F8;--surface:#FFFFFF;--surface-2:#EEF0F4;--border:#DCE0E6;--text:#15181E;--text-2:#454D59;--text-3:#5B6472;--accent:#3D4ED6;--accent-soft:#E7EAFB;--on-accent:#FFFFFF;--pos:#0B5E47;--pos-soft:#E2F3EC;--neg:#B9440F;--neg-soft:#FBEAE2;--warn:#8F5A00;--warn-soft:#FBF0DA;--rumor:#7139D6;--rumor-soft:#EFE7FC}
+.t-dark{--bg:#0D1015;--surface:#141920;--surface-2:#1B212A;--border:#29303B;--text:#E7EAEF;--text-2:#AFB7C3;--text-3:#8C96A5;--accent:#8E9CFF;--accent-soft:#222A4F;--on-accent:#0D1015;--pos:#4FE3B4;--pos-soft:#13302A;--neg:#E8794A;--neg-soft:#3A1F16;--warn:#E9B949;--warn-soft:#33290F;--rumor:#B99AF5;--rumor-soft:#2A2142}
+.app{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:14px;line-height:22px;min-height:100vh;display:flex;flex-wrap:wrap;align-items:stretch}
+a{color:var(--accent)}a:hover{color:var(--text)}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.nav a{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 12px;border-radius:8px;color:var(--text-2);text-decoration:none}
+.nav a:hover{background:var(--surface-2);color:var(--text)}
+.nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:500}
+.nav a.soon{color:var(--text-3)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:1px 8px;border-radius:999px;font-size:12px;line-height:20px;font-weight:500;white-space:nowrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:40px;padding:0 14px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);font:inherit;font-weight:500;cursor:pointer;text-decoration:none}
+.btn:hover{background:var(--surface-2);color:var(--text)}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn-primary:hover{background:var(--accent);color:var(--on-accent);opacity:.9}
+.iconbtn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text-2);cursor:pointer}
+.seg{min-width:44px;min-height:36px;border:0;border-radius:6px;background:transparent;color:var(--text-2);font:inherit;font-weight:500;cursor:pointer}
+.seg.on{background:var(--surface);color:var(--text);box-shadow:0 0 0 1px var(--border)}
+.search:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.lbl{font-size:12px;line-height:16px;font-weight:500;letter-spacing:.02em;color:var(--text-3)}
+.step{display:flex;gap:14px;padding:14px 0;border-top:1px solid var(--border)}
+.stepbtn{min-height:32px;padding:0 10px;border:0;border-radius:6px;background:transparent;color:var(--accent);font:inherit;font-size:13px;cursor:pointer}
+</style>
+</helmet>
+<div class="app {{themeClass}}">
+
+<nav aria-label="{{t.mainNav}}" style="flex: 1 1 232px; box-sizing: border-box; padding: 20px 12px; border-right: 1px solid var(--border); background: var(--surface); display: flex; flex-direction: column; gap: 4px">
+<div style="display: flex; align-items: center; gap: 10px; padding: 4px 12px 20px">
+<svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><path d="M14 3a11 11 0 1 0 11 11" fill="none" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round"></path><path d="M14 8.5a5.5 5.5 0 1 0 5.5 5.5" fill="none" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round" opacity=".55"></path><circle cx="22.5" cy="5.5" r="2.6" fill="var(--accent)"></circle></svg>
+<div style="font-size: 18px; font-weight: 600; letter-spacing: -.01em">Preža</div>
+</div>
+<div class="nav" style="display: flex; flex-direction: column; gap: 2px">
+<a href="Main.dc.html">{{t.nav.overview}}</a>
+<a href="Radar.dc.html">{{t.nav.radar}}</a>
+<a href="Entries.dc.html">{{t.nav.entries}}</a>
+<a class="soon" href="#" title="{{t.soon}}">{{t.nav.signals}}</a>
+<a class="soon" href="#" title="{{t.soon}}">{{t.nav.portfolio}}</a>
+<a class="soon" href="#" title="{{t.soon}}">{{t.nav.theses}}</a>
+<a href="Options.dc.html">{{t.nav.options}}</a>
+<a class="soon" href="#" title="{{t.soon}}">{{t.nav.track}}</a>
+<a href="Settings.dc.html">{{t.nav.settings}}</a>
+</div>
+<div style="margin-top: auto; padding: 16px 12px 0; font-size: 12px; line-height: 18px; color: var(--text-3)">{{t.disclaimer}}</div>
+</nav>
+
+<div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+<header style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 12px 24px; border-bottom: 1px solid var(--border); background: var(--surface)">
+<label class="search" style="flex: 1 1 240px; display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-2); color: var(--text-3)">
+<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.6"></circle><path d="M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>
+<input type="search" aria-label="{{t.search}}" placeholder="{{t.search}}" style="flex: 1; min-width: 0; border: 0; outline: none; background: transparent; color: var(--text); font: inherit">
+<span class="mono" style="font-size: 12px; color: var(--text-3)">⌘K</span>
+</label>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 14px; font-size: 12px; color: var(--text-2)">
+<span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 50%; background: var(--pos)"></span>{{t.st.gw}}</span>
+<span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 50%; background: var(--pos)"></span>{{t.st.flex}}</span>
+<span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 50%; background: var(--pos)"></span>{{t.st.llm}}</span>
+</div>
+<span class="chip" style="background: var(--warn-soft); color: var(--warn)">{{t.sample}}</span>
+<div role="group" aria-label="{{t.langLabel}}" style="display: flex; gap: 2px; padding: 2px; border-radius: 8px; background: var(--surface-2)">
+<button class="seg {{slCls}}" aria-pressed="{{isSl}}" onClick="{{setSl}}">SL</button>
+<button class="seg {{enCls}}" aria-pressed="{{isEn}}" onClick="{{setEn}}">EN</button>
+</div>
+<button class="iconbtn" aria-label="{{t.toggleTheme}}" onClick="{{toggleTheme}}">
+<sc-if value="{{isDark}}" hint-placeholder-val="{{ false }}">
+<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="3.6" fill="none" stroke="currentColor" stroke-width="1.6"></circle><path d="M9 1.5v2M9 14.5v2M1.5 9h2M14.5 9h2M3.7 3.7l1.4 1.4M12.9 12.9l1.4 1.4M3.7 14.3l1.4-1.4M12.9 5.1l1.4-1.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>
+</sc-if>
+<sc-if value="{{isLight}}" hint-placeholder-val="{{ true }}">
+<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M15 11.2A6.5 6.5 0 0 1 6.8 3a6.5 6.5 0 1 0 8.2 8.2z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path></svg>
+</sc-if>
+</button>
+</header>
+
+<main style="padding: 28px 24px 40px; display: flex; flex-direction: column; gap: 20px; max-width: 1280px; width: 100%; box-sizing: border-box">
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px">
+<div>
+<div class="lbl">{{t.kicker}}</div>
+<h1 style="margin: 4px 0 0; font-size: 28px; line-height: 34px; font-weight: 600">{{t.title}} <a class="mono" href="Instrument.dc.html" style="text-decoration: none; color: var(--text)">MSFT</a></h1>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 8px; font-size: 13px; color: var(--text-2)">
+<span class="chip" style="background: {{statusBg}}; color: {{statusFg}}">{{statusTxt}}</span>
+<span>{{t.started}}</span>
+<span class="mono">{{costTxt}}</span>
+</div>
+</div>
+<button class="btn" onClick="{{toggleDone}}">{{toggleTxt}}</button>
+</div>
+
+<div style="height: 6px; border-radius: 3px; background: var(--surface-2)" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{progressNum}}" aria-label="{{t.progress}}"><div style="height: 6px; border-radius: 3px; background: var(--accent); width: {{progress}}"></div></div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+<section class="card" aria-label="{{t.timelineLabel}}" style="flex: 999 1 560px; min-width: 0; padding: 4px 20px 8px">
+<sc-for list="{{steps}}" as="s" hint-placeholder-count="9">
+<div class="step">
+<div style="width: 28px; flex: none; display: flex; flex-direction: column; align-items: center; padding-top: 2px">
+<span style="width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; background: {{s.dotBg}}; color: {{s.dotFg}}; border: 2px {{s.dotBorder}} {{s.dotLine}}; box-sizing: border-box">{{s.icon}}</span>
+</div>
+<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+<span style="font-weight: 600; color: {{s.titleColor}}">{{s.name}}</span>
+<span class="chip" style="background: var(--surface-2); color: var(--text-2)">{{s.model}}</span>
+<span class="mono" style="margin-left: auto; font-size: 12px; color: var(--text-3)">{{s.meta}}</span>
+</div>
+<sc-if value="{{s.hasText}}" hint-placeholder-val="{{ true }}">
+<p style="margin: 0; color: var(--text-2); font-size: 13px; line-height: 20px">{{s.text}}</p>
+</sc-if>
+<sc-if value="{{s.hasDebate}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-wrap: wrap; gap: 10px">
+<div style="flex: 1 1 220px; padding: 10px 12px; border-radius: 8px; background: var(--pos-soft); font-size: 13px; line-height: 20px"><div class="lbl" style="color: var(--pos)">Bull</div><div style="color: var(--text)">{{s.bull}}</div></div>
+<div style="flex: 1 1 220px; padding: 10px 12px; border-radius: 8px; background: var(--neg-soft); font-size: 13px; line-height: 20px"><div class="lbl" style="color: var(--neg)">Bear</div><div style="color: var(--text)">{{s.bear}}</div></div>
+</div>
+</sc-if>
+</div>
+</div>
+</sc-for>
+</section>
+
+<aside style="flex: 1 1 340px; min-width: 0; display: flex; flex-direction: column; gap: 20px">
+<sc-if value="{{done}}" hint-placeholder-val="{{ false }}">
+<section class="card" style="padding: 20px; display: flex; flex-direction: column; gap: 12px; border-color: var(--accent)">
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
+<h2 style="margin: 0; font-size: 16px; line-height: 24px; font-weight: 600">{{t.decision}}</h2>
+<span class="chip" style="background: var(--pos-soft); color: var(--pos); font-size: 13px">{{t.rating}}</span>
+</div>
+<p style="margin: 0; color: var(--text-2)">{{t.summary}}</p>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+<div><div class="lbl">{{t.entry}}</div><div class="mono">{{t.entryV}}</div></div>
+<div><div class="lbl">{{t.stop}}</div><div class="mono" style="color: var(--neg)">{{t.stopV}}</div></div>
+<div><div class="lbl">{{t.target}}</div><div class="mono" style="color: var(--pos)">{{t.targetV}}</div></div>
+<div><div class="lbl">{{t.horizon}}</div><div>{{t.horizonV}}</div></div>
+<div><div class="lbl">{{t.size}}</div><div class="mono">{{t.sizeV}}</div></div>
+<div><div class="lbl">{{t.consensus}}</div><div>{{t.consensusV}}</div></div>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<button class="btn btn-primary">{{t.accept}}</button>
+<a class="btn" href="Options.dc.html">{{t.optionsIdea}}</a>
+<button class="btn">{{t.dismiss}}</button>
+</div>
+</section>
+</sc-if>
+<sc-if value="{{running}}" hint-placeholder-val="{{ true }}">
+<section class="card" style="padding: 20px; display: flex; flex-direction: column; gap: 8px">
+<h2 style="margin: 0; font-size: 16px; line-height: 24px; font-weight: 600">{{t.decision}}</h2>
+<p style="margin: 0; color: var(--text-3)">{{t.pending}}</p>
+</section>
+</sc-if>
+<section class="card" style="padding: 16px 20px; display: flex; flex-direction: column; gap: 10px">
+<h2 style="margin: 0; font-size: 16px; line-height: 24px; font-weight: 600">{{t.context}}</h2>
+<sc-for list="{{ctx}}" as="c" hint-placeholder-count="4">
+<div style="display: flex; gap: 12px; font-size: 13px; line-height: 20px"><span class="lbl" style="width: 96px; flex: none; padding-top: 2px">{{c.l}}</span><span style="color: var(--text-2)">{{c.v}}</span></div>
+</sc-for>
+</section>
+<section class="card" style="padding: 16px 20px; display: flex; flex-direction: column; gap: 8px">
+<h2 style="margin: 0; font-size: 16px; line-height: 24px; font-weight: 600">{{t.models}}</h2>
+<sc-for list="{{models}}" as="m" hint-placeholder-count="3">
+<div style="display: flex; align-items: center; gap: 10px; font-size: 13px"><span style="flex: 1">{{m.role}}</span><span class="chip" style="background: var(--surface-2); color: var(--text-2)">{{m.model}}</span><span class="mono" style="width: 64px; text-align: right; color: var(--text-3)">{{m.cost}}</span></div>
+</sc-for>
+</section>
+</aside>
+</div>
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"lang":{"editor":"enum","options":["sl","en"],"default":"sl"},"$preview":{"width":1440,"height":1180}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { done: false }; }
+  renderVals() {
+    const theme = this.state.theme || this.props.theme || 'light';
+    const lang = this.state.lang || this.props.lang || 'sl';
+    const L = lang === 'sl' ? 0 : 1;
+    const done = this.state.done;
+    const T = {
+      sl: {
+        mainNav: 'Glavni meni', soon: 'Prototip sledi (BL-005)', search: 'Išči simbol ali podjetje', sample: 'Vzorčni podatki', toggleTheme: 'Preklopi temo', langLabel: 'Jezik',
+        nav: { overview: 'Pregled', radar: 'Radar', entries: 'Vstopi', signals: 'Signali', portfolio: 'Portfelj', theses: 'Teze', options: 'Opcije', track: 'Uspešnost', settings: 'Nastavitve' },
+        st: { gw: 'IB Gateway', flex: 'Flex 06:00', llm: 'Lokalni model' },
+        disclaimer: 'Raziskovalni pripomoček, ne naložbeni nasvet. Odločitev je tvoja.',
+        kicker: 'SCR-06 · agentski zagon', title: 'Analiza', started: 'začeto 11:18 · sprožilec: vstopni signal',
+        running: 'Teče', finished: 'Končano', showDone: 'Prikaži končano stanje', showRunning: 'Prikaži stanje med izvajanjem',
+        progress: 'Napredek analize', timelineLabel: 'Koraki agentov', decision: 'Končna odločitev', pending: 'Odločitev bo na voljo, ko Portfolio Manager zaključi. Med čakanjem lahko zapustiš stran, obvestilo pride v Telegram.',
+        rating: 'Povečaj', summary: 'Dokup v treh delih v coni 402–410 $. Teza o rasti oblaka drži, padec je sektorski. Velikost omejena na ciljno težo 11 %.',
+        entry: 'Vstop', entryV: '402–410 $', stop: 'Stop', stopV: '371 $', target: 'Cilj', targetV: '470 $', horizon: 'Horizont', horizonV: '6–12 mesecev', size: 'Velikost', sizeV: '+1,2 % portfelja', consensus: 'Soglasje', consensusV: '2/2 modela: Povečaj',
+        accept: 'Sprejmi signal', optionsIdea: 'Opcijska ideja', dismiss: 'Zavrzi',
+        context: 'Kontekst', models: 'Modeli in strošek'
+      },
+      en: {
+        mainNav: 'Main menu', soon: 'Prototype to follow (BL-005)', search: 'Search symbol or company', sample: 'Sample data', toggleTheme: 'Toggle theme', langLabel: 'Language',
+        nav: { overview: 'Overview', radar: 'Radar', entries: 'Entries', signals: 'Signals', portfolio: 'Portfolio', theses: 'Theses', options: 'Options', track: 'Track record', settings: 'Settings' },
+        st: { gw: 'IB Gateway', flex: 'Flex 06:00', llm: 'Local model' },
+        disclaimer: 'Research aid, not investment advice. The decision is yours.',
+        kicker: 'SCR-06 · agent run', title: 'Analysis', started: 'started 11:18 AM · trigger: entry signal',
+        running: 'Running', finished: 'Finished', showDone: 'Show finished state', showRunning: 'Show running state',
+        progress: 'Analysis progress', timelineLabel: 'Agent steps', decision: 'Final decision', pending: 'The decision appears when the Portfolio Manager finishes. You can leave this page; a Telegram notification will follow.',
+        rating: 'Overweight', summary: 'Add in three tranches in the $402–410 zone. The cloud growth thesis holds; the drop is sector-wide. Size capped at an 11% target weight.',
+        entry: 'Entry', entryV: '$402–410', stop: 'Stop', stopV: '$371', target: 'Target', targetV: '$470', horizon: 'Horizon', horizonV: '6–12 months', size: 'Size', sizeV: '+1.2% of portfolio', consensus: 'Consensus', consensusV: '2/2 models: Overweight',
+        accept: 'Accept signal', optionsIdea: 'Options idea', dismiss: 'Dismiss',
+        context: 'Context', models: 'Models and cost'
+      }
+    };
+    const t = T[lang];
+    const STEPS = [
+      { n: ['Tehnični analitik', 'Market analyst'], m: 'OpenCode GLM', meta: '18 s · 6,1k', txt: ['Cena 0,8 % nad SMA200, RSI 37, volumen ob padcu 1,3× povprečja. Podpora pri 398 $.', 'Price 0.8% above SMA200, RSI 37, volume on the drop 1.3× average. Support at $398.'] },
+      { n: ['Fundamentalni analitik', 'Fundamentals analyst'], m: 'OpenCode GLM', meta: '24 s · 9,4k', txt: ['10-Q: rast oblaka 29 %, operativna marža 45 %. P/E pod 5-letno mediano.', '10-Q: cloud growth 29%, operating margin 45%. P/E below its 5-year median.'] },
+      { n: ['Analitik novic', 'News analyst'], m: 'OpenCode GLM', meta: '15 s · 5,2k', txt: ['Ni novic, specifičnih za podjetje. Padec je skupen sektorju po makro podatkih.', 'No company-specific news. The drop is sector-wide after macro data.'] },
+      { n: ['Analitik sentimenta', 'Sentiment analyst'], m: 'Qwen 27B · lokalno', meta: '31 s · 4,8k', txt: ['Sentiment nevtralen do rahlo negativen, brez nenavadne pozornosti.', 'Sentiment neutral to slightly negative, no unusual attention.'] },
+      { n: ['Debata: bull in bear', 'Debate: bull vs bear'], m: 'OpenCode Kimi', meta: '42 s · 12,3k', debate: true },
+      { n: ['Research manager', 'Research manager'], m: 'Claude', meta: '21 s · 8,8k', txt: ['Prevlada argumentov bull: padec ni posledica podjetja. Načrt: postopen dokup, tveganje AI investicij spremljati v tezi.', 'Bull case prevails: the drop is not company-driven. Plan: scaled add; track AI capex risk in the thesis.'] },
+      { n: ['Trader', 'Trader'], m: 'OpenCode GLM', meta: '9 s · 3,1k', txt: ['Predlog: 3 limit ravni (408, 401, 394 $), stop 371 $, cilj 470 $.', 'Proposal: 3 limit levels ($408, $401, $394), stop $371, target $470.'] },
+      { n: ['Ocena tveganja (3 perspektive)', 'Risk review (3 views)'], m: 'OpenCode GLM', meta: '27 s · 7,7k', txt: ['Konservativna: omeji na ciljno težo 11 %. Agresivna in nevtralna se strinjata z načrtom.', 'Conservative: cap at 11% target weight. Aggressive and neutral agree with the plan.'] },
+      { n: ['Portfolio manager', 'Portfolio manager'], m: 'Claude', meta: '19 s · 6,4k', txt: ['Ocena: Povečaj. Velikost +1,2 % portfelja.', 'Rating: Overweight. Size +1.2% of portfolio.'] }
+    ];
+    const runningAt = 4;
+    const steps = STEPS.map((s, i) => {
+      const state = done || i < runningAt ? 'done' : i === runningAt ? 'run' : 'wait';
+      return {
+        name: s.n[L], model: s.m, meta: state === 'wait' ? '—' : state === 'run' ? (lang === 'sl' ? 'teče…' : 'running…') : s.meta.replace(/,/g, lang === 'sl' ? ',' : '.'),
+        icon: state === 'done' ? '✓' : state === 'run' ? '' : '',
+        dotBg: state === 'done' ? 'var(--accent)' : 'var(--surface)', dotFg: 'var(--on-accent)', dotBorder: state === 'run' ? 'dashed' : 'solid', dotLine: state === 'wait' ? 'var(--border)' : 'var(--accent)',
+        titleColor: state === 'wait' ? 'var(--text-3)' : 'var(--text)',
+        hasText: !!s.txt && state === 'done', text: s.txt ? s.txt[L] : '',
+        hasDebate: !!s.debate && state !== 'wait',
+        bull: lang === 'sl' ? 'Sektorski padec brez spremembe ocen. Vrednotenje pod mediano, rast oblaka pospešuje.' : 'Sector-wide drop with no estimate cuts. Valuation below median; cloud growth accelerating.',
+        bear: lang === 'sl' ? 'AI kapitalski izdatki rastejo hitreje od prihodkov. Če Azure pade pod 25 %, vrednotenje ni poceni.' : 'AI capex is growing faster than revenue. If Azure drops below 25%, the valuation is not cheap.'
+      };
+    });
+    const ctx = [
+      { l: lang === 'sl' ? 'Sprožilec' : 'Trigger', v: lang === 'sl' ? 'Vstopni signal, cona 402–410 $, vzrok "sektor"' : 'Entry signal, zone $402–410, cause "sector"' },
+      { l: lang === 'sl' ? 'Portfelj' : 'Portfolio', v: lang === 'sl' ? 'MSFT 9,8 % · gotovina 6,4 %' : 'MSFT 9.8% · cash 6.4%' },
+      { l: lang === 'sl' ? 'Teza' : 'Thesis', v: lang === 'sl' ? '3 trditve: 2 drži, 1 šibi' : '3 claims: 2 hold, 1 weakening' },
+      { l: lang === 'sl' ? 'Podatki' : 'Data', v: lang === 'sl' ? 'lastna baza (vendor_local) · do 22. 10. 15:45' : 'own database (vendor_local) · up to Oct 22, 3:45 PM' }
+    ];
+    const models = [
+      { role: lang === 'sl' ? 'Analitiki, debata, trader' : 'Analysts, debate, trader', model: 'OpenCode', cost: done ? '0,18 $' : '0,11 $' },
+      { role: lang === 'sl' ? 'Sentiment' : 'Sentiment', model: 'Qwen 27B', cost: '0,00 $' },
+      { role: lang === 'sl' ? 'Managerji' : 'Managers', model: 'Claude (Agent SDK)', cost: done ? '0,43 $' : '0,00 $' }
+    ].map((m) => Object.assign(m, { cost: lang === 'sl' ? m.cost : '$' + m.cost.replace(' $', '').replace(',', '.') }));
+    return {
+      t, steps, ctx, models, done, running: !done,
+      statusTxt: done ? t.finished : t.running + ' · 5/9', statusBg: done ? 'var(--pos-soft)' : 'var(--accent-soft)', statusFg: done ? 'var(--pos)' : 'var(--accent)',
+      costTxt: done ? (lang === 'sl' ? '2,4 min · 64k tokenov · 0,61 $' : '2.4 min · 64k tokens · $0.61') : (lang === 'sl' ? '1,7 min · 38k tokenov · 0,11 $' : '1.7 min · 38k tokens · $0.11'),
+      progress: done ? '100%' : '50%', progressNum: done ? 100 : 50,
+      toggleTxt: done ? t.showRunning : t.showDone, toggleDone: () => this.setState({ done: !done }),
+      themeClass: 't-' + theme, isDark: theme === 'dark', isLight: theme !== 'dark',
+      isSl: lang === 'sl', isEn: lang === 'en', slCls: lang === 'sl' ? 'on' : '', enCls: lang === 'en' ? 'on' : '',
+      toggleTheme: () => this.setState({ theme: theme === 'dark' ? 'light' : 'dark' }),
+      setSl: () => this.setState({ lang: 'sl' }), setEn: () => this.setState({ lang: 'en' })
+    };
+  }
+}
+</script>
+</body>
+</html>

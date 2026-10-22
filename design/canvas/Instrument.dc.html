@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="sl">
+<head>
+<meta charset="utf-8">
+<title>Preža · Instrument</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.t-light{--bg:#F5F6F8;--surface:#FFFFFF;--surface-2:#EEF0F4;--border:#DCE0E6;--text:#15181E;--text-2:#454D59;--text-3:#5B6472;--accent:#3D4ED6;--accent-soft:#E7EAFB;--on-accent:#FFFFFF;--pos:#0B5E47;--pos-soft:#E2F3EC;--neg:#B9440F;--neg-soft:#FBEAE2;--warn:#8F5A00;--warn-soft:#FBF0DA;--rumor:#7139D6;--rumor-soft:#EFE7FC}
+.t-dark{--bg:#0D1015;--surface:#141920;--surface-2:#1B212A;--border:#29303B;--text:#E7EAEF;--text-2:#AFB7C3;--text-3:#8C96A5;--accent:#8E9CFF;--accent-soft:#222A4F;--on-accent:#0D1015;--pos:#4FE3B4;--pos-soft:#13302A;--neg:#E8794A;--neg-soft:#3A1F16;--warn:#E9B949;--warn-soft:#33290F;--rumor:#B99AF5;--rumor-soft:#2A2142}
+.app{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:14px;line-height:22px;min-height:100vh;display:flex;flex-wrap:wrap;align-items:stretch}
+a{color:var(--accent)}a:hover{color:var(--text)}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.nav a{display:flex;align-items:center;gap:10px;min-height:44px;padding:0 12px;border-radius:8px;color:var(--text-2);text-decoration:none}
+.nav a:hover{background:var(--surface-2);color:var(--text)}
+.nav a.on{background:var(--accent-soft);color:var(--accent);font-weight:500}
+.nav a.soon{color:var(--text-3)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:1px 8px;border-radius:999px;font-size:12px;line-height:20px;font-weight:500;white-space:nowrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:40px;padding:0 14px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);font:inherit;font-weight:500;cursor:pointer;text-decoration:none}
+.btn:hover{background:var(--surface-2);color:var(--text)}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn-primary:hover{background:var(--accent);color:var(--on-accent);opacity:.9}
+.iconbtn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text-2);cursor:pointer}
+.seg{min-width:44px;min-height:36px;border:0;border-radius:6px;background:transparent;color:var(--text-2);font:inherit;font-weight:500;cursor:pointer}
+.seg.on{background:var(--surface);color:var(--text);box-shadow:0 0 0 1px var(--border)}
+.search:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.lbl{font-size:12px;line-height:16px;font-weight:500;letter-spacing:.02em;color:var(--text-3)}
+</style>
+</helmet>
+<div class="app {{themeClass}}">
+
+<nav aria-label="{{t.mainNav}}" style="flex: 1 1 232px; box-sizing: border-box; padding: 20px 12px; border-right: 1px solid var(--border); background: var(--surface); display: flex; flex-direction: column; gap: 4px">
+<div style="display: flex; align-items: center; gap: 10px; padding: 4px 12px 20px">
+<svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><path d="M14 3a11 11 0 1 0 11 11" fill="none" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round"></path><path d="M14 8.5a5.5 5.5 0 1 0 5.5 5.5" fill="none" stroke="var(--accent)" stroke-width="2.4" stroke-linecap="round" opacity=".55"></path><circle cx="22.5" cy="5.5" r="2.6" fill="var(--accent)"></circle></svg>
+<div style="font-size: 18px; font-weight: 600; letter-spacing: -.01em">Preža</div>
+</div>
+<div class="nav" style="display: flex; flex-direction: column; gap: 2px">
+<a href="Main.dc.html">{{t.nav.overview}}</a>
+<a href="Radar.dc.html">{{t.nav.radar}}</a>
+<a href="Entries.dc.html">{{t.nav.entries}}</a>
+<a class="soon" href="#" title="{{t.soon}}">{{t.nav.signals}}</a>
+<a class="soon" href="#" title="{{t.soon}}">{{t.nav.portfolio}}</a>
+<a class="soon" href="#" title="{{t.soon}}">{{t.nav.theses}}</a>
+<a href="Options.dc.html">{{t.nav.options}}</a>
+<a class="soon" href="#" title="{{t.soon}}">{{t.nav.track}}</a>
+<a href="Settings.dc.html">{{t.nav.settings}}</a>
+</div>
+<div style="margin-top: auto; padding: 16px 12px 0; font-size: 12px; line-height: 18px; color: var(--text-3)">{{t.disclaimer}}</div>
+</nav>
+
+<div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column">
+<header style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 12px 24px; border-bottom: 1px solid var(--border); background: var(--surface)">
+<label class="search" style="flex: 1 1 240px; display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-2); color: var(--text-3)">
+<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.6"></circle><path d="M11 11l3.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>
+<input type="search" aria-label="{{t.search}}" placeholder="{{t.search}}" style="flex: 1; min-width: 0; border: 0; outline: none; background: transparent; color: var(--text); font: inherit">
+<span class="mono" style="font-size: 12px; color: var(--text-3)">⌘K</span>
+</label>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 14px; font-size: 12px; color: var(--text-2)">
+<span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 50%; background: var(--pos)"></span>{{t.st.gw}}</span>
+<span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 50%; background: var(--pos)"></span>{{t.st.flex}}</span>
+<span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 50%; background: var(--pos)"></span>{{t.st.llm}}</span>
+</div>
+<span class="chip" style="background: var(--warn-soft); color: var(--warn)">{{t.sample}}</span>
+<div role="group" aria-label="{{t.langLabel}}" style="display: flex; gap: 2px; padding: 2px; border-radius: 8px; background: var(--surface-2)">
+<button class="seg {{slCls}}" aria-pressed="{{isSl}}" onClick="{{setSl}}">SL</button>
+<button class="seg {{enCls}}" aria-pressed="{{isEn}}" onClick="{{setEn}}">EN</button>
+</div>
+<button class="iconbtn" aria-label="{{t.toggleTheme}}" onClick="{{toggleTheme}}">
+<sc-if value="{{isDark}}" hint-placeholder-val="{{ false }}">
+<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="3.6" fill="none" stroke="currentColor" stroke-width="1.6"></circle><path d="M9 1.5v2M9 14.5v2M1.5 9h2M14.5 9h2M3.7 3.7l1.4 1.4M12.9 12.9l1.4 1.4M3.7 14.3l1.4-1.4M12.9 5.1l1.4-1.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>
+</sc-if>
+<sc-if value="{{isLight}}" hint-placeholder-val="{{ true }}">
+<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M15 11.2A6.5 6.5 0 0 1 6.8 3a6.5 6.5 0 1 0 8.2 8.2z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path></svg>
+</sc-if>
+</button>
+</header>
+
+<main style="padding: 28px 24px 40px; display: flex; flex-direction: column; gap: 20px; max-width: 1280px; width: 100%; box-sizing: border-box">
+<div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px">
+<div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+<h1 class="mono" style="margin: 0; font-size: 28px; line-height: 34px; font-weight: 500">MSFT</h1>
+<span style="color: var(--text-2)">Microsoft Corp. · NASDAQ</span>
+<span class="chip" style="background: var(--surface-2); color: var(--text-2)">{{t.stock}}</span>
+<span class="chip" style="background: var(--accent-soft); color: var(--accent)">{{t.onWatch}}</span>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px; margin-top: 8px">
+<span class="mono" style="font-size: 24px; line-height: 30px; font-weight: 500">{{price}}</span>
+<span class="mono" style="color: var(--neg)">{{chg}}</span>
+<span style="font-size: 12px; color: var(--text-3)">{{t.prov}}</span>
+</div>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<a class="btn btn-primary" href="Analysis.dc.html">{{t.analyze}}</a>
+<a class="btn" href="Options.dc.html">{{t.options}}</a>
+<button class="btn">{{t.unwatch}}</button>
+</div>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+<div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 20px">
+<section class="card" style="padding: 16px 20px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px">
+<div role="group" aria-label="{{t.rangeLabel}}" style="display: flex; gap: 2px; padding: 2px; border-radius: 8px; background: var(--surface-2)">
+<sc-for list="{{ranges}}" as="r" hint-placeholder-count="4">
+<button class="seg {{r.cls}}" aria-pressed="{{r.on}}" onClick="{{r.pick}}">{{r.label}}</button>
+</sc-for>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 14px; margin-left: auto; font-size: 12px; color: var(--text-2)">
+<span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 14px; height: 2px; background: var(--text)"></span>{{t.price}}</span>
+<span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 14px; height: 2px; background: var(--warn)"></span>SMA200</span>
+<span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 14px; height: 10px; background: var(--accent-soft); border: 1px solid var(--accent)"></span>{{t.zone}}</span>
+<span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 14px; border-top: 2px dashed var(--neg)"></span>{{t.stop}}</span>
+<span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 8px; height: 8px; border-radius: 50%; background: var(--accent)"></span>{{t.events}}</span>
+</div>
+</div>
+<svg role="img" aria-label="{{chartAlt}}" viewBox="0 0 800 300" preserveAspectRatio="none" style="width: 100%; height: 300px; display: block">
+<rect x="0" y="{{zoneY}}" width="800" height="{{zoneH}}" fill="var(--accent-soft)"></rect>
+<line x1="0" x2="800" y1="{{zoneY}}" y2="{{zoneY}}" stroke="var(--accent)" stroke-width="1" vector-effect="non-scaling-stroke"></line>
+<line x1="0" x2="800" y1="{{stopY}}" y2="{{stopY}}" stroke="var(--neg)" stroke-width="1.5" stroke-dasharray="6 5" vector-effect="non-scaling-stroke"></line>
+<line x1="0" x2="800" y1="75" y2="75" stroke="var(--border)" stroke-width="1" vector-effect="non-scaling-stroke"></line>
+<line x1="0" x2="800" y1="150" y2="150" stroke="var(--border)" stroke-width="1" vector-effect="non-scaling-stroke"></line>
+<line x1="0" x2="800" y1="225" y2="225" stroke="var(--border)" stroke-width="1" vector-effect="non-scaling-stroke"></line>
+<path d="{{smaPath}}" fill="none" stroke="var(--warn)" stroke-width="2" vector-effect="non-scaling-stroke"></path>
+<path d="{{pricePath}}" fill="none" stroke="var(--text)" stroke-width="2" vector-effect="non-scaling-stroke"></path>
+<circle cx="{{m1x}}" cy="{{m1y}}" r="6" fill="var(--accent)" stroke="var(--surface)" stroke-width="2"></circle>
+<circle cx="{{m2x}}" cy="{{m2y}}" r="6" fill="var(--accent)" stroke="var(--surface)" stroke-width="2"></circle>
+<circle cx="{{m3x}}" cy="{{m3y}}" r="6" fill="var(--rumor)" stroke="var(--surface)" stroke-width="2"></circle>
+</svg>
+<div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-3)" class="mono"><span>{{axisFrom}}</span><span>{{axisTo}}</span></div>
+</section>
+
+<section class="card" style="padding: 16px 20px">
+<h2 style="margin: 0 0 12px; font-size: 16px; line-height: 24px; font-weight: 600">{{t.keyData}}</h2>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px">
+<sc-for list="{{facts}}" as="f" hint-placeholder-count="8">
+<div><div class="lbl">{{f.l}}</div><div class="mono" style="font-size: 16px; line-height: 24px">{{f.v}}</div><div style="font-size: 12px; color: var(--text-3)">{{f.n}}</div></div>
+</sc-for>
+</div>
+<div style="margin-top: 12px; font-size: 12px; color: var(--text-3)">{{t.factsProv}}</div>
+</section>
+
+<section class="card" style="padding: 16px 20px">
+<h2 style="margin: 0 0 8px; font-size: 16px; line-height: 24px; font-weight: 600">{{t.timeline}}</h2>
+<sc-for list="{{timeline}}" as="e" hint-placeholder-count="4">
+<div style="display: flex; gap: 12px; padding: 10px 0; border-top: 1px solid var(--border); font-size: 13px">
+<span class="mono" style="width: 84px; flex: none; color: var(--text-3)">{{e.date}}</span>
+<span class="chip" style="background: {{e.bg}}; color: {{e.fg}}">{{e.kind}}</span>
+<span style="color: var(--text-2)">{{e.text}}</span>
+</div>
+</sc-for>
+</section>
+</div>
+
+<aside style="flex: 1 1 340px; min-width: 0; display: flex; flex-direction: column; gap: 20px">
+<section class="card" style="padding: 16px 20px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
+<h2 style="margin: 0; font-size: 16px; line-height: 24px; font-weight: 600">{{t.lastAnalysis}}</h2>
+<span class="chip" style="background: var(--pos-soft); color: var(--pos)">{{t.rating}}</span>
+</div>
+<p style="margin: 0; color: var(--text-2)">{{t.summary}}</p>
+<div style="display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px">
+<span><span class="lbl">{{t.target}}</span> <span class="mono">{{target}}</span></span>
+<span><span class="lbl">{{t.horizon}}</span> {{t.horizonV}}</span>
+</div>
+<div style="font-size: 12px; color: var(--text-3)">{{t.runMeta}}</div>
+<a href="Analysis.dc.html" style="font-size: 13px">{{t.openRun}}</a>
+</section>
+
+<section class="card" style="padding: 16px 20px; display: flex; flex-direction: column; gap: 4px">
+<div style="display: flex; align-items: center; justify-content: space-between">
+<h2 style="margin: 0; font-size: 16px; line-height: 24px; font-weight: 600">{{t.thesis}}</h2>
+<span style="font-size: 12px; color: var(--text-3)">{{t.reviewed}}</span>
+</div>
+<sc-for list="{{claims}}" as="c" hint-placeholder-count="3">
+<div style="display: flex; gap: 10px; padding: 8px 0; border-top: 1px solid var(--border); font-size: 13px; line-height: 20px">
+<span class="mono" style="width: 18px; flex: none; color: {{c.color}}; font-weight: 500" aria-label="{{c.state}}">{{c.icon}}</span>
+<span><span style="color: var(--text)">{{c.text}}</span><br><span style="color: var(--text-3)">{{c.note}}</span></span>
+</div>
+</sc-for>
+</section>
+
+<section class="card" style="padding: 16px 20px">
+<h2 style="margin: 0 0 8px; font-size: 16px; line-height: 24px; font-weight: 600">{{t.signals}}</h2>
+<sc-for list="{{sigs}}" as="s" hint-placeholder-count="3">
+<div style="display: flex; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px solid var(--border); font-size: 13px">
+<span class="chip" style="background: {{s.bg}}; color: {{s.fg}}">{{s.kind}}</span>
+<span class="mono" style="color: var(--text-3)">{{s.date}}</span>
+<span style="margin-left: auto; color: {{s.resColor}}" class="mono">{{s.res}}</span>
+</div>
+</sc-for>
+</section>
+</aside>
+</div>
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"lang":{"editor":"enum","options":["sl","en"],"default":"sl"},"$preview":{"width":1440,"height":1180}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { range: '1y' }; }
+  renderVals() {
+    const theme = this.state.theme || this.props.theme || 'light';
+    const lang = this.state.lang || this.props.lang || 'sl';
+    const L = lang === 'sl' ? 0 : 1;
+    const loc = lang === 'sl' ? 'sl-SI' : 'en-US';
+    const num = (n, d) => n.toLocaleString(loc, { minimumFractionDigits: d, maximumFractionDigits: d });
+    const usd = (n, d) => lang === 'sl' ? num(n, d) + ' $' : '$' + num(n, d);
+    const T = {
+      sl: {
+        mainNav: 'Glavni meni', soon: 'Prototip sledi (BL-005)', search: 'Išči simbol ali podjetje', sample: 'Vzorčni podatki', toggleTheme: 'Preklopi temo', langLabel: 'Jezik',
+        nav: { overview: 'Pregled', radar: 'Radar', entries: 'Vstopi', signals: 'Signali', portfolio: 'Portfelj', theses: 'Teze', options: 'Opcije', track: 'Uspešnost', settings: 'Nastavitve' },
+        st: { gw: 'IB Gateway', flex: 'Flex 06:00', llm: 'Lokalni model' },
+        disclaimer: 'Raziskovalni pripomoček, ne naložbeni nasvet. Odločitev je tvoja.',
+        stock: 'Delnica', onWatch: 'Na watchlisti', prov: 'IBKR · zakasnjeno 15 min · 22. 10. 2026, 15:45',
+        analyze: 'Analiziraj', options: 'Opcijske ideje', unwatch: 'Odstrani z watchliste',
+        rangeLabel: 'Obdobje', price: 'Cena', zone: 'Vstopna cona', stop: 'Tezni stop', events: 'Dogodki',
+        keyData: 'Ključni podatki', factsProv: 'Vir: SEC EDGAR (10-Q, 30. 9. 2026), izračun Preža · osveženo 21. 10. 2026',
+        timeline: 'Dogodki in filingi', lastAnalysis: 'Zadnja analiza', rating: 'Povečaj',
+        summary: 'Dokup v coni 402–410 $ v treh delih. Teza o rasti oblaka in AI storitev drži, padec je sektorski. Tveganje: upočasnitev rasti Azure pod 25 %.',
+        target: 'Cilj', horizon: 'Horizont', horizonV: '6–12 mesecev', runMeta: '22. 10. 2026, 11:20 · OpenCode GLM + Claude · 2,4 min · 0,61 $', openRun: 'Odpri celotno analizo',
+        thesis: 'Teza', reviewed: 'pregledano 19. 10.', signals: 'Signali na tem instrumentu'
+      },
+      en: {
+        mainNav: 'Main menu', soon: 'Prototype to follow (BL-005)', search: 'Search symbol or company', sample: 'Sample data', toggleTheme: 'Toggle theme', langLabel: 'Language',
+        nav: { overview: 'Overview', radar: 'Radar', entries: 'Entries', signals: 'Signals', portfolio: 'Portfolio', theses: 'Theses', options: 'Options', track: 'Track record', settings: 'Settings' },
+        st: { gw: 'IB Gateway', flex: 'Flex 06:00', llm: 'Local model' },
+        disclaimer: 'Research aid, not investment advice. The decision is yours.',
+        stock: 'Stock', onWatch: 'On watchlist', prov: 'IBKR · 15 min delayed · Oct 22, 2026, 3:45 PM',
+        analyze: 'Analyze', options: 'Options ideas', unwatch: 'Remove from watchlist',
+        rangeLabel: 'Range', price: 'Price', zone: 'Entry zone', stop: 'Thesis stop', events: 'Events',
+        keyData: 'Key data', factsProv: 'Source: SEC EDGAR (10-Q, Sep 30, 2026), computed by Preža · updated Oct 21, 2026',
+        timeline: 'Events and filings', lastAnalysis: 'Latest analysis', rating: 'Overweight',
+        summary: 'Add in the $402–410 zone in three tranches. The cloud and AI services growth thesis holds; the drop is sector-wide. Risk: Azure growth slowing below 25%.',
+        target: 'Target', horizon: 'Horizon', horizonV: '6–12 months', runMeta: 'Oct 22, 2026, 11:20 AM · OpenCode GLM + Claude · 2.4 min · $0.61', openRun: 'Open full analysis',
+        thesis: 'Thesis', reviewed: 'reviewed Oct 19', signals: 'Signals on this instrument'
+      }
+    };
+    const t = T[lang];
+    const range = this.state.range;
+    const N = { '1m': 22, '3m': 64, '1y': 250, '5y': 260 }[range];
+    let seed = 7;
+    const rnd = () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
+    const full = [];
+    let p = 330;
+    for (let i = 0; i < 520; i += 1) {
+      const trend = i < 430 ? 0.32 : -0.55;
+      p = p + trend + (rnd() - 0.5) * 7;
+      full.push(p);
+    }
+    full[full.length - 1] = 406.8;
+    const sma = full.map((v, i) => { const s = full.slice(Math.max(0, i - 199), i + 1); return s.reduce((a, b) => a + b, 0) / s.length; });
+    const step = range === '5y' ? 2 : 1;
+    const idx = [];
+    for (let i = full.length - N * step; i < full.length; i += step) idx.push(i);
+    const ys = idx.map((i) => full[i]).concat(idx.map((i) => sma[i]), [402, 410, 371]);
+    const lo = Math.min.apply(null, ys) - 8;
+    const hi = Math.max.apply(null, ys) + 8;
+    const Y = (v) => (300 - ((v - lo) / (hi - lo)) * 300).toFixed(1);
+    const X = (k) => ((k / (idx.length - 1)) * 800).toFixed(1);
+    const path = (arr) => idx.map((i, k) => (k ? 'L' : 'M') + X(k) + ' ' + Y(arr[i])).join(' ');
+    const mk = (frac) => { const k = Math.round(frac * (idx.length - 1)); return [X(k), Y(full[idx[k]])]; };
+    const m1 = mk(0.35), m2 = mk(0.72), m3 = mk(0.93);
+    const ranges = [['1m', '1M'], ['3m', '3M'], ['1y', lang === 'sl' ? '1L' : '1Y'], ['5y', lang === 'sl' ? '2L' : '2Y']].map((r) => ({ label: r[1], on: r[0] === range, cls: r[0] === range ? 'on' : '', pick: () => this.setState({ range: r[0] }) }));
+    const facts = [
+      { l: 'P/E', v: num(31.2, 1), n: lang === 'sl' ? '5-l. mediana 33,0' : '5y median 33.0' },
+      { l: 'EV/EBIT', v: num(25.6, 1), n: lang === 'sl' ? '5-l. mediana 27,4' : '5y median 27.4' },
+      { l: 'FCF yield', v: num(2.6, 1) + (lang === 'sl' ? ' %' : '%'), n: lang === 'sl' ? 'mediana 2,4 %' : 'median 2.4%' },
+      { l: lang === 'sl' ? 'Rast prihodkov' : 'Revenue growth', v: '+' + num(15.8, 1) + (lang === 'sl' ? ' %' : '%'), n: 'TTM' },
+      { l: lang === 'sl' ? 'Operativna marža' : 'Operating margin', v: num(45.1, 1) + (lang === 'sl' ? ' %' : '%'), n: 'TTM' },
+      { l: lang === 'sl' ? 'Tržna kap.' : 'Market cap', v: lang === 'sl' ? '3,02 bio $' : '$3.02T', n: '' },
+      { l: 'ATR(14)', v: usd(7.9, 2), n: lang === 'sl' ? '1,9 % cene' : '1.9% of price' },
+      { l: 'RSI(14)', v: num(37, 0), n: lang === 'sl' ? 'pod 40' : 'below 40' }
+    ];
+    const timeline = [
+      { date: lang === 'sl' ? '22. 10.' : 'Oct 22', kind: lang === 'sl' ? 'Vstop' : 'Entry', bg: 'var(--accent-soft)', fg: 'var(--accent)', text: lang === 'sl' ? 'Cena v vstopni coni, vzrok padca: sektor.' : 'Price in entry zone, drawdown cause: sector.' },
+      { date: lang === 'sl' ? '22. 10.' : 'Oct 22', kind: lang === 'sl' ? 'Sektor' : 'Sector', bg: 'var(--surface-2)', fg: 'var(--text-2)', text: lang === 'sl' ? 'Padec programske opreme po makro podatkih (IGV −2,4 %).' : 'Software sell-off after macro data (IGV −2.4%).' },
+      { date: lang === 'sl' ? '14. 10.' : 'Oct 14', kind: 'Form 4', bg: 'var(--surface-2)', fg: 'var(--text-2)', text: lang === 'sl' ? 'Prodaja direktorja po vnaprej določenem načrtu (10b5-1). Nizka pomembnost.' : 'Director sale under a pre-set 10b5-1 plan. Low materiality.' },
+      { date: lang === 'sl' ? '30. 9.' : 'Sep 30', kind: '10-Q', bg: 'var(--surface-2)', fg: 'var(--text-2)', text: lang === 'sl' ? 'Četrtletno poročilo: rast oblaka 29 %.' : 'Quarterly report: cloud growth 29%.' }
+    ];
+    const claims = [
+      { icon: '✓', color: 'var(--pos)', state: lang === 'sl' ? 'drži' : 'holds', text: lang === 'sl' ? 'Rast oblaka nad 25 % letno' : 'Cloud growth above 25% YoY', note: lang === 'sl' ? 'Zadnje četrtletje 29 % (10-Q)' : 'Last quarter 29% (10-Q)' },
+      { icon: '✓', color: 'var(--pos)', state: lang === 'sl' ? 'drži' : 'holds', text: lang === 'sl' ? 'Operativna marža nad 40 %' : 'Operating margin above 40%', note: 'TTM 45,1 %' },
+      { icon: '!', color: 'var(--warn)', state: lang === 'sl' ? 'šibi' : 'weakening', text: lang === 'sl' ? 'Investicije v AI se povrnejo v 3 letih' : 'AI capex pays back within 3 years', note: lang === 'sl' ? 'Kapitalski izdatki rastejo hitreje od prihodkov AI storitev' : 'Capex growing faster than AI services revenue' }
+    ];
+    const sigs = [
+      { kind: lang === 'sl' ? 'Vstop' : 'Entry', bg: 'var(--accent-soft)', fg: 'var(--accent)', date: lang === 'sl' ? '22. 10. 2026' : 'Oct 22, 2026', res: lang === 'sl' ? 'odprto' : 'open', resColor: 'var(--text-3)' },
+      { kind: lang === 'sl' ? 'Vstop' : 'Entry', bg: 'var(--accent-soft)', fg: 'var(--accent)', date: lang === 'sl' ? '4. 8. 2026' : 'Aug 4, 2026', res: lang === 'sl' ? '20 d: ▲ +6,8 %' : '20d: ▲ +6.8%', resColor: 'var(--pos)' },
+      { kind: lang === 'sl' ? 'Katalizator' : 'Catalyst', bg: 'var(--pos-soft)', fg: 'var(--pos)', date: lang === 'sl' ? '30. 7. 2026' : 'Jul 30, 2026', res: lang === 'sl' ? '20 d: ▼ −1,2 %' : '20d: ▼ −1.2%', resColor: 'var(--neg)' }
+    ];
+    return {
+      t, ranges, facts, timeline, claims, sigs,
+      price: usd(406.8, 2), chg: lang === 'sl' ? '▼ −0,6 % danes' : '▼ −0.6% today', target: usd(470, 0),
+      pricePath: path(full), smaPath: path(sma), zoneY: Y(410), zoneH: (Y(402) - Y(410)).toFixed(1), stopY: Y(371),
+      m1x: m1[0], m1y: m1[1], m2x: m2[0], m2y: m2[1], m3x: m3[0], m3y: m3[1],
+      axisFrom: range === '1m' ? (lang === 'sl' ? '22. 9.' : 'Sep 22') : range === '3m' ? (lang === 'sl' ? '22. 7.' : 'Jul 22') : range === '1y' ? (lang === 'sl' ? 'okt. 2025' : 'Oct 2025') : (lang === 'sl' ? 'okt. 2024' : 'Oct 2024'),
+      axisTo: lang === 'sl' ? '22. 10. 2026' : 'Oct 22, 2026',
+      chartAlt: lang === 'sl' ? 'Cena MSFT pada proti SMA200 in je v vstopni coni 402–410 $, nad teznim stopom 371 $.' : 'MSFT price is falling toward its SMA200 and sits in the $402–410 entry zone, above the $371 thesis stop.',
+      themeClass: 't-' + theme, isDark: theme === 'dark', isLight: theme !== 'dark',
+      isSl: lang === 'sl', isEn: lang === 'en', slCls: lang === 'sl' ? 'on' : '', enCls: lang === 'en' ? 'on' : '',
+      toggleTheme: () => this.setState({ theme: theme === 'dark' ? 'light' : 'dark' }),
+      setSl: () => this.setState({ lang: 'sl' }), setEn: () => this.setState({ lang: 'en' })
+    };
+  }
+}
+</script>
+</body>
+</html>
