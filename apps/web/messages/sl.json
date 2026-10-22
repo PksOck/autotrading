@@ -1,0 +1,154 @@
+{
+  "app": {
+    "name": "Preža",
+    "tagline": "Na preži za priložnostmi"
+  },
+  "nav": {
+    "overview": "Pregled",
+    "radar": "Radar",
+    "entries": "Vstopi",
+    "signals": "Signali",
+    "portfolio": "Portfelj",
+    "theses": "Teze",
+    "options": "Opcije",
+    "trackRecord": "Uspešnost",
+    "settings": "Nastavitve",
+    "more": "Več"
+  },
+  "view": {
+    "discover": "Novi predlogi",
+    "watchlist": "Watchlista",
+    "portfolio": "Portfelj"
+  },
+  "action": {
+    "analyze": "Analiziraj",
+    "accept": "Sprejmi",
+    "watch": "Spremljaj",
+    "dismiss": "Zavrzi",
+    "restore": "Obnovi",
+    "openIbkr": "Odpri v IBKR",
+    "save": "Shrani",
+    "cancel": "Prekliči",
+    "search": "Išči simbol ali podjetje"
+  },
+  "theme": {
+    "label": "Tema",
+    "system": "Sistem",
+    "light": "Svetla",
+    "dark": "Temna",
+    "toggle": "Preklopi temo"
+  },
+  "locale": {
+    "label": "Jezik",
+    "sl": "Slovenščina",
+    "en": "English"
+  },
+  "signal": {
+    "kind": {
+      "catalyst": "Katalizator",
+      "entry": "Vstop",
+      "exit_warning": "Opozorilo za izstop",
+      "thesis_break": "Zlom teze",
+      "options_idea": "Opcijska ideja"
+    },
+    "source": {
+      "rule": "Pravilo",
+      "radar": "Radar",
+      "agent": "Agent",
+      "manual": "Ročno"
+    },
+    "status": {
+      "new": "Novo",
+      "watching": "Spremljam",
+      "accepted": "Sprejeto",
+      "dismissed": "Zavrnjeno",
+      "expired": "Poteklo"
+    },
+    "horizon": {
+      "label": "Horizont",
+      "days": "dnevi",
+      "weeks": "tedni",
+      "months": "meseci",
+      "years": "leta"
+    },
+    "strength": "Moč",
+    "confidence": "Zaupanje",
+    "entryZone": "Vstopna cona",
+    "stop": "Stop",
+    "target": "Cilj",
+    "rationale": "Zakaj",
+    "count": "{count, plural, one {# signal} two {# signala} few {# signali} other {# signalov}}"
+  },
+  "rating": {
+    "Buy": "Kupi",
+    "Overweight": "Povečaj",
+    "Hold": "Drži",
+    "Underweight": "Zmanjšaj",
+    "Sell": "Prodaj",
+    "review": "Potreben pregled"
+  },
+  "radar": {
+    "event": "Dogodek",
+    "score": "Ocena priložnosti",
+    "materiality": "Pomembnost",
+    "novelty": "Novost",
+    "reaction": "Odziv cene",
+    "attention": "Pozornost",
+    "rumor": "Nepotrjeno",
+    "confirmed": "Potrjeno"
+  },
+  "entry": {
+    "cause": {
+      "label": "Vzrok padca",
+      "market": "Trg",
+      "sector": "Sektor",
+      "transient": "Začasno",
+      "fundamental": "Temeljno",
+      "unknown": "Neznano"
+    },
+    "thesisIntact": "Teza drži",
+    "ladder": "Postopni nakup",
+    "distance": "Do cone",
+    "drawdown": "Od vrha"
+  },
+  "thesis": {
+    "holds": "Drži",
+    "weakening": "Šibi",
+    "broken": "Ovržena"
+  },
+  "analysis": {
+    "running": "Analiza teče",
+    "split": "Razdeljeno mnenje",
+    "cost": "Strošek",
+    "tokens": "Tokeni"
+  },
+  "portfolio": {
+    "exposure": "Izpostavljenost",
+    "weight": "Teža",
+    "pnl": "Nerealiziran P/L"
+  },
+  "etf": {
+    "overlap": "Prekrivanje s portfeljem",
+    "ter": "Stroški (TER)",
+    "holdings": "Največje pozicije"
+  },
+  "provenance": {
+    "source": "Vir",
+    "updated": "Osveženo {time}"
+  },
+  "state": {
+    "loading": "Nalagam",
+    "empty": "Ni podatkov",
+    "stale": "Zastarelo",
+    "error": "Napaka",
+    "noData": "ni podatka"
+  },
+  "system": {
+    "gateway": "IB Gateway",
+    "flex": "IBKR Flex",
+    "ollama": "Lokalni model",
+    "litellm": "LLM usmerjevalnik",
+    "budget": "Poraba LLM"
+  },
+  "disclaimer": "Raziskovalni pripomoček, ne naložbeni nasvet. Odločitev je tvoja."
+}

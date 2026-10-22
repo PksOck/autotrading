@@ -1,0 +1,13 @@
+Preža
+Copyright 2026 PksOck
+
+This project may include code adapted from the following projects.
+Each adapted file states its origin in a header comment.
+
+- TradingAgents (https://github.com/TauricResearch/TradingAgents), Apache License 2.0
+  (used as a dependency)
+- Vibe-Trading (https://github.com/HKUDS/Vibe-Trading), MIT License
+- trading-signals (https://github.com/bennycode/trading-signals), MIT License
+  (used as a dependency)
+- QuantConnect LEAN (https://github.com/QuantConnect/Lean), Apache License 2.0
+  (concepts only)

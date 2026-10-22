@@ -1,5 +1,0 @@
-[
-  { "symbol": "AMZN", "name": "Amazon.com, Inc.", "type": "stock", "venue": "NASDAQ" },
-  { "symbol": "AAPL", "name": "Apple Inc.", "type": "stock", "venue": "NASDAQ" },
-  { "symbol": "MSFT", "name": "Microsoft Corporation", "type": "stock", "venue": "NASDAQ" }
-]

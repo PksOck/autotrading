@@ -1,0 +1,154 @@
+{
+  "app": {
+    "name": "Preža",
+    "tagline": "Opportunity radar for long-term investors"
+  },
+  "nav": {
+    "overview": "Overview",
+    "radar": "Radar",
+    "entries": "Entries",
+    "signals": "Signals",
+    "portfolio": "Portfolio",
+    "theses": "Theses",
+    "options": "Options",
+    "trackRecord": "Track record",
+    "settings": "Settings",
+    "more": "More"
+  },
+  "view": {
+    "discover": "Discover",
+    "watchlist": "Watchlist",
+    "portfolio": "Portfolio"
+  },
+  "action": {
+    "analyze": "Analyze",
+    "accept": "Accept",
+    "watch": "Watch",
+    "dismiss": "Dismiss",
+    "restore": "Restore",
+    "openIbkr": "Open in IBKR",
+    "save": "Save",
+    "cancel": "Cancel",
+    "search": "Search symbol or company"
+  },
+  "theme": {
+    "label": "Theme",
+    "system": "System",
+    "light": "Light",
+    "dark": "Dark",
+    "toggle": "Toggle theme"
+  },
+  "locale": {
+    "label": "Language",
+    "sl": "Slovenščina",
+    "en": "English"
+  },
+  "signal": {
+    "kind": {
+      "catalyst": "Catalyst",
+      "entry": "Entry",
+      "exit_warning": "Exit warning",
+      "thesis_break": "Thesis break",
+      "options_idea": "Options idea"
+    },
+    "source": {
+      "rule": "Rule",
+      "radar": "Radar",
+      "agent": "Agent",
+      "manual": "Manual"
+    },
+    "status": {
+      "new": "New",
+      "watching": "Watching",
+      "accepted": "Accepted",
+      "dismissed": "Dismissed",
+      "expired": "Expired"
+    },
+    "horizon": {
+      "label": "Horizon",
+      "days": "days",
+      "weeks": "weeks",
+      "months": "months",
+      "years": "years"
+    },
+    "strength": "Strength",
+    "confidence": "Confidence",
+    "entryZone": "Entry zone",
+    "stop": "Stop",
+    "target": "Target",
+    "rationale": "Why",
+    "count": "{count, plural, one {# signal} other {# signals}}"
+  },
+  "rating": {
+    "Buy": "Buy",
+    "Overweight": "Overweight",
+    "Hold": "Hold",
+    "Underweight": "Underweight",
+    "Sell": "Sell",
+    "review": "Needs review"
+  },
+  "radar": {
+    "event": "Event",
+    "score": "Opportunity score",
+    "materiality": "Materiality",
+    "novelty": "Novelty",
+    "reaction": "Price reaction",
+    "attention": "Attention",
+    "rumor": "Unconfirmed",
+    "confirmed": "Confirmed"
+  },
+  "entry": {
+    "cause": {
+      "label": "Drawdown cause",
+      "market": "Market",
+      "sector": "Sector",
+      "transient": "Transient",
+      "fundamental": "Fundamental",
+      "unknown": "Unknown"
+    },
+    "thesisIntact": "Thesis intact",
+    "ladder": "Scaled entry",
+    "distance": "To zone",
+    "drawdown": "From high"
+  },
+  "thesis": {
+    "holds": "Holds",
+    "weakening": "Weakening",
+    "broken": "Broken"
+  },
+  "analysis": {
+    "running": "Analysis running",
+    "split": "Split opinion",
+    "cost": "Cost",
+    "tokens": "Tokens"
+  },
+  "portfolio": {
+    "exposure": "Exposure",
+    "weight": "Weight",
+    "pnl": "Unrealized P/L"
+  },
+  "etf": {
+    "overlap": "Overlap with portfolio",
+    "ter": "Expense ratio (TER)",
+    "holdings": "Top holdings"
+  },
+  "provenance": {
+    "source": "Source",
+    "updated": "Updated {time}"
+  },
+  "state": {
+    "loading": "Loading",
+    "empty": "No data",
+    "stale": "Stale",
+    "error": "Error",
+    "noData": "no data"
+  },
+  "system": {
+    "gateway": "IB Gateway",
+    "flex": "IBKR Flex",
+    "ollama": "Local model",
+    "litellm": "LLM router",
+    "budget": "LLM usage"
+  },
+  "disclaimer": "Research aid, not investment advice. The decision is yours."
+}
