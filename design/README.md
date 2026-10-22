@@ -16,4 +16,6 @@
 Vsak zaslon ima v glavi preklop teme (svetla/temna) in jezika (SL/EN), zasloni so povezani prek stranskega menija (Play način).
 Vsi podatki na prototipih so **vzorčni** (izmišljeni), samo za postavitev.
 
+Kopija izvorov artboardov je v [`design/canvas/`](./canvas/) (za zgodovino in sklicevanje). Vir resnice je platno: po spremembah na platnu se kopija osveži.
+
 Komentarje na prototipe pusti neposredno na platnu (BL-004).
