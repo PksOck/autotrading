@@ -117,3 +117,23 @@ async def test_proposal_analysis_creates_manual_signal_and_watchlist_entry(
         listed[0]["created_at"]
     )
     assert Signal  # imported for type context
+
+
+async def test_proposal_is_accepted_even_when_the_queue_is_down(
+    api: tuple[httpx.AsyncClient, FakeRouter], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import time
+
+    from preza.config import get_settings
+
+    client, _ = api
+    monkeypatch.setenv("REDIS_URL", "redis://127.0.0.1:9/0")  # nothing listens here
+    get_settings.cache_clear()
+    started = time.monotonic()
+    response = await client.post("/proposals", json={"symbols": ["nvda"], "hypothesis": "test"})
+    assert response.status_code == 202
+    assert response.json()["status"] == "queued" and response.json()["symbols"] == ["NVDA"]
+    assert time.monotonic() - started < 5, "a missing queue must not stall the request"
+    sync = await client.post("/portfolio/sync")
+    assert sync.status_code in (409, 503)
+    get_settings.cache_clear()

@@ -4,6 +4,12 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tansta
 import { api } from "./client";
 import type {
   BarsOut,
+  EventOut,
+  ProposalCreate,
+  ProposalOut,
+  RadarView,
+  SignalOut,
+  SignalStatus,
   BarsRange,
   InstrumentDetail,
   InstrumentOut,
@@ -21,6 +27,9 @@ export const keys = {
   instrument: (symbol: string) => ["instrument", symbol] as const,
   bars: (symbol: string, range: BarsRange) => ["bars", symbol, range] as const,
   search: (q: string) => ["search", q] as const,
+  radar: (view: RadarView, minScore: number) => ["radar", view, minScore] as const,
+  signals: (status: SignalStatus | "all") => ["signals", status] as const,
+  proposals: ["proposals"] as const,
 };
 
 export const useSystemStatus = () =>
@@ -82,5 +91,46 @@ export function usePortfolioSync() {
   return useMutation({
     mutationFn: () => api.send<{ job_id: string }>("/portfolio/sync", "POST"),
     onSuccess: () => client.invalidateQueries({ queryKey: keys.portfolio }),
+  });
+}
+
+export const useRadarEvents = (view: RadarView, minScore: number) =>
+  useQuery({
+    queryKey: keys.radar(view, minScore),
+    queryFn: () => api.get<EventOut[]>(`/radar/events?view=${view}&min_score=${minScore}`),
+    refetchInterval: 60_000,
+    placeholderData: keepPreviousData,
+  });
+
+export const useSignals = (status: SignalStatus | "all") =>
+  useQuery({
+    queryKey: keys.signals(status),
+    queryFn: () => api.get<SignalOut[]>(status === "all" ? "/signals" : `/signals?status=${status}`),
+    refetchInterval: 60_000,
+  });
+
+export function useSignalUpdate() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, status, reason }: { id: string; status: SignalStatus; reason?: string }) =>
+      api.send<SignalOut>(`/signals/${id}`, "PATCH", { status, reason }),
+    onSuccess: () => client.invalidateQueries({ queryKey: ["signals"] }),
+  });
+}
+
+export const useProposalList = () =>
+  useQuery({
+    queryKey: keys.proposals,
+    queryFn: () => api.get<ProposalOut[]>("/proposals"),
+    // Poll while something is still being analyzed.
+    refetchInterval: (query) =>
+      query.state.data?.some((p) => p.status === "queued" || p.status === "running") ? 4_000 : false,
+  });
+
+export function useCreateProposal() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (data: ProposalCreate) => api.send<ProposalOut>("/proposals", "POST", data),
+    onSuccess: () => client.invalidateQueries({ queryKey: keys.proposals }),
   });
 }

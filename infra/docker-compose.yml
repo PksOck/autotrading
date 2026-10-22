@@ -16,6 +16,8 @@ x-api-env: &api-env
   IBKR_FLEX_TOKEN: ${IBKR_FLEX_TOKEN:-}
   IBKR_FLEX_QUERY_ID: ${IBKR_FLEX_QUERY_ID:-}
   TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+  TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
+  APP_BASE_URL: ${APP_BASE_URL:-http://127.0.0.1:3000}
   FINNHUB_API_KEY: ${FINNHUB_API_KEY:-}
   SEC_EDGAR_USER_AGENT: ${SEC_EDGAR_USER_AGENT:-}
   RSS_ENABLED: ${RSS_ENABLED:-true}
@@ -95,6 +97,15 @@ services:
       api: { condition: service_healthy }
     restart: unless-stopped
 
+  notify:
+    build: ../services/api
+    command: ["python", "-m", "preza.cli.telegram_bot"]
+    environment:
+      <<: *api-env
+    depends_on:
+      api: { condition: service_healthy }
+    restart: unless-stopped
+
   web:
     build:
       context: ..
@@ -123,7 +134,7 @@ services:
     restart: unless-stopped
     # Brez objavljenih portov: dostop samo iz notranjega omrežja (api, worker).
 
-  # claude-runner (M4, BL-084) in notify (M2, BL-051) se dodata v svojih mejnikih.
+  # claude-runner (M4, BL-084) se doda v svojem mejniku.
 
 volumes:
   pgdata:

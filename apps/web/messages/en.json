@@ -98,7 +98,44 @@
     "reaction": "Price reaction",
     "attention": "Attention",
     "rumor": "Unconfirmed",
-    "confirmed": "Confirmed"
+    "confirmed": "Confirmed",
+    "title": "Radar",
+    "subtitle": "Events from news, filings and speculation, ranked by opportunity score.",
+    "types": {
+      "earnings": "Earnings",
+      "guidance": "Guidance",
+      "merger": "M&A",
+      "filing": "Filing",
+      "insider": "Insiders",
+      "analyst": "Analyst",
+      "product": "Product",
+      "regulatory": "Regulatory",
+      "legal": "Legal",
+      "macro": "Macro",
+      "rumor": "Rumor",
+      "other": "Other"
+    },
+    "all": "All",
+    "onlyRumors": "Rumors only",
+    "minScore": "Minimum score",
+    "viewsLabel": "Views",
+    "filtersLabel": "Filters",
+    "listLabel": "Events",
+    "detailLabel": "Event details",
+    "sourcesLabel": "Sources",
+    "empty": {
+      "discover": "No new ideas above the threshold. Radar checks sources every 15 minutes.",
+      "watchlist": "No watchlist events in the last 7 days.",
+      "portfolio": "No portfolio events in the last 7 days."
+    },
+    "notTriaged": "waiting for the local model",
+    "selectHint": "Select an event for details.",
+    "reactionZ": "Price reaction (z)",
+    "hints": {
+      "discover": "Instruments you neither hold nor watch.",
+      "watchlist": "Instruments on your watchlist.",
+      "portfolio": "Your positions at IBKR."
+    }
   },
   "entry": {
     "cause": {
@@ -266,7 +303,7 @@
     },
     "submit": "Send to analysis",
     "submitted": "Proposal {symbols} is queued",
-    "previewNote": "Preview: submission to analysis goes live in M2 (BL-053). The proposal is stored locally.",
+    "previewNote": "The analysis runs in the background; the result arrives as a signal and on Telegram.",
     "undo": "Undo",
     "undone": "Proposal withdrawn",
     "required": "Enter at least one symbol.",
@@ -383,5 +420,47 @@
     "chartSummary": "{symbol} over {range}: last close {close}, change {change}.",
     "price": "Price",
     "volume": "Volume"
+  },
+  "signalsPage": {
+    "title": "Signals",
+    "subtitle": "All signals in one place. The decision is yours.",
+    "tabs": {
+      "new": "New",
+      "watching": "Watching",
+      "accepted": "Accepted",
+      "dismissed": "Dismissed",
+      "expired": "Expired"
+    },
+    "empty": "No signals in this view.",
+    "evidence": "Evidence",
+    "rumorCannotAccept": "A rumor cannot be accepted until an official source confirms it.",
+    "accepted": "Signal accepted",
+    "watched": "Watching signal",
+    "dismissed": "Signal dismissed",
+    "expires": "Expires {time}",
+    "source": {
+      "rule": "Rule",
+      "radar": "Radar",
+      "agent": "Agent",
+      "manual": "Your proposal"
+    },
+    "direction": {
+      "up": "Up",
+      "down": "Down",
+      "neutral": "Neutral"
+    }
+  },
+  "proposalsPage": {
+    "verdict": {
+      "supports": "Hypothesis holds",
+      "partly": "Partly holds",
+      "contradicts": "Hypothesis does not hold",
+      "insufficient": "Not enough data"
+    },
+    "failed": "Analysis failed",
+    "queued": "Queued",
+    "running": "Analyzing",
+    "openSignal": "Open signal",
+    "submitError": "The proposal could not be submitted."
   }
 }

@@ -98,7 +98,44 @@
     "reaction": "Odziv cene",
     "attention": "Pozornost",
     "rumor": "Nepotrjeno",
-    "confirmed": "Potrjeno"
+    "confirmed": "Potrjeno",
+    "title": "Radar",
+    "subtitle": "Dogodki iz novic, filingov in špekulacij, razvrščeni po oceni priložnosti.",
+    "types": {
+      "earnings": "Poročilo",
+      "guidance": "Napoved",
+      "merger": "Prevzem",
+      "filing": "Filing",
+      "insider": "Insiderji",
+      "analyst": "Analitik",
+      "product": "Izdelek",
+      "regulatory": "Regulator",
+      "legal": "Pravno",
+      "macro": "Makro",
+      "rumor": "Govorica",
+      "other": "Drugo"
+    },
+    "all": "Vsi",
+    "onlyRumors": "Samo govorice",
+    "minScore": "Najmanjša ocena",
+    "viewsLabel": "Pogledi",
+    "filtersLabel": "Filtri",
+    "listLabel": "Dogodki",
+    "detailLabel": "Podrobnosti dogodka",
+    "sourcesLabel": "Viri",
+    "empty": {
+      "discover": "Ni novih predlogov nad pragom. Radar preverja vire vsakih 15 minut.",
+      "watchlist": "Za watchlisto ni dogodkov v zadnjih 7 dneh.",
+      "portfolio": "Za portfelj ni dogodkov v zadnjih 7 dneh."
+    },
+    "notTriaged": "čaka na lokalni model",
+    "selectHint": "Izberi dogodek za podrobnosti.",
+    "reactionZ": "Odziv cene (z)",
+    "hints": {
+      "discover": "Instrumenti, ki jih nimaš in ne spremljaš.",
+      "watchlist": "Instrumenti na tvoji watchlisti.",
+      "portfolio": "Tvoje pozicije pri IBKR."
+    }
   },
   "entry": {
     "cause": {
@@ -266,7 +303,7 @@
     },
     "submit": "Pošlji v analizo",
     "submitted": "Predlog {symbols} je v vrsti",
-    "previewNote": "Predogled: oddaja v analizo bo aktivna v M2 (BL-053). Predlog je shranjen lokalno.",
+    "previewNote": "Analiza teče v ozadju, rezultat dobiš kot signal in v Telegram.",
     "undo": "Razveljavi",
     "undone": "Predlog umaknjen",
     "required": "Vnesi vsaj en simbol.",
@@ -383,5 +420,47 @@
     "chartSummary": "Cena {symbol} v obdobju {range}: zadnje zaprtje {close}, sprememba {change}.",
     "price": "Cena",
     "volume": "Volumen"
+  },
+  "signalsPage": {
+    "title": "Signali",
+    "subtitle": "Vsi signali na enem mestu. Odločitev je tvoja.",
+    "tabs": {
+      "new": "Novo",
+      "watching": "Spremljam",
+      "accepted": "Sprejeto",
+      "dismissed": "Zavrnjeno",
+      "expired": "Poteklo"
+    },
+    "empty": "V tem pogledu ni signalov.",
+    "evidence": "Dokazi",
+    "rumorCannotAccept": "Govorice ni mogoče sprejeti, dokler je ne potrdi uradni vir.",
+    "accepted": "Signal sprejet",
+    "watched": "Signal spremljam",
+    "dismissed": "Signal zavrnjen",
+    "expires": "Poteče {time}",
+    "source": {
+      "rule": "Pravilo",
+      "radar": "Radar",
+      "agent": "Agent",
+      "manual": "Tvoj predlog"
+    },
+    "direction": {
+      "up": "Gor",
+      "down": "Dol",
+      "neutral": "Nevtralno"
+    }
+  },
+  "proposalsPage": {
+    "verdict": {
+      "supports": "Hipoteza drži",
+      "partly": "Delno drži",
+      "contradicts": "Hipoteza ne drži",
+      "insufficient": "Premalo podatkov"
+    },
+    "failed": "Analiza ni uspela",
+    "queued": "V vrsti",
+    "running": "Analiza teče",
+    "openSignal": "Odpri signal",
+    "submitError": "Predloga ni bilo mogoče oddati."
   }
 }

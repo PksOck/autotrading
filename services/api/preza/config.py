@@ -26,6 +26,8 @@ class Settings(BaseSettings):
     ibkr_flex_query_id: str | None = None
 
     telegram_bot_token: str | None = None
+    telegram_chat_id: str | None = None
+    app_base_url: str = "http://127.0.0.1:3000"
 
     status_timeout_s: float = Field(default=2.0, gt=0)
 

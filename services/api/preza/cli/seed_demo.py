@@ -153,5 +153,130 @@ async def main() -> None:
     )
 
 
+# --- Radar demo (M2): demo news through the real pipeline, triaged by a deterministic stub ---
+
+DEMO_NEWS = [
+    (
+        "MSFT",
+        "Microsoft raises full-year cloud revenue guidance",
+        "press_release",
+        35,
+        0.8,
+        0.9,
+        0.6,
+        False,
+    ),
+    ("MSFT", "Microsoft lifts cloud guidance as AI demand grows", "news", 20, 0.8, 0.9, 0.6, False),
+    (
+        "ORCL",
+        "Oracle directors buy shares in open market (Form 4)",
+        "filing",
+        90,
+        0.6,
+        0.9,
+        0.4,
+        False,
+    ),
+    ("ASML", "ASML supply-chain peer reports record orders", "news", 300, 0.6, 0.7, 0.5, False),
+    ("IUES", "Oil stays below $70 for a third week", "news", 400, 0.7, 0.6, -0.5, False),
+    (
+        "CRWD",
+        "CrowdStrike raises annual revenue outlook",
+        "press_release",
+        60,
+        0.8,
+        0.9,
+        0.7,
+        False,
+    ),
+    (
+        "KSTL",
+        "Reddit users speculate about a Kestrel Bio takeover",
+        "social",
+        15,
+        0.6,
+        0.7,
+        0.5,
+        True,
+    ),
+]
+
+
+class DemoTriage:
+    """Stands in for the local model so the Radar can be demoed without Ollama."""
+
+    def __init__(self) -> None:
+        self.by_title = {title: row for row in DEMO_NEWS for title in [row[1]]}
+
+    async def embed(self, texts: list[str]) -> list[list[float]]:
+        from preza.llm.client import LlmUnavailableError
+
+        raise LlmUnavailableError("demo: no embeddings")
+
+    async def complete_json(self, role, system, user, schema):  # type: ignore[no-untyped-def]
+        from preza.domain.radar import EventType, TimeSensitivity, TriageResult
+        from preza.llm.client import LlmResult
+
+        row = next((r for title, r in self.by_title.items() if title in user), DEMO_NEWS[0])
+        symbol, title, _, _, materiality, novelty, sentiment, rumor = row
+        value = TriageResult(
+            tickers=[symbol],
+            event_type=EventType.RUMOR if rumor else EventType.GUIDANCE,
+            is_rumor=rumor,
+            sentiment=sentiment,
+            materiality=materiality,
+            novelty=novelty,
+            time_sensitivity=TimeSensitivity.DAYS,
+            summary=title + ".",
+        )
+        return LlmResult(value=value, model="demo-triage", prompt_tokens=0, completion_tokens=0)
+
+
+class DemoNews:
+    name = "demo"
+
+    async def fetch(self, since):  # type: ignore[no-untyped-def]
+        from datetime import UTC, datetime, timedelta
+
+        from preza.domain.radar import NewsIn
+
+        now = datetime.now(UTC)
+        return [
+            NewsIn(
+                source="demo" if kind != "social" else "reddit",
+                url=f"https://demo.preza.local/{symbol.lower()}/{i}",
+                title=title,
+                summary=title,
+                published_at=now - timedelta(minutes=minutes),
+                symbols=[symbol],
+                kind=kind,
+            )
+            for i, (symbol, title, kind, minutes, *_rest) in enumerate(DEMO_NEWS)
+        ]
+
+
+async def seed_radar() -> None:
+    from preza.radar.pipeline import run_radar
+
+    async with get_sessionmaker()() as session:
+        for symbol, name in (("CRWD", "CrowdStrike Holdings"), ("KSTL", "Kestrel Bio (fictional)")):
+            await get_or_create(
+                session,
+                symbol=symbol,
+                source=SOURCE,
+                name=name,
+                kind=InstrumentKind.STOCK,
+                currency="USD",
+            )
+        result = await run_radar(session, [DemoNews()], DemoTriage(), threshold=0.2)
+        await session.commit()
+    print(f"demo radar: {result.events} events, {result.signals} signals")
+
+
+async def seed_all() -> None:
+    await main()
+    await seed_radar()
+
+
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(seed_all())

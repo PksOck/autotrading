@@ -7,20 +7,18 @@ import { useEffect, useId, useState, type FormEvent } from "react";
 import { toast } from "sonner";
 import { cn } from "@/lib/cn";
 import { spring } from "@/lib/motion";
-import {
-  PROPOSE_EVENT,
-  parseSymbols,
-  useProposals,
-  type Proposal,
-  type ProposalDepth,
-  type ProposalDirection,
-  type ProposalSaveTo,
-  type ProposeDetail,
-} from "@/stores/proposals";
+import { useRouter } from "next/navigation";
+import { useCreateProposal } from "@/lib/api/hooks";
+import { PROPOSE_EVENT, parseSymbols, type ProposeDetail } from "@/stores/proposals";
+
+type ProposalDepth = "quick" | "standard" | "deep";
+type ProposalDirection = "up" | "down" | "unsure";
+type ProposalSaveTo = "active" | "reserve" | "once";
+type Horizon = "days" | "weeks" | "months" | "years";
 
 const DEPTHS: ProposalDepth[] = ["quick", "standard", "deep"];
 const DIRECTIONS: ProposalDirection[] = ["up", "down", "unsure"];
-const HORIZONS: Proposal["horizon"][] = ["days", "weeks", "months", "years"];
+const HORIZONS: Horizon[] = ["days", "weeks", "months", "years"];
 const SAVE_TO: ProposalSaveTo[] = ["active", "reserve", "once"];
 
 const fieldClass =
@@ -30,14 +28,14 @@ const fieldClass =
 export function ProposalComposer() {
   const t = useTranslations();
   const id = useId();
-  const add = useProposals((s) => s.add);
-  const remove = useProposals((s) => s.remove);
+  const router = useRouter();
+  const create = useCreateProposal();
   const [open, setOpen] = useState(false);
   const [symbols, setSymbols] = useState("");
   const [hypothesis, setHypothesis] = useState("");
   const [source, setSource] = useState("");
   const [direction, setDirection] = useState<ProposalDirection>("unsure");
-  const [horizon, setHorizon] = useState<Proposal["horizon"]>("months");
+  const [horizon, setHorizon] = useState<Horizon>("months");
   const [depth, setDepth] = useState<ProposalDepth>("standard");
   const [saveTo, setSaveTo] = useState<ProposalSaveTo>("reserve");
   const [error, setError] = useState(false);
@@ -55,36 +53,31 @@ export function ProposalComposer() {
     return () => window.removeEventListener(PROPOSE_EVENT, onPropose);
   }, []);
 
-  const submit = (event: FormEvent) => {
+  const submit = async (event: FormEvent) => {
     event.preventDefault();
     const parsed = parseSymbols(`${symbols} ${source.match(/\$[A-Za-z.]{1,10}/g)?.join(" ") ?? ""}`);
     if (!parsed.length) {
       setError(true);
       return;
     }
-    const proposal: Proposal = {
-      id: crypto.randomUUID(),
-      symbols: parsed,
-      hypothesis: hypothesis.trim(),
-      source: source.trim(),
-      direction,
-      horizon,
-      depth,
-      saveTo,
-      createdAt: new Date().toISOString(),
-      status: "draft",
-    };
-    add(proposal);
+    try {
+      await create.mutateAsync({
+        symbols: parsed,
+        hypothesis: hypothesis.trim(),
+        source_text: source.trim(),
+        direction,
+        horizon,
+        depth,
+        save_to: saveTo,
+      });
+    } catch {
+      toast.error(t("proposalsPage.submitError"));
+      return;
+    }
     setOpen(false);
     toast.success(t("proposal.submitted", { symbols: parsed.join(", ") }), {
       description: t("proposal.previewNote"),
-      action: {
-        label: t("proposal.undo"),
-        onClick: () => {
-          remove(proposal.id);
-          toast(t("proposal.undone"));
-        },
-      },
+      action: { label: t("nav.proposals"), onClick: () => router.push("/proposals") },
     });
   };
 
@@ -217,7 +210,7 @@ export function ProposalComposer() {
                     <Dialog.Close className="h-10 rounded-md border border-border px-4 font-medium hover:bg-surface-2">
                       {t("action.cancel")}
                     </Dialog.Close>
-                    <button type="submit" className="h-10 rounded-md bg-accent px-4 font-medium text-on-accent hover:opacity-90">
+                    <button type="submit" disabled={create.isPending} className="h-10 rounded-md bg-accent px-4 font-medium text-on-accent hover:opacity-90 disabled:opacity-60">
                       {t("proposal.submit")}
                     </button>
                   </div>

@@ -3,6 +3,7 @@
 import logging
 import time
 import uuid
+from datetime import UTC, datetime, timedelta
 from typing import Any, ClassVar
 
 import httpx
@@ -18,6 +19,8 @@ from preza.ingest.edgar import parse_company_tickers
 from preza.ingest.factory import build_sources
 from preza.llm.client import LiteLlmClient, LlmUnavailableError
 from preza.models import Instrument, Position, Proposal, WatchlistItem
+from preza.notify.service import morning_digest, notify_new_signals
+from preza.notify.telegram import TelegramClient
 from preza.proposals.analyze import analyze_proposal
 from preza.radar.pipeline import run_radar
 from preza.services.portfolio import record_sync, store_statement
@@ -102,11 +105,31 @@ async def radar(ctx: dict[str, Any]) -> str:
     )
 
 
+async def sweep_proposals(ctx: dict[str, Any]) -> int:
+    """Re-queues proposals that were stored while the queue was down."""
+    cutoff = datetime.now(UTC) - timedelta(minutes=2)
+    async with get_sessionmaker()() as session:
+        stuck = list(
+            await session.scalars(
+                select(Proposal.id).where(Proposal.status == "queued", Proposal.created_at < cutoff)
+            )
+        )
+    redis = ctx.get("redis")
+    for proposal_id in stuck:
+        if redis is not None:
+            await redis.enqueue_job(
+                "analyze_proposal_job", str(proposal_id), _job_id=f"proposal:{proposal_id}"
+            )
+    return len(stuck)
+
+
 async def analyze_proposal_job(ctx: dict[str, Any], proposal_id: str) -> str:
     async with get_sessionmaker()() as session:
         proposal = await session.get(Proposal, uuid.UUID(proposal_id))
         if proposal is None:
             return "missing"
+        if proposal.status != "queued":
+            return proposal.status  # already handled (API enqueue and sweep may overlap)
         try:
             await analyze_proposal(
                 session, proposal, llm_client(), get_bars_service(), get_settings().default_locale
@@ -118,11 +141,44 @@ async def analyze_proposal_job(ctx: dict[str, Any], proposal_id: str) -> str:
         return proposal.status
 
 
+async def _telegram_job(job: Any) -> str:
+    settings = get_settings()
+    if not (settings.telegram_bot_token and settings.telegram_chat_id):
+        return "unconfigured"
+    client = TelegramClient(settings.telegram_bot_token)
+    try:
+        async with get_sessionmaker()() as session:
+            count = await job(session, client, settings.telegram_chat_id, settings)
+            await session.commit()
+    finally:
+        await client.aclose()
+    return f"sent={count}"
+
+
+async def notify(ctx: dict[str, Any]) -> str:
+    return await _telegram_job(notify_new_signals)
+
+
+async def digest(ctx: dict[str, Any]) -> str:
+    return await _telegram_job(morning_digest)
+
+
 class WorkerSettings:
-    functions: ClassVar[list[Any]] = [sync_flex, refresh_bars, radar, analyze_proposal_job]
+    functions: ClassVar[list[Any]] = [
+        sync_flex,
+        refresh_bars,
+        radar,
+        analyze_proposal_job,
+        sweep_proposals,
+        notify,
+        digest,
+    ]
     cron_jobs: ClassVar[list[Any]] = [
         cron(sync_flex, hour={5}, minute={15}),  # after IBKR prepares the previous day (~07:15 CET)
         cron(refresh_bars, weekday={0, 1, 2, 3, 4}, hour={21}, minute={30}),  # after US close
         cron(radar, minute={2, 17, 32, 47}),  # every 15 minutes
+        cron(sweep_proposals, minute={5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 0}),
+        cron(notify, minute=set(range(0, 60, 5))),  # every 5 minutes
+        cron(digest, hour={5}, minute={30}),  # 07:30 Ljubljana in summer, 06:30 in winter
     ]
     redis_settings = RedisSettings.from_dsn(get_settings().redis_url)
