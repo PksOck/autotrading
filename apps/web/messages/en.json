@@ -126,9 +126,35 @@
     "tokens": "Tokens"
   },
   "portfolio": {
-    "exposure": "Exposure",
+    "exposure": "Exposure by currency",
     "weight": "Weight",
-    "pnl": "Unrealized P/L"
+    "pnl": "Unrealized P/L",
+    "title": "Portfolio",
+    "tabPositions": "Positions",
+    "tabWatchlist": "Watchlist",
+    "total": "Total value",
+    "asOf": "As of {date}",
+    "sync": "Sync with IBKR",
+    "syncing": "Syncing…",
+    "syncQueued": "Sync queued",
+    "syncFailed": "Sync failed",
+    "flexUnconfigured": "IBKR Flex is not configured. Set IBKR_FLEX_TOKEN and IBKR_FLEX_QUERY_ID in .env.",
+    "queueUnavailable": "The job queue (Redis) is unreachable.",
+    "lastSync": "Last sync: {time}",
+    "never": "Never synced",
+    "emptyTitle": "Portfolio is empty",
+    "emptyBody": "Once IBKR Flex is configured (token and a Flex Query with OpenPositions, Trades, CashReport), positions load every morning at 7:15. For development load demo data: python -m preza.cli.seed_demo.",
+    "cash": "Cash",
+    "col": {
+      "instrument": "Instrument",
+      "quantity": "Quantity",
+      "price": "Price",
+      "value": "Value",
+      "weight": "Weight",
+      "pnl": "Unrealized P/L",
+      "today": "Today"
+    },
+    "byKind": "By type"
   },
   "etf": {
     "overlap": "Overlap with portfolio",
@@ -137,7 +163,18 @@
   },
   "provenance": {
     "source": "Source",
-    "updated": "Updated {time}"
+    "updated": "Updated {time}",
+    "stale": "stale",
+    "demo": "demo data",
+    "sources": {
+      "ibkr": "IBKR",
+      "ibkr_flex": "IBKR Flex",
+      "yahoo": "Yahoo",
+      "stooq": "Stooq",
+      "demo": "demo",
+      "fake": "test",
+      "universe": "list"
+    }
   },
   "state": {
     "loading": "Loading",
@@ -292,5 +329,58 @@
   },
   "instrument": {
     "stock": "Stock"
+  },
+  "watchlist": {
+    "add": "Add to watchlist",
+    "symbol": "Symbol",
+    "tier": "Tier",
+    "note": "Note or thesis",
+    "target": "Target price",
+    "alertBelow": "Alert below",
+    "alertAbove": "Alert above",
+    "tiers": {
+      "active": "Active",
+      "reserve": "Idea reserve"
+    },
+    "added": "Added {date}",
+    "sinceAdded": "Since added",
+    "remove": "Remove",
+    "removed": "Removed from watchlist",
+    "moveTo": "Move to: {tier}",
+    "markReviewed": "Mark as reviewed",
+    "reviewed": "reviewed",
+    "new": "new",
+    "duplicate": "This instrument is already on the watchlist.",
+    "empty": "The watchlist is empty. Add a symbol above or from an instrument preview.",
+    "adding": "Adding…",
+    "onWatchlist": "On watchlist",
+    "addShort": "Watch"
+  },
+  "instrumentPage": {
+    "notFound": "Instrument {symbol} is not in the database.",
+    "notFoundHint": "Add it to the watchlist or propose it for analysis; its data then loads.",
+    "noBars": "No price data yet. The source is unreachable or the instrument is not supported.",
+    "range": "Range",
+    "ranges": {
+      "1m": "1M",
+      "3m": "3M",
+      "1y": "1Y",
+      "2y": "2Y",
+      "5y": "5Y"
+    },
+    "stats": "Key data",
+    "high52": "52w high",
+    "low52": "52w low",
+    "drawdown": "From high",
+    "sma200": "To SMA200",
+    "rsi": "RSI(14)",
+    "atr": "ATR(14)",
+    "exchange": "Exchange",
+    "currency": "Currency",
+    "isin": "ISIN",
+    "ucits": "UCITS",
+    "chartSummary": "{symbol} over {range}: last close {close}, change {change}.",
+    "price": "Price",
+    "volume": "Volume"
   }
 }

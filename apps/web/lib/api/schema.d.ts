@@ -301,6 +301,8 @@ export interface components {
             unrealized_pnl: number | null;
             /** Weight Pct */
             weight_pct: number | null;
+            /** Change Pct */
+            change_pct?: number | null;
         };
         /** Provenance */
         Provenance: {

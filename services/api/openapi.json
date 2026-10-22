@@ -883,6 +883,17 @@
               }
             ],
             "title": "Weight Pct"
+          },
+          "change_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Change Pct"
           }
         },
         "type": "object",

@@ -1,6 +1,7 @@
-import { Planned } from "@/components/common/Planned";
+import { InstrumentView } from "@/components/instrument/InstrumentView";
 
-/** SCR-05 Instrument arrives in M1 (BL-029). Until then the peek panel is the instrument view. */
-export default function InstrumentPage() {
-  return <Planned navKey="portfolio" />;
+/** SCR-05 Instrument (BL-029). */
+export default async function InstrumentPage({ params }: { params: Promise<{ symbol: string }> }) {
+  const { symbol } = await params;
+  return <InstrumentView symbol={decodeURIComponent(symbol).toUpperCase()} />;
 }

@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from preza.domain.market import InstrumentKind
 from preza.domain.portfolio import CashIn, FlexStatement, PortfolioOut, PositionOut, SyncInfo
-from preza.models import CashBalance, Position, SyncRun, Trade
+from preza.models import Bar, CashBalance, Position, SyncRun, Trade
 from preza.services.instruments import get_or_create
 
 
@@ -113,6 +113,20 @@ def _value_in_base(position: Position, base: str) -> Decimal | None:
     return None
 
 
+async def daily_change(session: AsyncSession, instrument_id: int) -> Decimal | None:
+    closes = list(
+        await session.scalars(
+            select(Bar.close)
+            .where(Bar.instrument_id == instrument_id)
+            .order_by(Bar.day.desc())
+            .limit(2)
+        )
+    )
+    if len(closes) < 2 or not closes[1]:
+        return None
+    return (closes[0] / closes[1] - 1) * 100
+
+
 async def get_portfolio(session: AsyncSession, base_currency: str) -> PortfolioOut:
     latest = await session.scalar(select(func.max(Position.report_date)))
     last_sync_row = await session.scalar(
@@ -168,6 +182,7 @@ async def get_portfolio(session: AsyncSession, base_currency: str) -> PortfolioO
                 market_value=p.market_value,
                 unrealized_pnl=p.unrealized_pnl,
                 weight_pct=(value / total * 100) if value is not None and total else None,
+                change_pct=await daily_change(session, p.instrument_id),
             )
         )
     return PortfolioOut(

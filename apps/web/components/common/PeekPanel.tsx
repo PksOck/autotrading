@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useTranslations } from "next-intl";
 import { Dialog } from "radix-ui";
 import { InstrumentPreview } from "@/components/common/InstrumentPreview";
+import { WatchButton } from "@/components/watchlist/WatchButton";
 import { spring } from "@/lib/motion";
 import { usePeek } from "@/lib/use-peek";
 import { openProposalComposer } from "@/stores/proposals";
@@ -61,6 +62,7 @@ export function PeekPanel() {
 
                 {current.kind === "instrument" && (
                   <div className="mt-auto flex flex-wrap gap-2">
+                    <WatchButton symbol={current.id} />
                     <button
                       type="button"
                       onClick={() => openProposalComposer({ symbols: [current.id] })}

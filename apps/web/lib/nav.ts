@@ -14,7 +14,7 @@ export const NAV: NavItem[] = [
   { href: "/entries", key: "entries", screen: "SCR-03", milestone: "M3", main: true, shortcut: "e" },
   { href: "/signals", key: "signals", screen: "SCR-04", milestone: "M2", main: true, shortcut: "s" },
   { href: "/proposals", key: "proposals", screen: "SCR-12", milestone: "M2" },
-  { href: "/portfolio", key: "portfolio", screen: "SCR-08", milestone: "M1", main: true, shortcut: "p" },
+  { href: "/portfolio", key: "portfolio", screen: "SCR-08", main: true, shortcut: "p" },
   { href: "/theses", key: "theses", screen: "SCR-09", milestone: "M5" },
   { href: "/options", key: "options", screen: "SCR-07", milestone: "M6" },
   { href: "/track-record", key: "trackRecord", screen: "SCR-10", milestone: "M5" },

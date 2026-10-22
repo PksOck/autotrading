@@ -1,9 +1,9 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { Tooltip } from "radix-ui";
-import type { ServiceState, SystemStatus as Status } from "@/lib/api/types";
+import { useSystemStatus } from "@/lib/api/hooks";
+import type { ServiceState } from "@/lib/api/types";
 
 const SHOWN = ["ib_gateway", "ibkr_flex", "ollama", "litellm"] as const;
 
@@ -14,20 +14,10 @@ const DOT: Record<ServiceState, string> = {
   unconfigured: "bg-text-3",
 };
 
-async function fetchStatus(): Promise<Status> {
-  const response = await fetch("/api/system/status", { cache: "no-store" });
-  if (!response.ok) throw new Error(String(response.status));
-  return response.json();
-}
-
 /** CMP-02: health of the services the user cares about, refreshed every 30 s. */
 export function SystemStatus() {
   const t = useTranslations("system");
-  const { data, isError } = useQuery({
-    queryKey: ["system-status"],
-    queryFn: fetchStatus,
-    refetchInterval: 30_000,
-  });
+  const { data, isError } = useSystemStatus();
 
   if (isError) {
     return (

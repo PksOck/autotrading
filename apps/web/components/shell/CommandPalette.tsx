@@ -7,7 +7,7 @@ import { useEffect, useState, useTransition } from "react";
 import { setLocale } from "@/app/actions";
 import { Icon } from "@/components/common/Icon";
 import { NAV } from "@/lib/nav";
-import { INSTRUMENTS } from "@/lib/sample-data";
+import { useInstrumentSearch, usePortfolio, useWatchlist } from "@/lib/api/hooks";
 import { nextThemePreference, readThemePreference, setThemePreference } from "@/lib/theme";
 import { usePeek } from "@/lib/use-peek";
 import { openProposalComposer, parseSymbols } from "@/stores/proposals";
@@ -52,9 +52,23 @@ export function CommandPalette() {
     action();
   };
 
+  const search = useInstrumentSearch(open ? query : "");
+  const portfolio = usePortfolio();
+  const watchlist = useWatchlist();
+  // Empty query: what the user holds and watches. Typing: server-side search.
+  const instruments = query.trim()
+    ? (search.data ?? []).map((i) => ({ symbol: i.symbol, name: i.name ?? "", hint: i.exchange ?? "" }))
+    : [
+        ...(portfolio.data?.positions ?? []).map((p) => ({ symbol: p.symbol, name: p.name ?? "", hint: "" })),
+        ...(watchlist.data ?? []).map((w) => ({ symbol: w.symbol, name: w.name ?? "", hint: "" })),
+      ].filter((item, index, all) => all.findIndex((x) => x.symbol === item.symbol) === index);
+
   const typedSymbols = parseSymbols(query);
+  // Offer "propose" only once the search has answered, so Enter never races the results.
   const unknownSymbol =
-    typedSymbols.length === 1 && !INSTRUMENTS.some((i) => i.symbol === typedSymbols[0]) ? typedSymbols[0] : null;
+    typedSymbols.length === 1 && !search.isFetching && !instruments.some((i) => i.symbol === typedSymbols[0])
+      ? typedSymbols[0]
+      : null;
 
   return (
     <Command.Dialog
@@ -76,6 +90,21 @@ export function CommandPalette() {
       <Command.List className="max-h-[60vh] overflow-y-auto p-2">
         <Command.Empty className="px-3 py-6 text-center text-text-3">{t("command.empty")}</Command.Empty>
 
+        <Command.Group heading={t("command.groupInstruments")} className={group}>
+          {instruments.map((instrument) => (
+            <Command.Item
+              key={instrument.symbol}
+              value={`${instrument.symbol} ${instrument.name} ${instrument.hint}`}
+              onSelect={() => run(() => peek({ kind: "instrument", id: instrument.symbol }))}
+              className={item}
+            >
+              <span className="num w-14 font-medium text-text">{instrument.symbol}</span>
+              <span className="flex-1 truncate">{instrument.name}</span>
+              {instrument.hint && <span className="num text-xs text-text-3">{instrument.hint}</span>}
+            </Command.Item>
+          ))}
+        </Command.Group>
+
         {unknownSymbol && (
           <Command.Group heading={t("command.groupActions")} className={group}>
             <Command.Item
@@ -88,20 +117,6 @@ export function CommandPalette() {
             </Command.Item>
           </Command.Group>
         )}
-
-        <Command.Group heading={t("command.groupInstruments")} className={group}>
-          {INSTRUMENTS.map((instrument) => (
-            <Command.Item
-              key={instrument.symbol}
-              value={`${instrument.symbol} ${instrument.name}`}
-              onSelect={() => run(() => peek({ kind: "instrument", id: instrument.symbol }))}
-              className={item}
-            >
-              <span className="num w-14 font-medium text-text">{instrument.symbol}</span>
-              <span className="truncate">{instrument.name}</span>
-            </Command.Item>
-          ))}
-        </Command.Group>
 
         <Command.Group heading={t("command.groupNav")} className={group}>
           {NAV.map((nav) => (

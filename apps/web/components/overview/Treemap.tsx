@@ -6,7 +6,7 @@ import { computeTreemap } from "@/components/overview/treemap-layout";
 import { cn } from "@/lib/cn";
 import { formatChange } from "@/lib/format";
 import { spring } from "@/lib/motion";
-import type { SampleInstrument } from "@/lib/sample-data";
+import type { ThesisState } from "@/lib/sample-data";
 import { useAppLocale } from "@/lib/use-app-locale";
 import { useElementSize } from "@/lib/use-element-size";
 import { usePeek } from "@/lib/use-peek";
@@ -15,8 +15,10 @@ import { useFocusStore } from "@/stores/focus";
 /** Intensity of the daily-change tint, capped so text keeps its contrast. */
 const tint = (change: number) => Math.min(Math.abs(change) / 3, 1) * 32 + 6;
 
+export type TreemapItem = { symbol: string; weight: number; change: number; thesis: ThesisState };
+
 /** CMP-25 / OV-01: portfolio treemap. Area = weight, tint = daily change, border = thesis. */
-export function Treemap({ items, height = 280 }: { items: SampleInstrument[]; height?: number }) {
+export function Treemap({ items, height = 280 }: { items: TreemapItem[]; height?: number }) {
   const t = useTranslations();
   const locale = useAppLocale();
   const [ref, size] = useElementSize<HTMLDivElement>();

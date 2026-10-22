@@ -35,6 +35,7 @@ test("command palette opens a peek panel", async ({ page }, info) => {
   await page.goto("/", { waitUntil: "networkidle" });
   await page.keyboard.press("Control+k");
   await page.getByPlaceholder("Išči simbol, zaslon ali dejanje").fill("asml");
+  await expect(page.getByRole("option", { name: /ASML Holding/ })).toBeVisible();
   await shot(page, "desktop-command-palette");
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/peek=instrument%3AASML|peek=instrument:ASML/);

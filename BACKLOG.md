@@ -37,19 +37,19 @@
 
 | ID | Naloga | Ref | Status |
 |---|---|---|---|
-| BL-020 | Pogodba vira podatkov (Protocol + skupni pytest nabor), prepis iz legacy `provider-contract.ts` | research §3.6 | next |
-| BL-021 | Router virov s kvotami in fallbackom (prepis legacy `composite-provider` + `quota-tracker`) | research §3.6 | next |
-| BL-022 | IBKR Flex: token, Flex Query (pozicije, posli, gotovina, dividende), parser, nočna sinhronizacija | PLAN §5.1 | next |
-| BL-023 | IB Gateway Docker (`gnzsnz/ib-gateway`, READ_ONLY_API, IBC auto-restart), ločen API uporabnik | ADR-0006 | next |
-| BL-024 | `services/broker`: ib_async klient (EOD svečke, contract details), prepis delov Vibe-Trading `ibkr/local.py` | research §3.2 | next |
-| BL-025 | Tabele `instrument`, `bar` (hypertable), `position`, `trade`, `cash`, `watchlist` | research §4.2 | next |
-| BL-026 | Univerzum: S&P 500 + Nasdaq 100 + seznam ETF-jev (konfiguracija), dnevna posodobitev sestave | PLAN §2 | next |
-| BL-027 | ETF profili: TER, AUM, holdings (izdajatelji CSV / yfinance), sektorji, države | research §5.5 | next |
-| BL-028 | SCR-08 Portfelj | DESIGN §4 | next |
-| BL-029 | SCR-05 Instrument: CMP-13 PriceChart (lightweight-charts + trading-signals), ključni podatki, CMP-08 | DESIGN §4 | next |
-| BL-030 | Watchlista: dodaj/odstrani, skupine | SCR-05 | next |
-| BL-031 | Iskanje ⌘K (simbol, ime) | CMP-01 | next |
-| BL-032 | Model watchliste: raven (aktivna / zaloga), vir ideje, oznake, cena in datum dodaje, donos od dodaje, cenovna opozorila, pregledano | research/trading-list §1 | next |
+| BL-020 | Pogodba vira podatkov (Protocol + skupni pytest nabor), prepis iz legacy `provider-contract.ts` | research §3.6 | done |
+| BL-021 | Router virov s kvotami in fallbackom (prepis legacy `composite-provider` + `quota-tracker`) | research §3.6 | done |
+| BL-022 | IBKR Flex: token, Flex Query (pozicije, posli, gotovina, dividende), parser, nočna sinhronizacija | PLAN §5.1 | done |
+| BL-023 | IB Gateway Docker (`gnzsnz/ib-gateway`, READ_ONLY_API, IBC auto-restart), ločen API uporabnik (compose profil `broker` narejen; živi preizkus na strežniku) | ADR-0006 | doing |
+| BL-024 | `services/broker`: ib_async klient (EOD svečke, contract details), prepis delov Vibe-Trading `ibkr/local.py` | research §3.2 | done |
+| BL-025 | Tabele `instrument`, `bar` (hypertable), `position`, `trade`, `cash`, `watchlist` | research §4.2 | done |
+| BL-026 | Univerzum: S&P 500 + Nasdaq 100 + seznam ETF-jev (konfiguracija), dnevna posodobitev sestave | PLAN §2 | done |
+| BL-027 | ETF profili: TER, AUM, holdings (izdajatelji CSV / yfinance), sektorji, države (seznam UCITS + ISIN narejen; holdings še ne) | research §5.5 | doing |
+| BL-028 | SCR-08 Portfelj | DESIGN §4 | done |
+| BL-029 | SCR-05 Instrument: CMP-13 PriceChart (lightweight-charts + trading-signals), ključni podatki, CMP-08 | DESIGN §4 | done |
+| BL-030 | Watchlista: dodaj/odstrani, skupine | SCR-05 | done |
+| BL-031 | Iskanje ⌘K (simbol, ime) | CMP-01 | done |
+| BL-032 | Model watchliste: raven (aktivna / zaloga), vir ideje, oznake, cena in datum dodaje, donos od dodaje, cenovna opozorila, pregledano | research/trading-list §1 | done |
 | BL-033 | (neobvezno) Uvoz idej in tez iz `trading-list` (MySQL izvoz) | research/trading-list §1 | later |
 
 ## M2: Radar

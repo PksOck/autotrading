@@ -66,6 +66,7 @@ class PositionOut(BaseModel):
     market_value: Num | None
     unrealized_pnl: Num | None
     weight_pct: Num | None
+    change_pct: Num | None = None
 
 
 class SyncInfo(BaseModel):

@@ -126,9 +126,35 @@
     "tokens": "Tokeni"
   },
   "portfolio": {
-    "exposure": "Izpostavljenost",
+    "exposure": "Izpostavljenost po valutah",
     "weight": "Teža",
-    "pnl": "Nerealiziran P/L"
+    "pnl": "Nerealiziran P/L",
+    "title": "Portfelj",
+    "tabPositions": "Pozicije",
+    "tabWatchlist": "Watchlista",
+    "total": "Skupna vrednost",
+    "asOf": "Stanje na {date}",
+    "sync": "Sinhroniziraj z IBKR",
+    "syncing": "Sinhroniziram…",
+    "syncQueued": "Sinhronizacija je v vrsti",
+    "syncFailed": "Sinhronizacija ni uspela",
+    "flexUnconfigured": "IBKR Flex ni nastavljen. Vpiši IBKR_FLEX_TOKEN in IBKR_FLEX_QUERY_ID v .env.",
+    "queueUnavailable": "Vrsta opravil (Redis) ni dosegljiva.",
+    "lastSync": "Zadnja sinhronizacija: {time}",
+    "never": "Še ni bilo sinhronizacije",
+    "emptyTitle": "Portfelj je prazen",
+    "emptyBody": "Ko nastaviš IBKR Flex (token in Flex Query z OpenPositions, Trades, CashReport), se pozicije naložijo vsako jutro ob 7:15. Za razvoj lahko naložiš demo podatke: python -m preza.cli.seed_demo.",
+    "cash": "Gotovina",
+    "col": {
+      "instrument": "Instrument",
+      "quantity": "Količina",
+      "price": "Cena",
+      "value": "Vrednost",
+      "weight": "Teža",
+      "pnl": "Nerealiziran P/L",
+      "today": "Danes"
+    },
+    "byKind": "Po vrsti"
   },
   "etf": {
     "overlap": "Prekrivanje s portfeljem",
@@ -137,7 +163,18 @@
   },
   "provenance": {
     "source": "Vir",
-    "updated": "Osveženo {time}"
+    "updated": "Osveženo {time}",
+    "stale": "zastarelo",
+    "demo": "demo podatki",
+    "sources": {
+      "ibkr": "IBKR",
+      "ibkr_flex": "IBKR Flex",
+      "yahoo": "Yahoo",
+      "stooq": "Stooq",
+      "demo": "demo",
+      "fake": "test",
+      "universe": "seznam"
+    }
   },
   "state": {
     "loading": "Nalagam",
@@ -292,5 +329,58 @@
   },
   "instrument": {
     "stock": "Delnica"
+  },
+  "watchlist": {
+    "add": "Dodaj na watchlisto",
+    "symbol": "Simbol",
+    "tier": "Raven",
+    "note": "Opomba ali teza",
+    "target": "Ciljna cena",
+    "alertBelow": "Opozorilo pod",
+    "alertAbove": "Opozorilo nad",
+    "tiers": {
+      "active": "Aktivna",
+      "reserve": "Zaloga idej"
+    },
+    "added": "Dodano {date}",
+    "sinceAdded": "Od dodaje",
+    "remove": "Odstrani",
+    "removed": "Odstranjeno z watchliste",
+    "moveTo": "Premakni v: {tier}",
+    "markReviewed": "Označi kot pregledano",
+    "reviewed": "pregledano",
+    "new": "novo",
+    "duplicate": "Ta instrument je že na watchlisti.",
+    "empty": "Watchlista je prazna. Dodaj simbol zgoraj ali iz predogleda instrumenta.",
+    "adding": "Dodajam…",
+    "onWatchlist": "Na watchlisti",
+    "addShort": "Spremljaj"
+  },
+  "instrumentPage": {
+    "notFound": "Instrumenta {symbol} ni v bazi.",
+    "notFoundHint": "Dodaj ga na watchlisto ali predlagaj v analizo, nato se podatki naložijo.",
+    "noBars": "Za ta instrument še ni cenovnih podatkov. Vir ni dosegljiv ali instrument ni podprt.",
+    "range": "Obdobje",
+    "ranges": {
+      "1m": "1M",
+      "3m": "3M",
+      "1y": "1L",
+      "2y": "2L",
+      "5y": "5L"
+    },
+    "stats": "Ključni podatki",
+    "high52": "52-t. vrh",
+    "low52": "52-t. dno",
+    "drawdown": "Od vrha",
+    "sma200": "Do SMA200",
+    "rsi": "RSI(14)",
+    "atr": "ATR(14)",
+    "exchange": "Borza",
+    "currency": "Valuta",
+    "isin": "ISIN",
+    "ucits": "UCITS",
+    "chartSummary": "Cena {symbol} v obdobju {range}: zadnje zaprtje {close}, sprememba {change}.",
+    "price": "Cena",
+    "volume": "Volumen"
   }
 }
