@@ -883,6 +883,13 @@
             ],
             "title": "Summary"
           },
+          "summary_translations": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Summary Translations"
+          },
           "symbols": {
             "items": {
               "type": "string"
@@ -1924,6 +1931,13 @@
           "rationale": {
             "type": "string",
             "title": "Rationale"
+          },
+          "rationale_translations": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Rationale Translations"
           },
           "evidence": {
             "items": {

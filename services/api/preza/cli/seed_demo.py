@@ -7,6 +7,7 @@ Run: python -m preza.cli.seed_demo
 import asyncio
 import math
 import random
+import re
 from datetime import date, timedelta
 from decimal import Decimal
 
@@ -202,6 +203,27 @@ DEMO_NEWS = [
 ]
 
 
+DEMO_SL = {
+    "Microsoft raises full-year cloud revenue guidance": (
+        "Microsoft je zvišal letno napoved prihodkov v oblaku"
+    ),
+    "Microsoft lifts cloud guidance as AI demand grows": (
+        "Microsoft zvišuje napoved za oblak zaradi rasti povpraševanja po UI"
+    ),
+    "Oracle directors buy shares in open market (Form 4)": (
+        "Direktorji Oracla kupujejo delnice na trgu (obrazec 4)"
+    ),
+    "ASML supply-chain peer reports record orders": (
+        "Dobavitelj iz verige ASML poroča o rekordnih naročilih"
+    ),
+    "Oil stays below $70 for a third week": "Nafta tretji teden ostaja pod 70 $",
+    "CrowdStrike raises annual revenue outlook": "CrowdStrike zvišuje letno napoved prihodkov",
+    "Reddit users speculate about a Kestrel Bio takeover": (
+        "Uporabniki Reddita ugibajo o prevzemu podjetja Kestrel Bio"
+    ),
+}
+
+
 class DemoTriage:
     """Stands in for the local model so the Radar can be demoed without Ollama."""
 
@@ -214,8 +236,26 @@ class DemoTriage:
         raise LlmUnavailableError("demo: no embeddings")
 
     async def complete_json(self, role, system, user, schema):  # type: ignore[no-untyped-def]
-        from preza.domain.radar import EventType, TimeSensitivity, TriageResult
+        from preza.domain.radar import (
+            EventType,
+            TimeSensitivity,
+            TranslatedText,
+            TranslationBatch,
+            TriageResult,
+        )
         from preza.llm.client import LlmResult
+
+        if schema is TranslationBatch:
+            items = [
+                TranslatedText(id=int(m[1]), text=DEMO_SL.get(m[2].rstrip("."), m[2]))
+                for m in re.finditer(r"^\[(\d+)\] (.+)$", user, re.MULTILINE)
+            ]
+            return LlmResult(
+                value=TranslationBatch(items=items),
+                model="demo-translate",
+                prompt_tokens=0,
+                completion_tokens=0,
+            )
 
         row = next((r for title, r in self.by_title.items() if title in user), DEMO_NEWS[0])
         symbol, title, _, _, materiality, novelty, sentiment, rumor = row
@@ -232,6 +272,9 @@ class DemoTriage:
         return LlmResult(value=value, model="demo-triage", prompt_tokens=0, completion_tokens=0)
 
 
+DEMO_URL = "https://demo.preza.local/"
+
+
 class DemoNews:
     name = "demo"
 
@@ -244,7 +287,7 @@ class DemoNews:
         return [
             NewsIn(
                 source="demo" if kind != "social" else "reddit",
-                url=f"https://demo.preza.local/{symbol.lower()}/{i}",
+                url=f"{DEMO_URL}{symbol.lower()}/{i}",
                 title=title,
                 summary=title,
                 published_at=now - timedelta(minutes=minutes),
@@ -256,9 +299,16 @@ class DemoNews:
 
 
 async def seed_radar() -> None:
+    from preza.models import Event, NewsItem, Signal
     from preza.radar.pipeline import run_radar
 
     async with get_sessionmaker()() as session:
+        # Re-seeding replaces the demo Radar instead of deduplicating it away.
+        demo_news = NewsItem.url.startswith(DEMO_URL)
+        event_ids = select(NewsItem.event_id).where(demo_news, NewsItem.event_id.is_not(None))
+        await session.execute(delete(Signal).where(Signal.event_id.in_(event_ids)))
+        await session.execute(delete(Event).where(Event.id.in_(event_ids)))
+        await session.execute(delete(NewsItem).where(demo_news))
         for symbol, name in (("CRWD", "CrowdStrike Holdings"), ("KSTL", "Kestrel Bio (fictional)")):
             await get_or_create(
                 session,
@@ -268,7 +318,7 @@ async def seed_radar() -> None:
                 kind=InstrumentKind.STOCK,
                 currency="USD",
             )
-        result = await run_radar(session, [DemoNews()], DemoTriage(), threshold=0.2)
+        result = await run_radar(session, [DemoNews()], DemoTriage(), threshold=0.2, locale="sl")
         await session.commit()
     print(f"demo radar: {result.events} events, {result.signals} signals")
 

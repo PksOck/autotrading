@@ -82,7 +82,7 @@ async def notify_new_signals(
             text = format_signal(
                 symbol,
                 signal.kind,
-                signal.rationale,
+                (signal.rationale_i18n or {}).get(settings.default_locale, signal.rationale),
                 float(signal.strength),
                 signal.is_rumor,
                 link,

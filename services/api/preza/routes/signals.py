@@ -38,6 +38,7 @@ def signal_out(signal: Signal) -> SignalOut:
         stop=signal.stop,
         target=signal.target,
         rationale=signal.rationale,
+        rationale_translations=dict(signal.rationale_i18n or {}),
         evidence=[EvidenceRef.model_validate(e) for e in signal.evidence],
         is_rumor=signal.is_rumor,
         status=SignalStatus(signal.status),

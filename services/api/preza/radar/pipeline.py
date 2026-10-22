@@ -17,6 +17,7 @@ from preza.radar.context import attention, reaction_z, relevance
 from preza.radar.score import ScoreInput, opportunity_score
 from preza.radar.signals import upsert_signal
 from preza.radar.store import store_news
+from preza.radar.translate import translate_events
 from preza.radar.triage import triage_event
 
 log = logging.getLogger(__name__)
@@ -29,6 +30,7 @@ class RadarRun:
     events: int = 0
     triaged: int = 0
     signals: int = 0
+    translated: int = 0
     errors: dict[str, str] = field(default_factory=dict)
 
 
@@ -60,17 +62,26 @@ async def fetch_all(
 
 
 async def process_events(
-    session: AsyncSession, events: list[Event], llm: Llm | None, threshold: float, run: RadarRun
+    session: AsyncSession,
+    events: list[Event],
+    llm: Llm | None,
+    threshold: float,
+    run: RadarRun,
+    locale: str = "en",
 ) -> None:
+    sensitivity: dict[int, str] = {}
     for event in events:
-        sensitivity = "days"
         if llm is not None and event.triaged_at is None:
             try:
                 triage = await triage_event(session, event, llm)
-                sensitivity = triage.time_sensitivity.value
+                sensitivity[event.id] = triage.time_sensitivity.value
                 run.triaged += 1
             except LlmUnavailableError as exc:
                 run.errors["triage"] = str(exc)
+    if llm is not None:
+        run.translated = await translate_events(events, llm, locale)
+
+    for event in events:
         if event.materiality is None or event.novelty is None:
             continue  # untriaged events wait for the local model; they are not scored blind
 
@@ -94,7 +105,7 @@ async def process_events(
             )
         )
         if instrument_id is not None and await upsert_signal(
-            session, event, instrument_id, threshold, sensitivity
+            session, event, instrument_id, threshold, sensitivity.get(event.id, "days")
         ):
             run.signals += 1
 
@@ -105,6 +116,7 @@ async def run_radar(
     llm: Llm | None,
     threshold: float = 0.6,
     lookback: timedelta = timedelta(hours=6),
+    locale: str = "en",
 ) -> RadarRun:
     run = RadarRun()
     items = await fetch_all(session, sources, datetime.now(UTC) - lookback, run)
@@ -122,6 +134,6 @@ async def run_radar(
     )
     events = list({e.id: e for e in [*touched, *pending]}.values())
     run.events = len(events)
-    await process_events(session, events, llm, threshold, run)
+    await process_events(session, events, llm, threshold, run, locale)
     await session.flush()
     return run

@@ -5,6 +5,7 @@ import { useFormatter, useTranslations } from "next-intl";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { EntityLink } from "@/components/common/EntityLink";
+import { TranslatedText } from "@/components/common/TranslatedText";
 import { useRadarEvents } from "@/lib/api/hooks";
 import type { EventOut, EventType, RadarView as View } from "@/lib/api/types";
 import { cn } from "@/lib/cn";
@@ -184,7 +185,7 @@ export function RadarView() {
                             {event.is_rumor ? t("radar.rumor") : t("radar.confirmed")}
                           </span>
                         </span>
-                        <span className="text-text">{event.summary ?? event.title}</span>
+                        <TranslatedText className="text-text" original={event.summary ?? event.title} translations={event.summary ? event.summary_translations : undefined} />
                         <span className="text-xs text-text-3">
                           {(event.sources ?? []).length} · {(event.sources ?? []).map((s) => s.source).filter((v, i, a) => a.indexOf(v) === i).join(", ")}
                           {event.score == null && ` · ${t("radar.notTriaged")}`}
@@ -219,7 +220,11 @@ export function RadarView() {
                   </span>
                 </div>
                 <h2 className="text-base leading-6 font-semibold">{selected.title}</h2>
-                {selected.summary && <p className="text-text-2">{selected.summary}</p>}
+                {selected.summary && (
+                  <p className="text-text-2">
+                    <TranslatedText original={selected.summary} translations={selected.summary_translations} />
+                  </p>
+                )}
                 <dl className="grid grid-cols-2 gap-3">
                   {(
                     [
@@ -251,7 +256,7 @@ export function RadarView() {
                 <div className="flex flex-wrap gap-2">
                   <button
                     type="button"
-                    onClick={() => openProposalComposer({ symbols: selected.symbols.slice(0, 1), hypothesis: selected.summary ?? selected.title })}
+                    onClick={() => openProposalComposer({ symbols: selected.symbols.slice(0, 1), hypothesis: selected.summary_translations?.[locale] ?? selected.summary ?? selected.title })}
                     className="h-10 rounded-md bg-accent px-4 font-medium text-on-accent hover:opacity-90"
                   >
                     {t("action.analyze")}

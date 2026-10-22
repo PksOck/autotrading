@@ -60,6 +60,17 @@ class TriageResult(BaseModel):
     summary: str = Field(max_length=400, description="one factual sentence in English")
 
 
+class TranslatedText(BaseModel):
+    id: int
+    text: str = Field(max_length=600)
+
+
+class TranslationBatch(BaseModel):
+    """Structured output of the summary translation call (BL-055)."""
+
+    items: list[TranslatedText]
+
+
 class EventStatus(StrEnum):
     NEW = "new"
     BELOW_THRESHOLD = "below_threshold"
@@ -86,6 +97,7 @@ class EventOut(BaseModel):
     id: int
     title: str
     summary: str | None
+    summary_translations: dict[str, str] = Field(default_factory=dict)
     symbols: list[str]
     event_type: EventType | None
     is_rumor: bool
@@ -160,6 +172,7 @@ class SignalOut(BaseModel):
     stop: Num | None
     target: Num | None
     rationale: str
+    rationale_translations: dict[str, str] = Field(default_factory=dict)
     evidence: list[EvidenceRef]
     is_rumor: bool
     status: SignalStatus

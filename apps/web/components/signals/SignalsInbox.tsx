@@ -5,6 +5,7 @@ import { useFormatter, useTranslations } from "next-intl";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { EntityLink } from "@/components/common/EntityLink";
+import { TranslatedText } from "@/components/common/TranslatedText";
 import { useSignalUpdate, useSignals } from "@/lib/api/hooks";
 import type { SignalOut, SignalStatus } from "@/lib/api/types";
 import { cn } from "@/lib/cn";
@@ -57,7 +58,9 @@ function SignalCard({ signal }: { signal: SignalOut }) {
           <span className="num text-text">{formatNumber(locale, Number(signal.strength), 2)}</span>
         </span>
       </div>
-      <p className="text-text-2">{signal.rationale}</p>
+      <p className="text-text-2">
+        <TranslatedText original={signal.rationale} translations={signal.rationale_translations} />
+      </p>
       {signal.evidence.length > 0 && (
         <details className="text-[13px]">
           <summary className="cursor-pointer text-text-3">

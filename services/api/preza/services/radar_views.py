@@ -29,6 +29,7 @@ def event_out(event: Event) -> EventOut:
         id=event.id,
         title=event.title,
         summary=event.summary,
+        summary_translations=dict(event.summary_i18n or {}),
         symbols=list(event.symbols),
         event_type=EventType(event.event_type) if event.event_type else None,
         is_rumor=event.is_rumor,

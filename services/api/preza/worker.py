@@ -97,11 +97,17 @@ async def radar(ctx: dict[str, Any]) -> str:
     async with get_sessionmaker()() as session:
         held, watched = await user_symbols(session)
         sources = build_sources(settings, sorted(held | watched), await _cik_map(ctx))
-        result = await run_radar(session, sources, llm_client(), settings.radar_signal_threshold)
+        result = await run_radar(
+            session,
+            sources,
+            llm_client(),
+            settings.radar_signal_threshold,
+            locale=settings.default_locale,
+        )
         await session.commit()
     return (
         f"new={result.new_items} events={result.events} signals={result.signals} "
-        f"errors={result.errors}"
+        f"translated={result.translated} errors={result.errors}"
     )
 
 

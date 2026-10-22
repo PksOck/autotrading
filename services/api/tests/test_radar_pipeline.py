@@ -1,3 +1,4 @@
+import re
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
@@ -7,7 +8,14 @@ from pydantic import BaseModel
 from sqlalchemy import func, select
 
 from preza.broker.flex import parse_statement
-from preza.domain.radar import EventType, NewsIn, TimeSensitivity, TriageResult
+from preza.domain.radar import (
+    EventType,
+    NewsIn,
+    TimeSensitivity,
+    TranslatedText,
+    TranslationBatch,
+    TriageResult,
+)
 from preza.llm.client import LlmResult, LlmUnavailableError
 from preza.models import Event, NewsItem, Signal
 from tests.conftest import FakeRouter
@@ -37,6 +45,10 @@ class FakeLlm:
 
     async def complete_json(self, role, system, user, schema: type[BaseModel]):  # type: ignore[no-untyped-def]
         self.calls += 1
+        if schema is TranslationBatch:
+            ids = [int(i) for i in re.findall(r"^\[(\d+)\]", user, re.MULTILINE)]
+            batch = TranslationBatch(items=[TranslatedText(id=i, text=f"SL #{i}") for i in ids])
+            return LlmResult(value=batch, model="fake-local", prompt_tokens=1, completion_tokens=1)
         text = user.lower()
         rumor = "rumor" in text or "reddit" in text
         value = TriageResult(
@@ -79,12 +91,14 @@ async def seed_portfolio() -> None:
         await session.commit()
 
 
-async def run(sources: list[FakeSource], llm: FakeLlm, threshold: float = 0.3) -> dict[str, int]:
+async def run(
+    sources: list[FakeSource], llm: FakeLlm, threshold: float = 0.3, locale: str = "en"
+) -> dict[str, int]:
     from preza.db import get_sessionmaker
     from preza.radar.pipeline import run_radar
 
     async with get_sessionmaker()() as session:
-        result = await run_radar(session, sources, llm, threshold=threshold)  # type: ignore[arg-type]
+        result = await run_radar(session, sources, llm, threshold=threshold, locale=locale)  # type: ignore[arg-type]
         await session.commit()
     return {"new": result.new_items, "events": result.events, "signals": result.signals}
 
@@ -164,3 +178,41 @@ async def test_without_local_model_events_wait_instead_of_scoring_blind(
         event = await session.scalar(select(Event))
         assert event is not None and event.score is None and event.triaged_at is None
         assert await session.scalar(select(func.count()).select_from(Signal)) == 0
+
+
+async def test_summaries_are_translated_for_the_user_locale(
+    api: tuple[httpx.AsyncClient, FakeRouter],
+) -> None:
+    from preza.db import get_sessionmaker
+
+    client, _ = api
+    await seed_portfolio()
+    llm = FakeLlm()
+    source = FakeSource("test", [news("Microsoft raises cloud guidance", "https://x/t1", 30)])
+    await run([source], llm, locale="sl")
+
+    async with get_sessionmaker()() as session:
+        event = (await session.scalars(select(Event))).one()
+        signal = (await session.scalars(select(Signal))).one()
+    assert event.summary == "Microsoft raised full-year cloud guidance."
+    assert event.summary_i18n == {"sl": f"SL #{event.id}"}
+    assert signal.rationale_i18n == {"sl": f"SL #{event.id}"}
+
+    calls = llm.calls
+    await run([source], llm, locale="sl")
+    assert llm.calls == calls  # already translated: no second call
+
+    body = (await client.get("/signals")).json()
+    assert body[0]["rationale_translations"] == {"sl": f"SL #{event.id}"}
+
+
+async def test_english_locale_skips_translation(api: tuple[httpx.AsyncClient, FakeRouter]) -> None:
+    from preza.db import get_sessionmaker
+
+    await seed_portfolio()
+    llm = FakeLlm()
+    await run([FakeSource("test", [news("Microsoft raises guidance", "https://x/t2", 30)])], llm)
+    async with get_sessionmaker()() as session:
+        event = (await session.scalars(select(Event))).one()
+    assert event.summary_i18n == {}
+    assert llm.calls == 1

@@ -212,7 +212,9 @@
       "demo": "demo",
       "fake": "test",
       "universe": "seznam"
-    }
+    },
+    "translated": "prevedeno",
+    "translatedTitle": "Strojni prevod. Izvirnik: {original}"
   },
   "state": {
     "loading": "Nalagam",

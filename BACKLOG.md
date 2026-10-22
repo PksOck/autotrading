@@ -71,7 +71,7 @@
 | BL-052 | SCR-01 Pregled (prva verzija) (portfelj in vrednost sta živa; utrip, lijak in režim še vzorčni) | DESIGN §4 | doing |
 | BL-053 | Ročni predlogi: model `proposal`, API, CMP-30, ⌘K akcija, Telegram `/predlog`, ekstrakcija simbolov iz prilepljenega besedila (local-fast), hitra analiza | DESIGN §11 | done |
 | BL-054 | SCR-12 Predlogi | DESIGN §11 | done |
-| BL-055 | Prevod povzetkov dogodkov in signalov v jezik uporabnika (local-fast), oznaka "prevedeno" | VOICE §7 | next |
+| BL-055 | Prevod povzetkov dogodkov in signalov v jezik uporabnika (local-fast), oznaka "prevedeno" | VOICE §7 | done |
 | BL-056 | Grozdenje brez vektorjev: upoštevaj isti simbol in tip dogodka v 24 h, ne samo besede v naslovu | PLAN §5 | done |
 | BL-057 | Telegram bot: besedila odgovorov (/start, /predlog, gumbi) v messages, ne v kodi | VOICE §6 | later |
 | BL-058 | Jutranji povzetek ob 7:30 po lokalnem času (zdaj 05:30 UTC, pozimi 6:30) | ADR-0007 | later |

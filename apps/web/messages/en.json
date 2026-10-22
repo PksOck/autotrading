@@ -212,7 +212,9 @@
       "demo": "demo",
       "fake": "test",
       "universe": "list"
-    }
+    },
+    "translated": "translated",
+    "translatedTitle": "Machine translation. Original: {original}"
   },
   "state": {
     "loading": "Loading",

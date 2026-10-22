@@ -18,6 +18,7 @@ from sqlalchemy import (
     Text,
     UniqueConstraint,
     Uuid,
+    text,
 )
 from sqlalchemy.dialects.postgresql import ARRAY, JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -191,6 +192,10 @@ class Event(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     title: Mapped[str] = mapped_column(String(500))
     summary: Mapped[str | None] = mapped_column(Text)
+    # Machine translations of `summary` by locale (BL-055); the English original stays canonical.
+    summary_i18n: Mapped[dict[str, str]] = mapped_column(
+        JSONB, default=dict, server_default=text("'{}'::jsonb")
+    )
     symbols: Mapped[list[str]] = mapped_column(ARRAY(String(20)), default=list)
     event_type: Mapped[str | None] = mapped_column(String(16))
     is_rumor: Mapped[bool] = mapped_column(Boolean, default=False)
@@ -253,6 +258,9 @@ class Signal(Base):
     stop: Mapped[Decimal | None] = mapped_column(PRICE)
     target: Mapped[Decimal | None] = mapped_column(PRICE)
     rationale: Mapped[str] = mapped_column(Text)
+    rationale_i18n: Mapped[dict[str, str]] = mapped_column(
+        JSONB, default=dict, server_default=text("'{}'::jsonb")
+    )
     evidence: Mapped[list[dict[str, Any]]] = mapped_column(JSONB, default=list)
     is_rumor: Mapped[bool] = mapped_column(Boolean, default=False)
     status: Mapped[str] = mapped_column(String(10), default="new", index=True)

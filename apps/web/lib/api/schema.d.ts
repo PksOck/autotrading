@@ -322,6 +322,10 @@ export interface components {
             title: string;
             /** Summary */
             summary: string | null;
+            /** Summary Translations */
+            summary_translations?: {
+                [key: string]: string;
+            };
             /** Symbols */
             symbols: string[];
             event_type: components["schemas"]["EventType"] | null;
@@ -658,6 +662,10 @@ export interface components {
             target: number | null;
             /** Rationale */
             rationale: string;
+            /** Rationale Translations */
+            rationale_translations?: {
+                [key: string]: string;
+            };
             /** Evidence */
             evidence: components["schemas"]["EvidenceRef"][];
             /** Is Rumor */

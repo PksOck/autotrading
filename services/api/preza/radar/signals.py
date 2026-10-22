@@ -77,6 +77,7 @@ async def upsert_signal(
     existing.strength = Decimal(str(score))
     existing.confidence = event.materiality
     existing.rationale = event.summary or event.title
+    existing.rationale_i18n = dict(event.summary_i18n or {}) if event.summary else {}
     existing.evidence = _evidence(event)
     existing.is_rumor = event.is_rumor
     event.status = EventStatus.SIGNALLED.value
