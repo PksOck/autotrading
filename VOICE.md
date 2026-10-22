@@ -41,6 +41,9 @@
 | SL | EN | Ključ v `messages` |
 |---|---|---|
 | signal | signal | `signal.*` |
+| predlog (ročni) | proposal | `proposal.*` |
+| hipoteza | hypothesis | `proposal.hypothesis` |
+| globina analize: hitro / standardno / globoko | depth: quick / standard / deep | `proposal.depth.*` |
 | vstopna točka / vstopna cona | entry point / entry zone | `entry.*` |
 | katalizator | catalyst | `signal.kind.catalyst` |
 | opozorilo za izstop | exit warning | `signal.kind.exit_warning` |

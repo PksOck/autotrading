@@ -15,8 +15,8 @@
 | BL-001 | Pravila projekta: BRAND, VOICE, DESIGN, PLAN, BACKLOG, SESSIONS, AGENTS, ADR-ji | S-001 | done |
 | BL-002 | Struktura monorepa z README v vsaki mapi, veja `legacy` | S-001 | done |
 | BL-003 | UI prototipi na Artifact platnu: tokeni, SCR-01, 02, 03, 05, 06, 07, 11 (kopija v `design/canvas/`) | DESIGN §4 | done |
-| BL-004 | Pregled prototipov z uporabnikom in popravki (komentarji na platnu) | BL-003 | next |
-| BL-005 | Prototipi še za SCR-04 Signali, SCR-08 Portfelj, SCR-09 Teze, SCR-10 Uspešnost + mobilna različica SCR-01/02 | DESIGN §4 | next |
+| BL-004 | Pregled prototipov z uporabnikom in popravki (komentarji na platnu) | BL-003 | done |
+| BL-005 | Prototipi še za SCR-04, 08, 09, 10, 12 + mobilna različica SCR-01/02 (zdaj neposredno v React, ne na platnu) | DESIGN §4 | later |
 | BL-006 | `infra/docker-compose.yml`: postgres (Timescale + pgvector), redis, litellm, api, worker, web; `.env.example` | ADR-0001 | next |
 | BL-007 | `apps/web`: Next.js 15 + Tailwind 4 + shadcn/ui, tokeni iz DESIGN §2 kot CSS spremenljivke, `data-theme` preklop | DESIGN §2 | next |
 | BL-008 | i18n: next-intl, `messages/sl.json` + `en.json`, preklop SL/EN, CI preverjanje manjkajočih ključev | ADR-0005, VOICE §6 | next |
@@ -28,8 +28,9 @@
 | BL-014 | CI (GitHub Actions): ruff, mypy, pytest, eslint, tsc, vitest, i18n ključi | AGENTS §4 | next |
 | BL-015 | `NOTICE` datoteka in predloga glave za prevzeto kodo | AGENTS §4 | next |
 | BL-016 | Tailscale na strežniku, HTTPS (Tailscale cert), dostop s telefona | ADR-0001 | next |
+| BL-019 | UX temelji: motion tokeni, MO-01–MO-10 primitivi, ⌘K (CMP-23), kukalo (CMP-21), EntityLink + HoverPreview, AnimatedNumber, Treemap, PulseTimeline, Funnel, RegimeStrip, Sparkline; stran `/ux` z vzorčnimi podatki | ADR-0009, DESIGN §8–§10 | next |
 | BL-017 | Varnostne kopije: nočni `pg_dump` v ločen disk | ADR-0001 | later |
-| BL-018 | Preveri dostopnost instrumentov za EU malega vlagatelja pri IBKR (PRIIPs/KID): ameriški ETF-ji niso na voljo, univerzum ETF = UCITS (LSE/Xetra), valute USD/EUR/GBP | PLAN §2 | next |
+| BL-018 | Preveri dostopnost instrumentov za EU malega vlagatelja pri IBKR (PRIIPs/KID): ameriški ETF-ji niso na voljo, univerzum ETF = UCITS (LSE/Xetra), valute USD/EUR/GBP | ADR-0008 | done |
 
 ## M1: Podatki + portfelj
 
@@ -67,6 +68,8 @@
 | BL-050 | SCR-04 Signali (nabiralnik) | DESIGN §4 | later |
 | BL-051 | Telegram bot: obvestila, gumbi Odpri / Spremljaj / Zavrzi, omejitev na tvoj chat_id | ADR-0007 | later |
 | BL-052 | SCR-01 Pregled (prva verzija) | DESIGN §4 | later |
+| BL-053 | Ročni predlogi: model `proposal`, API, CMP-30, ⌘K akcija, Telegram `/predlog`, ekstrakcija simbolov iz prilepljenega besedila (local-fast), hitra analiza | DESIGN §11 | later |
+| BL-054 | SCR-12 Predlogi | DESIGN §11 | later |
 
 ## M3: Vstopi
 
@@ -92,6 +95,7 @@
 | BL-086 | Regresijski testi agentov na 5 fiksnih posnetkih | research §3.1 | later |
 | BL-087 | Znanje za agente: prepis izbranih Vibe-Trading skills v `services/agents/knowledge/` | research §3.2 | later |
 | BL-088 | Dodatna analitika: dividende/odkupi in relativno vrednotenje (multiplikatorji računa koda) | research/trading-list §2 | later |
+| BL-090 | Ročni predlog → standardna/globoka analiza: hipoteza uporabnika v kontekstu, izrecna potrditev/ovržba v izhodu | DESIGN §11 | later |
 | BL-089 | Shema odločitve: sprožilci ocene (→ trditve teze), `delta_note` proti prejšnji analizi, prepričanje, razred velikosti, deterministična kontrolna ocena | research/trading-list §3 | later |
 
 ## M5: Teze + uspešnost

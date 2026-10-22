@@ -12,6 +12,8 @@ Format: `ADR-xxxx-kratek-naslov.md`, statusi: `predlagano` · `sprejeto` · `zam
 | [ADR-0005](./ADR-0005-i18n-sl-privzeto.md) | i18n: slovenščina privzeto, next-intl | sprejeto |
 | [ADR-0006](./ADR-0006-clovek-vedno-odloci.md) | Človek vedno odloči, brez samodejnih naročil | sprejeto |
 | [ADR-0007](./ADR-0007-telegram-obvestila.md) | Obvestila prek Telegrama | sprejeto |
+| [ADR-0008](./ADR-0008-instrumenti-ucits.md) | Instrumenti: ameriške delnice + UCITS ETF-ji | sprejeto |
+| [ADR-0009](./ADR-0009-napredni-ux-motion.md) | Napreden UX: gibanje, povezani pogledi, pregledi | sprejeto |
 
 ## Predloga
 

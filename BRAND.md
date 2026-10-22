@@ -2,13 +2,13 @@
 
 ## 1. Ime
 
-**Preža** (delovno ime)
+**Preža** (potrjeno v S-002)
 
 - *Biti na preži* pomeni mirno opazovati in čakati na pravi trenutek. To je bistvo dolgoročnega vlagatelja, ki ne lovi vsakega gibanja, ampak pravi vstop.
 - Kratko, slovensko, brez kolizije z znanimi finančnimi produkti.
 - V angleškem vmesniku ostane **Preža** (brez prevoda). Opis za angleški vmesnik: *"Preža: opportunity radar for long-term investors"*.
 
-Ime lahko kadarkoli zamenjamo. Uporablja se samo v `apps/web/messages/*.json` (`app.name`), naslovu strani in Telegram botu.
+Ime se uporablja samo v `apps/web/messages/*.json` (`app.name`), naslovu strani in Telegram botu.
 
 ## 2. Pozicioniranje
 
@@ -45,6 +45,7 @@ Ime lahko kadarkoli zamenjamo. Uporablja se samo v `apps/web/messages/*.json` (`
 | Teze | Teze | Theses | trditve, ki morajo veljati, in njihovo stanje | SCR-09 |
 | Uspešnost | Uspešnost | Track record | ali signali delujejo | SCR-10 |
 | Nastavitve | Nastavitve | Settings | jezik, tema, viri, LLM, proračun, Telegram | SCR-11 |
+| Predlogi | Predlogi | Proposals | tvoji ročni predlogi za analizo | SCR-12 |
 
 **Trije pogledi Radarja** (zavihki na SCR-02):
 

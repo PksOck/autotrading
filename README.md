@@ -1,6 +1,6 @@
 # Preža
 
-> Delovno ime. *Biti na preži*: opazovati, čakati na pravi trenutek.
+> *Biti na preži*: opazovati, čakati na pravi trenutek.
 
 Interna platforma za **zaznavanje naložbenih priložnosti** v ameriških delnicah in ETF-jih. Spremlja novice, filinge in špekulacije, prepoznava dobre (ponovne) vstopne točke za dolgoročne pozicije in s pomočjo AI agentov pripravi utemeljeno analizo. Odločitev in naročilo pri Interactive Brokers ostaneta vedno tvoja.
 

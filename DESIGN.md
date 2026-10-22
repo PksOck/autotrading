@@ -98,6 +98,18 @@ Kontrast je preverjen (WCAG 2.1): besedilni tokeni dosežejo vsaj 4,5:1 na `bg`,
 | CMP-16 | ViewTabs | zavihki pogledov: Novi predlogi / Watchlista / Portfelj | SCR-02, 03, 04 |
 | CMP-17 | EmptyState | razlog + dejanje | povsod |
 | CMP-18 | ConfirmDialog | dvojna potrditev za nepovratna dejanja | SCR-07, (M7) |
+| CMP-19 | EntityLink | klikljiva entiteta s predogledom in kukalom (LX-01, LX-02) | povsod |
+| CMP-20 | HoverPreview | predogled entitete ob hoverju | povsod |
+| CMP-21 | PeekPanel | desni panel z zgodovino, deljeni prehod na celoten zaslon | povsod |
+| CMP-22 | Trail | veriga izvora: novica → dogodek → signal → analiza → odločitev | SCR-04, 05, 06 |
+| CMP-23 | CommandPalette | ⌘K iskanje entitet in dejanj | glava |
+| CMP-24 | AnimatedNumber | animirana številka z bliskom smeri (MO-04) | povsod |
+| CMP-25 | Treemap | toplotni zemljevid portfelja (OV-01) | SCR-01, 08 |
+| CMP-26 | PulseTimeline | utrip Radarja (OV-02) | SCR-01, 02 |
+| CMP-27 | Funnel | lijak signalov (OV-03) | SCR-01, 10 |
+| CMP-28 | RegimeStrip | trak tržnega režima (OV-04) | SCR-01 |
+| CMP-29 | Sparkline | iskrica (OV-07) | povsod |
+| CMP-30 | ProposalComposer | ročni predlog za analizo (§11) | glava, ⌘K, SCR-02, SCR-12 |
 
 Osnova je **shadcn/ui** (Radix): Button, Tabs, Dialog, DropdownMenu, Tooltip, Table, Badge, Toggle, Command (iskanje ⌘K). Komponente CMP-xx so kompozicije nad njimi.
 
@@ -116,6 +128,7 @@ Osnova je **shadcn/ui** (Radix): Button, Tabs, Dialog, DropdownMenu, Tooltip, Ta
 | SCR-09 | Teze | `/theses` | trditve in tedenski pregledi | M5 |
 | SCR-10 | Uspešnost | `/track-record` | hit rate, alfa, kalibracija po virih | M5 |
 | SCR-11 | Nastavitve | `/settings` | jezik, tema, univerzum, pragovi, LLM vloge in proračun, Telegram, povezave | M0→ |
+| SCR-12 | Predlogi | `/proposals` | tvoji ročni predlogi, stanje analize, izid (§11) | M2→M4 |
 
 Na platnu so narisani: SCR-01, 02, 03, 05, 06, 07, 11 in tabla tokenov. SCR-04, 08, 09, 10 sledijo istim vzorcem (BL-005).
 
@@ -146,7 +159,100 @@ Na platnu so narisani: SCR-01, 02, 03, 05, 06, 07, 11 in tabla tokenov. SCR-04, 
 - `prefers-reduced-motion`: brez animacij razen nujnih kazalnikov napredka.
 - Jezik strani (`<html lang>`) sledi izbranemu jeziku.
 
-## 8. Gibanje
+## 8. Gibanje (motion sistem)
 
-- Trajanje 120 do 200 ms, `ease-out`. Animiramo samo prozornost in premik do 4 px.
-- Nov dogodek v Radarju: kratek poudarek ozadja (`--accent-soft`, 1,2 s), brez skakanja vsebine.
+Gibanje ni okras. **Vsaka animacija pojasni vzrok in posledico:** kaj se je spremenilo, od kod je prišlo, kam je šlo. Knjižnica: **Motion** (`motion/react`, naslednik Framer Motion) ([ADR-0009](./docs/adr/ADR-0009-napredni-ux-motion.md)).
+
+### 8.1 Tokeni gibanja
+
+| Token | Vrednost | Uporaba |
+|---|---|---|
+| `--dur-fast` | 120 ms | hover, fokus, preklop stikala |
+| `--dur-base` | 200 ms | pojav ali skritje elementa, zavihek |
+| `--dur-slow` | 320 ms | odpiranje panela, prehod strani |
+| `--ease-standard` | `cubic-bezier(.2, 0, 0, 1)` | večina prehodov |
+| `--ease-exit` | `cubic-bezier(.4, 0, 1, 1)` | izhod (hitrejši od vhoda) |
+| `spring.snappy` | `{ stiffness: 520, damping: 38 }` | indikator zavihka, izbira, preurejanje seznama |
+| `spring.soft` | `{ stiffness: 260, damping: 30 }` | panel, kartica, ki se razširi |
+
+Tokeni živijo v `apps/web/lib/motion.ts` (JS) in `tokens.css` (CSS). Komponente ne uporabljajo lastnih trajanj.
+
+### 8.2 Vzorci gibanja (obvezni)
+
+| ID | Vzorec | Kje | Kako |
+|---|---|---|---|
+| MO-01 | **Deljeni prehod** (shared layout) | kartica signala → panel podrobnosti, vrstica → instrument | `layoutId` na simbolu, ceni in oceni. Element "odpotuje" na novo mesto, ne izgine in se ponovno pojavi |
+| MO-02 | **Drsni indikator** | zavihki, stranski meni, segmentirani gumbi | en `motion.span` z `layoutId`, ki zdrsne pod aktivno izbiro |
+| MO-03 | **Živi seznam** | Radar, Signali, časovnica agentov | `AnimatePresence` + `layout`: novi elementi zdrsnejo od zgoraj (y −8 → 0, prozornost 0 → 1), ostali se gladko premaknejo navzdol, odstranjeni se skrčijo |
+| MO-04 | **Animirana številka** | cene, vrednost portfelja, ocene, števci | štetje do nove vrednosti (`useSpring`) + kratek blisk ozadja `--pos-soft` / `--neg-soft` (600 ms) glede na smer spremembe |
+| MO-05 | **Postopno razkrivanje** | debata agentov, povzetki | besedilo prihaja v delih (SSE), kazalnik pisanja, nov korak se razširi z `spring.soft` |
+| MO-06 | **Okostje → vsebina** | vse kartice | prelivanje (crossfade) iz okostja v vsebino iste oblike, brez skoka postavitve |
+| MO-07 | **Prehod strani** | med zasloni | View Transitions API (podpora v Next.js) ali Motion: vsebina se zamenja s prelivom in premikom 8 px, glava in meni ostaneta pri miru |
+| MO-08 | **Prehod grafa** | sprememba obdobja, filtra | črta se morfira med stanji (interpolacija poti), osi se animirajo, ne izrišejo na novo |
+| MO-09 | **Pulz dogodka** | nov dogodek nad pragom, oznaka na grafu | en val (obroč, ki se razširi in zbledi, 1,2 s). Nikoli neskončna animacija |
+| MO-10 | **Razveljavi** | Zavrzi, Spremljaj, Sprejmi | optimistična posodobitev + toast z gumbom *Razveljavi* (5 s) |
+
+**Pravila:**
+- Animiramo samo `transform` in `opacity` (in barvo ozadja za MO-04). Nikoli `width`/`height`/`top` neposredno (uporabi `layout`).
+- Hkrati se animira največ en "glavni" element. Ostalo je statično ali se samo prelije.
+- `prefers-reduced-motion`: vsi vzorci se zamenjajo s takojšnjo spremembo ali prelivom ≤ 120 ms. MO-09 se ne izvaja.
+- Gibanje nikoli ne zakasni podatka: vsebina je v DOM takoj, animacija je samo prikaz.
+
+## 9. Povezovanje: vse je povezano z vsem
+
+Cilj: uporabnik nikoli ne izgubi konteksta in vedno vidi, **od kod je kaj prišlo** in **kaj je s čim povezano**.
+
+| ID | Vzorec | Opis |
+|---|---|---|
+| LX-01 | **Entiteta povsod klikljiva** | vsak simbol, dogodek, signal, analiza, teza in pozicija je `EntityLink` (CMP-19). Hover po 300 ms odpre predogled (CMP-20 HoverPreview): mini graf, cena, zadnji signal, stanje teze |
+| LX-02 | **Kukalo (peek panel)** | klik na entiteto odpre desni panel (CMP-21 PeekPanel) brez zapustitve trenutnega zaslona. `Shift`+klik ali gumb "Odpri" vodi na celoten zaslon (z MO-01). Panel ima lastno zgodovino (nazaj/naprej) |
+| LX-03 | **Navzkrižno poudarjanje** | hover na dogodek v seznamu poudari njegovo oznako na grafu in obratno. Hover na pozicijo v portfelju poudari vse njene signale in dogodke na vseh vidnih panelih (skupno stanje `focusEntity`) |
+| LX-04 | **Sled (lineage)** | CMP-22 Trail: veriga *Novica → Dogodek → Signal → Analiza → Odločitev → (Naročilo)*. Na vsakem objektu vidiš celotno verigo in skočiš na kateri koli člen |
+| LX-05 | **Globalni kontekst simbola** | izbira simbola (⌘K ali klik "Fokus") filtrira vse zaslone na ta simbol, dokler fokusa ne odstraniš (značka v glavi) |
+| LX-06 | **Ukazna paleta** | CMP-23 ⌘K: iskanje entitet in dejanj (*Analiziraj MSFT*, *Dodaj na watchlisto*, *Preklopi temo*, *Pojdi na Radar*). Nedavne entitete na vrhu |
+| LX-07 | **Tipkovnica** | `j`/`k` premik po seznamu, `Enter` odpri kukalo, `a` analiziraj, `w` spremljaj, `x` zavrzi, `g r` Radar, `g e` Vstopi, `?` pomoč |
+| LX-08 | **Deep link** | vsak pogled, filter, fokus in odprt panel je v URL (`?peek=signal:8f3a&focus=MSFT`). Telegram povezave odprejo točno to stanje |
+
+## 10. Pregledi (overview vizualizacije)
+
+| ID | Pregled | Zaslon | Opis |
+|---|---|---|---|
+| OV-01 | **Toplotni zemljevid portfelja** (treemap) | SCR-01, SCR-08 | ploščina = teža, barva = dnevna sprememba (diverging pos/neg), obroba = stanje teze. Klik = kukalo |
+| OV-02 | **Utrip Radarja** | SCR-01, SCR-02 | časovnica zadnjih 7 dni: vrstica na simbol, pike = dogodki (velikost = ocena, barva = tip, črtkano = govorica). Čopič (brush) za izbiro obdobja filtrira seznam |
+| OV-03 | **Lijak signalov** | SCR-01, SCR-10 | novice → dogodki → nad pragom → signali → sprejeti → izidi. Pokaže, koliko šuma sistem filtrira |
+| OV-04 | **Trak tržnega režima** | glava SCR-01 | SPY proti SMA200, VIX, 10-l. obrestna mera, dolar: 4 mini indikatorji z barvo režima |
+| OV-05 | **Zemljevid vstopov** | SCR-03 | razsevni diagram: x = razdalja do cone, y = kakovost/vrednotenje, velikost = moč, barva = vzrok padca. Kandidati v "ciljnem kvadrantu" so poudarjeni |
+| OV-06 | **Mreža izpostavljenosti** | SCR-08 | sektor × regija skozi ETF holdinge, prekrivanja med ETF-ji |
+| OV-07 | **Iskrice (sparklines)** | povsod | 30-dnevni trend ob vsakem simbolu v tabelah |
+
+Vizualizacije pregledov so lastne SVG komponente (`d3-scale`, `d3-hierarchy`, `d3-shape` za izračun, React za izris, Motion za prehode). Cenovni grafi ostanejo lightweight-charts.
+
+## 11. Ročni predlogi (uporabnik predlaga, sistem analizira)
+
+Ideja ne pride samo iz Radarja. Uporabnik lahko **sam predlaga instrument ali tezo** in jo pošlje v analizo.
+
+**Vstopne točke:**
+- gumb **+ Predlog** v glavi (vedno viden) → CMP-30 ProposalComposer kot plavajoči panel;
+- ⌘K: *Predlagaj …* ali neposredno vnos simbola + `Enter` → *Predlagaj v analizo*;
+- Telegram: `/predlog MSFT padec po poročilu, zanima me vstop pod 400` ali posredovano sporočilo/povezava botu;
+- na vsakem dogodku in instrumentu: *Dodaj svojo hipotezo*.
+
+**Polja predloga** (samo simbol je obvezen):
+
+| Polje | Opis |
+|---|---|
+| simbol(i) | eden ali več; iz prilepljenega besedila jih predlaga lokalni model (`local-fast`), uporabnik potrdi |
+| hipoteza | prosto besedilo: zakaj te zanima (postane kontekst za agente, ne dejstvo) |
+| vir | povezava, prilepljena novica ali besedilo (shrani se kot `news_item` z virom `manual`) |
+| smer in horizont | gor/dol/ne vem · dnevi/tedni/meseci/leta |
+| globina | **Hitro** (lokalno, ~1 min, 0 $), **Standardno** (cloud-quick), **Globoko** (celoten TradingAgents/ETF graf, porabi kredit) |
+| kam shrani | watchlista (aktivna/zaloga) ali samo enkratna analiza |
+
+**Tok:** predlog → takojšnja potrditev (MO-10 toast z *Razveljavi*) → vrsta analiz (vidna v glavi kot števec) → rezultat kot signal `source=manual` z uporabnikovo hipotezo, ki jo agenti **izrecno potrdijo ali ovržejo** ("Tvoja hipoteza: … Ocena: delno drži, ker …") → obvestilo v Telegram.
+
+**Pravila:**
+- ročni predlogi gredo mimo praga Radarja, vendar spoštujejo dnevni proračun za globoke analize (prikaz preostanka ob izbiri globine);
+- hipoteza uporabnika se v pozivih označi kot *user hypothesis*, agenti jo morajo preveriti z dokazi, ne jo privzeti;
+- uspešnost ročnih predlogov se meri ločeno (SCR-10: "tvoji predlogi" proti "sistemski signali").
+
+**Zaslon:** SCR-12 *Predlogi* (`/proposals`): seznam tvojih predlogov s stanjem (v vrsti, v analizi, končano) in izidom.

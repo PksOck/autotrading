@@ -11,7 +11,7 @@ Zaznati **(a) priložnost iz novic, filingov in špekulacij** ter **(b) dobro (p
 | Tema | Odločitev |
 |---|---|
 | Gostovanje | Docker Compose lokalno, dostop prek Tailscale ([ADR-0001](./docs/adr/ADR-0001-docker-lokalno.md)) |
-| Lokalni LLM | ločena naprava v LAN, **24 GB VRAM**, Ollama, Qwen ~27B Q4 (točno verzijo potrdi v BL-012) |
+| Lokalni LLM | ločena naprava v LAN, **24 GB VRAM**, Ollama, **Qwen 3.8 27B, 4-bitna kvantizacija** (potrjeno) |
 | Oblačni LLM | **Claude Pro** (Agent SDK kredit), **OpenAI** naročnina (ChatGPT prijava), **OpenCode** naročnina. API ključev zaenkrat ni |
 | Broker | IBKR PRO: Flex Web Service + IB Gateway (Read-Only API) + ib_async |
 | Univerzum | trije pogledi: **Novi predlogi** (S&P 500 + Nasdaq 100 + izbrani ETF-ji), **Watchlista**, **Portfelj** |
@@ -19,7 +19,9 @@ Zaznati **(a) priložnost iz novic, filingov in špekulacij** ter **(b) dobro (p
 | Jezik | slovenščina privzeto, preklop na angleščino (next-intl) ([ADR-0005](./docs/adr/ADR-0005-i18n-sl-privzeto.md)) |
 | Tema | svetla in temna, privzeto po sistemu |
 | Prejšnja koda | veja `legacy` (samo za branje). Stari PHP projekt `trading-list` je vir izkušenj, ne predloga ([prevzem](./docs/research/2026-10-22-trading-list-prevzem.md)) |
-| Instrumenti | ameriške delnice + **UCITS ETF-ji** (EU mali vlagatelj pri IBKR ne more kupiti ameriških ETF-jev zaradi PRIIPs/KID, preveri BL-018) |
+| Instrumenti | ameriške delnice + **UCITS ETF-ji** (potrjeno, [ADR-0008](./docs/adr/ADR-0008-instrumenti-ucits.md)) |
+| UX | napreden React UX: gibanje (Motion), povezani pogledi, kukalo, ⌘K, pregledne vizualizacije ([ADR-0009](./docs/adr/ADR-0009-napredni-ux-motion.md), DESIGN.md §8–§10) |
+| Ročni predlogi | uporabnik lahko sam pošlje simbol, hipotezo ali novico v analizo (DESIGN.md §11) |
 
 ## 3. Arhitektura
 
@@ -46,7 +48,7 @@ Odločitve: [ADR-0002](./docs/adr/ADR-0002-python-backend-nextjs-frontend.md) (s
 | Vloga | Model | Naloge | Obseg |
 |---|---|---|---|
 | `embed` | Ollama `bge-m3` ali `nomic-embed-text` (~1 GB VRAM) | vektorji novic, grozdenje | vse novice |
-| `local-fast` | Ollama Qwen ~27B Q4, *brez razmišljanja* | triaža novic (JSON), tikerji, tip dogodka, sentiment, povzetek | stotine na dan |
+| `local-fast` | Ollama Qwen 3.8 27B (4-bit), *brez razmišljanja* | triaža novic (JSON), tikerji, tip dogodka, sentiment, povzetek | stotine na dan |
 | `local-reason` | isti model, *z razmišljanjem* | prvi prehod analize vzroka padca, ETF tema, prevodi povzetkov | desetine na dan |
 | `cloud-quick` | OpenCode Go (GLM / Kimi / DeepSeek) | analitiki in debata v TradingAgents | nekaj zagonov na dan |
 | `cloud-deep` | OpenAI prek ChatGPT prijave (TradingAgents), **Claude** prek Agent SDK (naši agenti) | končne odločitve, opcijski strateg, tedenski pregled tez | omejeno s krediti |
@@ -58,10 +60,11 @@ Odločitve: [ADR-0002](./docs/adr/ADR-0002-python-backend-nextjs-frontend.md) (s
 
 Ko kredit poide, LiteLLM preklopi na `cloud-deep` prek OpenAI.
 
-**Opomba o VRAM:** 27B Q4 zasede ~16 do 18 GB. Ob embed modelu ostane ~5 GB za kontekst, zato je vzporednost 1 do 2 zahtevi. Če triaža ne dohaja (S&P 500 ustvari veliko novic), dodamo manjši model (Qwen ~8B) za `local-fast` (BL-012).
+**Opomba o VRAM:** 27B Q4 zasede ~16 do 18 GB. Ob embed modelu ostane ~5 GB za kontekst, zato je vzporednost 1 do 2 zahtevi. Če triaža ne dohaja (S&P 500 ustvari veliko novic), dodamo manjši model iste družine za `local-fast` (BL-012).
 
 ## 5. Cevovodi
 
+0. **Ročni predlogi** (`services/api/proposals`): obrazec, ⌘K, Telegram `/predlog` → vrsta analiz z izbrano globino (hitro / standardno / globoko) → signal `source=manual`, ki hipotezo potrdi ali ovrže.
 1. **Ingest** (`services/api/ingest`): IBKR EOD svečke in opcijske verige (zakasnjeno), Flex (portfelj), SEC EDGAR (8-K, Form 4, 13D/G), Finnhub (novice, koledar poročil), RSS (sporočila za javnost), Reddit/StockTwits (samo watchlista + kandidati), yfinance (fallback, ETF holdings), FRED.
 2. **Radar** (`services/api/radar`): normalizacija → embed → grozdenje v dogodke → triaža (`local-fast`) → deterministični kontekst (odziv cene, pozornost) → ocena priložnosti → eskalacija → signal `catalyst` → Telegram.
 3. **Vstopi** (`services/api/entries`): pravila (trend, pullback, podpora, padec od vrha, pasovi vrednotenja, insiderji) → `dip_analyst` (`local-reason` → `cloud-quick` pri dvomu) → signal `entry` ali `thesis_break` → lestvica postopnega nakupa.
@@ -74,7 +77,7 @@ Ko kredit poide, LiteLLM preklopi na `cloud-deep` prek OpenAI.
 
 | ID | Mejnik | Rezultat (definicija "končano") | Naloge |
 |---|---|---|---|
-| **M0** | Temelji | `docker compose up` zažene vse servise. LiteLLM odgovori na vseh 5 vlog. CI je zelen. Prazna lupina UI (SL/EN, tema) | BL-001–BL-019 |
+| **M0** | Temelji | `docker compose up` zažene vse servise. LiteLLM odgovori na vseh 5 vlog. CI je zelen. Lupina UI (SL/EN, tema) z UX temelji: motion tokeni, ⌘K, kukalo, animirane številke, pregledne komponente na vzorčnih podatkih | BL-001–BL-019 |
 | **M1** | Podatki + portfelj | Flex in EOD svečke v bazi. SCR-08 Portfelj in SCR-05 Instrument (osnova) delujeta. Watchlista v bazi | BL-020–BL-039 |
 | **M2** | Radar | dogodki za tri poglede, triaža lokalno, ocena, SCR-02 in SCR-04, Telegram obvestila | BL-040–BL-059 |
 | **M3** | Vstopi | pravila, `dip_analyst`, SCR-03, lestvica, beleženje izidov | BL-060–BL-079 |

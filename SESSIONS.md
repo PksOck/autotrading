@@ -20,7 +20,7 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 **Odločitve (uporabnik):**
 - Dolgoročno trgovanje, občasno kratkoročno in opcije. Podatki v realnem času niso potrebni.
 - Fokus: priložnosti iz novic in špekulacij ter dobre (ponovne) vstopne točke, za delnice in ETF-je.
-- Docker lokalno. GPU naprava v LAN s 24 GB VRAM, Qwen ~27B Q4.
+- Docker lokalno. GPU naprava v LAN s 24 GB VRAM, Qwen 3.8 27B (4-bit).
 - Naročnine: Claude **Pro**, OpenAI, OpenCode. IBKR PRO.
 - Radar v treh pogledih: Novi predlogi (širše), Watchlista, Portfelj.
 - Obvestila prek Telegrama.
