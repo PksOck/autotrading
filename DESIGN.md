@@ -91,7 +91,7 @@ Kontrast je preverjen (WCAG 2.1): besedilni tokeni dosežejo vsaj 4,5:1 na `bg`,
 | CMP-09 | ChangeValue | ▲ +2,1 % / ▼ −3,4 % z barvo in predznakom | povsod |
 | CMP-10 | CauseBadge | vzrok padca: trg / sektor / začasno / temeljno / neznano | SCR-03 |
 | CMP-11 | ThesisCheck | trditev teze s stanjem ✓ drži / ! šibi / ✕ ovržena | SCR-05, 09 |
-| CMP-12 | AgentTimeline | koraki agentov v živo (SSE), razširljivi izhodi, stroški | SCR-06 |
+| CMP-12 | AgentTimeline | koraki agentov v živo (SSE), razvrščeni v faze (Analitiki, Debata, Načrt, Tveganja, Odločitev), bik/medved v dveh stolpcih od `md`, zaprt korak pokaže 3 vrstice, odprt cel markdown, novi koraki pridejo z MO-03 | SCR-06 |
 | CMP-13 | PriceChart | lightweight-charts + indikatorji (trading-signals) + oznake dogodkov in signalov | SCR-05 |
 | CMP-14 | PayoffChart | profil dobička in izgube opcijske strukture, break-even, max izguba | SCR-07 |
 | CMP-15 | LadderTable | lestvica postopnega nakupa (deleži, cene) | SCR-03, 04 |
@@ -122,7 +122,7 @@ Osnova je **shadcn/ui** (Radix): Button, Tabs, Dialog, DropdownMenu, Tooltip, Ta
 | SCR-03 | Vstopi | `/entries?view=all\|portfolio\|watchlist&symbol=…` | zemljevid vstopov (OV-05), kandidati s filtri (kandidati, v coni, blizu, vse), cona in stop (CMP-07), vzrok padca (CMP-10), sprožena pravila, pasovi vrednotenja, lestvica z zneskom (CMP-15) | M3 |
 | SCR-04 | Signali | `/signals` | nabiralnik, statusi, filtri, množična dejanja | M2 |
 | SCR-05 | Instrument | `/i/[symbol]` | graf, ključni podatki ali ETF profil, signali, analize, teze | M1→M4 |
-| SCR-06 | Analiza | `/analysis/[runId]` | debata agentov v živo, končna odločitev, stroški | M4 |
+| SCR-06 | Analiza | `/analysis`, `/analysis/[runId]` | seznam zagonov; glava z oceno, motorjem (TradingAgents ali ETF), viri in opozorili; panel "Tvoja hipoteza" pri globokem predlogu; končna odločitev; kartica odločitve (kontrolna ocena, prepričanje, razred velikosti, sprožilci, sprememba od prejšnje); CMP-12 | M4 |
 | SCR-07 | Opcije | `/options/[symbol]` | predlagane strukture, payoff, veriga, tveganja | M6 |
 | SCR-08 | Portfelj | `/portfolio` | pozicije, teže, izpostavljenost (skozi ETF), stanje tez | M1 |
 | SCR-09 | Teze | `/theses` | trditve in tedenski pregledi | M5 |

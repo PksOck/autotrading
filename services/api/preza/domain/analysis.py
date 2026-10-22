@@ -21,6 +21,11 @@ class AnalysisCreate(BaseModel):
     hypothesis: str | None = Field(default=None, max_length=2000)
 
 
+class AnalysisQuota(BaseModel):
+    limit: int = Field(description="0 means no limit")
+    used: int
+
+
 class AnalysisStepOut(BaseModel):
     seq: int
     agent: str

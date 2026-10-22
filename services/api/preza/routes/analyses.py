@@ -21,13 +21,14 @@ from preza.db import get_session, get_sessionmaker
 from preza.domain.analysis import (
     AnalysisCreate,
     AnalysisOut,
+    AnalysisQuota,
     AnalysisStatus,
     AnalysisStepOut,
     AnalysisSummary,
     DecisionCard,
 )
 from preza.models import AnalysisRun, AnalysisStep, Instrument
-from preza.services.analyses import new_run, queue_run
+from preza.services.analyses import limit_reached, new_run, queue_run, used_today
 from preza.services.instruments import find_by_symbol
 
 router = APIRouter(prefix="/analyses", tags=["analyses"])
@@ -90,6 +91,8 @@ async def create_analysis(
     instrument = await find_by_symbol(session, body.symbol.upper())
     if instrument is None:
         raise HTTPException(404, detail="instrument_not_found")
+    if await limit_reached(session, settings):
+        raise HTTPException(429, detail="daily_limit_reached")
     run = await new_run(
         session, instrument, settings, trade_date=body.trade_date, hypothesis=body.hypothesis
     )
@@ -98,6 +101,13 @@ async def create_analysis(
     await session.commit()
     await queue_run(settings, run.id)
     return out
+
+
+@router.get("/quota", response_model=AnalysisQuota)
+async def quota(
+    session: Session, settings: Annotated[Settings, Depends(get_settings)]
+) -> AnalysisQuota:
+    return AnalysisQuota(limit=settings.deep_daily_limit, used=await used_today(session))
 
 
 @router.get("", response_model=list[AnalysisSummary])

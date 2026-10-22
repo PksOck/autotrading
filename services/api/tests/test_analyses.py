@@ -1,5 +1,6 @@
 """Deep analysis API: queue a run, read it back, stream its steps (BL-080, BL-082)."""
 
+import uuid
 from datetime import date
 from typing import Any
 
@@ -131,3 +132,33 @@ async def test_detail_carries_the_decision_card(api: Any) -> None:
     card = (await client.get(f"/analyses/{run.id}")).json()["card"]
     assert card["size_class"] == "normal" and card["control"]["implied_rating"] == "Overweight"
     assert len(card["upgrade_if"]) == 2
+
+
+async def test_daily_limit(api: Any, monkeypatch: pytest.MonkeyPatch) -> None:
+    from preza.config import get_settings
+
+    client, _ = api
+
+    async def fake_enqueue(*args: Any, **kwargs: Any) -> None:
+        return None
+
+    monkeypatch.setattr(analyses_service, "enqueue", fake_enqueue)
+    monkeypatch.setenv("DEEP_DAILY_LIMIT", "2")
+    get_settings.cache_clear()
+    try:
+        await _instrument("ASML")
+        assert (await client.post("/analyses", json={"symbol": "ASML"})).status_code == 202
+        first_id = (await client.get("/analyses")).json()[0]["id"]
+        assert (await client.post("/analyses", json={"symbol": "ASML"})).status_code == 202
+        over = await client.post("/analyses", json={"symbol": "ASML"})
+        assert over.status_code == 429 and over.json()["detail"] == "daily_limit_reached"
+        assert (await client.get("/analyses/quota")).json() == {"limit": 2, "used": 2}
+
+        async with db.get_sessionmaker()() as session:  # a failed run gives its slot back
+            run = await session.get(AnalysisRun, uuid.UUID(first_id))
+            assert run is not None
+            run.status = "failed"
+            await session.commit()
+        assert (await client.post("/analyses", json={"symbol": "ASML"})).status_code == 202
+    finally:
+        get_settings.cache_clear()

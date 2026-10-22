@@ -48,6 +48,7 @@ class Settings(BaseSettings):
     deep_quick_role: str = "cloud-quick"
     deep_deep_role: str = "cloud-deep"
     deep_debate_rounds: int = Field(default=1, ge=1, le=3)
+    deep_daily_limit: int = Field(default=6, ge=0)  # 0 = no limit
     agents_home: str = "/data/agents"  # checkpoints, memory log and run logs
 
 

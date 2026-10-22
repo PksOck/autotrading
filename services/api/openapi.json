@@ -979,6 +979,27 @@
         }
       }
     },
+    "/analyses/quota": {
+      "get": {
+        "tags": [
+          "analyses"
+        ],
+        "summary": "Quota",
+        "operationId": "quota_analyses_quota_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisQuota"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/analyses/{run_id}": {
       "get": {
         "tags": [
@@ -1318,6 +1339,25 @@
           "steps"
         ],
         "title": "AnalysisOut"
+      },
+      "AnalysisQuota": {
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "title": "Limit",
+            "description": "0 means no limit"
+          },
+          "used": {
+            "type": "integer",
+            "title": "Used"
+          }
+        },
+        "type": "object",
+        "required": [
+          "limit",
+          "used"
+        ],
+        "title": "AnalysisQuota"
       },
       "AnalysisStatus": {
         "type": "string",

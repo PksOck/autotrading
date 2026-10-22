@@ -351,6 +351,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/analyses/quota": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Quota */
+        get: operations["quota_analyses_quota_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/analyses/{run_id}": {
         parameters: {
             query?: never;
@@ -453,6 +470,16 @@ export interface components {
             card?: components["schemas"]["DecisionCard"] | null;
             /** Steps */
             steps: components["schemas"]["AnalysisStepOut"][];
+        };
+        /** AnalysisQuota */
+        AnalysisQuota: {
+            /**
+             * Limit
+             * @description 0 means no limit
+             */
+            limit: number;
+            /** Used */
+            used: number;
         };
         /**
          * AnalysisStatus
@@ -1905,6 +1932,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    quota_analyses_quota_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnalysisQuota"];
                 };
             };
         };

@@ -29,6 +29,7 @@ x-api-env: &api-env
   DEEP_QUICK_ROLE: ${DEEP_QUICK_ROLE:-cloud-quick}
   DEEP_DEEP_ROLE: ${DEEP_DEEP_ROLE:-cloud-deep}
   DEEP_DEBATE_ROUNDS: ${DEEP_DEBATE_ROUNDS:-1}
+  DEEP_DAILY_LIMIT: ${DEEP_DAILY_LIMIT:-6}
 
 services:
   postgres:

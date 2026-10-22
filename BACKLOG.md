@@ -88,32 +88,35 @@
 | BL-064 | SCR-03 Vstopi | DESIGN §4 | done |
 | BL-066 | Preveri polja Finnhub `/stock/metric` na pravem omrežju (P/E, EV/EBIT, P/FCF serije) in dopolni zgodovino EV/EBIT | ADR-0010 | next |
 | BL-067 | `dip_analyst`: primerjava s sektorskim ETF-jem (ne samo s SPY), sektor iz profila instrumenta | research §5.3 | later |
-| BL-068 | Vstopi v Telegramu: obvestilo ob novem signalu `entry` in vrstica v jutranjem povzetku | ADR-0007 | later |
-| BL-069 | Instrument (SCR-05): cona, stop in raven lestvice na grafu (CMP-07 na CMP-13) | DESIGN §4 | later |
-| BL-070 | Pregled (SCR-01): kartica "V coni" z zemljevidom vstopov v malem | DESIGN §10 | later |
+| BL-068 | Vstopi v Telegramu: obvestilo ob novem signalu `entry` in vrstica v jutranjem povzetku | ADR-0007 | done |
+| BL-069 | Instrument (SCR-05): cona, stop in raven lestvice na grafu (CMP-07 na CMP-13) | DESIGN §4 | done |
+| BL-070 | Pregled (SCR-01): kartica "V coni" z zemljevidom vstopov v malem | DESIGN §10 | done |
 | BL-065 | `signal_outcome`: nočni izračun donosa po 1/5/20/60 dneh in alfe | research §5.8 | done |
 
 ## M4: Globoka analiza
 
 | ID | Naloga | Ref | Status |
 |---|---|---|---|
-| BL-080 | TradingAgents adapter (zaklenjena verzija, LiteLLM backend URL, checkpointing) | ADR-0003 | later |
-| BL-081 | `vendor_local`: TradingAgents bere iz naše baze | research §3.1 | later |
-| BL-082 | Worker + Redis pub/sub + SSE → CMP-12 AgentTimeline | research §3.1 | later |
-| BL-083 | ETF analitik (LangGraph) | research §5.5 | later |
+| BL-080 | TradingAgents adapter (zaklenjena verzija, LiteLLM backend URL, checkpointing) | ADR-0003 | done |
+| BL-081 | `vendor_local`: TradingAgents bere iz naše baze | research §3.1 | done |
+| BL-082 | Worker + Redis pub/sub + SSE → CMP-12 AgentTimeline | research §3.1 | done |
+| BL-083 | ETF analitik (profil sklada, prekrivanje skozi ETF-je, dva klica vlog; ADR-0011) | research §5.5 | done |
 | BL-084 | (odloženo) `claude_runner` samo, če se kasneje odločiš za Claude Agent SDK | PLAN §4 | later |
-| BL-085 | SCR-06 Analiza | DESIGN §4 | later |
+| BL-085 | SCR-06 Analiza | DESIGN §4 | done |
 | BL-086 | Regresijski testi agentov na 5 fiksnih posnetkih | research §3.1 | later |
 | BL-087 | Znanje za agente: prepis izbranih Vibe-Trading skills v `services/agents/knowledge/` | research §3.2 | later |
 | BL-088 | Dodatna analitika: dividende/odkupi in relativno vrednotenje (multiplikatorji računa koda) | research/trading-list §2 | later |
-| BL-090 | Ročni predlog → standardna/globoka analiza: hipoteza uporabnika v kontekstu, izrecna potrditev/ovržba v izhodu (hitra in standardna globina že delujeta v M2) | DESIGN §11 | later |
-| BL-089 | Shema odločitve: sprožilci ocene (→ trditve teze), `delta_note` proti prejšnji analizi, prepričanje, razred velikosti, deterministična kontrolna ocena | research/trading-list §3 | later |
+| BL-090 | Ročni predlog → standardna/globoka analiza: hipoteza uporabnika v kontekstu, izrecna potrditev/ovržba v izhodu (hitra in standardna globina že delujeta v M2) | DESIGN §11 | done |
+| BL-091 | Preveri Yahoo `funds_data` za UCITS kotacije (LSE, Xetra) na pravem omrežju: TER, top pozicije, sektorji | ADR-0011 | next |
+| BL-092 | Živi preizkus globoke analize prek LiteLLM (`cloud-quick`/`cloud-deep` z OpenCode Go/MiniMax): klici orodij, čas in cena enega zagona | ADR-0011 | next |
+| BL-093 | Dnevni limit globokih analiz (`DEEP_DAILY_LIMIT`, privzeto 6, `GET /analyses/quota`, 429 `daily_limit_reached`; globok predlog nad limitom dobi samo hitro presojo) in prikaz porabe na SCR-06 | research/trading-list §4 | doing |
+| BL-089 | Shema odločitve: sprožilci ocene (→ trditve teze), `delta_note` proti prejšnji analizi, prepričanje, razred velikosti, deterministična kontrolna ocena | research/trading-list §3 | done |
 
 ## M5: Teze + uspešnost
 
 | ID | Naloga | Ref | Status |
 |---|---|---|---|
-| BL-100 | Model teze, SCR-09, CMP-11 | research §5.6 | later |
+| BL-100 | Model teze, SCR-09, CMP-11 (sprožilci iz kartice odločitve BL-089 postanejo trditve teze) | research §5.6 | later |
 | BL-101 | Tedenski pregled tez (Claude) + signal `thesis_break` | research §5.6 | later |
 | BL-102 | SCR-10 Uspešnost, kalibracija | research §5.8 | later |
 

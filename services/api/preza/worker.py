@@ -26,7 +26,7 @@ from preza.notify.service import morning_digest, notify_new_signals
 from preza.notify.telegram import TelegramClient
 from preza.proposals.analyze import analyze_proposal
 from preza.radar.pipeline import run_radar
-from preza.services.analyses import new_run, queue_run
+from preza.services.analyses import limit_reached, new_run, queue_run
 from preza.services.fundamentals import refresh_fundamentals
 from preza.services.instruments import find_by_symbol, get_or_create
 from preza.services.outcomes import compute_outcomes
@@ -169,6 +169,9 @@ async def _deep_run(session: Any, proposal: Proposal) -> uuid.UUID | None:
         select(AnalysisRun.id).where(AnalysisRun.proposal_id == proposal.id)
     )
     if existing is not None:
+        return None
+    if await limit_reached(session, get_settings()):
+        log.info("deep proposal %s: daily analysis limit reached, quick verdict only", proposal.id)
         return None
     run = await new_run(
         session,

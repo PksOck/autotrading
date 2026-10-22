@@ -1,8 +1,9 @@
 """Creating deep analysis runs (M4). Shared by the API and by deep proposals (BL-090)."""
 
 import uuid
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, time
 
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from preza.config import Settings
@@ -12,6 +13,22 @@ from preza.queue import AGENTS_QUEUE, enqueue
 
 def job_id(run_id: uuid.UUID) -> str:
     return f"analysis:{run_id}"
+
+
+async def used_today(session: AsyncSession) -> int:
+    """Runs started today (UTC); failed runs do not count against the limit."""
+    start = datetime.combine(datetime.now(UTC).date(), time.min, tzinfo=UTC)
+    count = await session.scalar(
+        select(func.count())
+        .select_from(AnalysisRun)
+        .where(AnalysisRun.created_at >= start, AnalysisRun.status != "failed")
+    )
+    return count or 0
+
+
+async def limit_reached(session: AsyncSession, settings: Settings) -> bool:
+    limit = settings.deep_daily_limit
+    return limit > 0 and await used_today(session) >= limit
 
 
 async def new_run(
