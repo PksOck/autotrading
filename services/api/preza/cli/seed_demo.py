@@ -401,6 +401,9 @@ async def seed_all() -> None:
     await main()
     await seed_radar()
     await seed_entries()
+    from preza.cli.seed_demo_analysis import seed_analyses
+
+    await seed_analyses()
 
 
 if __name__ == "__main__":
