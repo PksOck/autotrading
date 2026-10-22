@@ -21,11 +21,12 @@ from preza.fundamentals.finnhub import FinnhubFundamentals, FundamentalsUnavaila
 from preza.ingest.edgar import parse_company_tickers
 from preza.ingest.factory import build_sources
 from preza.llm.client import LiteLlmClient, LlmUnavailableError
-from preza.models import Instrument, Position, Proposal, WatchlistItem
+from preza.models import AnalysisRun, Instrument, Position, Proposal, WatchlistItem
 from preza.notify.service import morning_digest, notify_new_signals
 from preza.notify.telegram import TelegramClient
 from preza.proposals.analyze import analyze_proposal
 from preza.radar.pipeline import run_radar
+from preza.services.analyses import new_run, queue_run
 from preza.services.fundamentals import refresh_fundamentals
 from preza.services.instruments import find_by_symbol, get_or_create
 from preza.services.outcomes import compute_outcomes
@@ -149,8 +150,34 @@ async def analyze_proposal_job(ctx: dict[str, Any], proposal_id: str) -> str:
         except LlmUnavailableError as exc:
             proposal.status = "failed"
             proposal.verdict = f'{{"summary": "llm_unavailable: {str(exc)[:120]}"}}'
+        run_id = await _deep_run(session, proposal) if proposal.depth == "deep" else None
         await session.commit()
-        return proposal.status
+    if run_id is not None:
+        await queue_run(get_settings(), run_id)
+    return proposal.status
+
+
+async def _deep_run(session: Any, proposal: Proposal) -> uuid.UUID | None:
+    """A deep proposal also gets the full agent analysis, with the hypothesis to test (BL-090).
+
+    The quick verdict above stays: it arrives in seconds, the agents take minutes.
+    """
+    instrument = await find_by_symbol(session, proposal.symbols[0])
+    if instrument is None:
+        return None
+    existing = await session.scalar(
+        select(AnalysisRun.id).where(AnalysisRun.proposal_id == proposal.id)
+    )
+    if existing is not None:
+        return None
+    run = await new_run(
+        session,
+        instrument,
+        get_settings(),
+        hypothesis=proposal.hypothesis or None,
+        proposal_id=proposal.id,
+    )
+    return run.id
 
 
 async def _benchmark_bars(session: Any) -> None:

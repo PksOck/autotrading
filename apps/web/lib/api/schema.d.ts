@@ -914,6 +914,8 @@ export interface components {
             verdict: string | null;
             /** Signal Id */
             signal_id: string | null;
+            /** Analysis Id */
+            analysis_id?: string | null;
             /**
              * Created At
              * Format: date-time

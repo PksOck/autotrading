@@ -2750,6 +2750,18 @@
             ],
             "title": "Signal Id"
           },
+          "analysis_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Analysis Id"
+          },
           "created_at": {
             "type": "string",
             "format": "date-time",

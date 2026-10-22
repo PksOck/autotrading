@@ -34,6 +34,7 @@ from preza_agents.deep_research.timeline import Step
 from preza_agents.etf_analyst.analyst import run_etf
 from preza_agents.etf_analyst.context import build_etf_facts
 from preza_agents.etf_analyst.profile import fetch_profile, store_profile, user_etfs
+from preza_agents.hypothesis import check_hypothesis, check_md
 
 log = logging.getLogger(__name__)
 
@@ -112,13 +113,13 @@ async def deep_analysis(
         deep = deep_settings(settings)
         extra: list[str] = []
         work: Awaitable[adapter.DeepResult]
+        llm = ctx.get("llm") or LiteLlmClient(
+            settings.litellm_base_url, settings.litellm_master_key
+        )
         if run.engine == "etf":
             facts = await build_etf_facts(session, run.instrument, snapshot, settings.base_currency)
             if facts.profile is None:
                 extra.append("no_profile")
-            llm = ctx.get("llm") or LiteLlmClient(
-                settings.litellm_base_url, settings.litellm_master_key
-            )
             work = run_etf(
                 llm,
                 facts,
@@ -150,6 +151,26 @@ async def deep_analysis(
             run.finished_at = _utcnow()
             await session.commit()
             return run.status
+        if run.hypothesis:
+            try:
+                check, model = await check_hypothesis(
+                    llm,
+                    run.hypothesis,
+                    result.reports,
+                    result.rating,
+                    run.locale,
+                    cast(Role, deep.deep_role),
+                )
+            except Exception:  # the run stands without the check; the caveat says so
+                log.warning("hypothesis check for %s failed", run_id, exc_info=True)
+                extra.append("hypothesis_unchecked")
+            else:
+                text = check_md(run.hypothesis, check, run.locale)
+                result.reports["hypothesis_check"] = text
+                result.models["hypothesis"] = model
+                steps.put(
+                    Step(agent="hypothesis", kind="report", title="hypothesis_check", content=text)
+                )
         steps.put(Step(agent="system", kind="status", title="done"))
         await _flush(session, run.id, steps, seq)
         run.rating = result.rating
@@ -209,6 +230,7 @@ async def startup(ctx: dict[str, Any]) -> None:
     if settings.litellm_master_key:
         os.environ.setdefault("OPENAI_COMPATIBLE_API_KEY", settings.litellm_master_key)
     await asyncio.to_thread(Path(settings.agents_home).mkdir, parents=True, exist_ok=True)
+    ctx["llm"] = LiteLlmClient(settings.litellm_base_url, settings.litellm_master_key)
 
 
 class WorkerSettings:

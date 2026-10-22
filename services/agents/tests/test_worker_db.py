@@ -123,7 +123,7 @@ async def test_deep_analysis_job(session, monkeypatch: pytest.MonkeyPatch) -> No
     assert await worker.deep_analysis({}, str(run.id)) == "done"
 
 
-async def test_etf_analysis_job(session) -> None:  # type: ignore[no-untyped-def]
+async def _etf_run(session, hypothesis: str | None = None) -> AnalysisRun:  # type: ignore[no-untyped-def]
     fixture = make_snapshot()
     instrument = Instrument(
         symbol="SEMI",
@@ -149,11 +149,19 @@ async def test_etf_analysis_job(session) -> None:  # type: ignore[no-untyped-def
             )
         )
     run = AnalysisRun(
-        instrument_id=instrument.id, engine="etf", trade_date=date(2026, 10, 20), locale="sl"
+        instrument_id=instrument.id,
+        engine="etf",
+        trade_date=date(2026, 10, 20),
+        locale="sl",
+        hypothesis=hypothesis,
     )
     session.add(run)
     await session.commit()
+    return run
 
+
+async def test_etf_analysis_job(session) -> None:  # type: ignore[no-untyped-def]
+    run = await _etf_run(session)
     llm = FakeRoleLlm(rating="Hold")
     assert await worker.deep_analysis({"llm": llm}, str(run.id)) == "done"
 
@@ -169,3 +177,33 @@ async def test_etf_analysis_job(session) -> None:  # type: ignore[no-untyped-def
         )
     )
     assert titles[0] == "started" and titles[-1] == "done"
+
+
+async def test_hypothesis_is_checked_after_the_run(session) -> None:  # type: ignore[no-untyped-def]
+    run = await _etf_run(session, hypothesis="Polprevodniki bodo rasli z AI.")
+    llm = FakeRoleLlm(rating="Overweight")
+    assert await worker.deep_analysis({"llm": llm}, str(run.id)) == "done"
+
+    await session.refresh(run)
+    assert len(llm.calls) == 3 and "Polprevodniki bodo rasli" in llm.calls[-1][2]
+    assert llm.calls[-1][0] == "cloud-deep"
+    assert "delno potrjena" in run.reports["hypothesis_check"]
+    assert run.models["hypothesis"] == "fake-cloud-deep"
+    titles = list(
+        await session.scalars(
+            select(AnalysisStep.title)
+            .where(AnalysisStep.run_id == run.id)
+            .order_by(AnalysisStep.seq)
+        )
+    )
+    assert titles[-2:] == ["hypothesis_check", "done"]
+
+
+async def test_failed_hypothesis_check_keeps_the_run(session) -> None:  # type: ignore[no-untyped-def]
+    run = await _etf_run(session, hypothesis="Polprevodniki bodo rasli z AI.")
+    llm = FakeRoleLlm(check_fails=True)
+    assert await worker.deep_analysis({"llm": llm}, str(run.id)) == "done"
+
+    await session.refresh(run)
+    assert run.rating == "Hold" and "hypothesis_check" not in run.reports
+    assert "hypothesis_unchecked" in run.caveats

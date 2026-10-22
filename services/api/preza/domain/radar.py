@@ -210,5 +210,6 @@ class ProposalOut(ProposalCreate):
     status: Literal["queued", "running", "done", "failed"]
     verdict: str | None
     signal_id: UUID | None
+    analysis_id: UUID | None = None
     created_at: datetime
     finished_at: datetime | None

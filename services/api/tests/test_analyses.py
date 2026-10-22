@@ -8,7 +8,7 @@ from sqlalchemy import select
 
 from preza import db
 from preza.models import AnalysisRun, AnalysisStep, Instrument
-from preza.routes import analyses
+from preza.services import analyses as analyses_service
 
 pytestmark = pytest.mark.db
 
@@ -27,7 +27,7 @@ async def test_create_list_and_get(api: Any, monkeypatch: pytest.MonkeyPatch) ->
         queued.append((job, job_id, queue_name))
         return job_id
 
-    monkeypatch.setattr(analyses, "enqueue", fake_enqueue)
+    monkeypatch.setattr(analyses_service, "enqueue", fake_enqueue)
     await _instrument("ASML")
     await _instrument("VWRA", kind="etf")
 
@@ -76,3 +76,37 @@ async def test_events_replay_and_end(api: Any) -> None:
     assert "id: 1\n" not in body
     assert "id: 2\nevent: step" in body and "id: 3\nevent: step" in body
     assert body.rstrip().endswith('data: {"status": "done"}')
+
+
+async def test_deep_proposal_queues_an_agent_run(api: Any, monkeypatch: pytest.MonkeyPatch) -> None:
+    from preza import worker
+    from preza.models import Proposal
+    from tests.test_api_m2 import VerdictLlm
+
+    client, _ = api
+    queued: list[Any] = []
+
+    async def fake_queue_run(settings: Any, run_id: Any) -> None:
+        queued.append(run_id)
+
+    llm = VerdictLlm()
+    monkeypatch.setattr(worker, "llm_client", lambda: llm)
+    monkeypatch.setattr(worker, "get_bars_service", lambda: None)
+    monkeypatch.setattr(worker, "queue_run", fake_queue_run)
+    await _instrument("ORCL")
+    async with db.get_sessionmaker()() as session:
+        proposal = Proposal(symbols=["ORCL"], hypothesis="Cloud backlog grows.", depth="deep")
+        session.add(proposal)
+        await session.commit()
+        proposal_id = proposal.id
+
+    assert await worker.analyze_proposal_job({}, str(proposal_id)) == "done"
+    assert llm.roles == ["cloud-deep"]  # the quick verdict still comes first
+    async with db.get_sessionmaker()() as session:
+        run = await session.scalar(select(AnalysisRun))
+        assert run is not None and queued == [run.id]
+        assert run.hypothesis == "Cloud backlog grows." and run.proposal_id == proposal_id
+        assert run.engine == "tradingagents" and run.status == "queued"
+
+    out = (await client.get(f"/proposals/{proposal_id}")).json()
+    assert out["analysis_id"] == str(run.id)

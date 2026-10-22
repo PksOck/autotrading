@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from preza.config import Settings, get_settings
 from preza.db import get_session
 from preza.domain.radar import ProposalCreate, ProposalOut
-from preza.models import Proposal, Signal
+from preza.models import AnalysisRun, Proposal, Signal
 from preza.queue import enqueue
 
 router = APIRouter(prefix="/proposals", tags=["proposals"])
@@ -18,6 +18,12 @@ Session = Annotated[AsyncSession, Depends(get_session)]
 
 async def proposal_out(session: AsyncSession, proposal: Proposal) -> ProposalOut:
     signal_id = await session.scalar(select(Signal.id).where(Signal.proposal_id == proposal.id))
+    analysis_id = await session.scalar(
+        select(AnalysisRun.id)
+        .where(AnalysisRun.proposal_id == proposal.id)
+        .order_by(AnalysisRun.created_at.desc())
+        .limit(1)
+    )
     verdict = None
     if proposal.verdict:
         try:
@@ -36,6 +42,7 @@ async def proposal_out(session: AsyncSession, proposal: Proposal) -> ProposalOut
         status=proposal.status,
         verdict=verdict,
         signal_id=signal_id,
+        analysis_id=analysis_id,
         created_at=proposal.created_at,
         finished_at=proposal.finished_at,
     )

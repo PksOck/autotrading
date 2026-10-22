@@ -9,7 +9,6 @@ import asyncio
 import json
 import uuid
 from collections.abc import AsyncIterator
-from datetime import UTC, datetime
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Request
@@ -27,7 +26,7 @@ from preza.domain.analysis import (
     AnalysisSummary,
 )
 from preza.models import AnalysisRun, AnalysisStep, Instrument
-from preza.queue import AGENTS_QUEUE, enqueue
+from preza.services.analyses import new_run, queue_run
 from preza.services.instruments import find_by_symbol
 
 router = APIRouter(prefix="/analyses", tags=["analyses"])
@@ -36,10 +35,6 @@ Session = Annotated[AsyncSession, Depends(get_session)]
 POLL_S = 1.0
 HEARTBEAT_S = 15.0
 FINISHED = {AnalysisStatus.DONE, AnalysisStatus.FAILED}
-
-
-def job_id(run_id: uuid.UUID) -> str:
-    return f"analysis:{run_id}"
 
 
 def summary(run: AnalysisRun) -> AnalysisSummary:
@@ -94,25 +89,13 @@ async def create_analysis(
     instrument = await find_by_symbol(session, body.symbol.upper())
     if instrument is None:
         raise HTTPException(404, detail="instrument_not_found")
-    run = AnalysisRun(
-        instrument_id=instrument.id,
-        engine="etf" if instrument.kind == "etf" else "tradingagents",
-        trade_date=body.trade_date or datetime.now(UTC).date(),
-        locale=settings.default_locale,
-        hypothesis=body.hypothesis,
-        caveats=[],
-        reports={},
-        models={},
+    run = await new_run(
+        session, instrument, settings, trade_date=body.trade_date, hypothesis=body.hypothesis
     )
-    session.add(run)
-    await session.flush()
     await session.refresh(run, ["instrument"])
     out = summary(run)
     await session.commit()
-    # A run stored while the queue is down is picked up by the agents' sweep.
-    await enqueue(
-        settings, "deep_analysis", str(run.id), job_id=job_id(run.id), queue_name=AGENTS_QUEUE
-    )
+    await queue_run(settings, run.id)
     return out
 
 
