@@ -4,6 +4,33 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 
 ---
 
+## S-005 · 2026-10-22 · M3 zaključek in M4 Globoka analiza
+
+**Cilj:** BL-068 do BL-070 in mejnik M4 (samostojno, brez uporabnika).
+
+**Narejeno:**
+- BL-068: signali `entry` in vrstica vstopov v Telegramu. BL-069: cona, stop in lestvica na grafu instrumenta. BL-070: kartica "V coni" na Pregledu.
+- BL-080 do BL-082: nova storitev `services/agents` (paket `preza_agents`, lasten arq delavec na `arq:agents`). TradingAgents v0.7.0 iz gita, modeli prek LiteLLM vlog, `vendor_local` servira posnetek naše baze (brez Yahooja), koraki v `analysis_step`, SSE z `Last-Event-ID` (ADR-0011).
+- BL-083: ETF analitik (profil sklada, prekrivanje skozi ETF-je v portfelju, TA-Lib, dva klica vlog), tedenska osvežitev profilov.
+- BL-085: SCR-06 Analiza in CMP-12 AgentTimeline v živo, gumb "Globoka analiza" na instrumentu (Sonnet subagent).
+- BL-090: globok ročni predlog ustvari zagon agentov s hipotezo; po zagonu jo en klic izrecno potrdi ali ovrže. Panel "Tvoja hipoteza".
+- BL-089: kartica odločitve: deterministična kontrolna ocena, prepričanje, razred velikosti, sprožilci, `delta_note`. Razlika z oceno agentov zniža zaupanje (`control_disagrees`).
+- BL-093: dnevni limit globokih analiz (privzeto 6) s prikazom porabe.
+- BL-086: regresijski testi na 5 fiksnih posnetkih z "golden" datotekami.
+- BL-088: kakovost poslovanja in dividende iz Finnhuba, kakovost v kontrolni oceni.
+- Testi: API 162, agenti 31, web 18 enotskih, e2e 22.
+
+**Odločitve:** ADR-0011 (ločena storitev agentov, lokalni vendor, SSE iz tabele, ETF cevovod, hipoteza po zagonu, kartica odločitve).
+
+**Odprto:**
+- BL-092: živi zagon prek LiteLLM z OpenCode Go/MiniMax (klici orodij, čas, cena). Prvi pravi preizkus M4.
+- BL-091: Yahoo `funds_data` za UCITS kotacije. BL-066: nova polja Finnhuba. BL-059: viri novic.
+- BL-023 živi IB Gateway, BL-160 zagon na tvojem strežniku.
+
+**Naslednji korak:** BL-092 na tvojem strežniku (`docker compose up agents`), nato M5 Teze (sprožilci iz kartice odločitve postanejo trditve teze).
+
+---
+
 ## S-004 · 2026-10-22 · Prevodi in M3 Vstopi
 
 **Cilj:** BL-055 in mejnik M3 (samostojno, uporabnik ne more poganjati na svojem računalniku).
