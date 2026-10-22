@@ -29,3 +29,10 @@ def test_score_rewards_material_new_relevant_events_and_penalizes_rumors() -> No
     assert unknown < strong
     buzz = opportunity_score(ScoreInput(**{**base.__dict__, "attention": 8.0}))
     assert buzz >= strong
+
+
+def test_same_ticker_headlines_share_enough_words() -> None:
+    a = words("Microsoft raises full-year cloud revenue guidance")
+    b = words("Microsoft lifts cloud guidance as AI demand grows")
+    assert jaccard(a, b) < 0.5  # word overlap alone would split them
+    assert len(a & b) >= 3  # the same-ticker rule joins them

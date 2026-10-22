@@ -56,21 +56,26 @@
 
 | ID | Naloga | Ref | Status |
 |---|---|---|---|
-| BL-040 | Ingest novic: Finnhub, RSS (GlobeNewswire, PR Newswire, Business Wire), normalizacija, dedupe po URL | PLAN §5 | later |
-| BL-041 | Ingest EDGAR: 8-K, Form 4, 13D/G (User-Agent, 10 req/s) | PLAN §5 | later |
-| BL-042 | Reddit/StockTwits pozornost (omembe proti 30-dnevni bazi) za watchlisto + kandidate | PLAN §5 | later |
-| BL-043 | Embed + grozdenje v `event` (pgvector, cos > 0,85, okno 48 h) | PLAN §5 | later |
-| BL-044 | Triaža `local-fast` z JSON shemo + testi na posnetkih 50 novic | VOICE §7 | later |
-| BL-045 | Deterministični kontekst: odziv cene (z-score proti sektorju/SPY), relativni volumen | research §5.2 | later |
-| BL-046 | Ocena priložnosti (konfiguracija uteži, verzija) | research §5.2.1 | later |
-| BL-047 | Govorice: oznaka, nadgradnja ob uradni potrditvi | AGENTS §3.4 | later |
-| BL-048 | Shema `Signal` + tabela, API | research §4.2 | later |
-| BL-049 | SCR-02 Radar s tremi pogledi (CMP-04, 05, 16) | DESIGN §4 | later |
-| BL-050 | SCR-04 Signali (nabiralnik) | DESIGN §4 | later |
-| BL-051 | Telegram bot: obvestila, gumbi Odpri / Spremljaj / Zavrzi, omejitev na tvoj chat_id | ADR-0007 | later |
-| BL-052 | SCR-01 Pregled (prva verzija) | DESIGN §4 | later |
-| BL-053 | Ročni predlogi: model `proposal`, API, CMP-30, ⌘K akcija, Telegram `/predlog`, ekstrakcija simbolov iz prilepljenega besedila (local-fast), hitra analiza | DESIGN §11 | later |
-| BL-054 | SCR-12 Predlogi | DESIGN §11 | later |
+| BL-040 | Ingest novic: Finnhub, RSS (GlobeNewswire, PR Newswire, Business Wire), normalizacija, dedupe po URL | PLAN §5 | done |
+| BL-041 | Ingest EDGAR: 8-K, Form 4, 13D/G (User-Agent, 10 req/s) | PLAN §5 | done |
+| BL-042 | Reddit/StockTwits pozornost (omembe proti 30-dnevni bazi) za watchlisto + kandidate (še ni vira; zdaj samo RSS, Finnhub, EDGAR) | PLAN §5 | later |
+| BL-043 | Embed + grozdenje v `event` (pgvector, cos > 0,85, okno 48 h) | PLAN §5 | done |
+| BL-044 | Triaža `local-fast` z JSON shemo + testi na posnetkih 50 novic | VOICE §7 | done |
+| BL-045 | Deterministični kontekst: odziv cene (z-score proti sektorju/SPY), relativni volumen | research §5.2 | done |
+| BL-046 | Ocena priložnosti (konfiguracija uteži, verzija) | research §5.2.1 | done |
+| BL-047 | Govorice: oznaka, nadgradnja ob uradni potrditvi | AGENTS §3.4 | done |
+| BL-048 | Shema `Signal` + tabela, API | research §4.2 | done |
+| BL-049 | SCR-02 Radar s tremi pogledi (CMP-04, 05, 16) | DESIGN §4 | done |
+| BL-050 | SCR-04 Signali (nabiralnik) | DESIGN §4 | done |
+| BL-051 | Telegram bot: obvestila, gumbi Odpri / Spremljaj / Zavrzi, omejitev na tvoj chat_id | ADR-0007 | done |
+| BL-052 | SCR-01 Pregled (prva verzija) (portfelj in vrednost sta živa; utrip, lijak in režim še vzorčni) | DESIGN §4 | doing |
+| BL-053 | Ročni predlogi: model `proposal`, API, CMP-30, ⌘K akcija, Telegram `/predlog`, ekstrakcija simbolov iz prilepljenega besedila (local-fast), hitra analiza | DESIGN §11 | done |
+| BL-054 | SCR-12 Predlogi | DESIGN §11 | done |
+| BL-055 | Prevod povzetkov dogodkov in signalov v jezik uporabnika (local-fast), oznaka "prevedeno" | VOICE §7 | next |
+| BL-056 | Grozdenje brez vektorjev: upoštevaj isti simbol in tip dogodka v 24 h, ne samo besede v naslovu | PLAN §5 | done |
+| BL-057 | Telegram bot: besedila odgovorov (/start, /predlog, gumbi) v messages, ne v kodi | VOICE §6 | later |
+| BL-058 | Jutranji povzetek ob 7:30 po lokalnem času (zdaj 05:30 UTC, pozimi 6:30) | ADR-0007 | later |
+| BL-059 | Preveri URL-je RSS virov (GlobeNewswire, PR Newswire, Business Wire) in obliko EDGAR feeda na pravem omrežju | research §5.1 | next |
 
 ## M3: Vstopi
 
@@ -96,7 +101,7 @@
 | BL-086 | Regresijski testi agentov na 5 fiksnih posnetkih | research §3.1 | later |
 | BL-087 | Znanje za agente: prepis izbranih Vibe-Trading skills v `services/agents/knowledge/` | research §3.2 | later |
 | BL-088 | Dodatna analitika: dividende/odkupi in relativno vrednotenje (multiplikatorji računa koda) | research/trading-list §2 | later |
-| BL-090 | Ročni predlog → standardna/globoka analiza: hipoteza uporabnika v kontekstu, izrecna potrditev/ovržba v izhodu | DESIGN §11 | later |
+| BL-090 | Ročni predlog → standardna/globoka analiza: hipoteza uporabnika v kontekstu, izrecna potrditev/ovržba v izhodu (hitra in standardna globina že delujeta v M2) | DESIGN §11 | later |
 | BL-089 | Shema odločitve: sprožilci ocene (→ trditve teze), `delta_note` proti prejšnji analizi, prepričanje, razred velikosti, deterministična kontrolna ocena | research/trading-list §3 | later |
 
 ## M5: Teze + uspešnost

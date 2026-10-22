@@ -18,6 +18,12 @@ from preza.models import Event, NewsItem
 WINDOW = timedelta(hours=48)
 EMBED_THRESHOLD = 0.85
 JACCARD_THRESHOLD = 0.5
+# Same ticker on both sides: three shared content words within 24 h is enough (BL-056).
+SHARED_WORDS_SAME_SYMBOL = 3
+SAME_SYMBOL_WINDOW = timedelta(hours=24)
+# Same ticker on both sides: three shared content words within 24 h is enough (BL-056).
+SHARED_WORDS_SAME_SYMBOL = 3
+SAME_SYMBOL_WINDOW = timedelta(hours=24)
 WORD = re.compile(r"[a-z0-9]{3,}")
 STOP = {
     "the",
@@ -86,10 +92,14 @@ async def assign_events(
             if item.embedding and vectors:
                 score, threshold = cosine(item.embedding, centroid(vectors)), EMBED_THRESHOLD
             else:
-                score = max(
-                    (jaccard(words(item.title), words(m.title)) for m in members), default=0.0
-                )
+                title_words = words(item.title)
+                score = max((jaccard(title_words, words(m.title)) for m in members), default=0.0)
                 threshold = JACCARD_THRESHOLD
+                same_symbol = bool(set(item.symbols) & set(event.symbols))
+                recent = abs(item.published_at - event.last_seen_at) <= SAME_SYMBOL_WINDOW
+                shared = max((len(title_words & words(m.title)) for m in members), default=0)
+                if same_symbol and recent and shared >= SHARED_WORDS_SAME_SYMBOL:
+                    score = max(score, threshold)
             if score >= threshold and score > best_score:
                 best, best_score = event, score
         if best is None:

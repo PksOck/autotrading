@@ -4,7 +4,7 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 
 ---
 
-## S-003 · 2026-10-22 · M1 v oblaku, brez uporabnika
+## S-003 · 2026-10-22 · M1 in M2 v oblaku, brez uporabnika
 
 **Cilj:** nadaljevati samostojno (uporabnik ne more poganjati na svojem računalniku).
 
@@ -16,11 +16,19 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 - Testi: API 30 (vključno z integracijskimi na Postgres in preizkusom na TimescaleDB), web 11 enotskih, e2e 11 (Sonnet subagent je dodal 5 in našel napako v ⌘K, popravljeno).
 - Preverjeno: migracije na TimescaleDB (hypertable), pot API → Redis → worker, napaka pri Flex sinhronizaciji se zapiše in prikaže.
 
+**Narejeno (M2):**
+- Viri novic: RSS/Atom, Finnhub, SEC EDGAR (napisal Sonnet subagent, 25 testov). Cevovod Radarja: shranjevanje po kanoničnem URL, grozdenje (vektorji ali besede), triaža z `local-fast`, odziv cene (z) in pozornost, ocena priložnosti, signali; govorica ostane "spremljaj" do uradne potrditve.
+- API: `/radar/events` (trije pogledi), `/signals`, `/proposals` (analiza predloga: številke izračuna koda, model presodi hipotezo).
+- Telegram bot (napisal Sonnet subagent): obvestila s tihimi urami in dnevnim limitom, gumbi, `/predlog`, jutranji povzetek.
+- Web: Radar, Signali, Predlogi na pravem API.
+- Napake, ki so jih našli testi in posnetki zaslona: proxy ni prepuščal novih poti; `POST /proposals` je vedno vrnil 500; manjkajoči Redis je zrušil zahtevo. Vse popravljeno.
+- Testi: API 87, web 11 enotskih, e2e 11.
+
 **Omejitve okolja (ne repoja):** omrežna politika blokira opencode.ai, api.minimax.io, sec.gov, stooq.com, Yahoo in ghcr.io bloke; Docker Hub omejuje (429), Googlov mirror deluje; build kontejnerji nimajo proxyja, zato slik API/web tu ni bilo mogoče zgraditi. Živih podatkov tu ni bilo, testi uporabljajo ročno sestavljene posnetke formatov.
 
 **Odprto:** BL-023 živi IB Gateway, BL-027 ETF holdings, BL-011 imena modelov, celoten `docker compose up` na tvojem strežniku (BL-160).
 
-**Naslednji korak:** M2 Radar.
+**Naslednji korak:** M3 Vstopi (pravila, vzrok padca, lestvica) in BL-055, BL-056.
 
 ---
 
