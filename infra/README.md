@@ -22,3 +22,10 @@ Ollama teče na ločeni GPU napravi v LAN (`OLLAMA_BASE_URL`), model `LOCAL_MODE
 `claude-runner` (M4) in `notify` (Telegram, M2) se dodata v svojih mejnikih.
 
 Ref: ADR-0001, BL-006, BL-011, BL-016, BL-023.
+
+## Preizkus globoke analize (BL-092)
+
+1. V `.env` izpolni `LITELLM_MASTER_KEY`, `OPENCODE_API_KEY`, `MINIMAX_API_KEY` in imena modelov (`OPENCODE_QUICK_MODEL`, `MINIMAX_MODEL`).
+2. `docker compose --env-file ../.env up -d --build` (storitev `agents` je del jedra).
+3. V brskalniku odpri instrument (npr. `/i/ASML`, ob odprtju se naložijo sveče) in klikni "Globoka analiza".
+4. Ko se konča: `scripts/collect-analysis.sh` zapakira zagon in dnevnike v `infra/analysis-<id>.tar.gz`. Ključe iz dnevnika LiteLLM odstrani, pred pošiljanjem pa arhiv vseeno preglej.
