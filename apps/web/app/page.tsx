@@ -1,5 +1,6 @@
 import { getFormatter, getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/common/PageHeader";
+import { InZoneCard } from "@/components/overview/InZoneCard";
 import { Funnel } from "@/components/overview/Funnel";
 import { PortfolioTreemapCard } from "@/components/overview/PortfolioTreemapCard";
 import { PortfolioValue } from "@/components/overview/PortfolioValue";
@@ -24,6 +25,7 @@ export default async function OverviewPage() {
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
         <div className="flex min-w-0 flex-col gap-6">
           <PortfolioTreemapCard />
+          <InZoneCard />
           <section className="card p-5">
             <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
               <h2 className="text-base font-semibold">{t("pulse")}</h2>

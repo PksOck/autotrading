@@ -329,7 +329,13 @@
     "funnel": "Lijak signalov, 30 dni",
     "newToday": "Novo danes",
     "portfolioValue": "Vrednost portfelja",
-    "today": "danes"
+    "today": "danes",
+    "inZone": {
+      "title": "V coni",
+      "all": "Vsi vstopi",
+      "empty": "Nobena pozicija trenutno ni v coni vstopa. Cene so še nad conami.",
+      "emptyAction": "Odpri vstope"
+    }
   },
   "funnel": {
     "news": "Novice",

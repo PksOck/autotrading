@@ -7,11 +7,12 @@ import type { EntryOut } from "@/lib/api/types";
 import { useFocusStore } from "@/stores/focus";
 import { CAUSE_COLOR, type Cause } from "./CauseBadge";
 
-const H = 260;
+const H_FULL = 260;
+const H_COMPACT = 170;
 const PAD = { l: 56, r: 16, t: 24, b: 28 };
 
 /** Pushes overlapping points apart vertically so every symbol stays readable. */
-function dodge<T extends { cx: number; cy: number; r: number }>(points: T[]): T[] {
+function dodge<T extends { cx: number; cy: number; r: number }>(points: T[], H: number): T[] {
   const placed: T[] = [];
   for (const p of [...points].sort((a, b) => a.cx - b.cx)) {
     let cy = p.cy;
@@ -30,11 +31,15 @@ export function EntryMap({
   entries,
   selected,
   onSelect,
+  compact = false,
 }: {
   entries: EntryOut[];
   selected?: string;
   onSelect: (symbol: string) => void;
+  /** Overview variant: lower plot, no caption. */
+  compact?: boolean;
 }) {
+  const H = compact ? H_COMPACT : H_FULL;
   const t = useTranslations("entriesPage.map");
   const reduceMotion = useReducedMotion();
   const hovered = useFocusStore((s) => s.hovered);
@@ -69,6 +74,7 @@ export function EntryMap({
         r: 6 + 3 * e.rules.length,
       };
     }),
+    H,
   );
   return (
     <figure className="flex flex-col gap-2" ref={ref}>
@@ -166,7 +172,7 @@ export function EntryMap({
           );
         })}
       </svg>
-      <figcaption className="text-xs text-text-3">{t("caption")}</figcaption>
+      {!compact && <figcaption className="text-xs text-text-3">{t("caption")}</figcaption>}
     </figure>
   );
 }

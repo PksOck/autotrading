@@ -329,7 +329,13 @@
     "funnel": "Signal funnel, 30 days",
     "newToday": "New today",
     "portfolioValue": "Portfolio value",
-    "today": "today"
+    "today": "today",
+    "inZone": {
+      "title": "In zone",
+      "all": "All entries",
+      "empty": "No position is in its entry zone right now. Prices are still above the zones.",
+      "emptyAction": "Open entries"
+    }
   },
   "funnel": {
     "news": "News",
