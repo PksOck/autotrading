@@ -1,0 +1,175 @@
+"""arq worker for agent runs (M4). Its own queue, one run at a time.
+
+Run with `arq preza_agents.worker.WorkerSettings`. The run itself is blocking
+(LangGraph, worker threads); it runs in a thread while this loop writes its steps
+to the database every half second, which is what the timeline streams (BL-082).
+"""
+
+from __future__ import annotations
+
+import asyncio
+import functools
+import logging
+import os
+import queue
+import uuid
+from collections.abc import Callable
+from datetime import UTC, datetime, timedelta
+from pathlib import Path
+from typing import Any, ClassVar
+
+from arq import cron
+from arq.connections import RedisSettings
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from preza.config import Settings, get_settings
+from preza.db import get_sessionmaker
+from preza.models import AnalysisRun, AnalysisStep
+from preza.queue import AGENTS_QUEUE
+from preza_agents.deep_research import adapter
+from preza_agents.deep_research.snapshot import build_snapshot
+from preza_agents.deep_research.timeline import Step
+
+log = logging.getLogger(__name__)
+
+FLUSH_S = 0.5
+MAX_CONTENT = 20_000
+RUN_TIMEOUT_S = 3 * 60 * 60
+
+
+def deep_settings(settings: Settings) -> adapter.DeepSettings:
+    return adapter.DeepSettings(
+        litellm_base_url=settings.litellm_base_url,
+        quick_role=settings.deep_quick_role,
+        deep_role=settings.deep_deep_role,
+        debate_rounds=settings.deep_debate_rounds,
+        home=Path(settings.agents_home),
+        benchmark=settings.benchmark_symbol,
+    )
+
+
+def _utcnow() -> datetime:
+    return datetime.now(UTC)
+
+
+async def _next_seq(session: AsyncSession, run_id: uuid.UUID) -> int:
+    last = await session.scalar(
+        select(func.max(AnalysisStep.seq)).where(AnalysisStep.run_id == run_id)
+    )
+    return (last or 0) + 1
+
+
+async def _flush(
+    session: AsyncSession, run_id: uuid.UUID, steps: queue.SimpleQueue[Step], seq: int
+) -> int:
+    added = False
+    while True:
+        try:
+            step = steps.get_nowait()
+        except queue.Empty:
+            break
+        session.add(
+            AnalysisStep(
+                run_id=run_id,
+                seq=seq,
+                agent=step.agent,
+                kind=step.kind,
+                title=step.title,
+                content=step.content[:MAX_CONTENT],
+            )
+        )
+        seq += 1
+        added = True
+    if added:
+        await session.commit()
+    return seq
+
+
+async def deep_analysis(
+    ctx: dict[str, Any], run_id: str, graph_factory: Callable[..., Any] | None = None
+) -> str:
+    settings = get_settings()
+    async with get_sessionmaker()() as session:
+        run = await session.get(AnalysisRun, uuid.UUID(run_id))
+        if run is None:
+            return "missing"
+        if run.status in ("done", "failed"):
+            return run.status
+        run.status = "running"
+        run.started_at = run.started_at or _utcnow()
+        snapshot = await build_snapshot(session, run.instrument, run.trade_date)
+        run.snapshot = snapshot.model_dump(mode="json")
+        seq = await _next_seq(session, run.id)
+        await session.commit()
+
+        steps: queue.SimpleQueue[Step] = queue.SimpleQueue()
+        steps.put(Step(agent="system", kind="status", title="started"))
+        config = adapter.build_config(deep_settings(settings), run.locale)
+        run_deep = (
+            functools.partial(adapter.run_deep, graph_factory=graph_factory)
+            if graph_factory
+            else adapter.run_deep
+        )
+        task = asyncio.create_task(asyncio.to_thread(run_deep, snapshot, config, steps.put))
+        while not task.done():
+            seq = await _flush(session, run.id, steps, seq)
+            await asyncio.wait({task}, timeout=FLUSH_S)
+        try:
+            result = task.result()
+        except Exception as exc:  # a failed run is a row with its reason, not a crashed worker
+            log.exception("deep analysis %s failed", run_id)
+            steps.put(Step(agent="system", kind="status", title="failed", content=str(exc)[:500]))
+            await _flush(session, run.id, steps, seq)
+            run.status = "failed"
+            run.error = f"{type(exc).__name__}: {str(exc)[:500]}"
+            run.finished_at = _utcnow()
+            await session.commit()
+            return run.status
+        steps.put(Step(agent="system", kind="status", title="done"))
+        await _flush(session, run.id, steps, seq)
+        run.rating = result.rating
+        run.decision = result.decision
+        run.reports = result.reports
+        run.models = result.models
+        run.caveats = adapter.caveats(snapshot, result.rating)
+        run.status = "done"
+        run.finished_at = _utcnow()
+        await session.commit()
+        return run.status
+
+
+async def sweep_runs(ctx: dict[str, Any]) -> int:
+    """Queue runs stored while Redis was down; arq's job id keeps this from doubling a run."""
+    cutoff = _utcnow() - timedelta(minutes=2)
+    async with get_sessionmaker()() as session:
+        stuck = list(
+            await session.scalars(
+                select(AnalysisRun.id).where(
+                    AnalysisRun.status == "queued", AnalysisRun.created_at < cutoff
+                )
+            )
+        )
+    for run_id in stuck:
+        await ctx["redis"].enqueue_job(
+            "deep_analysis", str(run_id), _job_id=f"analysis:{run_id}", _queue_name=AGENTS_QUEUE
+        )
+    return len(stuck)
+
+
+async def startup(ctx: dict[str, Any]) -> None:
+    settings = get_settings()
+    # TradingAgents' OpenAI-compatible client reads its key from this variable.
+    if settings.litellm_master_key:
+        os.environ.setdefault("OPENAI_COMPATIBLE_API_KEY", settings.litellm_master_key)
+    await asyncio.to_thread(Path(settings.agents_home).mkdir, parents=True, exist_ok=True)
+
+
+class WorkerSettings:
+    functions: ClassVar[list[Any]] = [deep_analysis, sweep_runs]
+    cron_jobs: ClassVar[list[Any]] = [cron(sweep_runs, minute=set(range(0, 60, 5)))]
+    on_startup = startup
+    queue_name = AGENTS_QUEUE
+    max_jobs = 1  # one GPU and two subscriptions: runs queue up instead of competing
+    job_timeout = RUN_TIMEOUT_S
+    redis_settings = RedisSettings.from_dsn(get_settings().redis_url)

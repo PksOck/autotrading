@@ -352,3 +352,58 @@ class SignalOutcome(Base):
     mfe_pct: Mapped[Decimal] = mapped_column(Numeric(12, 4))
     mae_pct: Mapped[Decimal] = mapped_column(Numeric(12, 4))
     computed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class AnalysisRun(Base):
+    """A deep analysis (M4, BL-080): TradingAgents for stocks, our ETF analyst for ETFs.
+
+    The data snapshot the agents read is stored with the run, so every claim in the
+    report can be traced to its source and the run can be replayed (BL-086).
+    """
+
+    __tablename__ = "analysis_run"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    instrument_id: Mapped[int] = mapped_column(ForeignKey("instrument.id"), index=True)
+    engine: Mapped[str] = mapped_column(String(16))
+    trade_date: Mapped[date] = mapped_column(Date)
+    status: Mapped[str] = mapped_column(String(10), default="queued", index=True)
+    locale: Mapped[str] = mapped_column(String(5), default="sl")
+    hypothesis: Mapped[str | None] = mapped_column(Text)
+    proposal_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("proposal.id", ondelete="SET NULL")
+    )
+    rating: Mapped[str | None] = mapped_column(String(12))
+    decision: Mapped[str | None] = mapped_column(Text)
+    reports: Mapped[dict[str, str]] = mapped_column(JSONB, default=dict)
+    # Deterministic warnings shown next to the rating, e.g. "rumor_only" (AGENTS.md rule 4).
+    caveats: Mapped[list[str]] = mapped_column(JSONB, default=list)
+    snapshot: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
+    models: Mapped[dict[str, str]] = mapped_column(JSONB, default=dict)
+    error: Mapped[str | None] = mapped_column(Text)
+    signal_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("signal.id", ondelete="SET NULL")
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utcnow, index=True
+    )
+    started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+    instrument: Mapped[Instrument] = relationship(lazy="joined")
+
+
+class AnalysisStep(Base):
+    """One step of a run as the timeline shows it (CMP-12); `seq` orders the replay."""
+
+    __tablename__ = "analysis_step"
+
+    run_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("analysis_run.id", ondelete="CASCADE"), primary_key=True
+    )
+    seq: Mapped[int] = mapped_column(Integer, primary_key=True)
+    agent: Mapped[str] = mapped_column(String(32))
+    kind: Mapped[str] = mapped_column(String(10))
+    title: Mapped[str | None] = mapped_column(String(200))
+    content: Mapped[str] = mapped_column(Text, default="")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)

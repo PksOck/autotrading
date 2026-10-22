@@ -333,10 +333,180 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/analyses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Analyses */
+        get: operations["list_analyses_analyses_get"];
+        put?: never;
+        /** Create Analysis */
+        post: operations["create_analysis_analyses_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/analyses/{run_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Analysis */
+        get: operations["get_analysis_analyses__run_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/analyses/{run_id}/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Analysis Events */
+        get: operations["analysis_events_analyses__run_id__events_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AnalysisCreate */
+        AnalysisCreate: {
+            /** Symbol */
+            symbol: string;
+            /** Trade Date */
+            trade_date?: string | null;
+            /** Hypothesis */
+            hypothesis?: string | null;
+        };
+        /** AnalysisOut */
+        AnalysisOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Symbol */
+            symbol: string;
+            /** Name */
+            name: string | null;
+            /** Engine */
+            engine: string;
+            /**
+             * Trade Date
+             * Format: date
+             */
+            trade_date: string;
+            status: components["schemas"]["AnalysisStatus"];
+            /** Rating */
+            rating: string | null;
+            /** Caveats */
+            caveats: string[];
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Finished At */
+            finished_at: string | null;
+            /** Locale */
+            locale: string;
+            /** Hypothesis */
+            hypothesis: string | null;
+            /** Decision */
+            decision: string | null;
+            /** Reports */
+            reports: {
+                [key: string]: string;
+            };
+            /** Models */
+            models: {
+                [key: string]: string;
+            };
+            /** Error */
+            error: string | null;
+            /** Started At */
+            started_at: string | null;
+            /** Data Sources */
+            data_sources: {
+                [key: string]: string | null;
+            };
+            /** Steps */
+            steps: components["schemas"]["AnalysisStepOut"][];
+        };
+        /**
+         * AnalysisStatus
+         * @enum {string}
+         */
+        AnalysisStatus: "queued" | "running" | "done" | "failed";
+        /** AnalysisStepOut */
+        AnalysisStepOut: {
+            /** Seq */
+            seq: number;
+            /** Agent */
+            agent: string;
+            /** Kind */
+            kind: string;
+            /** Title */
+            title: string | null;
+            /** Content */
+            content: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** AnalysisSummary */
+        AnalysisSummary: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Symbol */
+            symbol: string;
+            /** Name */
+            name: string | null;
+            /** Engine */
+            engine: string;
+            /**
+             * Trade Date
+             * Format: date
+             */
+            trade_date: string;
+            status: components["schemas"]["AnalysisStatus"];
+            /** Rating */
+            rating: string | null;
+            /** Caveats */
+            caveats: string[];
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Finished At */
+            finished_at: string | null;
+        };
         /** BarOut */
         BarOut: {
             /**
@@ -1603,6 +1773,137 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Queued"];
+                };
+            };
+        };
+    };
+    list_analyses_analyses_get: {
+        parameters: {
+            query?: {
+                symbol?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnalysisSummary"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_analysis_analyses_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AnalysisCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnalysisSummary"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_analysis_analyses__run_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnalysisOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    analysis_events_analyses__run_id__events_get: {
+        parameters: {
+            query?: {
+                after?: number;
+            };
+            header?: {
+                "Last-Event-ID"?: string | null;
+            };
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

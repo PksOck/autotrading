@@ -44,6 +44,12 @@ class Settings(BaseSettings):
 
     benchmark_symbol: str = "SPY"  # entries (move vs market) and signal outcomes (alpha)
 
+    # Deep analysis (M4, services/agents): LiteLLM roles for TradingAgents' two tiers.
+    deep_quick_role: str = "cloud-quick"
+    deep_deep_role: str = "cloud-deep"
+    deep_debate_rounds: int = Field(default=1, ge=1, le=3)
+    agents_home: str = "/data/agents"  # checkpoints, memory log and run logs
+
 
 @lru_cache
 def get_settings() -> Settings:

@@ -8,11 +8,17 @@ from redis.exceptions import RedisError
 
 from preza.config import Settings
 
+AGENTS_QUEUE = "arq:agents"  # served by services/agents, apart from the API worker
+
 log = logging.getLogger(__name__)
 
 
 async def enqueue(
-    settings: Settings, job: str, *args: object, job_id: str | None = None
+    settings: Settings,
+    job: str,
+    *args: object,
+    job_id: str | None = None,
+    queue_name: str | None = None,
 ) -> str | None:
     """Returns the job id, or None when the queue is unreachable or the job is already queued."""
     redis_settings = RedisSettings.from_dsn(settings.redis_url)
@@ -24,7 +30,7 @@ async def enqueue(
         log.warning("queue unavailable for %s: %s", job, exc)
         return None
     try:
-        queued = await pool.enqueue_job(job, *args, _job_id=job_id)
+        queued = await pool.enqueue_job(job, *args, _job_id=job_id, _queue_name=queue_name)
     except (RedisError, OSError) as exc:
         log.warning("enqueue %s failed: %s", job, exc)
         return None

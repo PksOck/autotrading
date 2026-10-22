@@ -25,6 +25,10 @@ x-api-env: &api-env
   RADAR_NOTIFY_THRESHOLD: ${RADAR_NOTIFY_THRESHOLD:-0.7}
   YAHOO_ENABLED: ${YAHOO_ENABLED:-true}
   STOOQ_ENABLED: ${STOOQ_ENABLED:-true}
+  BENCHMARK_SYMBOL: ${BENCHMARK_SYMBOL:-SPY}
+  DEEP_QUICK_ROLE: ${DEEP_QUICK_ROLE:-cloud-quick}
+  DEEP_DEEP_ROLE: ${DEEP_DEEP_ROLE:-cloud-deep}
+  DEEP_DEBATE_ROUNDS: ${DEEP_DEBATE_ROUNDS:-1}
 
 services:
   postgres:
@@ -97,6 +101,21 @@ services:
       api: { condition: service_healthy }
     restart: unless-stopped
 
+  agents:
+    # Deep analysis (M4): TradingAgents with our data, its own queue and dependencies.
+    build:
+      context: ..
+      dockerfile: services/agents/Dockerfile
+    environment:
+      <<: *api-env
+      AGENTS_HOME: /data/agents
+      FRED_API_KEY: ${FRED_API_KEY:-} # neobvezno: makro podatki za analitika novic
+    volumes:
+      - agentsdata:/data/agents
+    depends_on:
+      api: { condition: service_healthy }
+    restart: unless-stopped
+
   notify:
     build: ../services/api
     command: ["python", "-m", "preza.cli.telegram_bot"]
@@ -139,3 +158,4 @@ services:
 volumes:
   pgdata:
   redisdata:
+  agentsdata:

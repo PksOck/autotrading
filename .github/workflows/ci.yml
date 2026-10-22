@@ -42,6 +42,36 @@ jobs:
           uv run python -m preza.cli.export_openapi openapi.json
           git diff --exit-code openapi.json
 
+  agents:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: services/agents
+    services:
+      postgres:
+        image: timescale/timescaledb-ha:pg17
+        env:
+          POSTGRES_USER: preza
+          POSTGRES_PASSWORD: preza
+          POSTGRES_DB: preza_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U preza -d preza_test"
+          --health-interval 5s --health-timeout 3s --health-retries 20
+    env:
+      TEST_DATABASE_URL: postgresql+asyncpg://preza:preza@localhost:5432/preza_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+      - run: uv sync --frozen
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run mypy
+      # The whole TradingAgents graph on fixed snapshots with a scripted model (BL-086).
+      - run: uv run pytest -q
+
   web:
     runs-on: ubuntu-latest
     steps:
