@@ -82,6 +82,31 @@ FINISHED_STEPS: list[tuple[str, str, str | None, str]] = [
 
 RUNNING_STEPS = FINISHED_STEPS[:8]
 
+# Shape of the decision card (BL-089); the control numbers here are demo values.
+CARD = {
+    "rating": "Overweight",
+    "control": {
+        "score": 0.21,
+        "coverage": 1.0,
+        "components": {"valuation": 0.55, "technical": -0.5, "risk": 0.2},
+        "weights": {"valuation": 0.4, "technical": 0.15, "risk": 0.15},
+        "implied_rating": "Overweight",
+    },
+    "confidence": "normal",
+    "conviction": 6,
+    "size_class": "normal",
+    "upgrade_if": [
+        "Cena zapre nad 200-dnevnim povprečjem in tam ostane dva tedna.",
+        "Četrtletno poročilo potrdi rast naročil.",
+    ],
+    "downgrade_if": [
+        "Zaostritev izvoznih omejitev za EUV opremo.",
+        "Cena pade pod dno zadnjih tednov.",
+    ],
+    "delta_note": None,
+    "previous": None,
+}
+
 
 def _snapshot(as_of: date) -> dict[str, object]:
     return {
@@ -129,6 +154,7 @@ async def seed_analyses() -> None:
                     else {"market_report": MARKET}
                 ),
                 caveats=[],
+                card=CARD if done else None,
                 snapshot=_snapshot(today),
                 models={"quick": SOURCE, "deep": SOURCE},
                 created_at=started,

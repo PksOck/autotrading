@@ -25,11 +25,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from preza.config import Settings, get_settings
 from preza.db import get_sessionmaker
-from preza.llm.client import LiteLlmClient, Role
+from preza.domain.analysis import DecisionCard, PreviousRun
+from preza.llm.client import LiteLlmClient, Llm, Role
 from preza.models import AnalysisRun, AnalysisStep
 from preza.queue import AGENTS_QUEUE
+from preza_agents.decision_card import build_card, control_score, draft_card
 from preza_agents.deep_research import adapter
-from preza_agents.deep_research.snapshot import build_snapshot
+from preza_agents.deep_research.snapshot import DataSnapshot, build_snapshot
 from preza_agents.deep_research.timeline import Step
 from preza_agents.etf_analyst.analyst import run_etf
 from preza_agents.etf_analyst.context import build_etf_facts
@@ -171,8 +173,16 @@ async def deep_analysis(
                 steps.put(
                     Step(agent="hypothesis", kind="report", title="hypothesis_check", content=text)
                 )
+        card, card_model = await _card(session, run, snapshot, result, llm, deep)
+        if card_model is None:
+            extra.append("card_incomplete")
+        if card.confidence == "low":
+            extra.append("control_disagrees")
         steps.put(Step(agent="system", kind="status", title="done"))
         await _flush(session, run.id, steps, seq)
+        run.card = card.model_dump(mode="json")
+        if card_model is not None:
+            result.models["card"] = card_model
         run.rating = result.rating
         run.decision = result.decision
         run.reports = result.reports
@@ -185,6 +195,53 @@ async def deep_analysis(
         run.finished_at = _utcnow()
         await session.commit()
         return run.status
+
+
+async def _card(
+    session: AsyncSession,
+    run: AnalysisRun,
+    snapshot: DataSnapshot,
+    result: adapter.DeepResult,
+    llm: Llm,
+    deep: adapter.DeepSettings,
+) -> tuple[DecisionCard, str | None]:
+    """The decision card; without the model's half it still carries the control score."""
+    before = await session.scalar(
+        select(AnalysisRun)
+        .where(
+            AnalysisRun.instrument_id == run.instrument_id,
+            AnalysisRun.status == "done",
+            AnalysisRun.id != run.id,
+            AnalysisRun.created_at < run.created_at,
+        )
+        .order_by(AnalysisRun.created_at.desc())
+        .limit(1)
+    )
+    previous = (
+        PreviousRun(id=before.id, trade_date=before.trade_date, rating=before.rating)
+        if before is not None
+        else None
+    )
+    draft, model = None, None
+    try:
+        draft, model = await draft_card(
+            llm,
+            result.rating,
+            result.decision,
+            result.reports,
+            None
+            if before is None
+            else {
+                "trade_date": before.trade_date.isoformat(),
+                "rating": before.rating,
+                "decision": (before.decision or "")[:3000],
+            },
+            run.locale,
+            cast(Role, deep.quick_role),
+        )
+    except Exception:
+        log.warning("decision card for %s failed", run.id, exc_info=True)
+    return build_card(result.rating, control_score(snapshot), draft, previous), model
 
 
 async def sweep_runs(ctx: dict[str, Any]) -> int:

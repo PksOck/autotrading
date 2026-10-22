@@ -450,6 +450,7 @@ export interface components {
             data_sources: {
                 [key: string]: string | null;
             };
+            card?: components["schemas"]["DecisionCard"] | null;
             /** Steps */
             steps: components["schemas"]["AnalysisStepOut"][];
         };
@@ -546,6 +547,55 @@ export interface components {
              * Format: date
              */
             report_date: string;
+        };
+        /**
+         * ControlScore
+         * @description Deterministic composite next to the agents' rating (BL-089). Components in -1..1.
+         */
+        ControlScore: {
+            /** Score */
+            score: number | null;
+            /**
+             * Coverage
+             * @description share of the weights with data
+             */
+            coverage: number;
+            /** Components */
+            components: {
+                [key: string]: number | null;
+            };
+            /** Weights */
+            weights: {
+                [key: string]: number;
+            };
+            /** Implied Rating */
+            implied_rating: string | null;
+        };
+        /**
+         * DecisionCard
+         * @description Structured decision (BL-089). The model writes triggers, conviction and the delta
+         *     note; the control score, size class and confidence are computed by code.
+         */
+        DecisionCard: {
+            /** Rating */
+            rating: string;
+            control: components["schemas"]["ControlScore"];
+            /**
+             * Confidence
+             * @enum {string}
+             */
+            confidence: "normal" | "low";
+            /** Conviction */
+            conviction?: number | null;
+            /** Size Class */
+            size_class: ("none" | "small" | "normal" | "increased") | null;
+            /** Upgrade If */
+            upgrade_if?: string[];
+            /** Downgrade If */
+            downgrade_if?: string[];
+            /** Delta Note */
+            delta_note?: string | null;
+            previous?: components["schemas"]["PreviousRun"] | null;
         };
         /**
          * Direction
@@ -833,6 +883,21 @@ export interface components {
             weight_pct: number | null;
             /** Change Pct */
             change_pct?: number | null;
+        };
+        /** PreviousRun */
+        PreviousRun: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Trade Date
+             * Format: date
+             */
+            trade_date: string;
+            /** Rating */
+            rating: string | null;
         };
         /** ProposalCreate */
         ProposalCreate: {

@@ -1277,6 +1277,16 @@
             "type": "object",
             "title": "Data Sources"
           },
+          "card": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DecisionCard"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "steps": {
             "items": {
               "$ref": "#/components/schemas/AnalysisStepOut"
@@ -1556,6 +1566,163 @@
           "report_date"
         ],
         "title": "CashIn"
+      },
+      "ControlScore": {
+        "properties": {
+          "score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score"
+          },
+          "coverage": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Coverage",
+            "description": "share of the weights with data"
+          },
+          "components": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "object",
+            "title": "Components"
+          },
+          "weights": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Weights"
+          },
+          "implied_rating": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Implied Rating"
+          }
+        },
+        "type": "object",
+        "required": [
+          "score",
+          "coverage",
+          "components",
+          "weights",
+          "implied_rating"
+        ],
+        "title": "ControlScore",
+        "description": "Deterministic composite next to the agents' rating (BL-089). Components in -1..1."
+      },
+      "DecisionCard": {
+        "properties": {
+          "rating": {
+            "type": "string",
+            "title": "Rating"
+          },
+          "control": {
+            "$ref": "#/components/schemas/ControlScore"
+          },
+          "confidence": {
+            "type": "string",
+            "enum": [
+              "normal",
+              "low"
+            ],
+            "title": "Confidence"
+          },
+          "conviction": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 10.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conviction"
+          },
+          "size_class": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "none",
+                  "small",
+                  "normal",
+                  "increased"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Size Class"
+          },
+          "upgrade_if": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Upgrade If"
+          },
+          "downgrade_if": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Downgrade If"
+          },
+          "delta_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delta Note"
+          },
+          "previous": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PreviousRun"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "rating",
+          "control",
+          "confidence",
+          "size_class"
+        ],
+        "title": "DecisionCard",
+        "description": "Structured decision (BL-089). The model writes triggers, conviction and the delta\nnote; the control score, size class and confidence are computed by code."
       },
       "Direction": {
         "type": "string",
@@ -2593,6 +2760,38 @@
           "weight_pct"
         ],
         "title": "PositionOut"
+      },
+      "PreviousRun": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "trade_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Trade Date"
+          },
+          "rating": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rating"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "trade_date",
+          "rating"
+        ],
+        "title": "PreviousRun"
       },
       "ProposalCreate": {
         "properties": {

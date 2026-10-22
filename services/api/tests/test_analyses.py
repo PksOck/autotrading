@@ -110,3 +110,24 @@ async def test_deep_proposal_queues_an_agent_run(api: Any, monkeypatch: pytest.M
 
     out = (await client.get(f"/proposals/{proposal_id}")).json()
     assert out["analysis_id"] == str(run.id)
+
+
+async def test_detail_carries_the_decision_card(api: Any) -> None:
+    from preza.cli.seed_demo_analysis import CARD
+
+    client, _ = api
+    await _instrument("ASML")
+    async with db.get_sessionmaker()() as session:
+        run = AnalysisRun(
+            instrument_id=await session.scalar(select(Instrument.id)),
+            engine="tradingagents",
+            trade_date=date(2026, 10, 20),
+            status="done",
+            rating="Overweight",
+            card=CARD,
+        )
+        session.add(run)
+        await session.commit()
+    card = (await client.get(f"/analyses/{run.id}")).json()["card"]
+    assert card["size_class"] == "normal" and card["control"]["implied_rating"] == "Overweight"
+    assert len(card["upgrade_if"]) == 2

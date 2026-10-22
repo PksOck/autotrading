@@ -379,6 +379,7 @@ class AnalysisRun(Base):
     # Deterministic warnings shown next to the rating, e.g. "rumor_only" (AGENTS.md rule 4).
     caveats: Mapped[list[str]] = mapped_column(JSONB, default=list)
     snapshot: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
+    card: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     models: Mapped[dict[str, str]] = mapped_column(JSONB, default=dict)
     error: Mapped[str | None] = mapped_column(Text)
     signal_id: Mapped[uuid.UUID | None] = mapped_column(

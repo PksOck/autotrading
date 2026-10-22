@@ -7,13 +7,17 @@ from typing import Any
 from pydantic import BaseModel
 
 from preza.llm.client import LlmResult
+from preza_agents.decision_card import CardDraft
 from preza_agents.etf_analyst.analyst import EtfDecision, EtfTheme
 from preza_agents.hypothesis import HypothesisCheck
 
 
 class FakeRoleLlm:
-    def __init__(self, rating: str = "Hold", check_fails: bool = False) -> None:
+    def __init__(
+        self, rating: str = "Hold", check_fails: bool = False, conviction: int = 6
+    ) -> None:
         self.rating = rating
+        self.conviction = conviction
         self.check_fails = check_fails
         self.calls: list[tuple[str, str, str]] = []
 
@@ -26,6 +30,13 @@ class FakeRoleLlm:
             value = EtfTheme(summary="Polprevodniki rastejo z naložbami v AI.", drivers=["AI"])
         elif schema is EtfDecision:
             value = EtfDecision(rating=self.rating, rationale="Prekrivanje je majhno.")  # type: ignore[arg-type]
+        elif schema is CardDraft:
+            value = CardDraft(
+                upgrade_if=["Cena zapre nad 200-dnevnim povprečjem."],
+                downgrade_if=["Naročila padejo dve četrtletji zapored."],
+                conviction=self.conviction,
+                delta_note="Ocena ostaja, nov je podatek o naročilih.",
+            )
         elif schema is HypothesisCheck:
             if self.check_fails:
                 raise RuntimeError("model unavailable")

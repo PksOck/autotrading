@@ -168,7 +168,10 @@ async def test_etf_analysis_job(session) -> None:  # type: ignore[no-untyped-def
     await session.refresh(run)
     assert run.rating == "Hold"
     assert "no_profile" in run.caveats and "no_fundamentals" not in run.caveats
-    assert len(llm.calls) == 2
+    assert len(llm.calls) == 3  # theme, decision, card
+    assert run.card is not None and run.card["conviction"] == 6
+    assert run.card["control"]["components"]["valuation"] is None  # a fund has no P/E
+    assert run.card["previous"] is None and run.card["delta_note"] is None
     titles = list(
         await session.scalars(
             select(AnalysisStep.title)
@@ -185,8 +188,8 @@ async def test_hypothesis_is_checked_after_the_run(session) -> None:  # type: ig
     assert await worker.deep_analysis({"llm": llm}, str(run.id)) == "done"
 
     await session.refresh(run)
-    assert len(llm.calls) == 3 and "Polprevodniki bodo rasli" in llm.calls[-1][2]
-    assert llm.calls[-1][0] == "cloud-deep"
+    assert len(llm.calls) == 4 and "Polprevodniki bodo rasli" in llm.calls[2][2]
+    assert llm.calls[2][0] == "cloud-deep"
     assert "delno potrjena" in run.reports["hypothesis_check"]
     assert run.models["hypothesis"] == "fake-cloud-deep"
     titles = list(
@@ -207,3 +210,26 @@ async def test_failed_hypothesis_check_keeps_the_run(session) -> None:  # type: 
     await session.refresh(run)
     assert run.rating == "Hold" and "hypothesis_check" not in run.reports
     assert "hypothesis_unchecked" in run.caveats
+
+
+async def test_card_compares_with_the_previous_run(session) -> None:  # type: ignore[no-untyped-def]
+    first = await _etf_run(session)
+    assert await worker.deep_analysis({"llm": FakeRoleLlm()}, str(first.id)) == "done"
+    second = AnalysisRun(
+        instrument_id=first.instrument_id,
+        engine="etf",
+        trade_date=date(2026, 10, 20),
+        locale="sl",
+    )
+    session.add(second)
+    await session.commit()
+    llm = FakeRoleLlm(rating="Overweight", conviction=9)
+    assert await worker.deep_analysis({"llm": llm}, str(second.id)) == "done"
+
+    await session.refresh(second)
+    card = second.card
+    assert card is not None
+    assert card["previous"] == {"id": str(first.id), "trade_date": "2026-10-20", "rating": "Hold"}
+    assert card["delta_note"] and '"rating": "Hold"' in llm.calls[-1][2]
+    assert card["size_class"] in ("increased", "small")  # small only when the control disagrees
+    assert ("control_disagrees" in second.caveats) == (card["size_class"] == "small")

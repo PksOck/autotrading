@@ -56,6 +56,7 @@ class DataSnapshot(BaseModel):
     fundamentals: dict[str, Any] | None = None
     fundamentals_source: str | None = None
     fundamentals_as_of: date | None = None
+    fundamentals_history: dict[str, list[tuple[date, float]]] = Field(default_factory=dict)
     news: list[NewsRow] = Field(default_factory=list)
     global_news: list[NewsRow] = Field(default_factory=list)
 
@@ -92,6 +93,14 @@ async def _news(
         )
         for item, is_rumor in rows
     ]
+
+
+def _history(raw: dict[str, Any] | None, as_of: date) -> dict[str, list[tuple[date, float]]]:
+    out: dict[str, list[tuple[date, float]]] = {}
+    for metric, points in (raw or {}).items():
+        rows = [(date.fromisoformat(str(d)), float(v)) for d, v in points if v is not None]
+        out[metric] = [(d, v) for d, v in rows if d <= as_of]
+    return out
 
 
 async def build_snapshot(
@@ -135,6 +144,7 @@ async def build_snapshot(
         fundamentals=fundamentals.metrics if fundamentals else None,
         fundamentals_source=fundamentals.source if fundamentals else None,
         fundamentals_as_of=fundamentals.as_of if fundamentals else None,
+        fundamentals_history=_history(fundamentals.history if fundamentals else None, as_of),
         news=news,
         global_news=global_news,
     )

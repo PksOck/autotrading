@@ -24,6 +24,7 @@ from preza.domain.analysis import (
     AnalysisStatus,
     AnalysisStepOut,
     AnalysisSummary,
+    DecisionCard,
 )
 from preza.models import AnalysisRun, AnalysisStep, Instrument
 from preza.services.analyses import new_run, queue_run
@@ -125,6 +126,7 @@ async def get_analysis(run_id: uuid.UUID, session: Session) -> AnalysisOut:
         error=run.error,
         started_at=run.started_at,
         data_sources=_sources(run),
+        card=DecisionCard.model_validate(run.card) if run.card else None,
         steps=[step_out(s) for s in steps],
     )
 
