@@ -6,6 +6,7 @@ const PATHS: Record<string, string> = {
   signals: "M4 12h4l2-6 4 12 2-6h4",
   proposals: "M12 5v14M5 12h14",
   portfolio: "M4 7h16v12H4zM9 7V5h6v2",
+  analyses: "M4 5h16v10H9l-5 4zM8 9h8M8 12h5",
   theses: "M5 4h14v16H5zM8 9h8M8 13h8M8 17h5",
   options: "M4 19c4 0 6-14 16-14M4 12h16",
   trackRecord: "M5 19V9M12 19V5M19 19v-7",

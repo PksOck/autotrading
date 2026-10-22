@@ -1,8 +1,15 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
+import { lastSeq, mergeSteps } from "@/lib/analysis";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiError, api } from "./client";
 import type {
+  AnalysisCreate,
+  AnalysisOut,
+  AnalysisStatus,
+  AnalysisStep,
+  AnalysisSummary,
   EntryOut,
   EntryView,
   BarsOut,
@@ -33,6 +40,8 @@ export const keys = {
   signals: (status: SignalStatus | "all") => ["signals", status] as const,
   entries: (view: EntryView) => ["entries", view] as const,
   proposals: ["proposals"] as const,
+  analyses: (symbol?: string) => ["analyses", symbol ?? "all"] as const,
+  analysis: (id: string) => ["analysis", id] as const,
 };
 
 export const useSystemStatus = () =>
@@ -160,4 +169,74 @@ export function useCreateProposal() {
     mutationFn: (data: ProposalCreate) => api.send<ProposalOut>("/proposals", "POST", data),
     onSuccess: () => client.invalidateQueries({ queryKey: keys.proposals }),
   });
+}
+
+export const useAnalyses = (symbol?: string) =>
+  useQuery({
+    queryKey: keys.analyses(symbol),
+    queryFn: () =>
+      api.get<AnalysisSummary[]>(symbol ? `/analyses?symbol=${encodeURIComponent(symbol)}` : "/analyses"),
+    refetchInterval: (query) =>
+      query.state.data?.some((a) => a.status === "queued" || a.status === "running") ? 5_000 : false,
+  });
+
+export const useAnalysis = (id: string) =>
+  useQuery({
+    queryKey: keys.analysis(id),
+    queryFn: () => api.get<AnalysisOut>(`/analyses/${encodeURIComponent(id)}`),
+    retry: false,
+  });
+
+export function useCreateAnalysis() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (data: AnalysisCreate) => api.send<AnalysisSummary>("/analyses", "POST", data),
+    onSuccess: () => client.invalidateQueries({ queryKey: ["analyses"] }),
+  });
+}
+
+/**
+ * Live steps of a run (ADR-0011): starts from the steps already loaded, then follows
+ * `/analyses/{id}/events` while the run is queued/running. Dedupes by seq and closes on `end`.
+ */
+export function useAnalysisStream(id: string, initialSteps: AnalysisStep[], status: AnalysisStatus | undefined) {
+  const client = useQueryClient();
+  const [streamed, setStreamed] = useState<AnalysisStep[]>([]);
+  const [connected, setConnected] = useState(false);
+  const seqRef = useRef(0);
+  const steps = mergeSteps(initialSteps, streamed);
+  const live = status === "queued" || status === "running";
+
+  const latest = lastSeq(steps);
+  useEffect(() => {
+    seqRef.current = latest;
+  });
+
+  useEffect(() => {
+    if (!live) return;
+    const source = new EventSource(`/api/analyses/${encodeURIComponent(id)}/events?after=${seqRef.current}`);
+    source.onopen = () => setConnected(true);
+    source.addEventListener("step", (event) => {
+      try {
+        const step = JSON.parse((event as MessageEvent<string>).data) as AnalysisStep;
+        setStreamed((prev) => mergeSteps(prev, [step]));
+      } catch {
+        /* ignore a malformed frame; the next one still applies */
+      }
+    });
+    source.addEventListener("end", () => {
+      source.close();
+      setConnected(false);
+      void client.invalidateQueries({ queryKey: keys.analysis(id) });
+      void client.invalidateQueries({ queryKey: ["analyses"] });
+    });
+    // On error EventSource reconnects by itself and resends Last-Event-ID.
+    source.onerror = () => setConnected(false);
+    return () => {
+      source.close();
+      setConnected(false);
+    };
+  }, [id, live, client]);
+
+  return { steps, connected: live && connected };
 }

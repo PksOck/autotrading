@@ -4,6 +4,8 @@ import { motion } from "motion/react";
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { AnalysisRunList } from "@/components/analysis/AnalysisRunList";
+import { LaunchAnalysisButton } from "@/components/analysis/LaunchAnalysisButton";
 import { AnimatedNumber } from "@/components/common/AnimatedNumber";
 import { ProvenanceTag } from "@/components/common/ProvenanceTag";
 import { CauseBadge } from "@/components/entries/CauseBadge";
@@ -131,6 +133,7 @@ export function InstrumentView({ symbol }: { symbol: string }) {
           <button type="button" onClick={() => openProposalComposer({ symbols: [symbol] })} className="h-10 rounded-md bg-accent px-4 font-medium text-on-accent hover:opacity-90">
             {t("action.analyze")}
           </button>
+          <LaunchAnalysisButton symbol={symbol} />
           <WatchButton symbol={symbol} />
         </div>
       </header>
@@ -225,6 +228,15 @@ export function InstrumentView({ symbol }: { symbol: string }) {
               </Link>
             </section>
           )}
+          <section className="card overflow-hidden" aria-label={t("analysisPage.latest.title")}>
+            <div className="flex items-center justify-between gap-2 px-4 pt-4 pb-2">
+              <h2 className="text-base font-semibold">{t("analysisPage.latest.title")}</h2>
+              <Link href="/analysis" className="text-[13px] font-medium text-accent hover:underline">
+                {t("analysisPage.latest.all")} →
+              </Link>
+            </div>
+            <AnalysisRunList symbol={symbol} limit={3} compact emptyKey="latest.empty" />
+          </section>
           <section className="card p-4">
             <h2 className="mb-3 text-base font-semibold">{t("instrumentPage.stats")}</h2>
             <dl className="grid grid-cols-2 gap-x-4 gap-y-3">

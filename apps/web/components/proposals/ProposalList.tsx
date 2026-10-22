@@ -49,6 +49,11 @@ export function ProposalList() {
               </div>
               {p.hypothesis && <p className="text-text-2">“{p.hypothesis}”</p>}
               {p.verdict && <p className="rounded-md bg-surface-2 p-3 text-[13px] text-text">{p.verdict}</p>}
+              {p.analysis_id && (
+                <Link href={`/analysis/${p.analysis_id}`} className="text-[13px] text-accent">
+                  {t("analysisPage.openAnalysis")} →
+                </Link>
+              )}
               {p.signal_id && (
                 <Link href="/signals" className="text-[13px] text-accent">
                   {t("proposalsPage.openSignal")} →

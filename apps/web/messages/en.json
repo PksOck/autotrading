@@ -16,7 +16,8 @@
     "more": "More",
     "proposals": "Proposals",
     "ux": "Design system",
-    "mainLabel": "Main menu"
+    "mainLabel": "Main menu",
+    "analyses": "Analyses"
   },
   "view": {
     "discover": "Discover",
@@ -571,5 +572,129 @@
       "rich": "rich",
       "caption": "Left is closer to the zone, higher is cheaper. Size shows the number of rules, colour the cause. Dashed circle: no valuation data."
     }
+  },
+  "analysisPage": {
+    "title": "Analyses",
+    "subtitle": "Deep agent analyses: what they saw, how they argued and what they propose. The decision stays yours.",
+    "runTitle": "Analysis",
+    "indexLabel": "Recent analyses",
+    "back": "All analyses",
+    "notFound": "This analysis does not exist. It may have been deleted or the link is wrong.",
+    "loadFailed": "The analysis could not be loaded. The rest of the page works, try again in a moment.",
+    "empty": "No deep analysis yet. Start one from an instrument page with the Deep analysis button.",
+    "emptyAction": "Open entries",
+    "tradeDate": "Analysis date",
+    "started": "Started",
+    "status": {
+      "queued": "Queued",
+      "running": "Running",
+      "done": "Done",
+      "failed": "Failed"
+    },
+    "live": "running",
+    "liveWorking": "Agents are working …",
+    "stepCount": "{count, plural, one {# step} other {# steps}}",
+    "rating": {
+      "Buy": "Buy",
+      "Overweight": "Overweight",
+      "Hold": "Hold",
+      "Underweight": "Underweight",
+      "Sell": "Sell",
+      "REVIEW": "Needs review",
+      "none": "No rating"
+    },
+    "ratingLabel": "Agents' rating: {rating}",
+    "caveats": {
+      "rumor_only": "Unconfirmed rumors only",
+      "no_fundamentals": "No fundamentals",
+      "short_history": "Short price history",
+      "no_profile": "No ETF profile",
+      "hypothesis_unchecked": "Hypothesis not checked"
+    },
+    "caveatHint": "Caveats of this analysis",
+    "opinion": "This is the agents' opinion, not an instruction. The rating places no order and creates no signal. You decide.",
+    "provenance": {
+      "line": "Source: {bars} · prices up to {asOf}",
+      "fundamentals": "fundamentals: {source} ({asOf})",
+      "noFundamentals": "no fundamentals",
+      "models": "Models: quick {quick}, deep {deep}",
+      "unknown": "n/a"
+    },
+    "decision": {
+      "title": "Final decision",
+      "pending": "The decision appears when the portfolio manager finishes. Follow the steps below meanwhile.",
+      "queued": "The analysis is waiting in the queue. It starts when the previous one is done.",
+      "failedTitle": "The analysis failed",
+      "failedHint": "Partial steps are below. Run the analysis again from the instrument page.",
+      "noError": "No reason given."
+    },
+    "timelineLabel": "Analysis progress",
+    "timelineEmpty": "No steps yet.",
+    "phases": {
+      "analysts": "Analysts",
+      "debate": "Debate",
+      "plan": "Plan",
+      "risk": "Risks",
+      "decision": "Decision"
+    },
+    "kinds": {
+      "tool": "Tool call",
+      "report": "Report",
+      "debate": "Debate",
+      "decision": "Decision",
+      "status": "Status"
+    },
+    "reports": {
+      "market_report": "Market report",
+      "news_report": "News report",
+      "fundamentals_report": "Fundamentals report",
+      "investment_plan": "Investment plan",
+      "trader_investment_plan": "Trader's proposal",
+      "final_trade_decision": "Final decision"
+    },
+    "statusSteps": {
+      "started": "Started",
+      "done": "Finished",
+      "failed": "Error"
+    },
+    "expand": "Expand",
+    "collapse": "Collapse",
+    "expandLabel": "Expand: {title}",
+    "collapseLabel": "Collapse: {title}",
+    "launch": {
+      "button": "Deep analysis",
+      "starting": "Starting …",
+      "notFound": "This instrument cannot be analyzed because it is not in the database.",
+      "failed": "The analysis could not be started. Try again in a moment."
+    },
+    "latest": {
+      "title": "Latest deep analyses",
+      "empty": "No deep analysis for this instrument yet.",
+      "all": "All analyses"
+    },
+    "engines": {
+      "etf": "ETF analyst",
+      "tradingagents": "Stock agents"
+    },
+    "hypothesis": {
+      "title": "Your hypothesis",
+      "note": "The hypothesis check is the agents' opinion, not a fact."
+    },
+    "openAnalysis": "Open analysis"
+  },
+  "agents": {
+    "system": "System",
+    "market": "Market analyst",
+    "news": "News analyst",
+    "fundamentals": "Fundamentals analyst",
+    "social": "Social analyst",
+    "bull": "Bull (for buying)",
+    "bear": "Bear (against buying)",
+    "research_manager": "Research manager",
+    "trader": "Trader",
+    "aggressive": "Aggressive",
+    "conservative": "Conservative",
+    "neutral": "Neutral",
+    "portfolio_manager": "Portfolio manager"
   }
 }

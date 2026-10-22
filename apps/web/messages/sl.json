@@ -16,7 +16,8 @@
     "more": "Več",
     "proposals": "Predlogi",
     "ux": "Oblikovni sistem",
-    "mainLabel": "Glavni meni"
+    "mainLabel": "Glavni meni",
+    "analyses": "Analize"
   },
   "view": {
     "discover": "Novi predlogi",
@@ -571,5 +572,129 @@
       "rich": "drago",
       "caption": "Levo je bližje coni, zgoraj je ugodnejše vrednotenje. Velikost kaže število pravil, barva vzrok padca. Črtkan krog: ni podatkov o vrednotenju."
     }
+  },
+  "analysisPage": {
+    "title": "Analize",
+    "subtitle": "Globoke analize agentov: kaj so videli, kako so se prepirali in kaj predlagajo. Odločitev ostane tvoja.",
+    "runTitle": "Analiza",
+    "indexLabel": "Zadnje analize",
+    "back": "Vse analize",
+    "notFound": "Te analize ni. Morda je bila izbrisana ali pa povezava ni pravilna.",
+    "loadFailed": "Analize ni mogoče naložiti. Ostala stran deluje, poskusi znova čez trenutek.",
+    "empty": "Še ni nobene globoke analize. Zaženi jo na strani instrumenta z gumbom Globoka analiza.",
+    "emptyAction": "Odpri vstope",
+    "tradeDate": "Datum analize",
+    "started": "Začetek",
+    "status": {
+      "queued": "V vrsti",
+      "running": "V teku",
+      "done": "Končana",
+      "failed": "Ni uspela"
+    },
+    "live": "v teku",
+    "liveWorking": "Agenti delajo …",
+    "stepCount": "{count, plural, one {# korak} two {# koraka} few {# koraki} other {# korakov}}",
+    "rating": {
+      "Buy": "Kupi",
+      "Overweight": "Povečaj",
+      "Hold": "Drži",
+      "Underweight": "Zmanjšaj",
+      "Sell": "Prodaj",
+      "REVIEW": "Potreben pregled",
+      "none": "Brez ocene"
+    },
+    "ratingLabel": "Ocena agentov: {rating}",
+    "caveats": {
+      "rumor_only": "Samo nepotrjene govorice",
+      "no_fundamentals": "Brez temeljnih podatkov",
+      "short_history": "Kratka zgodovina cen",
+      "no_profile": "Brez profila ETF-ja",
+      "hypothesis_unchecked": "Hipoteze ni bilo mogoče preveriti"
+    },
+    "caveatHint": "Opozorila te analize",
+    "opinion": "To je mnenje agentov, ne navodilo. Ocena ne odda naročila in ne ustvari signala. Odločiš ti.",
+    "provenance": {
+      "line": "Vir: {bars} · cene do {asOf}",
+      "fundamentals": "temeljni podatki: {source} ({asOf})",
+      "noFundamentals": "temeljnih podatkov ni",
+      "models": "Modela: hitri {quick}, globoki {deep}",
+      "unknown": "ni podatka"
+    },
+    "decision": {
+      "title": "Končna odločitev",
+      "pending": "Odločitev bo na voljo, ko portfeljski vodja zaključi. Dotlej spremljaj korake spodaj.",
+      "queued": "Analiza čaka v vrsti. Začne se, ko je prejšnja končana.",
+      "failedTitle": "Analiza ni uspela",
+      "failedHint": "Delni koraki so spodaj. Zaženi analizo znova na strani instrumenta.",
+      "noError": "Vzrok ni naveden."
+    },
+    "timelineLabel": "Potek analize",
+    "timelineEmpty": "Še ni nobenega koraka.",
+    "phases": {
+      "analysts": "Analitiki",
+      "debate": "Debata",
+      "plan": "Načrt",
+      "risk": "Tveganja",
+      "decision": "Odločitev"
+    },
+    "kinds": {
+      "tool": "Klic orodja",
+      "report": "Poročilo",
+      "debate": "Debata",
+      "decision": "Odločitev",
+      "status": "Stanje"
+    },
+    "reports": {
+      "market_report": "Tržno poročilo",
+      "news_report": "Poročilo o novicah",
+      "fundamentals_report": "Temeljno poročilo",
+      "investment_plan": "Naložbeni načrt",
+      "trader_investment_plan": "Predlog trgovca",
+      "final_trade_decision": "Končna odločitev"
+    },
+    "statusSteps": {
+      "started": "Zagon",
+      "done": "Zaključeno",
+      "failed": "Napaka"
+    },
+    "expand": "Razširi",
+    "collapse": "Skrči",
+    "expandLabel": "Razširi: {title}",
+    "collapseLabel": "Skrči: {title}",
+    "launch": {
+      "button": "Globoka analiza",
+      "starting": "Zaganjam …",
+      "notFound": "Instrumenta ni mogoče analizirati, ker ga ni v bazi.",
+      "failed": "Analize ni bilo mogoče zagnati. Poskusi znova čez trenutek."
+    },
+    "latest": {
+      "title": "Zadnje globoke analize",
+      "empty": "Za ta instrument še ni globoke analize.",
+      "all": "Vse analize"
+    },
+    "engines": {
+      "etf": "Analitik ETF",
+      "tradingagents": "Agenti za delnice"
+    },
+    "hypothesis": {
+      "title": "Tvoja hipoteza",
+      "note": "Preverjanje hipoteze je mnenje agentov, ne dejstvo."
+    },
+    "openAnalysis": "Odpri analizo"
+  },
+  "agents": {
+    "system": "Sistem",
+    "market": "Tržni analitik",
+    "news": "Analitik novic",
+    "fundamentals": "Temeljni analitik",
+    "social": "Analitik družbenih omrežij",
+    "bull": "Bik (za nakup)",
+    "bear": "Medved (proti nakupu)",
+    "research_manager": "Raziskovalni vodja",
+    "trader": "Trgovec",
+    "aggressive": "Drzen",
+    "conservative": "Previden",
+    "neutral": "Nevtralen",
+    "portfolio_manager": "Portfeljski vodja"
   }
 }
