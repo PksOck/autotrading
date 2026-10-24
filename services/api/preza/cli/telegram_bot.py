@@ -128,8 +128,14 @@ async def run() -> None:
         await client.aclose()
 
 
-def main() -> None:
+def configure_logging() -> None:
     logging.basicConfig(level=logging.INFO)
+    # httpx logs every request URL at INFO, and Bot API URLs carry the token.
+    logging.getLogger("httpx").setLevel(logging.WARNING)
+
+
+def main() -> None:
+    configure_logging()
     asyncio.run(run())
 
 

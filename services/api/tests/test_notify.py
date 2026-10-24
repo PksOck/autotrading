@@ -1,4 +1,5 @@
 import json
+import logging
 import uuid
 from datetime import UTC, datetime, timedelta
 from decimal import Decimal
@@ -8,7 +9,7 @@ import httpx
 import pytest
 from sqlalchemy import func, select
 
-from preza.cli.telegram_bot import handle_update, parse_predlog
+from preza.cli.telegram_bot import configure_logging, handle_update, parse_predlog
 from preza.config import Settings
 from preza.models import EntryCandidate, Instrument, Proposal, Signal
 from preza.notify.models import Notification
@@ -469,3 +470,9 @@ async def test_bot_start_predlog_and_foreign_chat(
     assert proposal.depth == "quick" and proposal.save_to == "reserve"
     assert queued == [str(proposal.id)] and "AMD, NVDA" in outbox.texts[-1]
     assert outbox.texts[1].startswith("Uporaba")
+
+
+def test_bot_logging_hides_request_urls() -> None:
+    # Bot API URLs embed the token; httpx must not log them at INFO.
+    configure_logging()
+    assert not logging.getLogger("httpx").isEnabledFor(logging.INFO)
