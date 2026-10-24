@@ -18,7 +18,7 @@ coverage/
 infra/secrets/
 
 # podatki in volumni
-data/
+/data/
 *.sqlite
 *.db
 
