@@ -35,6 +35,10 @@ import type {
   ThesisDraftCreate,
   ThesisClaimOut,
   ThesisClaimStatusChange,
+  ReviewOut,
+  ClaimReviewProposalOut,
+  AcceptProposal,
+  DismissProposal,
 } from "./types";
 
 export const keys = {
@@ -51,12 +55,20 @@ export const keys = {
   analyses: (symbol?: string) => ["analyses", symbol ?? "all"] as const,
   analysis: (id: string) => ["analysis", id] as const,
   analysisQuota: ["analyses-quota"] as const,
-  theses: (symbol?: string, limit = 30, offset = 0) => ["theses", symbol ?? null, limit, offset] as const,
+  theses: (symbol?: string, limit = 30, offset = 0) =>
+    ["theses", symbol ?? null, limit, offset] as const,
   thesis: (id: string) => ["thesis", id] as const,
+  thesisReviews: (id: string, limit = 30, offset = 0) =>
+    ["thesis-reviews", id, limit, offset] as const,
+  thesisReviewProposals: (id: string) => ["thesis-review-proposals", id] as const,
 };
 
 export const useSystemStatus = () =>
-  useQuery({ queryKey: keys.status, queryFn: () => api.get<SystemStatus>("/system/status"), refetchInterval: 30_000 });
+  useQuery({
+    queryKey: keys.status,
+    queryFn: () => api.get<SystemStatus>("/system/status"),
+    refetchInterval: 30_000,
+  });
 
 export const usePortfolio = () =>
   useQuery({ queryKey: keys.portfolio, queryFn: () => api.get<PortfolioOut>("/portfolio") });
@@ -75,7 +87,9 @@ export const useBars = (symbol: string, range: BarsRange, refresh = true) =>
   useQuery({
     queryKey: keys.bars(symbol, range),
     queryFn: () =>
-      api.get<BarsOut>(`/instruments/${encodeURIComponent(symbol)}/bars?range=${range}&refresh=${refresh}`),
+      api.get<BarsOut>(
+        `/instruments/${encodeURIComponent(symbol)}/bars?range=${range}&refresh=${refresh}`,
+      ),
     placeholderData: keepPreviousData,
     retry: false,
   });
@@ -152,7 +166,8 @@ export const useEntry = (symbol: string) =>
 export const useSignals = (status: SignalStatus | "all") =>
   useQuery({
     queryKey: keys.signals(status),
-    queryFn: () => api.get<SignalOut[]>(status === "all" ? "/signals" : `/signals?status=${status}`),
+    queryFn: () =>
+      api.get<SignalOut[]>(status === "all" ? "/signals" : `/signals?status=${status}`),
     refetchInterval: 60_000,
   });
 
@@ -171,7 +186,9 @@ export const useProposalList = () =>
     queryFn: () => api.get<ProposalOut[]>("/proposals"),
     // Poll while something is still being analyzed.
     refetchInterval: (query) =>
-      query.state.data?.some((p) => p.status === "queued" || p.status === "running") ? 4_000 : false,
+      query.state.data?.some((p) => p.status === "queued" || p.status === "running")
+        ? 4_000
+        : false,
   });
 
 export function useCreateProposal() {
@@ -186,9 +203,13 @@ export const useAnalyses = (symbol?: string) =>
   useQuery({
     queryKey: keys.analyses(symbol),
     queryFn: () =>
-      api.get<AnalysisSummary[]>(symbol ? `/analyses?symbol=${encodeURIComponent(symbol)}` : "/analyses"),
+      api.get<AnalysisSummary[]>(
+        symbol ? `/analyses?symbol=${encodeURIComponent(symbol)}` : "/analyses",
+      ),
     refetchInterval: (query) =>
-      query.state.data?.some((a) => a.status === "queued" || a.status === "running") ? 5_000 : false,
+      query.state.data?.some((a) => a.status === "queued" || a.status === "running")
+        ? 5_000
+        : false,
   });
 
 export const useAnalysis = (id: string) =>
@@ -200,9 +221,14 @@ export const useAnalysis = (id: string) =>
 
 /** Daily deep-analysis limit (BL-093); limit 0 means unlimited. */
 export const useAnalysisQuota = () =>
-  useQuery({ queryKey: keys.analysisQuota, queryFn: () => api.get<AnalysisQuota>("/analyses/quota"), staleTime: 30_000 });
+  useQuery({
+    queryKey: keys.analysisQuota,
+    queryFn: () => api.get<AnalysisQuota>("/analyses/quota"),
+    staleTime: 30_000,
+  });
 
-export const quotaReached = (q: AnalysisQuota | undefined) => !!q && q.limit > 0 && q.used >= q.limit;
+export const quotaReached = (q: AnalysisQuota | undefined) =>
+  !!q && q.limit > 0 && q.used >= q.limit;
 
 export function useCreateAnalysis() {
   const client = useQueryClient();
@@ -218,11 +244,18 @@ export function useCreateAnalysis() {
 export const useTheses = (symbol?: string, limit = 30, offset = 0) =>
   useQuery({
     queryKey: keys.theses(symbol, limit, offset),
-    queryFn: () => api.get<ThesisSummary[]>(`/theses?limit=${limit}&offset=${offset}${symbol ? `&symbol=${encodeURIComponent(symbol)}` : ""}`),
+    queryFn: () =>
+      api.get<ThesisSummary[]>(
+        `/theses?limit=${limit}&offset=${offset}${symbol ? `&symbol=${encodeURIComponent(symbol)}` : ""}`,
+      ),
   });
 
 export const useThesis = (id: string) =>
-  useQuery({ queryKey: keys.thesis(id), queryFn: () => api.get<ThesisOut>(`/theses/${encodeURIComponent(id)}`), retry: false });
+  useQuery({
+    queryKey: keys.thesis(id),
+    queryFn: () => api.get<ThesisOut>(`/theses/${encodeURIComponent(id)}`),
+    retry: false,
+  });
 
 function useInvalidateTheses() {
   const client = useQueryClient();
@@ -234,10 +267,99 @@ function useInvalidateTheses() {
   };
 }
 
+async function reviewPages<T>(
+  path: string,
+  limit: number,
+  offset: number,
+  all: boolean,
+  firstPath?: string,
+): Promise<T[]> {
+  const result: T[] = [];
+  let page: T[];
+  do {
+    page = await api.get<T[]>(
+      firstPath ?? `${path}${path.endsWith("?") ? "" : "&"}limit=${limit}&offset=${offset}`,
+    );
+    if (!Array.isArray(page)) throw new Error("Invalid review response");
+    result.push(...page);
+    firstPath = undefined;
+    offset += page.length;
+  } while (all && page.length === limit);
+  return result;
+}
+
+export const useThesisReviews = (id: string, limit = 30, offset = 0, allPages = false) =>
+  useQuery({
+    queryKey: allPages
+      ? [...keys.thesisReviews(id, limit, offset), "all"]
+      : keys.thesisReviews(id, limit, offset),
+    queryFn: () =>
+      reviewPages<ReviewOut>(
+        `/theses/${encodeURIComponent(id)}/reviews?`,
+        limit,
+        offset,
+        allPages,
+        `/theses/${encodeURIComponent(id)}/reviews?limit=${limit}&offset=${offset}`,
+      ),
+    retry: false,
+  });
+
+export const useThesisReviewProposals = (id: string) =>
+  useQuery({
+    queryKey: keys.thesisReviewProposals(id),
+    queryFn: () =>
+      reviewPages<ClaimReviewProposalOut>(
+        `/theses/${encodeURIComponent(id)}/review-proposals?state=pending`,
+        30,
+        0,
+        true,
+        `/theses/${encodeURIComponent(id)}/review-proposals?state=pending`,
+      ),
+    retry: false,
+  });
+
+function useInvalidateThesisReviews() {
+  const client = useQueryClient();
+  return async () => {
+    await Promise.all(
+      ["thesis-reviews", "thesis-review-proposals", "thesis", "theses", "signals"].map((key) =>
+        client.invalidateQueries({ queryKey: [key] }),
+      ),
+    );
+  };
+}
+
+export function useAcceptThesisReviewProposal(thesisId: string, proposalId: string) {
+  const invalidate = useInvalidateThesisReviews();
+  return useMutation({
+    mutationFn: (body: AcceptProposal) =>
+      api.send<ClaimReviewProposalOut>(
+        `/theses/${encodeURIComponent(thesisId)}/review-proposals/${encodeURIComponent(proposalId)}/accept`,
+        "POST",
+        body,
+      ),
+    onSettled: invalidate,
+  });
+}
+
+export function useDismissThesisReviewProposal(thesisId: string, proposalId: string) {
+  const invalidate = useInvalidateThesisReviews();
+  return useMutation({
+    mutationFn: (body: DismissProposal) =>
+      api.send<ClaimReviewProposalOut>(
+        `/theses/${encodeURIComponent(thesisId)}/review-proposals/${encodeURIComponent(proposalId)}/dismiss`,
+        "POST",
+        body,
+      ),
+    onSettled: invalidate,
+  });
+}
+
 export function useCreateThesisDraft() {
   const invalidate = useInvalidateTheses();
   return useMutation({
-    mutationFn: (data: ThesisDraftCreate) => api.send<ThesisRevisionOut>("/theses/drafts", "POST", data),
+    mutationFn: (data: ThesisDraftCreate) =>
+      api.send<ThesisRevisionOut>("/theses/drafts", "POST", data),
     onSettled: invalidate,
   });
 }
@@ -245,7 +367,12 @@ export function useCreateThesisDraft() {
 export function usePatchThesisRevision(thesisId: string, revisionId: string) {
   const invalidate = useInvalidateTheses();
   return useMutation({
-    mutationFn: (data: ThesisRevisionPatch) => api.send<ThesisRevisionOut>(`/theses/${encodeURIComponent(thesisId)}/revisions/${encodeURIComponent(revisionId)}`, "PATCH", data),
+    mutationFn: (data: ThesisRevisionPatch) =>
+      api.send<ThesisRevisionOut>(
+        `/theses/${encodeURIComponent(thesisId)}/revisions/${encodeURIComponent(revisionId)}`,
+        "PATCH",
+        data,
+      ),
     onSettled: invalidate,
   });
 }
@@ -253,7 +380,11 @@ export function usePatchThesisRevision(thesisId: string, revisionId: string) {
 export function useConfirmThesisRevision(thesisId: string, revisionId: string) {
   const invalidate = useInvalidateTheses();
   return useMutation({
-    mutationFn: () => api.send<ThesisRevisionOut>(`/theses/${encodeURIComponent(thesisId)}/revisions/${encodeURIComponent(revisionId)}/confirm`, "POST"),
+    mutationFn: () =>
+      api.send<ThesisRevisionOut>(
+        `/theses/${encodeURIComponent(thesisId)}/revisions/${encodeURIComponent(revisionId)}/confirm`,
+        "POST",
+      ),
     onSettled: invalidate,
   });
 }
@@ -261,7 +392,12 @@ export function useConfirmThesisRevision(thesisId: string, revisionId: string) {
 export function useChangeClaimStatus(thesisId: string, claimId: string) {
   const invalidate = useInvalidateTheses();
   return useMutation({
-    mutationFn: (data: ThesisClaimStatusChange) => api.send<ThesisClaimOut>(`/theses/${encodeURIComponent(thesisId)}/claims/${encodeURIComponent(claimId)}/status`, "POST", data),
+    mutationFn: (data: ThesisClaimStatusChange) =>
+      api.send<ThesisClaimOut>(
+        `/theses/${encodeURIComponent(thesisId)}/claims/${encodeURIComponent(claimId)}/status`,
+        "POST",
+        data,
+      ),
     onSettled: invalidate,
   });
 }
@@ -270,7 +406,11 @@ export function useChangeClaimStatus(thesisId: string, claimId: string) {
  * Live steps of a run (ADR-0011): starts from the steps already loaded, then follows
  * `/analyses/{id}/events` while the run is queued/running. Dedupes by seq and closes on `end`.
  */
-export function useAnalysisStream(id: string, initialSteps: AnalysisStep[], status: AnalysisStatus | undefined) {
+export function useAnalysisStream(
+  id: string,
+  initialSteps: AnalysisStep[],
+  status: AnalysisStatus | undefined,
+) {
   const client = useQueryClient();
   const [streamed, setStreamed] = useState<AnalysisStep[]>([]);
   const [connected, setConnected] = useState(false);
@@ -285,7 +425,9 @@ export function useAnalysisStream(id: string, initialSteps: AnalysisStep[], stat
 
   useEffect(() => {
     if (!live) return;
-    const source = new EventSource(`/api/analyses/${encodeURIComponent(id)}/events?after=${seqRef.current}`);
+    const source = new EventSource(
+      `/api/analyses/${encodeURIComponent(id)}/events?after=${seqRef.current}`,
+    );
     source.onopen = () => setConnected(true);
     source.addEventListener("step", (event) => {
       try {

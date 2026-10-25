@@ -8,6 +8,8 @@ import {
   usePatchThesisRevision,
   useConfirmThesisRevision,
   useChangeClaimStatus,
+  useThesisReviews,
+  useThesisReviewProposals,
 } from "@/lib/api/hooks";
 import { asOf, claim, revision, thesis } from "@/test/thesis-fixtures";
 import type { ThesisOut } from "@/lib/api/types";
@@ -18,6 +20,8 @@ vi.mock("@/lib/api/hooks", () => ({
   usePatchThesisRevision: vi.fn(),
   useConfirmThesisRevision: vi.fn(),
   useChangeClaimStatus: vi.fn(),
+  useThesisReviews: vi.fn(),
+  useThesisReviewProposals: vi.fn(),
 }));
 const patch = vi.fn();
 const confirm = vi.fn();
@@ -45,6 +49,14 @@ function renderDetail() {
 beforeEach(() => {
   vi.clearAllMocks();
   setData();
+  vi.mocked(useThesisReviews).mockReturnValue({
+    data: [],
+    refetch: vi.fn(),
+  } as unknown as ReturnType<typeof useThesisReviews>);
+  vi.mocked(useThesisReviewProposals).mockReturnValue({
+    data: [],
+    refetch: vi.fn(),
+  } as unknown as ReturnType<typeof useThesisReviewProposals>);
   vi.mocked(usePatchThesisRevision).mockReturnValue(
     mutation(patch) as ReturnType<typeof usePatchThesisRevision>,
   );

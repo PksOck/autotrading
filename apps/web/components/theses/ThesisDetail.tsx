@@ -8,6 +8,8 @@ import {
   useConfirmThesisRevision,
   usePatchThesisRevision,
   useThesis,
+  useThesisReviews,
+  useThesisReviewProposals,
 } from "@/lib/api/hooks";
 import type {
   ThesisClaimOut,
@@ -18,6 +20,7 @@ import type {
 import { isHttpUrl, thesisErrorKey } from "@/lib/thesis";
 import { LocalTime } from "./LocalTime";
 import { ThesisCheck } from "./ThesisCheck";
+import { ThesisReviewProposals, ThesisReviewRun } from "./ThesisReviewProposals";
 import { thesisButton } from "./styles";
 
 const field = "min-h-11 w-full rounded-md border border-border bg-surface px-3 py-2 text-text";
@@ -448,8 +451,18 @@ function DraftEditor({ revision }: { revision: ThesisRevisionOut }) {
 
 export function ThesisDetail({ thesisId }: { thesisId: string }) {
   const t = useTranslations("thesis");
+  const reviewT = useTranslations("theses.review");
   const format = useFormatter();
   const { data: thesis, isLoading, error, refetch } = useThesis(thesisId);
+  const reviewsQuery = useThesisReviews(thesisId, 30, 0, true);
+  const proposalsQuery = useThesisReviewProposals(thesisId);
+  const reviews = Array.isArray(reviewsQuery.data) ? reviewsQuery.data : [];
+  const proposals = Array.isArray(proposalsQuery.data) ? proposalsQuery.data : [];
+  const refreshReviews = () => {
+    void refetch();
+    void reviewsQuery.refetch();
+    void proposalsQuery.refetch();
+  };
   if (isLoading)
     return <div className="card h-64 animate-pulse" aria-busy="true" aria-label={t("loading")} />;
   if (error)
@@ -479,6 +492,24 @@ export function ThesisDetail({ thesisId }: { thesisId: string }) {
         </h2>
         <Provenance source={thesis.source} asOf={thesis.as_of} />
       </header>
+      <section aria-label={reviewT("title")} className="card flex flex-col gap-3 p-4">
+        <h2 className="text-base font-semibold">{reviewT("title")}</h2>
+        {(reviewsQuery.isLoading || proposalsQuery.isLoading) && (
+          <p aria-busy="true">{reviewT("loading")}</p>
+        )}
+        {reviewsQuery.error || proposalsQuery.error ? (
+          <p role="alert">{reviewT("loadError")}</p>
+        ) : (
+          !reviewsQuery.isLoading &&
+          !reviews.length && <p className="text-[13px] text-text-2">{reviewT("empty")}</p>
+        )}
+        {reviews.map((review) => (
+          <ThesisReviewRun key={review.id} review={review} />
+        ))}
+        <button className={`${thesisButton} w-fit`} onClick={refreshReviews}>
+          {reviewT("refresh")}
+        </button>
+      </section>
       {!thesis.revisions.some((revision) => revision.status === "active") && (
         <p className="text-[13px] text-text-2">{t("noActiveHint")}</p>
       )}
@@ -527,6 +558,14 @@ export function ThesisDetail({ thesisId }: { thesisId: string }) {
                     </p>
                   )}
                   <Provenance source={claim.source} asOf={claim.as_of} />
+                  <ThesisReviewProposals
+                    thesisId={thesis.id}
+                    claim={claim}
+                    active={revision.status === "active"}
+                    proposals={proposals}
+                    reviews={reviews}
+                    refresh={refreshReviews}
+                  />
                   {revision.status === "active" && (
                     <ClaimStatusForm thesisId={thesis.id} claim={claim} />
                   )}

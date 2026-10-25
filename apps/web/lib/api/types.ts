@@ -14,7 +14,8 @@ export type PortfolioOut = S["PortfolioOut"];
 export type PositionOut = S["PositionOut"];
 export type WatchlistOut = S["WatchlistOut"];
 // Fields with server defaults are optional for callers.
-export type WatchlistCreate = Pick<S["WatchlistCreate"], "symbol"> & Partial<Omit<S["WatchlistCreate"], "symbol">>;
+export type WatchlistCreate = Pick<S["WatchlistCreate"], "symbol"> &
+  Partial<Omit<S["WatchlistCreate"], "symbol">>;
 export type WatchlistUpdate = S["WatchlistUpdate"];
 export type WatchTier = S["WatchTier"];
 export type BarsRange = "1m" | "3m" | "1y" | "2y" | "5y";
@@ -24,7 +25,8 @@ export type RadarView = S["RadarView"];
 export type SignalOut = S["SignalOut"];
 export type SignalStatus = S["SignalStatus"];
 export type ProposalOut = S["ProposalOut"];
-export type ProposalCreate = Pick<S["ProposalCreate"], "symbols"> & Partial<Omit<S["ProposalCreate"], "symbols">>;
+export type ProposalCreate = Pick<S["ProposalCreate"], "symbols"> &
+  Partial<Omit<S["ProposalCreate"], "symbols">>;
 export type EntryOut = S["EntryOut"];
 export type EntryView = S["EntryView"];
 export type OutcomeStat = S["OutcomeStat"];
@@ -32,7 +34,8 @@ export type AnalysisSummary = S["AnalysisSummary"];
 export type AnalysisOut = S["AnalysisOut"];
 export type AnalysisStep = S["AnalysisStepOut"];
 export type AnalysisStatus = S["AnalysisStatus"];
-export type AnalysisCreate = Pick<S["AnalysisCreate"], "symbol"> & Partial<Omit<S["AnalysisCreate"], "symbol">>;
+export type AnalysisCreate = Pick<S["AnalysisCreate"], "symbol"> &
+  Partial<Omit<S["AnalysisCreate"], "symbol">>;
 export type DecisionCard = NonNullable<AnalysisOut["card"]>;
 export type AnalysisQuota = S["AnalysisQuota"];
 export type ThesisSummary = S["ThesisSummary"];
@@ -45,3 +48,7 @@ export type ThesisClaimEventOut = S["ThesisClaimEventOut"];
 export type ThesisClaimStatusChange = S["ThesisClaimStatusChange"];
 export type ThesisEvidence = S["ThesisEvidence"];
 export type ClaimStatus = ThesisClaimOut["status"];
+export type ReviewOut = S["ReviewOut"];
+export type ClaimReviewProposalOut = S["ClaimReviewProposalOut"];
+export type AcceptProposal = S["AcceptProposal"];
+export type DismissProposal = S["DismissProposal"];

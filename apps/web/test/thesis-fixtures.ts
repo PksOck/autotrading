@@ -4,6 +4,8 @@ import type {
   ThesisOut,
   ThesisRevisionOut,
   ThesisSummary,
+  ReviewOut,
+  ClaimReviewProposalOut,
 } from "@/lib/api/types";
 
 export const thesisId = "10000000-0000-4000-8000-000000000001";
@@ -83,4 +85,58 @@ export const summary: ThesisSummary = {
   claim_status_counts: { open: 1, confirmed: 0, weakening: 0, broken: 0, expired: 0 },
   latest_draft_id: null,
   updated_at: asOf,
+};
+
+export const review: ReviewOut = {
+  id: "10000000-0000-4000-8000-000000000005",
+  revision_id: revision.id,
+  week_start: "2026-10-19",
+  status: "done",
+  source: "weekly_review",
+  as_of: asOf,
+  input_from: "2026-10-19T00:00:00Z",
+  input_cutoff: asOf,
+  snapshot: { omitted_count: 2 },
+  truncated: true,
+  role: "cloud-deep",
+  model: "review-model",
+  prompt_version: "v1",
+  attempts: 1,
+  prompt_tokens: 100,
+  completion_tokens: 100,
+  cost: null,
+  error_code: null,
+  created_at: asOf,
+  started_at: asOf,
+  finished_at: asOf,
+  dispatch_at: asOf,
+};
+
+export const reviewProposal: ClaimReviewProposalOut = {
+  id: "10000000-0000-4000-8000-000000000006",
+  review_id: review.id,
+  claim_id: claim.id,
+  status_at_review: "open",
+  last_claim_event_id_at_review: null,
+  suggested_status: "broken",
+  assessment: "sufficient",
+  rationale: "Margins declined in the latest filing.",
+  evidence: [
+    {
+      source: "EDGAR",
+      as_of: asOf,
+      ref: "filing:1",
+      url: "https://www.sec.gov/filing/1",
+      is_rumor: false,
+    },
+    { source: "forum", as_of: asOf, ref: "post:1", is_rumor: true },
+  ],
+  actor: "agent",
+  source: "weekly_review",
+  as_of: asOf,
+  state: "pending",
+  decided_at: null,
+  dismissal_reason: null,
+  accepted_event_id: null,
+  signal_id: null,
 };
