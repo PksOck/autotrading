@@ -46,8 +46,11 @@ model_list:
 
 router_settings:
   fallbacks:
-    - cloud-deep: ["cloud-deep-backup", "cloud-quick"]
-    - cloud-quick: ["local-reason"]
+    # OpenCode Go (cloud-quick, cloud-deep-backup) rejects calls without the
+    # x-opencode-session header, so MiniMax and the local model carry the load
+    # until BL-097 picks a provider.
+    - cloud-deep: ["local-reason"]
+    - cloud-quick: ["cloud-deep", "local-fast"]
     - local-fast: ["cloud-quick"]
   num_retries: 1
 
