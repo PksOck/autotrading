@@ -4,6 +4,28 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 
 ---
 
+## S-007 · 2026-10-25 · BL-101 tedenski pregled tez
+
+**Cilj:** tedenski pregled tez s predlogi in signalom `thesis_break` (ADR-0012).
+
+**Narejeno:**
+- API: tabeli `thesis_review` in `thesis_claim_review_proposal` (migracija 0013), posnetek vhoda z do 30 viri (10 mest za uradne), uradnost določi koda (EDGAR, `rss:prnewswire` z gostiteljem), družbena omrežja so vedno govorica. Predlog `broken` z vsaj enim uradnim citatom brez govorice ustvari `thesis_break` (prioriteta 0,8). Sprejem gre skozi obstoječo spremembo statusa z `actor = "user"`, 409 ob spremembi trditve; zavrnitev zahteva razlog in zapre odprt signal.
+- Agents: `thesis_tracker` z nedeljskim tekom ob 06:15 UTC in dnevnim ob 06:20 UTC, en klic `cloud-deep` (4000 izhodnih žetonov, 660 s), brez odprte transakcije med klicem, `failed_unknown` po prekinitvi brez ponovnega klica.
+- Web: predlogi na SCR-09 ločeno od dejanskega stanja trditve, sprejem z izrecno potrditvijo, zavrnitev z razlogom, SL/EN.
+- Testi: API 269 (z DB na izolirani bazi), agents 68 (z DB), web 79 enotskih, e2e teze 8.
+- Migracija 0013 na živi bazi (varnostna kopija `C:/Users/Jan/Documents/preza-backups/preza-pre-0013-20261025T193625Z.dump`, pisci ustavljeni, reviewer APPROVE). Vse storitve so na novi sliki iz te veje.
+
+**Odločitve:** ADR-0012 (pregled ustvari predlog, status trditve spremeni samo uporabnik).
+
+**Odprto:**
+- Prvi živi pregled bo v nedeljo ob 06:15 UTC oziroma ob dnevnem teku, ko bo potrjena aktivna različica (osnutek ASML še čaka tvojo potrditev).
+- Štirje regresijski testi agents padejo samo na Windows zaradi CRLF kontrolnih vsot (v Linux kontejnerju uspejo), BL-163.
+- BL-097 ostaja tvoja odločitev.
+
+**Naslednji korak:** oblikovanje za Android in Windows (BL-164).
+
+---
+
 ## S-006 · 2026-10-25 · Živi viri podatkov in začetek M5 Teze
 
 **Cilj:** preveriti žive povezave iz `.env` (IB še ni povezan), popraviti ugotovljeno in začeti M5.

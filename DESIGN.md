@@ -125,7 +125,7 @@ Osnova je **shadcn/ui** (Radix): Button, Tabs, Dialog, DropdownMenu, Tooltip, Ta
 | SCR-06 | Analiza | `/analysis`, `/analysis/[runId]` | seznam zagonov; glava z oceno, motorjem (TradingAgents ali ETF), viri in opozorili; panel "Tvoja hipoteza" pri globokem predlogu; končna odločitev; kartica odločitve (kontrolna ocena, prepričanje, razred velikosti, sprožilci, sprememba od prejšnje); CMP-12 | M4 |
 | SCR-07 | Opcije | `/options/[symbol]` | predlagane strukture, payoff, veriga, tveganja | M6 |
 | SCR-08 | Portfelj | `/portfolio` | pozicije, teže, izpostavljenost (skozi ETF), stanje tez | M1 |
-| SCR-09 | Teze | `/theses` | izvedeno BL-100: seznam, filter, strani in `/theses/[thesisId]`; ročno ustvarjanje iz analize, urejanje in potrditev osnutka, stanja trditev z dokazi in zgodovino, viri in lokalni čas; tedenski pregledi še niso izvedeni | M5 |
+| SCR-09 | Teze | `/theses` | izvedeno BL-100: seznam, filter, strani in `/theses/[thesisId]`; ročno ustvarjanje iz analize, urejanje in potrditev osnutka, stanja trditev z dokazi in zgodovino, viri in lokalni čas; BL-101: tedenski predlogi pregleda ločeno od dejanskega stanja (značka »Predlog pregleda«, sprejem z izrecno potrditvijo, zavrnitev z razlogom, pokritost in napake pregleda) | M5 |
 | SCR-10 | Uspešnost | `/track-record` | hit rate, alfa, kalibracija po virih | M5 |
 | SCR-11 | Nastavitve | `/settings` | jezik, tema, univerzum, pragovi, LLM vloge in proračun, Telegram, povezave | M0→ |
 | SCR-12 | Predlogi | `/proposals` | tvoji ročni predlogi, stanje analize, izid (§11) | M2→M4 |

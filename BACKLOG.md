@@ -122,10 +122,12 @@
 | ID | Naloga | Ref | Status |
 |---|---|---|---|
 | BL-100 | Model teze, SCR-09, CMP-11 (sprožilci iz kartice odločitve BL-089 postanejo trditve teze). Modeli in migracija 0012, API (osnutek iz analize, urejanje, potrditev, status trditve z dokazi), SCR-09 seznam in podrobnosti, gumb na SCR-06 | research §5.6 | done |
-| BL-101 | Tedenski pregled tez (Claude) + signal `thesis_break` | research §5.6 | next |
+| BL-101 | Tedenski pregled tez (`cloud-deep`) + signal `thesis_break` (ADR-0012) | research §5.6 | done |
 | BL-102 | SCR-10 Uspešnost, kalibracija | research §5.8 | later |
 | BL-161 | Števec urejanj osnutka teze: `expected_version` zdaj preverja zaporedno številko različice, ne urejanj; `updated_at` ne sledi urejanju trditev | BL-100 | later |
 | BL-162 | Demo podatki za e2e (NVDA/ASML analize), da `analysis.spec.ts` in ostali e2e tečejo brez žive baze; Playwright brskalnik 1248 manjka lokalno | BL-100 | later |
+| BL-163 | Regresijski testi agents: golden kontrolne vsote padejo na Windows zaradi CRLF (`.gitattributes` za `tests/regression` ali normalizacija pred hashem) | BL-101 | later |
+| BL-164 | Oblikovanje za Android in Windows: odstrani Apple vzorce (pisave, kontrole, gibi), platformno nevtralen UI | S-007 | doing |
 
 ## M6: Opcije
 
