@@ -12,16 +12,10 @@ from defusedxml import ElementTree as DefusedET
 from preza.domain.radar import NewsIn, NewsKind
 from preza.ingest.base import SourceUnavailableError
 
-# (name, url). TODO: URLs are from memory of the public feed listings; verify once network
-# access exists (they are not exercised by tests).
+# (name, url). PR Newswire verified live on 2026-10-25.
+# GlobeNewswire and Business Wire dropped (paid / blocked).
 DEFAULT_FEEDS: list[tuple[str, str]] = [
-    (
-        "globenewswire",
-        "https://www.globenewswire.com/RssFeed/orgclass/1/feedTitle/"
-        "GlobeNewswire%20-%20News%20about%20Public%20Companies",
-    ),
     ("prnewswire", "https://www.prnewswire.com/rss/news-releases-list.rss"),
-    ("businesswire", "https://feed.businesswire.com/rss/home/?rss=G1QFDERJXkJeEFpRWA=="),
 ]
 
 SUMMARY_MAX = 1000

@@ -75,7 +75,7 @@
 | BL-056 | Grozdenje brez vektorjev: upoštevaj isti simbol in tip dogodka v 24 h, ne samo besede v naslovu | PLAN §5 | done |
 | BL-057 | Telegram bot: besedila odgovorov (/start, /predlog, gumbi) v messages, ne v kodi | VOICE §6 | later |
 | BL-058 | Jutranji povzetek ob 7:30 po lokalnem času (zdaj 05:30 UTC, pozimi 6:30) | ADR-0007 | later |
-| BL-059 | Preveri URL-je RSS virov (GlobeNewswire, PR Newswire, Business Wire) in obliko EDGAR feeda na pravem omrežju | research §5.1 | next |
+| BL-059 | RSS in EDGAR preverjena v živo: ohranjen samo PR Newswire; GlobeNewswire in Business Wire opuščena kot nebrezplačna vira; oblika EDGAR feeda potrjena | research §5.1 | done |
 
 ## M3: Vstopi
 

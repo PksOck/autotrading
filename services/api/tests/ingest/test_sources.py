@@ -93,7 +93,7 @@ def test_rss_rejects_garbage_and_entities() -> None:
 
 
 def test_default_feeds_shape() -> None:
-    assert len(DEFAULT_FEEDS) == 3
+    assert [name for name, _ in DEFAULT_FEEDS] == ["prnewswire"]
     assert all(url.startswith("https://") for _, url in DEFAULT_FEEDS)
 
 

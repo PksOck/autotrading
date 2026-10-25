@@ -15,7 +15,7 @@ NewsKind = Literal["news", "press_release", "filing", "social"]
 class NewsIn(BaseModel):
     """One item as delivered by a news source, before dedupe and clustering."""
 
-    source: str = Field(description="e.g. finnhub, rss:globenewswire, edgar, reddit")
+    source: str = Field(description="e.g. finnhub, rss:prnewswire, edgar, reddit")
     external_id: str | None = None
     url: str
     title: str
