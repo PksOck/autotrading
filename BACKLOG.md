@@ -51,6 +51,7 @@
 | BL-031 | Iskanje ⌘K (simbol, ime) | CMP-01 | done |
 | BL-032 | Model watchliste: raven (aktivna / zaloga), vir ideje, oznake, cena in datum dodaje, donos od dodaje, cenovna opozorila, pregledano | research/trading-list §1 | done |
 | BL-033 | (neobvezno) Uvoz idej in tez iz `trading-list` (MySQL izvoz) | research/trading-list §1 | later |
+| BL-034 | Stooq privzeto izklopljen (`STOOQ_ENABLED=false`): stooq.com skriptam vrne JS izziv, ki ga ne obidemo; Yahoo ostane vir dnevnih cen | S-006 | done |
 
 ## M2: Radar
 
@@ -86,7 +87,7 @@
 | BL-062 | `dip_analyst`: vzrok padca (trg / sektor / začasno / temeljno), `local-reason` → `cloud-quick` | research §5.3 | done |
 | BL-063 | Lestvica postopnega nakupa (ATR) | CMP-15 | done |
 | BL-064 | SCR-03 Vstopi | DESIGN §4 | done |
-| BL-066 | Preveri polja Finnhub `/stock/metric` na pravem omrežju (P/E, EV/EBIT, P/FCF serije, ROE, marže, rast, dolg, dividende) in dopolni zgodovino EV/EBIT | ADR-0010 | next |
+| BL-066 | Preveri polja Finnhub `/stock/metric` na pravem omrežju (P/E, EV/EBIT, P/FCF serije, ROE, marže, rast, dolg, dividende) in dopolni zgodovino EV/EBIT. Preverjeno 2026-10-25: `ebitTTM` in serija `evEbit` manjkata, EV/EBIT se izpelje iz `evRevenue / operatingMargin` (MSFT 25,7, 27 letnih točk) | ADR-0010 | done |
 | BL-067 | `dip_analyst`: primerjava s sektorskim ETF-jem (ne samo s SPY), sektor iz profila instrumenta | research §5.3 | later |
 | BL-068 | Vstopi v Telegramu: obvestilo ob novem signalu `entry` in vrstica v jutranjem povzetku | ADR-0007 | done |
 | BL-069 | Instrument (SCR-05): cona, stop in raven lestvice na grafu (CMP-07 na CMP-13) | DESIGN §4 | done |
@@ -107,8 +108,11 @@
 | BL-087 | Znanje za agente: prepis izbranih Vibe-Trading skills v `services/agents/knowledge/` | research §3.2 | later |
 | BL-088 | Dodatna analitika: kakovost (ROE, marže, rast, dolg) in dividende iz Finnhuba, ocena kakovosti v kontrolni oceni | research/trading-list §2 | done |
 | BL-094 | Relativno vrednotenje proti sorodnim podjetjem (Finnhub `/stock/peers`) in odkupi delnic (sprememba števila delnic) | research/trading-list §2 | later |
+| BL-095 | TER za ETF-je, kjer ga Yahoo ne vrne (Vanguard): vir iz KID izdajatelja v `ucits_etfs.yaml` z `source` in `as_of`, prednost pred Yahoo. VWRA/VWCE: 0,14 % iz KIID 2026-07-28 (`kid:vanguard`); stolpca `ter_source`, `ter_as_of` (migracija 0011) | ADR-0011 | done |
+| BL-096 | `index_name` za UCITS ETF-je iz `ucits_etfs.yaml` (Yahoo `categoryName` je prazen) | ADR-0011 | done |
+| BL-097 | Odločitev o ponudniku za `cloud-quick`: OpenCode Go zavrača klice brez glave `x-opencode-session`; zdaj padec na `local-reason` | ADR-0004 | next |
 | BL-090 | Ročni predlog → standardna/globoka analiza: hipoteza uporabnika v kontekstu, izrecna potrditev/ovržba v izhodu (hitra in standardna globina že delujeta v M2) | DESIGN §11 | done |
-| BL-091 | Preveri Yahoo `funds_data` za UCITS kotacije (LSE, Xetra) na pravem omrežju: TER, top pozicije, sektorji | ADR-0011 | next |
+| BL-091 | Preveri Yahoo `funds_data` za UCITS kotacije (LSE, Xetra) na pravem omrežju: TER, top pozicije, sektorji. Preverjeno 2026-10-25: pozicije in sektorji za vse; TER manjka za Vanguard (VWRA, VWCE); `categoryName` je vedno prazen (glej BL-095, BL-096) | ADR-0011 | done |
 | BL-092 | Živi preizkus globoke analize prek LiteLLM (`cloud-quick`/`cloud-deep` z OpenCode Go/MiniMax): klici orodij, čas in cena enega zagona | ADR-0011 | next |
 | BL-093 | Dnevni limit globokih analiz (`DEEP_DAILY_LIMIT`, privzeto 6, `GET /analyses/quota`, 429 `daily_limit_reached`; globok predlog nad limitom dobi samo hitro presojo) in prikaz porabe na SCR-06 | research/trading-list §4 | done |
 | BL-089 | Shema odločitve: sprožilci ocene (→ trditve teze), `delta_note` proti prejšnji analizi, prepričanje, razred velikosti, deterministična kontrolna ocena | research/trading-list §3 | done |
@@ -117,7 +121,7 @@
 
 | ID | Naloga | Ref | Status |
 |---|---|---|---|
-| BL-100 | Model teze, SCR-09, CMP-11 (sprožilci iz kartice odločitve BL-089 postanejo trditve teze) | research §5.6 | later |
+| BL-100 | Model teze, SCR-09, CMP-11 (sprožilci iz kartice odločitve BL-089 postanejo trditve teze). Rezina 1: modeli in migracija 0012 | research §5.6 | doing |
 | BL-101 | Tedenski pregled tez (Claude) + signal `thesis_break` | research §5.6 | later |
 | BL-102 | SCR-10 Uspešnost, kalibracija | research §5.8 | later |
 
