@@ -185,7 +185,10 @@ def profile_md(facts: EtfFacts, locale: str) -> str:
         return f"### {t['profile']}\n{t['none']}"
     lines = [f"### {t['profile']}"]
     if p.get("ter") is not None:
-        lines.append(f"- {t['ter']}: {_num(float(p['ter']) * 100, locale, 2)} %")
+        ter = f"- {t['ter']}: {_num(float(p['ter']) * 100, locale, 2)} %"
+        if p.get("ter_source"):
+            ter += f" [{p['ter_source']}; {p.get('ter_as_of') or '?'}]"
+        lines.append(ter)
     if p.get("index_name"):
         lines.append(f"- {t['index']}: {p['index_name']}")
     if p.get("distribution"):

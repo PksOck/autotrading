@@ -20,6 +20,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from preza.data.symbols import yahoo_symbol
 from preza.models import EtfProfile, Instrument, Position, WatchlistItem
+from preza.universe.loader import UcitsFacts, ucits_facts
 
 log = logging.getLogger(__name__)
 
@@ -31,6 +32,8 @@ TER_ROW = "Annual Report Expense Ratio"
 class ProfileIn:
     as_of: date
     ter: Decimal | None = None
+    ter_source: str | None = None
+    ter_as_of: date | None = None
     index_name: str | None = None
     distribution: str | None = None
     holdings: list[dict[str, Any]] = field(default_factory=list)
@@ -67,6 +70,7 @@ def profile_from_funds(
     fund_overview: dict[str, Any] | None,
     instrument_name: str | None,
     today: date,
+    facts: UcitsFacts | None = None,
 ) -> ProfileIn:
     holdings = []
     if top_holdings is not None and not top_holdings.empty:
@@ -91,14 +95,21 @@ def profile_from_funds(
         value = _number(fund_operations.loc[TER_ROW].iloc[0])
         if value is not None and 0 < value < 0.05:  # a fraction; anything else is a unit mix-up
             ter = Decimal(str(round(value, 6)))
-    return ProfileIn(
+    profile = ProfileIn(
         as_of=today,
         ter=ter,
-        index_name=(fund_overview or {}).get("categoryName"),
+        ter_source=SOURCE if ter is not None else None,
+        ter_as_of=today if ter is not None else None,
+        index_name=(fund_overview or {}).get("categoryName") or (facts.index if facts else None),
         distribution=distribution_from_name(instrument_name),
         holdings=sorted(holdings, key=lambda h: -h["weight"]),
         sectors=sectors,
     )
+    if facts is not None and facts.ter is not None:
+        profile.ter = facts.ter
+        profile.ter_source = facts.ter_source
+        profile.ter_as_of = facts.ter_as_of
+    return profile
 
 
 def fetch_profile(instrument: Instrument, today: date) -> ProfileIn:
@@ -113,6 +124,7 @@ def fetch_profile(instrument: Instrument, today: date) -> ProfileIn:
         funds.fund_overview,
         instrument.name,
         today,
+        ucits_facts(instrument.symbol, instrument.exchange, isin=instrument.isin),
     )
 
 
@@ -120,6 +132,8 @@ async def store_profile(session: AsyncSession, instrument: Instrument, profile: 
     row = await session.get(EtfProfile, instrument.id) or EtfProfile(instrument_id=instrument.id)
     row.as_of = profile.as_of
     row.ter = profile.ter
+    row.ter_source = profile.ter_source
+    row.ter_as_of = profile.ter_as_of
     row.index_name = profile.index_name
     row.distribution = profile.distribution
     row.holdings = profile.holdings

@@ -18,6 +18,8 @@ def profile_dict(row: EtfProfile) -> dict[str, Any]:
     return {
         "as_of": row.as_of.isoformat(),
         "ter": float(row.ter) if row.ter is not None else None,
+        "ter_source": row.ter_source,
+        "ter_as_of": row.ter_as_of.isoformat() if row.ter_as_of is not None else None,
         "index_name": row.index_name,
         "distribution": row.distribution,
         "holdings": list(row.holdings or []),

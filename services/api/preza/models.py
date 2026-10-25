@@ -424,6 +424,9 @@ class EtfProfile(Base):
     )
     as_of: Mapped[date] = mapped_column(Date)
     ter: Mapped[Decimal | None] = mapped_column(Numeric(8, 6))
+    # TER may come from the issuer KID instead of the row's `source` (BL-095).
+    ter_source: Mapped[str | None] = mapped_column(String(64))
+    ter_as_of: Mapped[date | None] = mapped_column(Date)
     aum: Mapped[Decimal | None] = mapped_column(Numeric(20, 2))
     aum_currency: Mapped[str | None] = mapped_column(String(3))
     index_name: Mapped[str | None] = mapped_column(String(200))
