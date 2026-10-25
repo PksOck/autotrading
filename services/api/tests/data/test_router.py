@@ -9,7 +9,13 @@ from preza.data.router import AllProvidersFailedError, BarsRouter, Route
 from preza.domain.market import BarIn
 
 REF = InstrumentRef("MSFT")
-BAR = BarIn(day=date(2026, 10, 22), open=Decimal(1), high=Decimal(2), low=Decimal("0.5"), close=Decimal("1.5"))
+BAR = BarIn(
+    day=date(2026, 10, 22),
+    open=Decimal(1),
+    high=Decimal(2),
+    low=Decimal("0.5"),
+    close=Decimal("1.5"),
+)
 
 
 class Fake:
@@ -53,7 +59,12 @@ async def test_router_skips_exhausted_quota_without_calling() -> None:
 
 
 async def test_router_reports_every_failure() -> None:
-    router = BarsRouter([Route(Fake("ibkr", ProviderUnavailableError("down")), Quota(1, 60)), Route(Fake("yahoo", []), Quota(1, 60))])
+    router = BarsRouter(
+        [
+            Route(Fake("ibkr", ProviderUnavailableError("down")), Quota(1, 60)),
+            Route(Fake("yahoo", []), Quota(1, 60)),
+        ]
+    )
     with pytest.raises(AllProvidersFailedError) as info:
         await router.daily_bars(REF, date(2026, 1, 1))
     assert info.value.errors == {"ibkr": "down", "yahoo": "empty"}

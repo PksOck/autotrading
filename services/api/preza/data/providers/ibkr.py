@@ -53,7 +53,9 @@ class IbkrProvider:
         if self._ib.isConnected():
             return
         try:
-            await self._ib.connectAsync(self._host, self._port, clientId=self._client_id, readonly=True)
+            await self._ib.connectAsync(
+                self._host, self._port, clientId=self._client_id, readonly=True
+            )
         except (OSError, TimeoutError) as exc:
             raise ProviderUnavailableError(f"gateway: {type(exc).__name__}") from exc
         self._ib.reqMarketDataType(DELAYED)

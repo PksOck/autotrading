@@ -1,6 +1,13 @@
 """Exchange-specific ticker spelling for each provider (UCITS ETFs trade in London and Xetra)."""
 
-YAHOO_SUFFIX = {"LSE": ".L", "LSEETF": ".L", "IBIS": ".DE", "IBIS2": ".DE", "XETRA": ".DE", "AEB": ".AS"}
+YAHOO_SUFFIX = {
+    "LSE": ".L",
+    "LSEETF": ".L",
+    "IBIS": ".DE",
+    "IBIS2": ".DE",
+    "XETRA": ".DE",
+    "AEB": ".AS",
+}
 STOOQ_SUFFIX = {"LSE": ".uk", "LSEETF": ".uk", "IBIS": ".de", "IBIS2": ".de", "XETRA": ".de"}
 US_EXCHANGES = {None, "", "SMART", "NASDAQ", "NYSE", "ARCA", "AMEX", "BATS", "ISLAND", "NMS"}
 

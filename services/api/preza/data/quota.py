@@ -6,7 +6,9 @@ from collections.abc import Callable
 
 
 class Quota:
-    def __init__(self, max_calls: int, per_seconds: float, clock: Callable[[], float] = time.monotonic):
+    def __init__(
+        self, max_calls: int, per_seconds: float, clock: Callable[[], float] = time.monotonic
+    ):
         self.max_calls = max_calls
         self.per_seconds = per_seconds
         self._clock = clock

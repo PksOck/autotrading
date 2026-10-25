@@ -17,7 +17,9 @@ def build_router(settings: Settings) -> BarsRouter:
         from preza.data.providers.ibkr import IbkrProvider, IBLike
 
         # IBKR pacing: max 60 historical requests per 10 minutes; keep headroom.
-        provider = IbkrProvider(cast(IBLike, IB()), settings.ib_gateway_host, settings.ib_gateway_port)
+        provider = IbkrProvider(
+            cast(IBLike, IB()), settings.ib_gateway_host, settings.ib_gateway_port
+        )
         routes.append(Route(provider, Quota(50, 600)))
     if settings.yahoo_enabled:
         routes.append(Route(YahooProvider(), Quota(300, 3600)))

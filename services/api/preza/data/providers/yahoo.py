@@ -37,7 +37,9 @@ def parse_chart(payload: dict[str, Any]) -> list[BarIn]:
         o, h, low, c = (Decimal(str(v)) for v in prices)
         volume = at("volume", i)
         day = datetime.fromtimestamp(ts + offset, tz=UTC).date()
-        bars.append(BarIn(day=day, open=o, high=h, low=low, close=c, volume=int(volume) if volume else None))
+        bars.append(
+            BarIn(day=day, open=o, high=h, low=low, close=c, volume=int(volume) if volume else None)
+        )
     return bars
 
 
@@ -45,7 +47,9 @@ class YahooProvider:
     name = "yahoo"
 
     def __init__(self, client: httpx.AsyncClient | None = None):
-        self._client = client or httpx.AsyncClient(timeout=15, headers={"User-Agent": "Mozilla/5.0 Preza"})
+        self._client = client or httpx.AsyncClient(
+            timeout=15, headers={"User-Agent": "Mozilla/5.0 Preza"}
+        )
 
     async def daily_bars(self, ref: InstrumentRef, start: date) -> list[BarIn]:
         start_ts = int(datetime.combine(start, datetime.min.time(), UTC).timestamp())

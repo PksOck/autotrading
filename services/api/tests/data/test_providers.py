@@ -47,7 +47,9 @@ def test_yahoo_error_is_not_found() -> None:
 
 async def test_yahoo_provider_contract() -> None:
     seen: list[httpx.Request] = []
-    provider = YahooProvider(client_returning(200, (FIXTURES / "yahoo_chart.json").read_bytes(), seen))
+    provider = YahooProvider(
+        client_returning(200, (FIXTURES / "yahoo_chart.json").read_bytes(), seen)
+    )
     await assert_provider_contract(provider, MSFT, date(2025, 1, 1))
     assert seen[0].url.path.endswith("/MSFT")
 
@@ -100,7 +102,12 @@ def bar(day: date, o: float, h: float, low: float, c: float, v: float) -> Simple
 
 
 async def test_ibkr_provider_contract_read_only_and_delayed() -> None:
-    ib = FakeIB([bar(date(2026, 10, 21), 408, 409.9, 404.1, 405, 100), bar(date(2026, 10, 22), 405.2, 407.8, 403.6, 406.8, -1)])
+    ib = FakeIB(
+        [
+            bar(date(2026, 10, 21), 408, 409.9, 404.1, 405, 100),
+            bar(date(2026, 10, 22), 405.2, 407.8, 403.6, 406.8, -1),
+        ]
+    )
     provider = IbkrProvider(ib, "gw", 4003)
     await assert_provider_contract(provider, MSFT, date(2026, 10, 1))
     assert ib.data_type == 3

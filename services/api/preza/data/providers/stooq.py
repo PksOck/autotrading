@@ -45,7 +45,11 @@ class StooqProvider:
         self._client = client or httpx.AsyncClient(timeout=15)
 
     async def daily_bars(self, ref: InstrumentRef, start: date) -> list[BarIn]:
-        params = {"s": stooq_symbol(ref.symbol, ref.exchange), "i": "d", "d1": start.strftime("%Y%m%d")}
+        params = {
+            "s": stooq_symbol(ref.symbol, ref.exchange),
+            "i": "d",
+            "d1": start.strftime("%Y%m%d"),
+        }
         try:
             response = await self._client.get(BASE_URL, params=params)
         except httpx.HTTPError as exc:
