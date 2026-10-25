@@ -259,3 +259,11 @@ async def test_edgar_since_and_no_mapping() -> None:
 async def test_edgar_errors(status: int, message: str) -> None:
     with pytest.raises(SourceUnavailableError, match=message):
         await EdgarSource("UA", client=client_returning(status)).fetch(LONG_AGO)
+
+
+def test_news_item_external_id_fits_url_guids() -> None:
+    # PR Newswire uses the article URL as guid, so external_id must hold any stored url.
+    from preza.models import NewsItem
+
+    columns = NewsItem.__table__.c
+    assert columns.external_id.type.length >= columns.url.type.length

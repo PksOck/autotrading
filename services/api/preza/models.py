@@ -167,7 +167,7 @@ class NewsItem(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     source: Mapped[str] = mapped_column(String(64), index=True)
-    external_id: Mapped[str | None] = mapped_column(String(128))
+    external_id: Mapped[str | None] = mapped_column(String(1000))  # RSS guids can be URLs
     url: Mapped[str] = mapped_column(String(1000), unique=True)
     title: Mapped[str] = mapped_column(String(500))
     summary: Mapped[str | None] = mapped_column(Text)
