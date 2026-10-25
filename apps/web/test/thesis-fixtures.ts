@@ -1,0 +1,86 @@
+import type {
+  AnalysisOut,
+  ThesisClaimOut,
+  ThesisOut,
+  ThesisRevisionOut,
+  ThesisSummary,
+} from "@/lib/api/types";
+
+export const thesisId = "10000000-0000-4000-8000-000000000001";
+export const runId = "10000000-0000-4000-8000-000000000002";
+export const asOf = "2026-10-25T12:00:00Z";
+export const analysis: AnalysisOut = {
+  id: runId,
+  symbol: "MSFT",
+  name: "Microsoft",
+  engine: "stock",
+  trade_date: "2026-10-25",
+  status: "done",
+  rating: "Hold",
+  caveats: [],
+  created_at: asOf,
+  finished_at: asOf,
+  locale: "en",
+  hypothesis: null,
+  decision: "Review margins",
+  reports: {},
+  models: {},
+  error: null,
+  started_at: asOf,
+  data_sources: {},
+  steps: [],
+  card: {
+    rating: "Hold",
+    confidence: "normal",
+    size_class: null,
+    upgrade_if: ["Margins remain stable"],
+    downgrade_if: [],
+    control: { score: null, coverage: 0, components: {}, weights: {}, implied_rating: null },
+  },
+};
+export const claim: ThesisClaimOut = {
+  id: "10000000-0000-4000-8000-000000000003",
+  revision_id: "10000000-0000-4000-8000-000000000004",
+  ordinal: 0,
+  trigger_kind: "upgrade",
+  trigger_index: 0,
+  original_text: "Margins remain stable",
+  statement: "Margins remain stable",
+  invalidated_if: "Margins fall",
+  status: "open",
+  expires_at: null,
+  source: "analysis",
+  as_of: asOf,
+  events: [],
+};
+export const revision: ThesisRevisionOut = {
+  id: claim.revision_id,
+  thesis_id: thesisId,
+  version: 1,
+  analysis_run_id: runId,
+  status: "active",
+  locale: "en",
+  delta_note: null,
+  source: "analysis",
+  as_of: asOf,
+  created_at: asOf,
+  confirmed_at: asOf,
+  claims: [claim],
+};
+export const thesis: ThesisOut = {
+  id: thesisId,
+  instrument: { id: 1, symbol: "MSFT", name: "Microsoft" },
+  source: "analysis",
+  as_of: asOf,
+  created_at: asOf,
+  updated_at: asOf,
+  revisions: [revision],
+};
+export const summary: ThesisSummary = {
+  id: thesisId,
+  instrument: thesis.instrument,
+  active_revision_version: 1,
+  claim_status_counts: { open: 1, confirmed: 0, weakening: 0, broken: 0, expired: 0 },
+  latest_draft_id: null,
+  updated_at: asOf,
+};

@@ -90,7 +90,7 @@ Kontrast je preverjen (WCAG 2.1): besedilni tokeni dosežejo vsaj 4,5:1 na `bg`,
 | CMP-08 | ProvenanceTag | vir · pred X min, opozorilo pri zastarelem | povsod |
 | CMP-09 | ChangeValue | ▲ +2,1 % / ▼ −3,4 % z barvo in predznakom | povsod |
 | CMP-10 | CauseBadge | vzrok padca: trg / sektor / začasno / temeljno / neznano | SCR-03 |
-| CMP-11 | ThesisCheck | trditev teze s stanjem ✓ drži / ! šibi / ✕ ovržena | SCR-05, 09 |
+| CMP-11 | ThesisCheck | izvedeno BL-100: ikona in besedilo za odprto, drži, šibi, ovrženo in poteklo stanje; zgodovina dokazov z vidno oznako govorice | SCR-05, 09 |
 | CMP-12 | AgentTimeline | koraki agentov v živo (SSE), razvrščeni v faze (Analitiki, Debata, Načrt, Tveganja, Odločitev), bik/medved v dveh stolpcih od `md`, zaprt korak pokaže 3 vrstice, odprt cel markdown, novi koraki pridejo z MO-03 | SCR-06 |
 | CMP-13 | PriceChart | lightweight-charts + indikatorji (trading-signals) + oznake dogodkov in signalov | SCR-05 |
 | CMP-14 | PayoffChart | profil dobička in izgube opcijske strukture, break-even, max izguba | SCR-07 |
@@ -125,7 +125,7 @@ Osnova je **shadcn/ui** (Radix): Button, Tabs, Dialog, DropdownMenu, Tooltip, Ta
 | SCR-06 | Analiza | `/analysis`, `/analysis/[runId]` | seznam zagonov; glava z oceno, motorjem (TradingAgents ali ETF), viri in opozorili; panel "Tvoja hipoteza" pri globokem predlogu; končna odločitev; kartica odločitve (kontrolna ocena, prepričanje, razred velikosti, sprožilci, sprememba od prejšnje); CMP-12 | M4 |
 | SCR-07 | Opcije | `/options/[symbol]` | predlagane strukture, payoff, veriga, tveganja | M6 |
 | SCR-08 | Portfelj | `/portfolio` | pozicije, teže, izpostavljenost (skozi ETF), stanje tez | M1 |
-| SCR-09 | Teze | `/theses` | trditve in tedenski pregledi | M5 |
+| SCR-09 | Teze | `/theses` | izvedeno BL-100: seznam, filter, strani in `/theses/[thesisId]`; ročno ustvarjanje iz analize, urejanje in potrditev osnutka, stanja trditev z dokazi in zgodovino, viri in lokalni čas; tedenski pregledi še niso izvedeni | M5 |
 | SCR-10 | Uspešnost | `/track-record` | hit rate, alfa, kalibracija po virih | M5 |
 | SCR-11 | Nastavitve | `/settings` | jezik, tema, univerzum, pragovi, LLM vloge in proračun, Telegram, povezave | M0→ |
 | SCR-12 | Predlogi | `/proposals` | tvoji ročni predlogi, stanje analize, izid (§11) | M2→M4 |

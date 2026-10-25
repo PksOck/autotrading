@@ -7,6 +7,7 @@ import { AnalysisStatusPill } from "@/components/analysis/AnalysisStatusPill";
 import { DecisionCardPanel } from "@/components/analysis/DecisionCardPanel";
 import { RatingPill } from "@/components/analysis/RatingPill";
 import { Markdown } from "@/components/common/Markdown";
+import { CreateThesisButton } from "@/components/theses/CreateThesisButton";
 import { ApiError } from "@/lib/api/client";
 import { useAnalysis, useAnalysisStream } from "@/lib/api/hooks";
 import type { AnalysisOut } from "@/lib/api/types";
@@ -130,6 +131,7 @@ export function AnalysisView({ runId }: { runId: string }) {
       </section>
 
       {run.card && <DecisionCardPanel card={run.card} />}
+      {run.status === "done" && run.card && ((run.card.upgrade_if?.length ?? 0) > 0 || (run.card.downgrade_if?.length ?? 0) > 0) && <CreateThesisButton runId={runId} />}
 
       <AgentTimeline steps={steps} status={run.status} connected={connected} />
     </div>

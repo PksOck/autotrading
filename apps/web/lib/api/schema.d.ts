@@ -402,6 +402,108 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/theses/drafts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Draft */
+        post: operations["create_draft_theses_drafts_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/theses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Theses */
+        get: operations["list_theses_theses_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/theses/{thesis_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Thesis */
+        get: operations["get_thesis_theses__thesis_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/theses/{thesis_id}/revisions/{revision_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Patch Revision */
+        patch: operations["patch_revision_theses__thesis_id__revisions__revision_id__patch"];
+        trace?: never;
+    };
+    "/theses/{thesis_id}/revisions/{revision_id}/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Confirm Revision */
+        post: operations["confirm_revision_theses__thesis_id__revisions__revision_id__confirm_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/theses/{thesis_id}/claims/{claim_id}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Change Claim Status */
+        post: operations["change_claim_status_theses__thesis_id__claims__claim_id__status_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1158,6 +1260,265 @@ export interface components {
             as_of: string;
             /** Services */
             services: components["schemas"]["ServiceStatus"][];
+        };
+        /** ThesisClaimEventOut */
+        ThesisClaimEventOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Claim Id
+             * Format: uuid
+             */
+            claim_id: string;
+            /**
+             * From Status
+             * @enum {string}
+             */
+            from_status: "open" | "confirmed" | "weakening" | "broken" | "expired";
+            /**
+             * To Status
+             * @enum {string}
+             */
+            to_status: "open" | "confirmed" | "weakening" | "broken" | "expired";
+            /**
+             * Actor
+             * @enum {string}
+             */
+            actor: "user" | "deterministic";
+            /** Rationale */
+            rationale: string;
+            /** Evidence */
+            evidence: components["schemas"]["ThesisEvidence"][];
+            /** Source */
+            source: string;
+            /**
+             * As Of
+             * Format: date-time
+             */
+            as_of: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /** ThesisClaimOut */
+        ThesisClaimOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Revision Id
+             * Format: uuid
+             */
+            revision_id: string;
+            /** Ordinal */
+            ordinal: number;
+            /**
+             * Trigger Kind
+             * @enum {string}
+             */
+            trigger_kind: "upgrade" | "downgrade";
+            /** Trigger Index */
+            trigger_index: number;
+            /** Original Text */
+            original_text: string;
+            /** Statement */
+            statement: string;
+            /** Invalidated If */
+            invalidated_if: string | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "open" | "confirmed" | "weakening" | "broken" | "expired";
+            /** Expires At */
+            expires_at: string | null;
+            /** Source */
+            source: string;
+            /**
+             * As Of
+             * Format: date-time
+             */
+            as_of: string;
+            /** Events */
+            events?: components["schemas"]["ThesisClaimEventOut"][];
+        };
+        /** ThesisClaimPatch */
+        ThesisClaimPatch: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Statement */
+            statement?: string | null;
+            /** Invalidated If */
+            invalidated_if?: string | null;
+            /** Expires At */
+            expires_at?: string | null;
+        };
+        /** ThesisClaimStatusChange */
+        ThesisClaimStatusChange: {
+            /**
+             * To Status
+             * @enum {string}
+             */
+            to_status: "open" | "confirmed" | "weakening" | "broken";
+            /** Rationale */
+            rationale: string;
+            /** Evidence */
+            evidence?: components["schemas"]["ThesisEvidence"][];
+            /**
+             * Expected Status
+             * @enum {string}
+             */
+            expected_status: "open" | "confirmed" | "weakening" | "broken" | "expired";
+        };
+        /** ThesisDraftCreate */
+        ThesisDraftCreate: {
+            /**
+             * Analysis Run Id
+             * Format: uuid
+             */
+            analysis_run_id: string;
+        };
+        /** ThesisEvidence */
+        ThesisEvidence: {
+            /** Ref */
+            ref?: string | null;
+            /** Url */
+            url?: string | null;
+            /** Source */
+            source: string;
+            /**
+             * As Of
+             * Format: date-time
+             */
+            as_of: string;
+            /** Is Rumor */
+            is_rumor: boolean;
+        };
+        /** ThesisInstrument */
+        ThesisInstrument: {
+            /** Id */
+            id: number;
+            /** Symbol */
+            symbol: string;
+            /** Name */
+            name: string | null;
+        };
+        /** ThesisOut */
+        ThesisOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            instrument: components["schemas"]["ThesisInstrument"];
+            /** Source */
+            source: string;
+            /**
+             * As Of
+             * Format: date-time
+             */
+            as_of: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             * @description Latest creation, confirmation or claim event time; draft edits have no stored timestamp.
+             */
+            updated_at: string;
+            /** Revisions */
+            revisions: components["schemas"]["ThesisRevisionOut"][];
+        };
+        /** ThesisRevisionOut */
+        ThesisRevisionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Thesis Id
+             * Format: uuid
+             */
+            thesis_id: string;
+            /** Version */
+            version: number;
+            /**
+             * Analysis Run Id
+             * Format: uuid
+             */
+            analysis_run_id: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "draft" | "active" | "superseded";
+            /** Locale */
+            locale: string;
+            /** Delta Note */
+            delta_note: string | null;
+            /** Source */
+            source: string;
+            /**
+             * As Of
+             * Format: date-time
+             */
+            as_of: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Confirmed At */
+            confirmed_at: string | null;
+            /** Claims */
+            claims?: components["schemas"]["ThesisClaimOut"][];
+        };
+        /** ThesisRevisionPatch */
+        ThesisRevisionPatch: {
+            /**
+             * Expected Version
+             * @description Checks the revision sequence number, not a mutable edit counter.
+             */
+            expected_version?: number | null;
+            /** Claims */
+            claims: components["schemas"]["ThesisClaimPatch"][];
+        };
+        /** ThesisSummary */
+        ThesisSummary: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            instrument: components["schemas"]["ThesisInstrument"];
+            /** Active Revision Version */
+            active_revision_version: number | null;
+            /** Claim Status Counts */
+            claim_status_counts: {
+                [key: string]: number;
+            };
+            /** Latest Draft Id */
+            latest_draft_id: string | null;
+            /**
+             * Updated At
+             * Format: date-time
+             * @description Latest creation, confirmation or claim event time; draft edits have no stored timestamp.
+             */
+            updated_at: string;
         };
         /** ValidationError */
         ValidationError: {
@@ -2009,6 +2370,216 @@ export interface operations {
                 };
                 content: {
                     "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_draft_theses_drafts_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ThesisDraftCreate"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ThesisRevisionOut"];
+                };
+            };
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ThesisRevisionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_theses_theses_get: {
+        parameters: {
+            query?: {
+                symbol?: string | null;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ThesisSummary"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_thesis_theses__thesis_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                thesis_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ThesisOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    patch_revision_theses__thesis_id__revisions__revision_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                thesis_id: string;
+                revision_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ThesisRevisionPatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ThesisRevisionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    confirm_revision_theses__thesis_id__revisions__revision_id__confirm_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                thesis_id: string;
+                revision_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ThesisRevisionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    change_claim_status_theses__thesis_id__claims__claim_id__status_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                thesis_id: string;
+                claim_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ThesisClaimStatusChange"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ThesisClaimOut"];
                 };
             };
             /** @description Validation Error */

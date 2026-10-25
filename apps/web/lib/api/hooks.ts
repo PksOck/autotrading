@@ -28,6 +28,13 @@ import type {
   WatchlistCreate,
   WatchlistOut,
   WatchlistUpdate,
+  ThesisSummary,
+  ThesisOut,
+  ThesisRevisionOut,
+  ThesisRevisionPatch,
+  ThesisDraftCreate,
+  ThesisClaimOut,
+  ThesisClaimStatusChange,
 } from "./types";
 
 export const keys = {
@@ -44,6 +51,8 @@ export const keys = {
   analyses: (symbol?: string) => ["analyses", symbol ?? "all"] as const,
   analysis: (id: string) => ["analysis", id] as const,
   analysisQuota: ["analyses-quota"] as const,
+  theses: (symbol?: string, limit = 30, offset = 0) => ["theses", symbol ?? null, limit, offset] as const,
+  thesis: (id: string) => ["thesis", id] as const,
 };
 
 export const useSystemStatus = () =>
@@ -203,6 +212,57 @@ export function useCreateAnalysis() {
       void client.invalidateQueries({ queryKey: ["analyses"] });
       void client.invalidateQueries({ queryKey: keys.analysisQuota });
     },
+  });
+}
+
+export const useTheses = (symbol?: string, limit = 30, offset = 0) =>
+  useQuery({
+    queryKey: keys.theses(symbol, limit, offset),
+    queryFn: () => api.get<ThesisSummary[]>(`/theses?limit=${limit}&offset=${offset}${symbol ? `&symbol=${encodeURIComponent(symbol)}` : ""}`),
+  });
+
+export const useThesis = (id: string) =>
+  useQuery({ queryKey: keys.thesis(id), queryFn: () => api.get<ThesisOut>(`/theses/${encodeURIComponent(id)}`), retry: false });
+
+function useInvalidateTheses() {
+  const client = useQueryClient();
+  return async () => {
+    await Promise.all([
+      client.invalidateQueries({ queryKey: ["theses"] }),
+      client.invalidateQueries({ queryKey: ["thesis"] }),
+    ]);
+  };
+}
+
+export function useCreateThesisDraft() {
+  const invalidate = useInvalidateTheses();
+  return useMutation({
+    mutationFn: (data: ThesisDraftCreate) => api.send<ThesisRevisionOut>("/theses/drafts", "POST", data),
+    onSettled: invalidate,
+  });
+}
+
+export function usePatchThesisRevision(thesisId: string, revisionId: string) {
+  const invalidate = useInvalidateTheses();
+  return useMutation({
+    mutationFn: (data: ThesisRevisionPatch) => api.send<ThesisRevisionOut>(`/theses/${encodeURIComponent(thesisId)}/revisions/${encodeURIComponent(revisionId)}`, "PATCH", data),
+    onSettled: invalidate,
+  });
+}
+
+export function useConfirmThesisRevision(thesisId: string, revisionId: string) {
+  const invalidate = useInvalidateTheses();
+  return useMutation({
+    mutationFn: () => api.send<ThesisRevisionOut>(`/theses/${encodeURIComponent(thesisId)}/revisions/${encodeURIComponent(revisionId)}/confirm`, "POST"),
+    onSettled: invalidate,
+  });
+}
+
+export function useChangeClaimStatus(thesisId: string, claimId: string) {
+  const invalidate = useInvalidateTheses();
+  return useMutation({
+    mutationFn: (data: ThesisClaimStatusChange) => api.send<ThesisClaimOut>(`/theses/${encodeURIComponent(thesisId)}/claims/${encodeURIComponent(claimId)}/status`, "POST", data),
+    onSettled: invalidate,
   });
 }
 
