@@ -6,7 +6,11 @@ import httpx
 import pytest
 
 from preza.domain.valuation import valuation_bands
-from preza.fundamentals.finnhub import FinnhubFundamentals, FundamentalsUnavailableError
+from preza.fundamentals.finnhub import (
+    FinnhubFundamentals,
+    FundamentalsUnavailableError,
+    parse_metric,
+)
 
 FIXTURE = Path(__file__).parent / "fixtures" / "finnhub_metric.json"
 
@@ -48,6 +52,58 @@ async def test_fcf_yield_falls_back_to_cash_flow_over_market_cap() -> None:
     api = FinnhubFundamentals("k", client_returning(200, json.dumps(payload)))
     snap = await api.fetch("AAPL")
     assert snap.metrics["fcf_yield"] == pytest.approx(99500 / 2925000 * 100)
+
+
+@pytest.mark.parametrize("margin", [46.73, 0, -10, None])
+def test_ev_ebit_falls_back_to_revenue_and_operating_margin(margin: float | None) -> None:
+    payload = {
+        "metric": {"evRevenueTTM": 11.9973, "operatingMarginTTM": margin},
+        "series": {
+            "annual": {
+                "evRevenue": [{"period": f"{year}-06-30", "v": 10.0} for year in range(2019, 2026)],
+                "operatingMargin": [
+                    {"period": "2025-06-30", "v": 0.4673},
+                    {"period": "2024-06-30", "v": 40.0},
+                    {"period": "2023-06-30", "v": 0},
+                    {"period": "2022-06-30", "v": -0.1},
+                    {"period": "2021-06-30", "v": None},
+                    {"period": "2018-06-30", "v": 0.5},
+                    {"period": "2019-06-30", "v": 1.5},
+                ],
+            },
+            "quarterly": {
+                "evRevenue": [{"period": "2025-06-30", "v": 99}],
+                "operatingMargin": [{"period": "2025-06-30", "v": 0.1}],
+            },
+        },
+    }
+    snap = parse_metric("MSFT", payload, date(2026, 10, 25))
+    expected = 11.9973 / (46.73 / 100) if margin == 46.73 else None
+    assert snap.metrics["ev_ebit"] == (pytest.approx(expected) if expected else None)
+    assert snap.history["ev_ebit"] == [
+        (date(2019, 6, 30), pytest.approx(10 / 1.5)),
+        (date(2024, 6, 30), pytest.approx(25)),
+        (date(2025, 6, 30), pytest.approx(10 / 0.4673)),
+    ]
+
+
+@pytest.mark.parametrize("direct_series", [False, True])
+def test_ev_ebit_prefers_existing_paths(direct_series: bool) -> None:
+    payload = json.loads(FIXTURE.read_text())
+    payload["metric"].update(evRevenueTTM=100, operatingMarginTTM=10)
+    payload["series"]["annual"].update(
+        evRevenue=[{"period": "2024-12-31", "v": 100}],
+        operatingMargin=[{"period": "2024-12-31", "v": 0.1}],
+    )
+    if direct_series:
+        payload["series"]["annual"]["evEbit"] = [{"period": "2024-12-31", "v": 20}]
+        payload["series"]["quarterly"]["evEbit"] = [{"period": "2024-12-31", "v": 21}]
+    snap = parse_metric("AAPL", payload, date(2026, 10, 25))
+    assert snap.metrics["ev_ebit"] == pytest.approx(2960000 / 123000)
+    assert snap.history["ev_ebit"][-1] == (
+        date(2024, 12, 31),
+        pytest.approx(21 if direct_series else 3300000 / 123000),
+    )
 
 
 @pytest.mark.parametrize("status", [429, 401, 500])

@@ -11,9 +11,10 @@ Field choices:
 - fcf_yield (percent): current 100 / `pfcfShareTTM` when positive, else
   `freeCashFlowTTM` / `marketCapitalization` * 100 (both in millions); history is
   100 / `pfcf` for each point where pfcf > 0.
-- ev_ebit: current `enterpriseValue` / `ebitTTM` when both are present and ebit > 0, else None.
+- ev_ebit: current `enterpriseValue` / `ebitTTM`, else `evRevenueTTM` / operating margin.
   History uses a direct `evEbit` series if present, otherwise annual `ev` / annual `ebit`
-  joined on period (quarterly ebit is not TTM, so it is not used).
+  joined on period, else annual `evRevenue` / `operatingMargin` (quarterly ebit is
+  not TTM, so it is not used).
 Quarterly and annual points are merged per metric, quarterly winning on equal dates.
 """
 
@@ -110,6 +111,12 @@ def parse_metric(symbol: str, payload: dict[str, Any], as_of: date) -> Fundament
 
     ev, ebit = _first(metric, "enterpriseValue"), _first(metric, "ebitTTM")
     ev_ebit = ev / ebit if ev is not None and ebit is not None and ebit > 0 else None
+    if ev_ebit is None:
+        ev_revenue = _first(metric, "evRevenueTTM")
+        margin = _first(metric, "operatingMarginTTM")
+        # Operating margin stands in for EBIT margin; current margins are percent.
+        if ev_revenue is not None and margin is not None and margin > 0:
+            ev_ebit = ev_revenue / (margin / 100.0)
 
     pe_hist = _merged(series, "pe", "peTTM")
     fcf_hist = {d: 100.0 / v for d, v in _merged(series, "pfcf", "pfcfTTM").items() if v > 0}
@@ -120,6 +127,16 @@ def parse_metric(symbol: str, payload: dict[str, Any], as_of: date) -> Fundament
         ev_ebit_hist = {
             d: ev_hist[d] / ebit_hist[d] for d in ev_hist if d in ebit_hist and ebit_hist[d] > 0
         }
+    if not ev_ebit_hist:
+        ev_revenue_hist = _series(series, "annual", "evRevenue")
+        margin_hist = _series(series, "annual", "operatingMargin")
+        for day, ev_revenue in ev_revenue_hist.items():
+            margin = margin_hist.get(day)
+            if margin is not None and margin > 0:
+                # Series margins are fractions; normalize percent-looking values.
+                if margin > 1.5:
+                    margin /= 100.0
+                ev_ebit_hist[day] = ev_revenue / margin
 
     def as_list(points: dict[date, float]) -> list[Point]:
         return sorted(points.items())
