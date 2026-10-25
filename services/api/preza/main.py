@@ -10,6 +10,7 @@ from preza.routes import (
     radar,
     signals,
     system,
+    theses,
     watchlist,
 )
 
@@ -25,6 +26,7 @@ def create_app() -> FastAPI:
     app.include_router(proposals.router)
     app.include_router(entries.router)
     app.include_router(analyses.router)
+    app.include_router(theses.router)
     return app
 
 
