@@ -4,6 +4,34 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 
 ---
 
+## S-006 · 2026-10-25 · Živi viri podatkov in začetek M5 Teze
+
+**Cilj:** preveriti žive povezave iz `.env` (IB še ni povezan), popraviti ugotovljeno in začeti M5.
+
+**Narejeno:**
+- Preverjeni viri: Finnhub, Yahoo, EDGAR (po vpisu e-pošte), PR Newswire RSS, Telegram. GlobeNewswire (403) in Business Wire (prazen vir) odstranjena, ker nista brezplačna (BL-059).
+- notify ne izpisuje več Telegram žetona (`httpx` na WARNING), log očiščen. Migracija 0010 (`news_item.external_id` daljši za URL guid) na živi bazi.
+- BL-034: Stooq privzeto izklopljen (JS izziv, ki ga ne obidemo).
+- BL-066: EV/EBIT iz `evRevenue / operatingMargin` (Finnhub ne vrne `ebitTTM`); MSFT 25,7, 27 letnih točk.
+- BL-091: Yahoo `funds_data` za UCITS: pozicije in sektorji za vse, TER manjka za Vanguard, `categoryName` vedno prazen.
+- BL-095, BL-096: TER in ime indeksa iz `ucits_etfs.yaml` (KIID izdajatelja ima prednost pred Yahoo, z lastnim `ter_source`/`ter_as_of`, migracija 0011). VWRA/VWCE 0,14 % iz Vanguard KIID 2026-07-28.
+- BL-100 končan: modeli teze, različice, trditve in dogodki (migracija 0012), API (osnutek iz končane analize, urejanje osnutka, izrecna potrditev, status trditve z razlogom in dokazi), SCR-09 seznam in podrobnosti, gumb "Ustvari osnutek teze" na SCR-06. Živi preizkus: osnutek teze ASML iz zagona `26e4dff1…` (6 trditev) čaka na tvoj pregled in potrditev.
+- Migraciji 0011 in 0012 na živi bazi (varnostna kopija `C:/Users/Jan/Documents/preza-backups/preza_pre0012_20261025.dump`, pisci ustavljeni, reviewer APPROVE).
+- BL-092: globoka analiza ASML uspešna prek MiniMax v 1501 s (Underweight, 6 sprožilcev). LiteLLM padci: `cloud-quick` → `cloud-deep` → `local-fast`.
+- Testi web: 58 enotskih, e2e teze 4 (Playwright z `CHROMIUM_PATH` na chromium-1234; `analysis.spec.ts` potrebuje demo podatke, BL-162).
+- Delo je delegirano OpenCode Sol agentom (general, architect), diff in teste je preveril glavni agent.
+
+**Odločitve:** teza nastane šele na klik iz končane analize, sprožilci ostanejo besedilo (brez negiranja in parsanja številk), potrditev različice ne potrdi trditev, status trditve spremeni samo uporabnik z razlogom in dokazom.
+
+**Odprto:**
+- BL-097: `cloud-quick` (OpenCode Go) zavrača klice brez glave `x-opencode-session`; zdaj gre prek MiniMax. Potrebna je tvoja odločitev o ponudniku.
+- BL-161: `expected_version` pri urejanju osnutka preverja različico, ne urejanj (spletni vmesnik pošlje samo spremenjene trditve).
+- IB Gateway ni povezan (BL-023). Seznam spremljanja je prazen, zato Radar ne daje signalov.
+
+**Naslednji korak:** BL-101 tedenski pregled tez in signal `thesis_break`.
+
+---
+
 ## S-005 · 2026-10-22 · M3 zaključek in M4 Globoka analiza
 
 **Cilj:** BL-068 do BL-070 in mejnik M4 (samostojno, brez uporabnika).
