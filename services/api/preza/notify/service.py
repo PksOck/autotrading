@@ -9,9 +9,16 @@ from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from preza.config import Settings, get_settings
-from preza.models import EntryCandidate, Signal
+from preza.models import (
+    EntryCandidate,
+    Signal,
+    ThesisClaimReviewProposal,
+    ThesisReview,
+    ThesisRevision,
+)
 from preza.notify.models import Notification
 from preza.notify.telegram import (
+    REVIEW_LABEL,
     Decision,
     NotificationPolicy,
     TelegramClient,
@@ -63,6 +70,25 @@ def _candidates(settings: Settings, now: datetime) -> Any:
     )
 
 
+async def review_signal_links(
+    session: AsyncSession, signal_ids: list[uuid.UUID], base_url: str
+) -> dict[uuid.UUID, str]:
+    """Only proposal-linked signals point to a thesis. Entry-origin breaks stay separate."""
+    if not signal_ids:
+        return {}
+    rows = await session.execute(
+        select(ThesisClaimReviewProposal.signal_id, ThesisRevision.thesis_id)
+        .join(ThesisReview, ThesisReview.id == ThesisClaimReviewProposal.review_id)
+        .join(ThesisRevision, ThesisRevision.id == ThesisReview.revision_id)
+        .where(ThesisClaimReviewProposal.signal_id.in_(signal_ids))
+    )
+    return {
+        signal_id: f"{base_url.rstrip('/')}/theses/{thesis_id}"
+        for signal_id, thesis_id in rows
+        if signal_id is not None
+    }
+
+
 async def notify_new_signals(
     session: AsyncSession,
     client: TelegramClient,
@@ -83,6 +109,9 @@ async def notify_new_signals(
     )
     if not signals:
         return 0
+    review_links = await review_signal_links(
+        session, [s.id for s in signals], settings.app_base_url
+    )
     held, _ = await user_symbols(session)
     sent_today = int(
         await session.scalar(
@@ -106,6 +135,7 @@ async def notify_new_signals(
         status = "deferred"
         if decision is Decision.SEND_NOW:
             link = f"{settings.app_base_url.rstrip('/')}/signals?peek=signal:{signal.id}"
+            link = review_links.get(signal.id, link)
             text = format_signal(
                 symbol,
                 signal.kind,
@@ -120,9 +150,12 @@ async def notify_new_signals(
                     else None
                 ),
                 stop=float(signal.stop) if signal.stop is not None else None,
+                review_proposal=signal.id in review_links,
             )
             try:
-                buttons = signal_buttons(signal.id, settings.default_locale, settings.app_base_url)
+                buttons = signal_buttons(
+                    signal.id, settings.default_locale, settings.app_base_url, url=link
+                )
                 await client.send_message(chat_id, text, buttons)
             except TelegramError as exc:
                 log.warning("telegram send failed, will retry: %s", exc)
@@ -169,6 +202,7 @@ async def morning_digest(
     if not rows and not entries:
         return 0
     top = rows[:DIGEST_LIMIT]
+    review_links = await review_signal_links(session, [s.id for s, _ in top], settings.app_base_url)
     count = len(rows)
     if locale == "sl":
         head = f"Jutranji povzetek · {count} {'signal' if count == 1 else 'signalov'}"
@@ -178,11 +212,16 @@ async def morning_digest(
         strength_label, open_label, entries_title = "Strength", "Open", "Entries"
     lines = [head]
     for signal, _ in top:
+        label = (
+            REVIEW_LABEL[locale] if signal.id in review_links else kind_label(signal.kind, locale)
+        )
         prefix = {"sl": "Nepotrjeno. ", "en": "Unconfirmed. "}[locale] if signal.is_rumor else ""
         lines.append(
-            f"{prefix}{signal.instrument.symbol} · {kind_label(signal.kind, locale)} · "
+            f"{prefix}{signal.instrument.symbol} · {label} · "
             f"{strength_label} {fmt_num(float(signal.strength), locale)}"
         )
+        if signal.id in review_links:
+            lines.append(review_links[signal.id])
     if entries:
         lines.append(entries_title)
         for entry in entries:

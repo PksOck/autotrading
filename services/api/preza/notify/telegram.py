@@ -108,6 +108,10 @@ DISMISS_LABEL = {"sl": "Zavrzi", "en": "Dismiss"}
 ZONE_LABEL = {"sl": "Cona", "en": "Zone"}
 STOP_LABEL = {"sl": "stop", "en": "stop"}
 MAX_RATIONALE = 220
+REVIEW_LABEL = {
+    "sl": "Predlog pregleda: možen zlom teze",
+    "en": "Review proposal: possible thesis break",
+}
 
 
 def _lang(locale: str) -> str:
@@ -141,10 +145,12 @@ def format_signal(
     *,
     zone: tuple[float, float] | None = None,
     stop: float | None = None,
+    review_proposal: bool = False,
 ) -> str:
     """At most 5 lines: header, zone and stop (entry only), rationale and strength, link."""
     lang = _lang(locale)
-    head = f"{html.escape(signal_symbol, quote=False)} · {kind_label(kind, lang)}"
+    label = REVIEW_LABEL[lang] if review_proposal else kind_label(kind, lang)
+    head = f"{html.escape(signal_symbol, quote=False)} · {label}"
     if is_rumor:
         head = f"{RUMOR_PREFIX[lang]} {head}"
     body = f"{_clean(rationale, MAX_RATIONALE)} {STRENGTH_LABEL[lang]} {fmt_num(strength, lang)}"
@@ -160,13 +166,15 @@ def format_signal(
     return "\n".join(lines)
 
 
-def signal_buttons(signal_id: object, locale: str, app_base_url: str) -> list[list[dict[str, Any]]]:
+def signal_buttons(
+    signal_id: object, locale: str, app_base_url: str, *, url: str | None = None
+) -> list[list[dict[str, Any]]]:
     lang = _lang(locale)
     return [
         [
             {
                 "text": OPEN_LABEL[lang],
-                "url": f"{app_base_url.rstrip('/')}/signals?peek=signal:{signal_id}",
+                "url": url or f"{app_base_url.rstrip('/')}/signals?peek=signal:{signal_id}",
             },
             {"text": WATCH_LABEL[lang], "callback_data": f"w:{signal_id}"},
             {"text": DISMISS_LABEL[lang], "callback_data": f"x:{signal_id}"},

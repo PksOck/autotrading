@@ -16,7 +16,14 @@ from preza.domain.thesis import (
     ThesisRevisionPatch,
     ThesisSummary,
 )
-from preza.services import theses
+from preza.domain.thesis_review import (
+    AcceptProposal,
+    ClaimReviewProposalOut,
+    DismissProposal,
+    ProposalState,
+    ReviewOut,
+)
+from preza.services import theses, thesis_reviews
 
 router = APIRouter(prefix="/theses", tags=["theses"])
 Session = Annotated[AsyncSession, Depends(get_session)]
@@ -75,3 +82,58 @@ async def change_claim_status(
     revision = await theses.get_revision(session, thesis_id, claim.revision_id)
     out = await theses.revision_out(session, revision)
     return next(item for item in out.claims if item.id == claim.id)
+
+
+@router.get("/{thesis_id}/reviews", response_model=list[ReviewOut])
+async def list_reviews(
+    thesis_id: uuid.UUID,
+    session: Session,
+    limit: Annotated[int, Query(ge=1, le=100)] = 30,
+    offset: Annotated[int, Query(ge=0)] = 0,
+) -> list[ReviewOut]:
+    return [
+        ReviewOut.model_validate(r)
+        for r in await thesis_reviews.list_reviews(session, thesis_id, limit, offset)
+    ]
+
+
+@router.get("/{thesis_id}/review-proposals", response_model=list[ClaimReviewProposalOut])
+async def list_review_proposals(
+    thesis_id: uuid.UUID,
+    session: Session,
+    state: ProposalState | None = "pending",
+    limit: Annotated[int, Query(ge=1, le=100)] = 30,
+    offset: Annotated[int, Query(ge=0)] = 0,
+) -> list[ClaimReviewProposalOut]:
+    return [
+        ClaimReviewProposalOut.model_validate(p)
+        for p in await thesis_reviews.list_proposals(session, thesis_id, state, limit, offset)
+    ]
+
+
+@router.post(
+    "/{thesis_id}/review-proposals/{proposal_id}/accept", response_model=ClaimReviewProposalOut
+)
+async def accept_review_proposal(
+    thesis_id: uuid.UUID,
+    proposal_id: uuid.UUID,
+    body: AcceptProposal,
+    session: Session,
+) -> ClaimReviewProposalOut:
+    return ClaimReviewProposalOut.model_validate(
+        await thesis_reviews.accept_proposal(session, thesis_id, proposal_id, body)
+    )
+
+
+@router.post(
+    "/{thesis_id}/review-proposals/{proposal_id}/dismiss", response_model=ClaimReviewProposalOut
+)
+async def dismiss_review_proposal(
+    thesis_id: uuid.UUID,
+    proposal_id: uuid.UUID,
+    body: DismissProposal,
+    session: Session,
+) -> ClaimReviewProposalOut:
+    return ClaimReviewProposalOut.model_validate(
+        await thesis_reviews.dismiss_proposal(session, thesis_id, proposal_id, body)
+    )

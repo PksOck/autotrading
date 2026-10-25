@@ -542,3 +542,66 @@ class ThesisClaimEvent(Base):
     source: Mapped[str] = mapped_column(String(64))
     as_of: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class ThesisReview(Base):
+    """One immutable input snapshot per revision/UTC ISO week. id is the run_id."""
+
+    __tablename__ = "thesis_review"
+    __table_args__ = (UniqueConstraint("revision_id", "week_start"),)
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    revision_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("thesis_revision.id", ondelete="CASCADE"), index=True
+    )
+    week_start: Mapped[date] = mapped_column(Date)
+    status: Mapped[str] = mapped_column(String(24), default="queued")
+    source: Mapped[str] = mapped_column(String(64), default="thesis_review")
+    as_of: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    input_from: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    input_cutoff: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    snapshot: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
+    truncated: Mapped[bool] = mapped_column(Boolean, default=False)
+    role: Mapped[str] = mapped_column(String(32), default="cloud-deep")
+    model: Mapped[str | None] = mapped_column(String(200))
+    prompt_version: Mapped[str] = mapped_column(String(64), default="thesis-review-v1")
+    attempts: Mapped[int] = mapped_column(Integer, default=0)
+    prompt_tokens: Mapped[int] = mapped_column(Integer, default=0)
+    completion_tokens: Mapped[int] = mapped_column(Integer, default=0)
+    cost: Mapped[Decimal | None] = mapped_column(Numeric(18, 10))
+    error_code: Mapped[str | None] = mapped_column(String(64))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    dispatch_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class ThesisClaimReviewProposal(Base):
+    """Agent interpretation. Only an explicit user acceptance changes a claim."""
+
+    __tablename__ = "thesis_claim_review_proposal"
+    __table_args__ = (UniqueConstraint("review_id", "claim_id"),)
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    review_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("thesis_review.id", ondelete="CASCADE"), index=True
+    )
+    claim_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("thesis_claim.id", ondelete="CASCADE"), index=True
+    )
+    status_at_review: Mapped[str] = mapped_column(String(12))
+    last_claim_event_id_at_review: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("thesis_claim_event.id")
+    )
+    suggested_status: Mapped[str | None] = mapped_column(String(12))
+    assessment: Mapped[str] = mapped_column(String(16))
+    rationale: Mapped[str] = mapped_column(Text)
+    evidence: Mapped[list[dict[str, Any]]] = mapped_column(JSONB, default=list)
+    actor: Mapped[str] = mapped_column(String(16), default="agent")
+    source: Mapped[str] = mapped_column(String(64), default="thesis_review")
+    as_of: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    state: Mapped[str] = mapped_column(String(12), default="pending", index=True)
+    decided_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    dismissal_reason: Mapped[str | None] = mapped_column(Text)
+    accepted_event_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("thesis_claim_event.id"))
+    signal_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("signal.id"), unique=True)

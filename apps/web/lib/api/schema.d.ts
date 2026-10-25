@@ -504,10 +504,88 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/theses/{thesis_id}/reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Reviews */
+        get: operations["list_reviews_theses__thesis_id__reviews_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/theses/{thesis_id}/review-proposals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Review Proposals */
+        get: operations["list_review_proposals_theses__thesis_id__review_proposals_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/theses/{thesis_id}/review-proposals/{proposal_id}/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Accept Review Proposal */
+        post: operations["accept_review_proposal_theses__thesis_id__review_proposals__proposal_id__accept_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/theses/{thesis_id}/review-proposals/{proposal_id}/dismiss": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Dismiss Review Proposal */
+        post: operations["dismiss_review_proposal_theses__thesis_id__review_proposals__proposal_id__dismiss_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AcceptProposal */
+        AcceptProposal: {
+            /**
+             * Expected Status
+             * @enum {string}
+             */
+            expected_status: "open" | "confirmed" | "weakening" | "broken" | "expired";
+            /** Expected Last Event Id */
+            expected_last_event_id: string | null;
+        };
         /** AnalysisCreate */
         AnalysisCreate: {
             /** Symbol */
@@ -677,6 +755,67 @@ export interface components {
              */
             report_date: string;
         };
+        /** ClaimReviewProposalOut */
+        ClaimReviewProposalOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Review Id
+             * Format: uuid
+             */
+            review_id: string;
+            /**
+             * Claim Id
+             * Format: uuid
+             */
+            claim_id: string;
+            /**
+             * Status At Review
+             * @enum {string}
+             */
+            status_at_review: "open" | "confirmed" | "weakening" | "broken" | "expired";
+            /** Last Claim Event Id At Review */
+            last_claim_event_id_at_review: string | null;
+            /** Suggested Status */
+            suggested_status: ("confirmed" | "weakening" | "broken") | null;
+            /**
+             * Assessment
+             * @enum {string}
+             */
+            assessment: "sufficient" | "insufficient";
+            /** Rationale */
+            rationale: string;
+            /** Evidence */
+            evidence: components["schemas"]["ThesisEvidence"][];
+            /**
+             * Actor
+             * @constant
+             */
+            actor: "agent";
+            /** Source */
+            source: string;
+            /**
+             * As Of
+             * Format: date-time
+             */
+            as_of: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "pending" | "accepted" | "dismissed";
+            /** Decided At */
+            decided_at: string | null;
+            /** Dismissal Reason */
+            dismissal_reason: string | null;
+            /** Accepted Event Id */
+            accepted_event_id: string | null;
+            /** Signal Id */
+            signal_id: string | null;
+        };
         /**
          * ControlScore
          * @description Deterministic composite next to the agents' rating (BL-089). Components in -1..1.
@@ -731,6 +870,11 @@ export interface components {
          * @enum {string}
          */
         Direction: "up" | "down" | "neutral";
+        /** DismissProposal */
+        DismissProposal: {
+            /** Reason */
+            reason: string;
+        };
         /** EntryOut */
         EntryOut: {
             /** Symbol */
@@ -1143,6 +1287,79 @@ export interface components {
          * @enum {string}
          */
         RadarView: "discover" | "watchlist" | "portfolio";
+        /** ReviewOut */
+        ReviewOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Revision Id
+             * Format: uuid
+             */
+            revision_id: string;
+            /**
+             * Week Start
+             * Format: date
+             */
+            week_start: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "queued" | "running" | "done" | "done_no_evidence" | "failed" | "failed_unknown" | "stale" | "skipped_limits";
+            /** Source */
+            source: string;
+            /**
+             * As Of
+             * Format: date-time
+             */
+            as_of: string;
+            /**
+             * Input From
+             * Format: date-time
+             */
+            input_from: string;
+            /**
+             * Input Cutoff
+             * Format: date-time
+             */
+            input_cutoff: string;
+            /** Snapshot */
+            snapshot: {
+                [key: string]: unknown;
+            };
+            /** Truncated */
+            truncated: boolean;
+            /** Role */
+            role: string;
+            /** Model */
+            model: string | null;
+            /** Prompt Version */
+            prompt_version: string;
+            /** Attempts */
+            attempts: number;
+            /** Prompt Tokens */
+            prompt_tokens: number;
+            /** Completion Tokens */
+            completion_tokens: number;
+            /** Cost */
+            cost: string | null;
+            /** Error Code */
+            error_code: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Started At */
+            started_at: string | null;
+            /** Finished At */
+            finished_at: string | null;
+            /** Dispatch At */
+            dispatch_at: string | null;
+        };
         /** RuleHitOut */
         RuleHitOut: {
             /** Rule */
@@ -2580,6 +2797,147 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ThesisClaimOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_reviews_theses__thesis_id__reviews_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path: {
+                thesis_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_review_proposals_theses__thesis_id__review_proposals_get: {
+        parameters: {
+            query?: {
+                state?: ("pending" | "accepted" | "dismissed") | null;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path: {
+                thesis_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClaimReviewProposalOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    accept_review_proposal_theses__thesis_id__review_proposals__proposal_id__accept_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                thesis_id: string;
+                proposal_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AcceptProposal"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClaimReviewProposalOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    dismiss_review_proposal_theses__thesis_id__review_proposals__proposal_id__dismiss_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                thesis_id: string;
+                proposal_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DismissProposal"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClaimReviewProposalOut"];
                 };
             };
             /** @description Validation Error */
