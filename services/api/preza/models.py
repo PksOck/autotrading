@@ -12,6 +12,7 @@ from sqlalchemy import (
     DateTime,
     Float,
     ForeignKey,
+    Index,
     Integer,
     Numeric,
     String,
@@ -439,3 +440,105 @@ class EtfProfile(Base):
     fetched_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
     instrument: Mapped[Instrument] = relationship(lazy="joined")
+
+
+class Thesis(Base):
+    """Why the user holds or watches an instrument, as checkable claims (M5, BL-100).
+
+    One thesis per instrument; each new analysis can become a new revision. Only the
+    user activates a revision and changes claim status; the LLM never does (ADR-0006).
+    """
+
+    __tablename__ = "thesis"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    instrument_id: Mapped[int] = mapped_column(ForeignKey("instrument.id"), unique=True)
+    source: Mapped[str] = mapped_column(String(64))
+    as_of: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+    instrument: Mapped[Instrument] = relationship(lazy="joined")
+
+
+class ThesisRevision(Base):
+    """A version of a thesis drafted from one analysis run's decision card."""
+
+    __tablename__ = "thesis_revision"
+    __table_args__ = (
+        UniqueConstraint("thesis_id", "version"),
+        UniqueConstraint("thesis_id", "analysis_run_id"),
+        # At most one active revision per thesis.
+        Index(
+            "uq_thesis_revision_active",
+            "thesis_id",
+            unique=True,
+            postgresql_where=text("status = 'active'"),
+        ),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    thesis_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("thesis.id", ondelete="CASCADE"), index=True
+    )
+    version: Mapped[int] = mapped_column(Integer)
+    analysis_run_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("analysis_run.id"))
+    # draft / active / superseded
+    status: Mapped[str] = mapped_column(String(12), default="draft")
+    locale: Mapped[str] = mapped_column(String(5), default="sl")
+    # Model commentary copied from the card; never evidence.
+    delta_note: Mapped[str | None] = mapped_column(Text)
+    source: Mapped[str] = mapped_column(String(64))
+    as_of: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    confirmed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class ThesisClaim(Base):
+    """One claim of a revision, taken from a card trigger (`upgrade_if`/`downgrade_if`).
+
+    The trigger text is kept as written: a downgrade condition is not negated into a
+    positive claim, and no numbers are parsed out of it.
+    """
+
+    __tablename__ = "thesis_claim"
+    __table_args__ = (
+        UniqueConstraint("revision_id", "ordinal"),
+        UniqueConstraint("revision_id", "trigger_kind", "trigger_index"),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    revision_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("thesis_revision.id", ondelete="CASCADE"), index=True
+    )
+    ordinal: Mapped[int] = mapped_column(Integer)
+    # upgrade / downgrade
+    trigger_kind: Mapped[str] = mapped_column(String(10))
+    trigger_index: Mapped[int] = mapped_column(Integer)
+    original_text: Mapped[str] = mapped_column(Text)
+    statement: Mapped[str] = mapped_column(Text)
+    invalidated_if: Mapped[str | None] = mapped_column(Text)
+    # open / confirmed / weakening / broken / expired
+    status: Mapped[str] = mapped_column(String(12), default="open")
+    expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    source: Mapped[str] = mapped_column(String(64))
+    as_of: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+class ThesisClaimEvent(Base):
+    """Append-only audit of claim status changes, each with rationale and evidence."""
+
+    __tablename__ = "thesis_claim_event"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    claim_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("thesis_claim.id", ondelete="CASCADE"), index=True
+    )
+    from_status: Mapped[str] = mapped_column(String(12))
+    to_status: Mapped[str] = mapped_column(String(12))
+    # user / deterministic
+    actor: Mapped[str] = mapped_column(String(16))
+    rationale: Mapped[str] = mapped_column(Text)
+    evidence: Mapped[list[dict[str, Any]]] = mapped_column(JSONB, default=list)
+    source: Mapped[str] = mapped_column(String(64))
+    as_of: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
