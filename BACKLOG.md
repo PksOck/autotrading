@@ -127,7 +127,7 @@
 | BL-161 | Števec urejanj osnutka teze: `expected_version` zdaj preverja zaporedno številko različice, ne urejanj; `updated_at` ne sledi urejanju trditev | BL-100 | later |
 | BL-162 | Demo podatki za e2e (NVDA/ASML analize), da `analysis.spec.ts` in ostali e2e tečejo brez žive baze; Playwright brskalnik 1248 manjka lokalno | BL-100 | later |
 | BL-163 | Regresijski testi agents: golden kontrolne vsote padejo na Windows zaradi CRLF (`.gitattributes` za `tests/regression` ali normalizacija pred hashem) | BL-101 | later |
-| BL-164 | Oblikovanje za Android in Windows: odstrani Apple vzorce (pisave, kontrole, gibi), platformno nevtralen UI | S-007 | doing |
+| BL-164 | Oblikovanje za Android in Windows (ADR-0013): bližnjice po platformi, segmentirani gumbi M3, brez zameglitve, 48 px na dotik, navigacijska vrstica M3, manifest, tipka nazaj | S-008 | done |
 
 ## M6: Opcije
 

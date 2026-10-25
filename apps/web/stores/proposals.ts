@@ -10,7 +10,7 @@ export function parseSymbols(input: string): string[] {
   return [...new Set(symbols)];
 }
 
-/** Window event used by the header button, ⌘K, peek panels and Radar to open the composer. */
+/** Window event used by the header button, command palette, peek panels and Radar to open the composer. */
 export const PROPOSE_EVENT = "preza:propose";
 export type ProposeDetail = { symbols?: string[]; hypothesis?: string };
 

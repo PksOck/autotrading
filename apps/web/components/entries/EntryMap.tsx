@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from "motion/react";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import type { EntryOut } from "@/lib/api/types";
+import { spring } from "@/lib/motion";
 import { useFocusStore } from "@/stores/focus";
 import { CAUSE_COLOR, type Cause } from "./CauseBadge";
 
@@ -140,10 +141,8 @@ export function EntryMap({
               initial={reduceMotion ? false : { opacity: 0, scale: 0.4 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{
+                ...spring.soft,
                 delay: reduceMotion ? 0 : i * 0.03,
-                type: "spring",
-                stiffness: 260,
-                damping: 22,
               }}
               style={{ transformOrigin: `${cx}px ${cy}px`, cursor: "pointer" }}
               onClick={() => onSelect(e.symbol)}

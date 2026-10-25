@@ -65,7 +65,7 @@ Kontrast je preverjen (WCAG 2.1): besedilni tokeni dosežejo vsaj 4,5:1 na `bg`,
 ### 2.3 Razmiki, polmeri, sence
 
 - Osnovna enota je **4 px**. Lestvica: 4, 8, 12, 16, 20, 24, 32, 40, 48, 64.
-- Polmeri: `--r-sm` 6 px (oznake, polja), `--r-md` 10 px (kartice), `--r-lg` 14 px (paneli, modali), `--r-full` (pilule).
+- Polmeri: `--r-sm` 4 px (oznake, polja), `--r-md` 8 px (kartice), `--r-lg` 12 px (paneli, modali), `--r-full` (pilule) ([ADR-0013](./docs/adr/ADR-0013-oblikovanje-android-windows.md)).
 - Sence: samo za plavajoče elemente (meni, modal): `0 8px 24px rgb(0 0 0 / .12)` (svetla), `0 8px 24px rgb(0 0 0 / .5)` (temna). Kartice nimajo senc, samo obrobo.
 - Zamik med karticami 16 px, notranji rob kartice 16 do 20 px.
 
@@ -73,8 +73,20 @@ Kontrast je preverjen (WCAG 2.1): besedilni tokeni dosežejo vsaj 4,5:1 na `bg`,
 
 - Lupina: stranski meni 232 px (zložljiv na 64 px) + vsebina z `max-width: 1440px`.
 - Prelomne točke: `sm` 640, `md` 960, `lg` 1280.
-- Pod `md`: stranski meni postane spodnja vrstica z 5 glavnimi moduli (Pregled, Radar, Vstopi, Signali, Portfelj), ostalo pod "Več". Tabele se pretvorijo v kartice ali se drsijo vodoravno v okvirju.
-- Najmanjša ciljna površina za dotik: 44 × 44 px.
+- Pod `md`: stranski meni postane navigacijska vrstica M3 s 5 cilji (Pregled, Radar, Signali, Portfelj, Več). Vstopi in ostali moduli so pod "Več". Aktivni cilj ima pilulo 64 × 32 px (`--accent-soft`) za ikono, višina 64 px + varni rob. Tabele se pretvorijo v kartice ali se drsijo vodoravno v okvirju.
+- Najmanjša ciljna površina za dotik (`pointer: coarse`): 48 × 48 px (M3). Pri miški ostane kompaktna gostota (32 do 36 px, Fluent 2).
+
+### 2.5 Platforme: Android in Windows
+
+Ciljni napravi sta Android (dotik) in Windows (miška, tipkovnica). Vmesnik je eden; kjer se platformi razlikujeta, sledi Material 3 in Fluent 2 ([ADR-0013](./docs/adr/ADR-0013-oblikovanje-android-windows.md)).
+
+- Bližnjice: `Ctrl K` povsod, `⌘K` samo na macOS. Na dotiku oznake bližnjic niso prikazane.
+- Segmentirani gumbi: obrobljena skupina, izbrani segment `--accent-soft` z besedilom `--accent`. Brez belega drsnika in sence (vzorec iOS).
+- Polja: obrobljena, ozadje `--surface`, fokus z obrobo `--accent`.
+- Brez `backdrop-filter`: glava ima polno ozadje, modali in paneli temno prosojno plast `rgb(0 0 0 / .4)`.
+- Tanki drsniki v barvah tokenov.
+- Spletni manifest (`display: standalone`) za namestitev na Androidu in v Edge; barva teme za svetlo in temno temo.
+- Sistemska tipka nazaj na Androidu zapre odprt modal ali panel, ne zaslona.
 
 ## 3. Komponente (`CMP-xx`)
 
@@ -172,8 +184,10 @@ Gibanje ni okras. **Vsaka animacija pojasni vzrok in posledico:** kaj se je spre
 | `--dur-slow` | 320 ms | odpiranje panela, prehod strani |
 | `--ease-standard` | `cubic-bezier(.2, 0, 0, 1)` | večina prehodov |
 | `--ease-exit` | `cubic-bezier(.4, 0, 1, 1)` | izhod (hitrejši od vhoda) |
-| `spring.snappy` | `{ stiffness: 520, damping: 38 }` | indikator zavihka, izbira, preurejanje seznama |
-| `spring.soft` | `{ stiffness: 260, damping: 30 }` | panel, kartica, ki se razširi |
+| `spring.snappy` | kritično dušena, `{ stiffness: 520, damping: 46 }` | indikator zavihka, izbira, preurejanje seznama |
+| `spring.soft` | kritično dušena, `{ stiffness: 260, damping: 33 }` | panel, kartica, ki se razširi |
+
+Vzmeti nimajo prenihaja (ADR-0013); odbijanje deluje kot iOS.
 
 Tokeni živijo v `apps/web/lib/motion.ts` (JS) in `tokens.css` (CSS). Komponente ne uporabljajo lastnih trajanj.
 
@@ -182,7 +196,7 @@ Tokeni živijo v `apps/web/lib/motion.ts` (JS) in `tokens.css` (CSS). Komponente
 | ID | Vzorec | Kje | Kako |
 |---|---|---|---|
 | MO-01 | **Deljeni prehod** (shared layout) | kartica signala → panel podrobnosti, vrstica → instrument | `layoutId` na simbolu, ceni in oceni. Element "odpotuje" na novo mesto, ne izgine in se ponovno pojavi |
-| MO-02 | **Drsni indikator** | zavihki, stranski meni, segmentirani gumbi | en `motion.span` z `layoutId`, ki zdrsne pod aktivno izbiro |
+| MO-02 | **Drsni indikator** | zavihki, stranski meni, navigacijska vrstica (segmentirani gumbi samo prelijejo barvo) | en `motion.span` z `layoutId`, ki zdrsne pod aktivno izbiro |
 | MO-03 | **Živi seznam** | Radar, Signali, časovnica agentov | `AnimatePresence` + `layout`: novi elementi zdrsnejo od zgoraj (y −8 → 0, prozornost 0 → 1), ostali se gladko premaknejo navzdol, odstranjeni se skrčijo |
 | MO-04 | **Animirana številka** | cene, vrednost portfelja, ocene, števci | štetje do nove vrednosti (`useSpring`) + kratek blisk ozadja `--pos-soft` / `--neg-soft` (600 ms) glede na smer spremembe |
 | MO-05 | **Postopno razkrivanje** | debata agentov, povzetki | besedilo prihaja v delih (SSE), kazalnik pisanja, nov korak se razširi z `spring.soft` |

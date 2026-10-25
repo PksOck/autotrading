@@ -7,21 +7,23 @@ import { LocaleSwitch } from "@/components/shell/LocaleSwitch";
 import { SystemStatus } from "@/components/shell/SystemStatus";
 import { ThemeToggle } from "@/components/shell/ThemeToggle";
 import type { ThemePreference } from "@/lib/theme";
+import { useShortcutLabel } from "@/lib/platform";
 import { openProposalComposer } from "@/stores/proposals";
 
 export function Header({ themePreference }: { themePreference: ThemePreference }) {
   const t = useTranslations();
+  const shortcut = useShortcutLabel();
 
   return (
-    <header className="sticky top-0 z-20 flex flex-wrap items-center gap-3 border-b border-border bg-surface/90 px-4 py-3 backdrop-blur md:px-6">
+    <header className="sticky top-0 z-20 flex flex-wrap items-center gap-3 border-b border-border bg-surface px-4 py-3 md:px-6">
       <button
         type="button"
         onClick={openCommandPalette}
-        className="flex h-10 min-w-0 flex-1 basis-56 items-center gap-2 rounded-md border border-border bg-surface-2 px-3 text-left text-text-3 hover:border-text-3"
+        className="flex h-10 min-w-0 flex-1 basis-56 items-center gap-2 rounded-md border border-border bg-surface px-3 text-left text-text-3 hover:border-text-3 focus:border-accent"
       >
         <Icon name="search" size={16} />
         <span className="flex-1 truncate">{t("header.search")}</span>
-        <kbd className="num text-xs">⌘K</kbd>
+        <kbd className="num text-xs pointer-coarse:hidden">{shortcut}</kbd>
       </button>
       <SystemStatus />
       <button

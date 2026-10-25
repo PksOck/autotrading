@@ -16,7 +16,7 @@ type Props = { entity: EntityRef; children?: ReactNode; className?: string };
  * cross-highlights the entity elsewhere (LX-03); click opens the peek panel (LX-02).
  */
 export function EntityLink({ entity, children, className }: Props) {
-  const { hrefFor } = usePeek();
+  const { hrefFor, open } = usePeek();
   const key = encodeEntity(entity);
   const setHovered = useFocusStore((s) => s.setHovered);
   const highlighted = useFocusStore((s) => s.hovered === key);
@@ -25,6 +25,12 @@ export function EntityLink({ entity, children, className }: Props) {
     <Link
       href={hrefFor(entity)}
       scroll={false}
+      onClick={(event) => {
+        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
+          return;
+        event.preventDefault();
+        open(entity);
+      }}
       onMouseEnter={() => setHovered(key)}
       onMouseLeave={() => setHovered(null)}
       onFocus={() => setHovered(key)}

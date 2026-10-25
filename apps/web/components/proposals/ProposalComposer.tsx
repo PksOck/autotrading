@@ -5,6 +5,8 @@ import { useTranslations } from "next-intl";
 import { Dialog } from "radix-ui";
 import { useEffect, useId, useState, type FormEvent } from "react";
 import { toast } from "sonner";
+import { SegmentedButtons } from "@/components/common/SegmentedButtons";
+import { useBackToClose } from "@/lib/useBackToClose";
 import { cn } from "@/lib/cn";
 import { spring } from "@/lib/motion";
 import { useRouter } from "next/navigation";
@@ -22,7 +24,7 @@ const HORIZONS: Horizon[] = ["days", "weeks", "months", "years"];
 const SAVE_TO: ProposalSaveTo[] = ["active", "reserve", "once"];
 
 const fieldClass =
-  "w-full rounded-md border border-border bg-surface-2 px-3 py-2 text-text placeholder:text-text-3 focus:border-accent focus:outline-none";
+  "w-full rounded-md border border-border bg-surface px-3 py-2 text-text placeholder:text-text-3 hover:border-text-3 focus:border-accent";
 
 /** CMP-30 (DESIGN.md §11): the user proposes a symbol or hypothesis for analysis. */
 export function ProposalComposer() {
@@ -31,6 +33,7 @@ export function ProposalComposer() {
   const router = useRouter();
   const create = useCreateProposal();
   const [open, setOpen] = useState(false);
+  const close = useBackToClose(open, () => setOpen(false));
   const [symbols, setSymbols] = useState("");
   const [hypothesis, setHypothesis] = useState("");
   const [source, setSource] = useState("");
@@ -55,7 +58,9 @@ export function ProposalComposer() {
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
-    const parsed = parseSymbols(`${symbols} ${source.match(/\$[A-Za-z.]{1,10}/g)?.join(" ") ?? ""}`);
+    const parsed = parseSymbols(
+      `${symbols} ${source.match(/\$[A-Za-z.]{1,10}/g)?.join(" ") ?? ""}`,
+    );
     if (!parsed.length) {
       setError(true);
       return;
@@ -74,7 +79,7 @@ export function ProposalComposer() {
       toast.error(t("proposalsPage.submitError"));
       return;
     }
-    setOpen(false);
+    close();
     toast.success(t("proposal.submitted", { symbols: parsed.join(", ") }), {
       description: t("proposal.previewNote"),
       action: { label: t("nav.proposals"), onClick: () => router.push("/proposals") },
@@ -82,13 +87,13 @@ export function ProposalComposer() {
   };
 
   return (
-    <Dialog.Root open={open} onOpenChange={setOpen}>
+    <Dialog.Root open={open} onOpenChange={(next) => (next ? setOpen(true) : close())}>
       <AnimatePresence>
         {open && (
           <Dialog.Portal forceMount>
             <Dialog.Overlay asChild forceMount>
               <motion.div
-                className="fixed inset-0 z-50 bg-black/30 backdrop-blur-[2px]"
+                className="fixed inset-0 z-50 bg-black/40"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -102,8 +107,12 @@ export function ProposalComposer() {
                 transition={spring.soft}
                 className="card fixed top-[6vh] left-1/2 z-50 max-h-[88vh] w-[min(640px,calc(100vw-24px))] -translate-x-1/2 overflow-y-auto p-6 shadow-float"
               >
-                <Dialog.Title className="text-xl leading-7 font-semibold">{t("proposal.title")}</Dialog.Title>
-                <Dialog.Description className="mt-1 text-text-2">{t("proposal.intro")}</Dialog.Description>
+                <Dialog.Title className="text-xl leading-7 font-semibold">
+                  {t("proposal.title")}
+                </Dialog.Title>
+                <Dialog.Description className="mt-1 text-text-2">
+                  {t("proposal.intro")}
+                </Dialog.Description>
 
                 <form onSubmit={submit} className="mt-5 flex flex-col gap-4" noValidate>
                   <div>
@@ -123,7 +132,10 @@ export function ProposalComposer() {
                       aria-describedby={`${id}-symbols-hint`}
                       className={cn(fieldClass, "num mt-1 uppercase", error && "border-neg")}
                     />
-                    <p id={`${id}-symbols-hint`} className={cn("mt-1 text-xs", error ? "text-neg" : "text-text-3")}>
+                    <p
+                      id={`${id}-symbols-hint`}
+                      className={cn("mt-1 text-xs", error ? "text-neg" : "text-text-3")}
+                    >
                       {error ? t("proposal.required") : t("proposal.symbolsHint")}
                     </p>
                   </div>
@@ -192,7 +204,9 @@ export function ProposalComposer() {
                             className="sr-only"
                           />
                           <span className="font-medium">{t(`proposal.depth.${d}`)}</span>
-                          <span className="text-xs text-text-3">{t(`proposal.depth.${d}Hint`)}</span>
+                          <span className="text-xs text-text-3">
+                            {t(`proposal.depth.${d}Hint`)}
+                          </span>
                         </label>
                       ))}
                     </div>
@@ -210,7 +224,11 @@ export function ProposalComposer() {
                     <Dialog.Close className="h-10 rounded-md border border-border px-4 font-medium hover:bg-surface-2">
                       {t("action.cancel")}
                     </Dialog.Close>
-                    <button type="submit" disabled={create.isPending} className="h-10 rounded-md bg-accent px-4 font-medium text-on-accent hover:opacity-90 disabled:opacity-60">
+                    <button
+                      type="submit"
+                      disabled={create.isPending}
+                      className="h-10 rounded-md bg-accent px-4 font-medium text-on-accent hover:opacity-90 disabled:opacity-60"
+                    >
                       {t("proposal.submit")}
                     </button>
                   </div>
@@ -240,34 +258,14 @@ function Segmented<T extends string>({
   return (
     <fieldset>
       <legend className="label mb-1">{legend}</legend>
-      <div className="flex flex-wrap gap-0.5 rounded-md bg-surface-2 p-0.5">
-        {options.map((option) => (
-          <label
-            key={option.value}
-            className={cn(
-              "relative flex h-9 flex-1 cursor-pointer items-center justify-center rounded-[5px] px-2 text-[13px] font-medium whitespace-nowrap text-text-2 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent",
-              value === option.value && "text-text",
-            )}
-          >
-            {value === option.value && (
-              <motion.span
-                layoutId={`${name}-pill`}
-                transition={spring.snappy}
-                className="absolute inset-0 rounded-[5px] bg-surface shadow-[0_0_0_1px_var(--border)]"
-              />
-            )}
-            <input
-              type="radio"
-              name={name}
-              value={option.value}
-              checked={value === option.value}
-              onChange={() => onChange(option.value)}
-              className="sr-only"
-            />
-            <span className="relative">{option.label}</span>
-          </label>
-        ))}
-      </div>
+      <SegmentedButtons
+        className="flex w-full"
+        label={legend}
+        name={name}
+        options={options}
+        value={value}
+        onChange={onChange}
+      />
     </fieldset>
   );
 }

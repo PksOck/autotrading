@@ -4,6 +4,26 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 
 ---
 
+## S-008 · 2026-10-25 · Oblikovanje za Android in Windows
+
+**Cilj:** vmesnik naj na Androidu in Windows ne deluje kot aplikacija za Apple (uporabnikova pripomba).
+
+**Narejeno:**
+- ADR-0013: en platformno nevtralen vmesnik, kjer se platformi razlikujeta, sledi Material 3 (dotik) in Fluent 2 (miška).
+- Web (BL-164): oznaka bližnjice `Ctrl K` (`⌘K` samo na macOS, skrita na dotiku), skupni `SegmentedButtons` (obrobljena skupina M3 namesto drsnika iOS), brez `backdrop-blur` (polna glava, temna prosojna plast), obrobljena polja, kritično dušene vzmeti, 48 px na dotik, navigacijska vrstica M3 s 5 cilji (Vstopi pod Več), polmeri 4/8/12, tanki drsniki, spletni manifest in barva teme, sistemska tipka nazaj zapre paleto ukazov in okno predloga.
+- Reviewer (Sol) je našel napako v zgodovini kukala (`?peek=`): kukalo smo vrnili na prejšnje vedenje (`router.push`, nemodalno), ker ga tipka nazaj že zapre. `useBackToClose` velja samo za prekrivni plasti, ki nista v URL-ju.
+- Testi: web 98 enotskih, e2e 19 uspešnih, 10 preskočenih (vzorčni podatki, BL-162). tsc, eslint, i18n čisti. Vsebnik `web` je na novi sliki.
+
+**Odločitve:** ADR-0013.
+
+**Odprto:**
+- Preveri na pravem telefonu Android (namestitev kot aplikacija, tipka nazaj) in v Edge na Windows.
+- Osnutek teze ASML še čaka tvojo potrditev; BL-097 ostaja tvoja odločitev; IB še ni povezan.
+
+**Naslednji korak:** naslednja naloga M5 iz BACKLOG.
+
+---
+
 ## S-007 · 2026-10-25 · BL-101 tedenski pregled tez
 
 **Cilj:** tedenski pregled tez s predlogi in signalom `thesis_break` (ADR-0012).

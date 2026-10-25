@@ -23,7 +23,6 @@
   --shadow-float: 0 8px 24px rgb(0 0 0 / 0.12);
 }
 
-
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
@@ -78,7 +77,7 @@
   --dur-slow: 320ms;
   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
   --ease-exit: cubic-bezier(0.4, 0, 1, 1);
-  --r-sm: 6px;
-  --r-md: 10px;
-  --r-lg: 14px;
+  --r-sm: 4px;
+  --r-md: 8px;
+  --r-lg: 12px;
 }

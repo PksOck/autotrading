@@ -4,6 +4,7 @@ import { scaleLinear } from "d3-scale";
 import { motion, useReducedMotion } from "motion/react";
 import { useTranslations } from "next-intl";
 import type { PulseEvent } from "@/lib/sample-data";
+import { spring } from "@/lib/motion";
 import { useElementSize } from "@/lib/use-element-size";
 import { usePeek } from "@/lib/use-peek";
 import { useFocusStore } from "@/stores/focus";
@@ -25,9 +26,13 @@ export function PulseTimeline({ events }: { events: PulseEvent[] }) {
   const hovered = useFocusStore((s) => s.hovered);
   const setHovered = useFocusStore((s) => s.setHovered);
 
-  const symbols = [...new Set([...events].sort((a, b) => a.hoursAgo - b.hoursAgo).map((e) => e.symbol))];
+  const symbols = [
+    ...new Set([...events].sort((a, b) => a.hoursAgo - b.hoursAgo).map((e) => e.symbol)),
+  ];
   const height = symbols.length * ROW + 24;
-  const x = scaleLinear().domain([HOURS, 0]).range([LABEL, Math.max(LABEL + 1, width - 12)]);
+  const x = scaleLinear()
+    .domain([HOURS, 0])
+    .range([LABEL, Math.max(LABEL + 1, width - 12)]);
   const newest = events.reduce((a, b) => (b.hoursAgo < a.hoursAgo ? b : a), events[0]!);
 
   return (
@@ -35,8 +40,20 @@ export function PulseTimeline({ events }: { events: PulseEvent[] }) {
       <svg width={width} height={height} role="group" aria-label={t("overview.pulse")}>
         {[0, 1, 2, 3, 4, 5, 6, 7].map((day) => (
           <g key={day}>
-            <line x1={x(day * 24)} x2={x(day * 24)} y1={0} y2={height - 20} stroke="var(--border)" />
-            <text x={x(day * 24)} y={height - 6} textAnchor="middle" fontSize={11} fill="var(--text-3)">
+            <line
+              x1={x(day * 24)}
+              x2={x(day * 24)}
+              y1={0}
+              y2={height - 20}
+              stroke="var(--border)"
+            />
+            <text
+              x={x(day * 24)}
+              y={height - 6}
+              textAnchor="middle"
+              fontSize={11}
+              fill="var(--text-3)"
+            >
               {day === 0 ? "0" : `−${day}d`}
             </text>
           </g>
@@ -46,7 +63,16 @@ export function PulseTimeline({ events }: { events: PulseEvent[] }) {
           const active = hovered === `instrument:${symbol}`;
           return (
             <g key={symbol}>
-              {active && <rect x={0} y={y - ROW / 2} width={width} height={ROW} fill="var(--accent-soft)" rx={4} />}
+              {active && (
+                <rect
+                  x={0}
+                  y={y - ROW / 2}
+                  width={width}
+                  height={ROW}
+                  fill="var(--accent-soft)"
+                  rx={4}
+                />
+              )}
               <text x={4} y={y + 4} fontSize={12} fontFamily="var(--font-mono)" fill="var(--text)">
                 {symbol}
               </text>
@@ -81,14 +107,15 @@ export function PulseTimeline({ events }: { events: PulseEvent[] }) {
                   strokeWidth={1.5}
                   initial={{ r: 0 }}
                   animate={{ r }}
-                  transition={{ delay: reduceMotion ? 0 : index * 0.03, type: "spring", stiffness: 520, damping: 30 }}
+                  transition={{ ...spring.snappy, delay: reduceMotion ? 0 : index * 0.03 }}
                   tabIndex={0}
                   role="button"
                   aria-label={`${event.symbol}, ${t(`radar.score`)} ${event.score}`}
                   className="cursor-pointer focus:outline-none focus-visible:stroke-accent"
                   onClick={() => open({ kind: "instrument", id: event.symbol })}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") open({ kind: "instrument", id: event.symbol });
+                    if (e.key === "Enter" || e.key === " ")
+                      open({ kind: "instrument", id: event.symbol });
                   }}
                   onMouseEnter={() => setHovered(`instrument:${event.symbol}`)}
                   onMouseLeave={() => setHovered(null)}

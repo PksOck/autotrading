@@ -3,6 +3,7 @@
 import { motion, useReducedMotion, useSpring, useTransform } from "motion/react";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/cn";
+import { spring as springTokens } from "@/lib/motion";
 
 type Props = {
   value: number;
@@ -16,7 +17,7 @@ type Props = {
  */
 export function AnimatedNumber({ value, format, className }: Props) {
   const reduceMotion = useReducedMotion();
-  const spring = useSpring(value, { stiffness: 140, damping: 22 });
+  const spring = useSpring(value, springTokens.number);
   const display = useTransform(spring, (v) => format(v));
   const [last, setLast] = useState(value);
   const [flash, setFlash] = useState<{ up: boolean; key: number } | null>(null);

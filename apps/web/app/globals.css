@@ -37,6 +37,23 @@
   html {
     background: var(--bg);
     color: var(--text);
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+  * {
+    scrollbar-width: inherit;
+    scrollbar-color: inherit;
+  }
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: var(--r-sm);
   }
   body {
     margin: 0;
@@ -49,9 +66,50 @@
     outline: 2px solid var(--accent);
     outline-offset: 2px;
   }
+  :where(input:not([type="radio"]):not([type="checkbox"]):not([type="range"]), textarea):hover {
+    border-color: var(--text-3);
+  }
+  :where(input:not([type="radio"]):not([type="checkbox"]):not([type="range"]), textarea):focus {
+    border-color: var(--accent);
+  }
   .num {
     font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;
+  }
+}
+
+@utility touch-target {
+  @media (pointer: coarse) {
+    min-height: 48px;
+    min-width: 48px;
+  }
+}
+
+/* Unlayered so compact desktop utility sizes cannot shrink touch hit areas. */
+@media (pointer: coarse) {
+  :where(
+    button,
+    a[href],
+    summary,
+    [role="button"],
+    [role="tab"],
+    [role="option"],
+    [cmdk-item],
+    label:has(input[type="radio"]),
+    label:has(input[type="checkbox"]),
+    input:not([type="radio"]):not([type="checkbox"]),
+    textarea,
+    select
+  ) {
+    min-height: 48px;
+    min-width: 48px;
+  }
+  :where(a[href]) {
+    display: inline-flex;
+    align-items: center;
+  }
+  kbd {
+    display: none;
   }
 }
 

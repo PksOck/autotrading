@@ -10,6 +10,7 @@ import { NAV } from "@/lib/nav";
 import { useInstrumentSearch, usePortfolio, useWatchlist } from "@/lib/api/hooks";
 import { nextThemePreference, readThemePreference, setThemePreference } from "@/lib/theme";
 import { usePeek } from "@/lib/use-peek";
+import { useBackToClose } from "@/lib/useBackToClose";
 import { openProposalComposer, parseSymbols } from "@/stores/proposals";
 
 export const COMMAND_EVENT = "preza:command";
@@ -20,13 +21,14 @@ const item =
 const group =
   "[&_[cmdk-group-heading]]:label [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:pt-3 [&_[cmdk-group-heading]]:pb-1";
 
-/** CMP-23 / LX-06: search entities and run actions. ⌘K / Ctrl+K anywhere. */
+/** CMP-23 / LX-06: search entities and run actions. Meta+K / Ctrl+K anywhere. */
 export function CommandPalette() {
   const t = useTranslations();
   const locale = useLocale();
   const router = useRouter();
   const { open: peek } = usePeek();
   const [open, setOpen] = useState(false);
+  const close = useBackToClose(open, () => setOpen(false));
   const [query, setQuery] = useState("");
   const [, startTransition] = useTransition();
 
@@ -34,7 +36,8 @@ export function CommandPalette() {
     const onKey = (event: KeyboardEvent) => {
       if (event.key.toLowerCase() === "k" && (event.metaKey || event.ctrlKey)) {
         event.preventDefault();
-        setOpen((o) => !o);
+        if (open) close();
+        else setOpen(true);
       }
     };
     const onOpen = () => setOpen(true);
@@ -44,12 +47,13 @@ export function CommandPalette() {
       window.removeEventListener("keydown", onKey);
       window.removeEventListener(COMMAND_EVENT, onOpen);
     };
-  }, []);
+  }, [open, close]);
 
   const run = (action: () => void) => {
-    setOpen(false);
-    setQuery("");
-    action();
+    close(() => {
+      setQuery("");
+      action();
+    });
   };
 
   const search = useInstrumentSearch(open ? query : "");
@@ -57,25 +61,35 @@ export function CommandPalette() {
   const watchlist = useWatchlist();
   // Empty query: what the user holds and watches. Typing: server-side search.
   const instruments = query.trim()
-    ? (search.data ?? []).map((i) => ({ symbol: i.symbol, name: i.name ?? "", hint: i.exchange ?? "" }))
+    ? (search.data ?? []).map((i) => ({
+        symbol: i.symbol,
+        name: i.name ?? "",
+        hint: i.exchange ?? "",
+      }))
     : [
-        ...(portfolio.data?.positions ?? []).map((p) => ({ symbol: p.symbol, name: p.name ?? "", hint: "" })),
+        ...(portfolio.data?.positions ?? []).map((p) => ({
+          symbol: p.symbol,
+          name: p.name ?? "",
+          hint: "",
+        })),
         ...(watchlist.data ?? []).map((w) => ({ symbol: w.symbol, name: w.name ?? "", hint: "" })),
       ].filter((item, index, all) => all.findIndex((x) => x.symbol === item.symbol) === index);
 
   const typedSymbols = parseSymbols(query);
   // Offer "propose" only once the search has answered, so Enter never races the results.
   const unknownSymbol =
-    typedSymbols.length === 1 && !search.isFetching && !instruments.some((i) => i.symbol === typedSymbols[0])
+    typedSymbols.length === 1 &&
+    !search.isFetching &&
+    !instruments.some((i) => i.symbol === typedSymbols[0])
       ? typedSymbols[0]
       : null;
 
   return (
     <Command.Dialog
       open={open}
-      onOpenChange={setOpen}
+      onOpenChange={(next) => (next ? setOpen(true) : close())}
       label={t("command.placeholder")}
-      overlayClassName="fixed inset-0 z-50 bg-black/30 backdrop-blur-[2px]"
+      overlayClassName="fixed inset-0 z-50 bg-black/40"
       contentClassName="card fixed top-[12vh] left-1/2 z-50 w-[min(640px,calc(100vw-32px))] -translate-x-1/2 overflow-hidden shadow-float data-[state=open]:animate-[fadeIn_var(--dur-base)_var(--ease-standard)]"
     >
       <div className="flex items-center gap-2 border-b border-border px-4">
@@ -88,7 +102,9 @@ export function CommandPalette() {
         />
       </div>
       <Command.List className="max-h-[60vh] overflow-y-auto p-2">
-        <Command.Empty className="px-3 py-6 text-center text-text-3">{t("command.empty")}</Command.Empty>
+        <Command.Empty className="px-3 py-6 text-center text-text-3">
+          {t("command.empty")}
+        </Command.Empty>
 
         <Command.Group heading={t("command.groupInstruments")} className={group}>
           {instruments.map((instrument) => (
@@ -100,7 +116,9 @@ export function CommandPalette() {
             >
               <span className="num w-14 font-medium text-text">{instrument.symbol}</span>
               <span className="flex-1 truncate">{instrument.name}</span>
-              {instrument.hint && <span className="num text-xs text-text-3">{instrument.hint}</span>}
+              {instrument.hint && (
+                <span className="num text-xs text-text-3">{instrument.hint}</span>
+              )}
             </Command.Item>
           ))}
         </Command.Group>
@@ -134,14 +152,20 @@ export function CommandPalette() {
         </Command.Group>
 
         <Command.Group heading={t("command.groupActions")} className={group}>
-          <Command.Item value="propose new" onSelect={() => run(() => openProposalComposer())} className={item}>
+          <Command.Item
+            value="propose new"
+            onSelect={() => run(() => openProposalComposer())}
+            className={item}
+          >
             <Icon name="proposals" />
             <span className="flex-1">{t("command.propose")}</span>
             <kbd className="num text-xs text-text-3">+</kbd>
           </Command.Item>
           <Command.Item
             value="theme"
-            onSelect={() => run(() => setThemePreference(nextThemePreference(readThemePreference())))}
+            onSelect={() =>
+              run(() => setThemePreference(nextThemePreference(readThemePreference())))
+            }
             className={item}
           >
             <Icon name="sun" />
@@ -164,7 +188,9 @@ export function CommandPalette() {
           </Command.Item>
         </Command.Group>
       </Command.List>
-      <div className="border-t border-border px-4 py-2 text-xs text-text-3">{t("command.shortcuts")}</div>
+      <div className="border-t border-border px-4 py-2 text-xs text-text-3">
+        {t("command.shortcuts")}
+      </div>
     </Command.Dialog>
   );
 }

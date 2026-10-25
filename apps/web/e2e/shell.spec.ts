@@ -22,11 +22,11 @@ test("theme and language switch", async ({ page }, info) => {
   await page.getByRole("button", { name: /Preklopi temo/ }).click();
   await page.getByRole("button", { name: /Preklopi temo/ }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-  await page.getByRole("button", { name: "en", exact: true }).click();
+  await page.getByRole("button", { name: /^en$/i }).click();
   await expect(page.getByRole("heading", { level: 1, name: "Overview" })).toBeVisible();
   await page.waitForTimeout(1200);
   await shot(page, "desktop-overview-dark-en");
-  await page.getByRole("button", { name: "sl", exact: true }).click();
+  await page.getByRole("button", { name: /^sl$/i }).click();
   await expect(page.getByRole("heading", { level: 1, name: "Pregled" })).toBeVisible();
 });
 
@@ -42,6 +42,9 @@ test("command palette opens a peek panel", async ({ page }, info) => {
   await expect(page.getByRole("dialog")).toContainText("ASML Holding");
   await page.waitForTimeout(800);
   await shot(page, "desktop-peek");
+  await page.goBack();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(page).not.toHaveURL(/peek=/);
 });
 
 test("manual proposal with undo", async ({ page }, info) => {
@@ -61,7 +64,34 @@ test("manual proposal with undo", async ({ page }, info) => {
 test("phone layout uses bottom navigation", async ({ page }, info) => {
   test.skip(info.project.name !== "phone", "phone only");
   await page.goto("/");
+  const nav = page.locator("nav.md\\:hidden");
+  await expect(nav.getByRole("link")).toHaveCount(4);
+  await expect(nav.getByRole("button", { name: "Več" })).toBeVisible();
+  await expect(nav.getByRole("link", { name: "Pregled" })).toHaveAttribute("aria-current", "page");
+  await expect(nav.getByRole("link", { name: "Vstopi" })).toHaveCount(0);
+  await expect(page.locator("header kbd")).toBeHidden();
   await expect(page.getByRole("link", { name: "Radar" }).last()).toBeVisible();
   await page.waitForTimeout(1200);
   await shot(page, "phone-overview");
+  await nav.getByRole("button", { name: "Več" }).click();
+  await expect(page.getByRole("dialog")).toBeVisible();
+  await page.getByRole("option", { name: /Vstopi/ }).click();
+  await expect(page).toHaveURL(/\/entries$/);
+  await expect(nav.getByRole("button", { name: "Več" })).toHaveAttribute("aria-current", "page");
+});
+
+test("system back and UI cancel close the composer without leaving the screen", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const url = page.url();
+  await page.getByRole("button", { name: "Predlog", exact: true }).click();
+  await expect(page.getByRole("dialog")).toBeVisible();
+  await page.goBack();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(page).toHaveURL(url);
+  await page.getByRole("button", { name: "Predlog", exact: true }).click();
+  await page.getByRole("button", { name: "Prekliči", exact: true }).click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(page).toHaveURL(url);
 });

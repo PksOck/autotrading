@@ -7,8 +7,9 @@ export const ease = {
 } as const;
 
 export const spring = {
-  snappy: { type: "spring", stiffness: 520, damping: 38 },
-  soft: { type: "spring", stiffness: 260, damping: 30 },
+  number: { stiffness: 140, damping: 2 * Math.sqrt(140) },
+  snappy: { type: "spring", stiffness: 520, damping: 2 * Math.sqrt(520) },
+  soft: { type: "spring", stiffness: 260, damping: 2 * Math.sqrt(260) },
 } as const;
 
 /** MO-03: entering list item. */
