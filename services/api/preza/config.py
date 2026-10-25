@@ -34,7 +34,8 @@ class Settings(BaseSettings):
     base_currency: str = "EUR"
     bars_lookback_days: int = Field(default=800, gt=30)
     yahoo_enabled: bool = True
-    stooq_enabled: bool = True
+    # Off by default: stooq.com serves a JS challenge to scripts (2026-10-25).
+    stooq_enabled: bool = False
 
     rss_enabled: bool = True
     finnhub_api_key: str | None = None
