@@ -20,6 +20,7 @@ from typing import Any, ClassVar, cast
 
 from arq import cron
 from arq.connections import RedisSettings
+from arq.worker import func as arq_func
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -27,8 +28,9 @@ from preza.config import Settings, get_settings
 from preza.db import get_sessionmaker
 from preza.domain.analysis import DecisionCard, PreviousRun
 from preza.llm.client import LiteLlmClient, Llm, Role
-from preza.models import AnalysisRun, AnalysisStep
+from preza.models import AnalysisRun, AnalysisStep, ThesisReview, ThesisRevision
 from preza.queue import AGENTS_QUEUE
+from preza.services.thesis_reviews import week_start
 from preza_agents.decision_card import build_card, control_score, draft_card
 from preza_agents.deep_research import adapter
 from preza_agents.deep_research.snapshot import DataSnapshot, build_snapshot
@@ -37,6 +39,7 @@ from preza_agents.etf_analyst.analyst import run_etf
 from preza_agents.etf_analyst.context import build_etf_facts
 from preza_agents.etf_analyst.profile import fetch_profile, store_profile, user_etfs
 from preza_agents.hypothesis import check_hypothesis, check_md
+from preza_agents.thesis_tracker.runner import thesis_review
 
 log = logging.getLogger(__name__)
 
@@ -290,14 +293,54 @@ async def startup(ctx: dict[str, Any]) -> None:
     ctx["llm"] = LiteLlmClient(settings.litellm_base_url, settings.litellm_master_key)
 
 
+async def discover_thesis_reviews(ctx: dict[str, Any]) -> int:
+    """Find missing reviews and recover interrupted reservations without redispatch."""
+    monday = week_start(_utcnow())
+    async with get_sessionmaker()() as session:
+        revisions = list(
+            await session.scalars(
+                select(ThesisRevision.id)
+                .outerjoin(
+                    ThesisReview,
+                    (ThesisReview.revision_id == ThesisRevision.id)
+                    & (ThesisReview.week_start == monday),
+                )
+                .where(
+                    ThesisRevision.status == "active",
+                    (ThesisReview.id.is_(None)) | ThesisReview.status.in_(("queued", "running")),
+                )
+                .order_by(ThesisRevision.id)
+            )
+        )
+    for revision_id in revisions:
+        await ctx["redis"].enqueue_job(
+            "thesis_review",
+            str(revision_id),
+            monday.isoformat(),
+            _job_id=f"thesis-review:{revision_id}:{monday.isoformat()}",
+            _queue_name=AGENTS_QUEUE,
+        )
+    return len(revisions)
+
+
 class WorkerSettings:
-    functions: ClassVar[list[Any]] = [deep_analysis, sweep_runs, refresh_etf_profiles]
+    functions: ClassVar[list[Any]] = [
+        deep_analysis,
+        sweep_runs,
+        refresh_etf_profiles,
+        arq_func(thesis_review, max_tries=1),
+    ]
     cron_jobs: ClassVar[list[Any]] = [
         cron(sweep_runs, minute=set(range(0, 60, 5))),
         cron(refresh_etf_profiles, weekday="sun", hour=5, minute=17),
+        cron(
+            discover_thesis_reviews, name="thesis-review-weekly", weekday="sun", hour=6, minute=15
+        ),
+        cron(discover_thesis_reviews, name="thesis-review-catchup", hour=6, minute=20),
     ]
     on_startup = startup
     queue_name = AGENTS_QUEUE
     max_jobs = 1  # one GPU and two subscriptions: runs queue up instead of competing
+    timezone = UTC
     job_timeout = RUN_TIMEOUT_S
     redis_settings = RedisSettings.from_dsn(get_settings().redis_url)

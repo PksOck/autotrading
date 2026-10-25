@@ -1,0 +1,8 @@
+{
+  "claims": [
+    {"claim_id":"00000000-0000-0000-0000-000000000001","assessment":"sufficient","suggested_status":"confirmed","rationale":"The renewed license supports the statement.","evidence_ids":["news_item:101"]},
+    {"claim_id":"00000000-0000-0000-0000-000000000002","assessment":"sufficient","suggested_status":"weakening","rationale":"The delay weakens support, but a downgrade trigger alone does not refute ongoing customer use.","evidence_ids":["news_item:102"]},
+    {"claim_id":"00000000-0000-0000-0000-000000000003","assessment":"sufficient","suggested_status":"broken","rationale":"The prohibition contradicts the ability to sell in the region.","evidence_ids":["news_item:103"]},
+    {"claim_id":"00000000-0000-0000-0000-000000000004","assessment":"insufficient","suggested_status":null,"rationale":"The unverified factory rumor does not establish production capacity.","evidence_ids":["news_item:104"]}
+  ]
+}
