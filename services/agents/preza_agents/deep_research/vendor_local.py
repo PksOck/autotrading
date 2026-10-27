@@ -117,7 +117,8 @@ def get_stock_data(symbol: str, start_date: str, end_date: str) -> str:
         f"# Source: {snap.bars_source or 'unknown'}, daily bars as of {snap.as_of}\n"
         f"# Total records: {len(out)}\n\n"
     )
-    return header + out.round(4).to_csv(index=False)
+    # pandas defaults to os.linesep; keep the tool text identical on every platform
+    return header + out.round(4).to_csv(index=False, lineterminator="\n")
 
 
 # Company and fundamentals
