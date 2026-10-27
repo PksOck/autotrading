@@ -20,7 +20,13 @@ export function LaunchAnalysisButton({ symbol }: { symbol: string }) {
     <button
       type="button"
       disabled={create.isPending || reached}
-      title={quota && quota.limit > 0 ? (reached ? t("limitReached") : t("quota", { used: quota.used, limit: quota.limit })) : undefined}
+      title={
+        quota && quota.limit > 0
+          ? reached
+            ? t("limitReached")
+            : t("quota", { used: quota.used, limit: quota.limit })
+          : undefined
+      }
       className={cls}
       onClick={() =>
         create.mutate(
@@ -32,7 +38,9 @@ export function LaunchAnalysisButton({ symbol }: { symbol: string }) {
               toast.error(
                 detail === "daily_limit_reached"
                   ? t("limitReached")
-                  : detail === "instrument_not_found" ? t("notFound") : t("failed"),
+                  : detail === "instrument_not_found"
+                    ? t("notFound")
+                    : t("failed"),
               );
             },
           },

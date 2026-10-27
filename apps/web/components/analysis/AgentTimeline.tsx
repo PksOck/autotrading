@@ -21,7 +21,8 @@ const AGENT_TONE: Record<string, string> = {
 function useStepTitle() {
   const t = useTranslations("analysisPage");
   return (step: AnalysisStep) => {
-    if (step.kind === "report" && step.title && t.has(`reports.${step.title}`)) return t(`reports.${step.title}`);
+    if (step.kind === "report" && step.title && t.has(`reports.${step.title}`))
+      return t(`reports.${step.title}`);
     if (step.kind === "decision") return t("kinds.decision");
     return t(`kinds.${step.kind}` as "kinds.report");
   };
@@ -30,7 +31,12 @@ function useStepTitle() {
 function AgentChip({ agent }: { agent: string }) {
   const t = useTranslations("agents");
   return (
-    <span className={cn("inline-flex items-center rounded-full px-2 text-xs leading-5 font-medium", AGENT_TONE[agent] ?? "bg-accent-soft text-accent")}>
+    <span
+      className={cn(
+        "inline-flex items-center rounded-full px-2 text-xs leading-5 font-medium",
+        AGENT_TONE[agent] ?? "bg-accent-soft text-accent",
+      )}
+    >
       {t.has(agent) ? t(agent) : agent}
     </span>
   );
@@ -46,7 +52,9 @@ function Expandable({ step, title }: { step: AnalysisStep; title: string }) {
       {open ? (
         <Markdown source={step.content} />
       ) : (
-        <p className="line-clamp-3 whitespace-pre-line text-[14px] leading-6 text-text-2 [overflow-wrap:anywhere]">{stripMarkdown(step.content)}</p>
+        <p className="line-clamp-3 whitespace-pre-line text-[14px] leading-6 text-text-2 [overflow-wrap:anywhere]">
+          {stripMarkdown(step.content)}
+        </p>
       )}
       {long && (
         <button
@@ -90,7 +98,9 @@ function StepRow({ step, hideAgent }: { step: AnalysisStep; hideAgent?: boolean 
     const key = step.title ?? "";
     return (
       <div className="flex items-center gap-2 text-xs text-text-3">
-        <span>{t.has(`statusSteps.${key}`) ? t(`statusSteps.${key}` as "statusSteps.done") : key}</span>
+        <span>
+          {t.has(`statusSteps.${key}`) ? t(`statusSteps.${key}` as "statusSteps.done") : key}
+        </span>
         {time}
       </div>
     );
@@ -99,7 +109,9 @@ function StepRow({ step, hideAgent }: { step: AnalysisStep; hideAgent?: boolean 
     <div className="flex flex-col gap-1.5">
       <div className="flex flex-wrap items-center gap-2">
         {!hideAgent && <AgentChip agent={step.agent} />}
-        {step.kind !== "debate" && <span className="text-[13px] font-medium text-text">{title}</span>}
+        {step.kind !== "debate" && (
+          <span className="text-[13px] font-medium text-text">{title}</span>
+        )}
         {time}
       </div>
       <Expandable step={step} title={title} />
@@ -114,7 +126,10 @@ function PhaseHeading({ phase, count, active }: { phase: Phase; count: number; a
       <h3 className="text-sm font-semibold text-text">{t(`phases.${phase}`)}</h3>
       <span className="text-xs text-text-3">{t("stepCount", { count })}</span>
       {active && (
-        <span data-testid="phase-live" className="inline-flex items-center gap-1.5 rounded-full bg-accent-soft px-2 text-xs leading-5 font-medium text-accent">
+        <span
+          data-testid="phase-live"
+          className="inline-flex items-center gap-1.5 rounded-full bg-accent-soft px-2 text-xs leading-5 font-medium text-accent"
+        >
           <span className="size-1.5 rounded-full bg-accent motion-safe:animate-pulse" />
           {t("live")}
         </span>
@@ -130,8 +145,18 @@ function DebateColumns({ steps, reduced }: { steps: AnalysisStep[]; reduced: boo
   return (
     <div className="grid gap-3 md:grid-cols-2">
       {sides.map((side) => (
-        <section key={side} className="flex min-w-0 flex-col gap-3 rounded-md border border-border bg-surface-2/40 p-3">
-          <h4 className={cn("text-xs font-semibold tracking-wide uppercase", side === "bull" ? "text-pos" : "text-neg")}>{t(side)}</h4>
+        <section
+          key={side}
+          className="flex min-w-0 flex-col gap-3 rounded-md border border-border bg-surface-2/40 p-3"
+        >
+          <h4
+            className={cn(
+              "text-xs font-semibold tracking-wide uppercase",
+              side === "bull" ? "text-pos" : "text-neg",
+            )}
+          >
+            {t(side)}
+          </h4>
           <AnimatePresence initial={false}>
             {steps
               .filter((s) => s.agent === side)
@@ -147,16 +172,70 @@ function DebateColumns({ steps, reduced }: { steps: AnalysisStep[]; reduced: boo
   );
 }
 
+/** Analyst steps folded per agent, so the four reports do not flood the page (BL-165). */
+function AnalystGroups({ steps, live }: { steps: AnalysisStep[]; live: boolean }) {
+  const t = useTranslations("analysisPage.details");
+  const agents = [...new Set(steps.map((s) => s.agent))];
+  return (
+    <ul className="flex flex-col gap-2">
+      {agents.map((agent) => {
+        const own = steps.filter((s) => s.agent === agent);
+        return (
+          <li key={agent}>
+            <details
+              className="group/agent rounded-md border border-border"
+              open={live && agent === agents.at(-1)}
+              data-testid="analyst-group"
+              data-agent={agent}
+            >
+              <summary className="touch-target flex cursor-pointer list-none items-center gap-2 px-3 py-2 [&::-webkit-details-marker]:hidden">
+                <span
+                  aria-hidden
+                  className="text-text-3 transition-transform group-open/agent:rotate-90"
+                >
+                  ›
+                </span>
+                <AgentChip agent={agent} />
+                <span className="text-xs text-text-3">
+                  {t("agentSteps", { count: own.length })}
+                </span>
+              </summary>
+              <ul className="flex flex-col gap-3 border-t border-border p-3">
+                {own.map((s) => (
+                  <li key={s.seq} data-seq={s.seq}>
+                    <StepRow step={s} hideAgent />
+                  </li>
+                ))}
+              </ul>
+            </details>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
 const stepMotion = (reduced: boolean) =>
   reduced
     ? ({ initial: false } as const)
-    : ({ initial: { opacity: 0, y: -8 }, animate: { opacity: 1, y: 0, transition: spring.soft } } as const);
+    : ({
+        initial: { opacity: 0, y: -8 },
+        animate: { opacity: 1, y: 0, transition: spring.soft },
+      } as const);
 
 /**
  * CMP-12: vertical timeline of agent steps grouped into phases (SCR-06). New steps slide in (MO-03),
  * the phase in progress pulses while the run is live.
  */
-export function AgentTimeline({ steps, status, connected = false }: { steps: AnalysisStep[]; status: AnalysisStatus; connected?: boolean }) {
+export function AgentTimeline({
+  steps,
+  status,
+  connected = false,
+}: {
+  steps: AnalysisStep[];
+  status: AnalysisStatus;
+  connected?: boolean;
+}) {
   const t = useTranslations("analysisPage");
   const reduced = useReducedMotion() ?? false;
   const groups = groupByPhase(steps);
@@ -165,7 +244,10 @@ export function AgentTimeline({ steps, status, connected = false }: { steps: Ana
 
   if (!groups.length) {
     return (
-      <section aria-label={t("timelineLabel")} className="card flex items-center gap-2 p-5 text-text-3">
+      <section
+        aria-label={t("timelineLabel")}
+        className="card flex items-center gap-2 p-5 text-text-3"
+      >
         {live && <span className="size-2 rounded-full bg-accent motion-safe:animate-pulse" />}
         {live ? t("liveWorking") : t("timelineEmpty")}
       </section>
@@ -173,24 +255,42 @@ export function AgentTimeline({ steps, status, connected = false }: { steps: Ana
   }
 
   return (
-    <section aria-label={t("timelineLabel")} data-testid="agent-timeline" data-step-count={steps.length} className="card p-4 sm:p-5">
+    <section
+      aria-label={t("timelineLabel")}
+      data-testid="agent-timeline"
+      data-step-count={steps.length}
+      className="card p-4 sm:p-5"
+    >
       <ol className="relative flex flex-col gap-6">
         {groups.map((g) => (
           <li key={g.phase} className="group relative pl-6 sm:pl-7">
-            <span aria-hidden className="absolute top-1.5 bottom-[-1.5rem] left-[5px] w-px bg-border group-last:hidden" />
             <span
               aria-hidden
-              className={cn("absolute top-1.5 left-0 size-[11px] rounded-full border-2 border-border bg-surface", active === g.phase && "border-accent bg-accent motion-safe:animate-pulse")}
+              className="absolute top-1.5 bottom-[-1.5rem] left-[5px] w-px bg-border group-last:hidden"
+            />
+            <span
+              aria-hidden
+              className={cn(
+                "absolute top-1.5 left-0 size-[11px] rounded-full border-2 border-border bg-surface",
+                active === g.phase && "border-accent bg-accent motion-safe:animate-pulse",
+              )}
             />
             <PhaseHeading phase={g.phase} count={g.steps.length} active={active === g.phase} />
             <div className="mt-3">
               {g.phase === "debate" ? (
                 <DebateColumns steps={g.steps} reduced={reduced} />
+              ) : g.phase === "analysts" ? (
+                <AnalystGroups steps={g.steps} live={live} />
               ) : (
                 <ul className="flex flex-col gap-3">
                   <AnimatePresence initial={false}>
                     {g.steps.map((s) => (
-                      <motion.li key={s.seq} data-seq={s.seq} layout={!reduced} {...stepMotion(reduced)}>
+                      <motion.li
+                        key={s.seq}
+                        data-seq={s.seq}
+                        layout={!reduced}
+                        {...stepMotion(reduced)}
+                      >
                         <StepRow step={s} />
                       </motion.li>
                     ))}
@@ -202,8 +302,16 @@ export function AgentTimeline({ steps, status, connected = false }: { steps: Ana
         ))}
       </ol>
       {live && (
-        <p className="mt-5 flex items-center gap-2 pl-6 text-[13px] text-text-3 sm:pl-7" aria-live="polite">
-          <span className={cn("size-2 rounded-full motion-safe:animate-pulse", connected ? "bg-accent" : "bg-text-3")} />
+        <p
+          className="mt-5 flex items-center gap-2 pl-6 text-[13px] text-text-3 sm:pl-7"
+          aria-live="polite"
+        >
+          <span
+            className={cn(
+              "size-2 rounded-full motion-safe:animate-pulse",
+              connected ? "bg-accent" : "bg-text-3",
+            )}
+          />
           {t("liveWorking")}
         </p>
       )}

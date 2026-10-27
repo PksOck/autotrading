@@ -2,12 +2,14 @@
 
 import { useFormatter, useTranslations } from "next-intl";
 import Link from "next/link";
+import { useState } from "react";
 import { AgentTimeline } from "@/components/analysis/AgentTimeline";
-import { AnalysisStatusPill } from "@/components/analysis/AnalysisStatusPill";
 import { DecisionCardPanel } from "@/components/analysis/DecisionCardPanel";
-import { RatingPill } from "@/components/analysis/RatingPill";
+import { DecisionHeader } from "@/components/analysis/DecisionHeader";
+import { EvidenceSplit } from "@/components/analysis/EvidenceSplit";
+import { HORIZONS, useHorizonTitle, type Horizon } from "@/components/analysis/outlook";
 import { Markdown } from "@/components/common/Markdown";
-import { CreateThesisButton } from "@/components/theses/CreateThesisButton";
+import { SegmentedButtons } from "@/components/common/SegmentedButtons";
 import { ApiError } from "@/lib/api/client";
 import { useAnalysis, useAnalysisStream } from "@/lib/api/hooks";
 import type { AnalysisOut } from "@/lib/api/types";
@@ -26,7 +28,10 @@ function Provenance({ run }: { run: AnalysisOut }) {
         ? t("fundamentals", { source: d.fundamentals, asOf: day(d.fundamentals_as_of) })
         : t("noFundamentals")}
       {" · "}
-      {t("models", { quick: run.models.quick ?? t("unknown"), deep: run.models.deep ?? t("unknown") })}
+      {t("models", {
+        quick: run.models.quick ?? t("unknown"),
+        deep: run.models.deep ?? t("unknown"),
+      })}
     </p>
   );
 }
@@ -40,10 +45,39 @@ function Skeleton() {
   );
 }
 
-/** SCR-06 Analiza: header with rating and provenance, final decision, live agent timeline. */
+/** Collapsible section below the decision header; the summary is the heading. */
+function Fold({
+  title,
+  open,
+  testId,
+  children,
+}: {
+  title: string;
+  open?: boolean;
+  testId?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <details className="group card" open={open} data-testid={testId}>
+      <summary className="touch-target flex cursor-pointer list-none items-center gap-2 p-4 text-base font-semibold sm:px-5 [&::-webkit-details-marker]:hidden">
+        <span aria-hidden className="text-text-3 transition-transform group-open:rotate-90">
+          ›
+        </span>
+        {title}
+      </summary>
+      <div className="flex flex-col gap-3 border-t border-border p-4 sm:p-5">{children}</div>
+    </details>
+  );
+}
+
+/**
+ * SCR-06 Analiza (BL-165): decision first. The header holds the action, price, position and the
+ * code-computed outlook; evidence, reasoning, control score and agent steps fold below.
+ */
 export function AnalysisView({ runId }: { runId: string }) {
   const t = useTranslations("analysisPage");
-  const format = useFormatter();
+  const horizonTitle = useHorizonTitle();
+  const [horizon, setHorizon] = useState<Horizon>("medium");
   const { data: run, isLoading, error } = useAnalysis(runId);
   const { steps, connected } = useAnalysisStream(runId, run?.steps ?? [], run?.status);
 
@@ -57,83 +91,95 @@ export function AnalysisView({ runId }: { runId: string }) {
     steps.find((s) => s.agent === "hypothesis" && s.title === "hypothesis_check")?.content ||
     run.reports.hypothesis_check ||
     null;
+  const live = run.status === "running" || run.status === "queued";
+  const selected = run.outlook?.horizons.find((h) => h.horizon === horizon);
 
   return (
     <div className="flex flex-col gap-5">
-      <Link href="/analysis" className="w-fit text-[13px] text-text-2 no-underline hover:text-accent">
+      <Link
+        href="/analysis"
+        className="w-fit text-[13px] text-text-2 no-underline hover:text-accent"
+      >
         ← {t("back")}
       </Link>
 
-      <header className="card flex flex-col gap-3 p-4 sm:p-5" aria-label={t("runTitle")}>
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-          <Link href={`/i/${encodeURIComponent(run.symbol)}`} className="num text-[28px] leading-[34px] font-medium text-text no-underline hover:text-accent">
-            {run.symbol}
-          </Link>
-          {run.name && <span className="text-text-2">{run.name}</span>}
-          <AnalysisStatusPill status={run.status} />
-          <span data-testid="analysis-engine" className="rounded-full bg-surface-2 px-2 text-xs leading-5 text-text-2">
-            {t.has(`engines.${run.engine}`) ? t(`engines.${run.engine}` as "engines.etf") : run.engine}
-          </span>
-          {run.rating && (
-            <span className="sm:ml-auto" aria-label={t("ratingLabel", { rating: run.rating })}>
-              <RatingPill rating={run.rating} size="lg" />
-            </span>
-          )}
-        </div>
-        <p className="text-[13px] text-text-2">
-          {t("tradeDate")}: <span className="num">{format.dateTime(new Date(run.trade_date), { dateStyle: "medium" })}</span>
-          {" · "}
-          {t("stepCount", { count: steps.length })}
-        </p>
-        {run.caveats.length > 0 && (
-          <ul className="flex flex-wrap gap-2" aria-label={t("caveatHint")}>
-            {run.caveats.map((c) => (
-              <li key={c} className="rounded-full bg-warn-soft px-2.5 text-xs leading-6 font-medium text-warn">
-                {t.has(`caveats.${c}`) ? t(`caveats.${c}` as "caveats.rumor_only") : c}
-              </li>
-            ))}
-          </ul>
-        )}
+      <DecisionHeader run={run} stepCount={steps.length} horizon={horizon} onHorizon={setHorizon}>
         <Provenance run={run} />
-        <p className="rounded-md bg-surface-2 px-3 py-2 text-[13px] text-text-2">{t("opinion")}</p>
-      </header>
+      </DecisionHeader>
+
+      {run.status === "failed" && (
+        <section
+          className="card flex flex-col gap-3 p-4 sm:p-5"
+          aria-label={t("decision.failedTitle")}
+          data-testid="decision-panel"
+        >
+          <h2 className="text-base font-semibold text-neg">{t("decision.failedTitle")}</h2>
+          <p className="rounded-md bg-neg-soft px-3 py-2 text-[13px] text-neg [overflow-wrap:anywhere]">
+            {run.error ?? t("decision.noError")}
+          </p>
+          <p className="text-[13px] text-text-3">{t("decision.failedHint")}</p>
+        </section>
+      )}
 
       {hypothesisCheck && (
-        <section className="card flex flex-col gap-3 border-accent p-4 sm:p-5" aria-label={t("hypothesis.title")} data-testid="hypothesis-panel">
+        <section
+          className="card flex flex-col gap-3 border-accent p-4 sm:p-5"
+          aria-label={t("hypothesis.title")}
+          data-testid="hypothesis-panel"
+        >
           <h2 className="text-base font-semibold">{t("hypothesis.title")}</h2>
           {run.hypothesis && <p className="text-[13px] text-text-2 italic">“{run.hypothesis}”</p>}
-          <Markdown source={hypothesisCheck.replace(/^\s*#{1,6}[^\n]*\n+/, "")} className="text-[15px] text-text" />
+          <Markdown
+            source={hypothesisCheck.replace(/^\s*#{1,6}[^\n]*\n+/, "")}
+            className="text-[15px] text-text"
+          />
           <p className="text-xs text-text-3">{t("hypothesis.note")}</p>
         </section>
       )}
 
-      <section
-        className="card flex flex-col gap-3 p-4 sm:p-5"
-        aria-label={run.status === "failed" ? t("decision.failedTitle") : t("decision.title")}
-        data-testid="decision-panel"
-      >
-        {run.status === "failed" ? (
-          <>
-            <h2 className="text-base font-semibold text-neg">{t("decision.failedTitle")}</h2>
-            <p className="rounded-md bg-neg-soft px-3 py-2 text-[13px] text-neg [overflow-wrap:anywhere]">{run.error ?? t("decision.noError")}</p>
-            <p className="text-[13px] text-text-3">{t("decision.failedHint")}</p>
-          </>
-        ) : (
-          <>
-            <h2 className="text-base font-semibold">{t("decision.title")}</h2>
-            {run.decision ? (
-              <Markdown source={run.decision.replace(/^\s*#{1,6}[^\n]*\n+/, "")} className="text-[15px] text-text" />
-            ) : (
-              <p className="text-text-3">{run.status === "queued" ? t("decision.queued") : t("decision.pending")}</p>
-            )}
-          </>
-        )}
-      </section>
+      {run.outlook && selected && (
+        <Fold title={t("evidence.title")} open testId="evidence-section">
+          <SegmentedButtons
+            semantics="pressed"
+            label={t("evidence.pick")}
+            value={horizon}
+            onChange={setHorizon}
+            options={HORIZONS.map((h) => ({
+              value: h,
+              label: horizonTitle(h).column,
+              testId: `evidence-pick-${h}`,
+            }))}
+            className="w-full sm:w-fit"
+          />
+          <EvidenceSplit outlook={selected} />
+        </Fold>
+      )}
 
-      {run.card && <DecisionCardPanel card={run.card} />}
-      {run.status === "done" && run.card && ((run.card.upgrade_if?.length ?? 0) > 0 || (run.card.downgrade_if?.length ?? 0) > 0) && <CreateThesisButton runId={runId} />}
+      {run.status !== "failed" && (
+        <Fold title={t("details.reasoning")} testId="decision-panel">
+          <h2 className="sr-only">{t("decision.title")}</h2>
+          {run.decision ? (
+            <Markdown
+              source={run.decision.replace(/^\s*#{1,6}[^\n]*\n+/, "")}
+              className="text-[15px] text-text"
+            />
+          ) : (
+            <p className="text-text-3">
+              {run.status === "queued" ? t("decision.queued") : t("decision.pending")}
+            </p>
+          )}
+        </Fold>
+      )}
 
-      <AgentTimeline steps={steps} status={run.status} connected={connected} />
+      {run.card && (
+        <Fold title={t("details.control")}>
+          <DecisionCardPanel card={run.card} triggers={false} />
+        </Fold>
+      )}
+
+      <Fold title={t("details.steps", { count: steps.length })} open={live} testId="steps-section">
+        <AgentTimeline steps={steps} status={run.status} connected={connected} />
+      </Fold>
     </div>
   );
 }

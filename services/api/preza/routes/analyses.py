@@ -27,6 +27,7 @@ from preza.domain.analysis import (
     AnalysisSummary,
     DecisionCard,
 )
+from preza.domain.outlook import Outlook, brief, compute_outlook
 from preza.models import AnalysisRun, AnalysisStep, Instrument
 from preza.services.analyses import limit_reached, new_run, queue_run, used_today
 from preza.services.instruments import find_by_symbol
@@ -39,7 +40,20 @@ HEARTBEAT_S = 15.0
 FINISHED = {AnalysisStatus.DONE, AnalysisStatus.FAILED}
 
 
-def summary(run: AnalysisRun) -> AnalysisSummary:
+def _outlook(run: AnalysisRun) -> Outlook | None:
+    """Computed on read from the frozen snapshot; a malformed one gives no outlook."""
+    try:
+        return compute_outlook(run.snapshot)
+    except (TypeError, ValueError, AttributeError, KeyError):
+        return None
+
+
+def _conviction(run: AnalysisRun) -> int | None:
+    value = (run.card or {}).get("conviction")
+    return value if isinstance(value, int) else None
+
+
+def summary(run: AnalysisRun, outlook: Outlook | None = None) -> AnalysisSummary:
     return AnalysisSummary(
         id=run.id,
         symbol=run.instrument.symbol,
@@ -51,6 +65,8 @@ def summary(run: AnalysisRun) -> AnalysisSummary:
         caveats=list(run.caveats or []),
         created_at=run.created_at,
         finished_at=run.finished_at,
+        conviction=_conviction(run),
+        outlook_brief=brief(outlook),
     )
 
 
@@ -117,7 +133,7 @@ async def list_analyses(
     query = select(AnalysisRun).order_by(AnalysisRun.created_at.desc()).limit(min(limit, 100))
     if symbol:
         query = query.join(Instrument).where(Instrument.symbol == symbol.upper())
-    return [summary(r) for r in await session.scalars(query)]
+    return [summary(r, _outlook(r)) for r in await session.scalars(query)]
 
 
 @router.get("/{run_id}", response_model=AnalysisOut)
@@ -126,8 +142,9 @@ async def get_analysis(run_id: uuid.UUID, session: Session) -> AnalysisOut:
     steps = await session.scalars(
         select(AnalysisStep).where(AnalysisStep.run_id == run.id).order_by(AnalysisStep.seq)
     )
+    outlook = _outlook(run)
     return AnalysisOut(
-        **summary(run).model_dump(),
+        **summary(run, outlook).model_dump(),
         locale=run.locale,
         hypothesis=run.hypothesis,
         decision=run.decision,
@@ -137,6 +154,7 @@ async def get_analysis(run_id: uuid.UUID, session: Session) -> AnalysisOut:
         started_at=run.started_at,
         data_sources=_sources(run),
         card=DecisionCard.model_validate(run.card) if run.card else None,
+        outlook=outlook,
         steps=[step_out(s) for s in steps],
     )
 

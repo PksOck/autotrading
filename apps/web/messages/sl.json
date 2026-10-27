@@ -804,7 +804,153 @@
       "delta": "Od zadnje analize",
       "previous": "Prejšnja analiza: {rating}, {date}"
     },
-    "quota": "Danes {used} od {limit}"
+    "quota": "Danes {used} od {limit}",
+    "action": {
+      "Buy": "Kupi",
+      "Overweight": "Povečaj delež",
+      "Hold": "Drži",
+      "Underweight": "Zmanjšaj delež",
+      "Sell": "Prodaj",
+      "REVIEW": "Potreben pregled"
+    },
+    "actionHint": {
+      "Buy": "Agenti predlagajo odpiranje ali povečanje pozicije.",
+      "Overweight": "Obstoječo pozicijo povečaj nad običajno težo; nova je smiselna.",
+      "Hold": "Obstoječo pozicijo obdrži, novih nakupov ne siliš.",
+      "Underweight": "Obstoječo pozicijo zmanjšaj pod običajno težo, nove ne odpiraj.",
+      "Sell": "Agenti predlagajo zaprtje pozicije.",
+      "REVIEW": "Agenti niso prišli do jasne ocene. Preberi utemeljitev."
+    },
+    "agentsSay": "Agenti predlagajo",
+    "agentsLabel": "Predlog agentov: {action}",
+    "englishRating": "oznaka agentov: {rating}",
+    "price": {
+      "label": "Trenutna cena",
+      "change": "{pct} zadnji dan",
+      "source": "{source}, {date}",
+      "none": "Cene ni"
+    },
+    "position": {
+      "label": "V portfelju",
+      "none": "Ni v portfelju",
+      "shares": "{qty, plural, one {# delnica} two {# delnici} few {# delnice} other {# delnic}}",
+      "value": "vrednost {value}",
+      "pnl": "{pnl} nerealizirano"
+    },
+    "controlAgrees": "Kontrola se strinja",
+    "controlDiffers": "Kontrola: {action}",
+    "outlook": {
+      "title": "Obeti po obdobjih",
+      "note": "Obeti računa koda iz cen in temeljnih podatkov po fiksnih pravilih, ne agenti. Niso napoved.",
+      "none": "Za to analizo obetov ni mogoče izračunati (ni posnetka cen).",
+      "missing": "Manjka: {items}",
+      "barLabel": "{title}: {pro} za, {neutral} nevtralno, {contra} proti",
+      "show": "Pokaži dokaze: {title}"
+    },
+    "horizon": {
+      "short": "Kratkoročno",
+      "medium": "Srednjeročno",
+      "long": "Dolgoročno",
+      "shortSpan": "do 3 mesecev",
+      "mediumSpan": "~1 leto",
+      "longSpan": "3+ let",
+      "shortCol": "Kratko",
+      "mediumCol": "~1 leto",
+      "longCol": "3+ let"
+    },
+    "verdict": {
+      "supports": "Podpira rast",
+      "mixed": "Mešano",
+      "against": "Proti rasti",
+      "insufficient": "Premalo podatkov"
+    },
+    "change": {
+      "title": "Kaj bi spremenilo oceno",
+      "up": "Ocena gre gor, če",
+      "down": "Ocena gre dol, če"
+    },
+    "evidence": {
+      "title": "Dokazi za in proti",
+      "pick": "Obdobje dokazov",
+      "pro": "Za rast",
+      "contra": "Proti rasti",
+      "neutral": "Nevtralno",
+      "empty": "Brez dokazov.",
+      "provenance": "{source}, {date}",
+      "keys": {
+        "trend_sma50": {
+          "label": "Cena proti 50-dnevnemu povprečju",
+          "text": "{value} od povprečja"
+        },
+        "rsi14": {
+          "label": "RSI (14 dni)",
+          "text": "{value}: {stance, select, pro {preprodano, pogosto sledi odboj} contra {prekupljeno, pogosto sledi premor} other {v običajnem pasu 30–70}}"
+        },
+        "return_1m": {
+          "label": "Donos zadnjega meseca",
+          "text": "{value} (prag ±{reference})"
+        },
+        "volatility_atr": {
+          "label": "Dnevna nihajnost (ATR)",
+          "text": "{value} cene na dan"
+        },
+        "trend_sma200": {
+          "label": "Cena proti 200-dnevnemu povprečju",
+          "text": "{value} od povprečja"
+        },
+        "cross_50_200": {
+          "label": "50- proti 200-dnevnemu povprečju",
+          "text": "{value}: {stance, select, pro {krajši trend nad dolgim} contra {krajši trend pod dolgim} other {trenda sta enaka}}"
+        },
+        "momentum_12_1": {
+          "label": "Zagon 12 mesecev (brez zadnjega)",
+          "text": "{value} (prag ±{reference})"
+        },
+        "valuation": {
+          "label": "Vrednotenje proti lastni 5-letni zgodovini",
+          "text": "{stance, select, pro {ceneje kot običajno} contra {dražje kot običajno} other {blizu običajnega}} (ocena {value})"
+        },
+        "return_3y_cagr": {
+          "label": "Letni donos zadnjih 3 let",
+          "text": "{value} na leto (prag {reference})"
+        },
+        "quality": {
+          "roe_pct": {
+            "label": "Donos na kapital (ROE)",
+            "text": "{value}"
+          },
+          "net_margin_pct": {
+            "label": "Neto marža",
+            "text": "{value}"
+          },
+          "revenue_growth_pct": {
+            "label": "Rast prihodkov",
+            "text": "{value} na leto"
+          },
+          "debt_to_equity": {
+            "label": "Dolg proti kapitalu",
+            "text": "{value}"
+          }
+        }
+      }
+    },
+    "details": {
+      "reasoning": "Utemeljitev agentov",
+      "control": "Kontrolna ocena",
+      "steps": "Koraki analitikov ({count})",
+      "agentSteps": "{count, plural, one {# korak} two {# koraka} few {# koraki} other {# korakov}}"
+    },
+    "columns": {
+      "instrument": "Instrument",
+      "date": "Datum",
+      "agents": "Agenti",
+      "proContra": "Za / proti",
+      "conviction": "Prepričanje",
+      "held": "V portfelju",
+      "when": "Ustvarjeno"
+    },
+    "proContraValue": "{pro} ▲ · {contra} ▼",
+    "proContraLabel": "{pro} dokazov za, {contra} proti"
   },
   "theses": {
     "review": {

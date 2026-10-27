@@ -625,6 +625,10 @@ export interface components {
             created_at: string;
             /** Finished At */
             finished_at: string | null;
+            /** Conviction */
+            conviction?: number | null;
+            /** @description horizon verdicts from the snapshot (ADR-0014) */
+            outlook_brief?: components["schemas"]["OutlookBrief"] | null;
             /** Locale */
             locale: string;
             /** Hypothesis */
@@ -648,6 +652,7 @@ export interface components {
                 [key: string]: string | null;
             };
             card?: components["schemas"]["DecisionCard"] | null;
+            outlook?: components["schemas"]["Outlook"] | null;
             /** Steps */
             steps: components["schemas"]["AnalysisStepOut"][];
         };
@@ -714,6 +719,10 @@ export interface components {
             created_at: string;
             /** Finished At */
             finished_at: string | null;
+            /** Conviction */
+            conviction?: number | null;
+            /** @description horizon verdicts from the snapshot (ADR-0014) */
+            outlook_brief?: components["schemas"]["OutlookBrief"] | null;
         };
         /** BarOut */
         BarOut: {
@@ -1016,6 +1025,34 @@ export interface components {
          * @enum {string}
          */
         EventType: "earnings" | "guidance" | "merger" | "filing" | "insider" | "analyst" | "product" | "regulatory" | "legal" | "macro" | "rumor" | "other";
+        /** Evidence */
+        Evidence: {
+            /** Key */
+            key: string;
+            /**
+             * Horizon
+             * @enum {string}
+             */
+            horizon: "short" | "medium" | "long";
+            /**
+             * Stance
+             * @enum {string}
+             */
+            stance: "pro" | "contra" | "neutral";
+            /** Value */
+            value: number | null;
+            /** Reference */
+            reference: number | null;
+            /**
+             * Unit
+             * @enum {string}
+             */
+            unit: "pct" | "index" | "ratio";
+            /** Source */
+            source: string | null;
+            /** As Of */
+            as_of: string | null;
+        };
         /** EvidenceRef */
         EvidenceRef: {
             /**
@@ -1047,6 +1084,31 @@ export interface components {
          * @enum {string}
          */
         Horizon: "days" | "weeks" | "months" | "years";
+        /** HorizonOutlook */
+        HorizonOutlook: {
+            /**
+             * Horizon
+             * @enum {string}
+             */
+            horizon: "short" | "medium" | "long";
+            /**
+             * Verdict
+             * @enum {string}
+             */
+            verdict: "supports" | "mixed" | "against" | "insufficient";
+            /** Pro */
+            pro: number;
+            /** Contra */
+            contra: number;
+            /** Neutral */
+            neutral: number;
+            /** Balance */
+            balance: number | null;
+            /** Evidence */
+            evidence: components["schemas"]["Evidence"][];
+            /** Missing */
+            missing: string[];
+        };
         /** InstrumentDetail */
         InstrumentDetail: {
             /** Symbol */
@@ -1116,6 +1178,38 @@ export interface components {
             avg_return_pct: string;
             /** Avg Alpha Pct */
             avg_alpha_pct: string | null;
+        };
+        /** Outlook */
+        Outlook: {
+            /**
+             * As Of
+             * Format: date
+             */
+            as_of: string;
+            /** Horizons */
+            horizons: components["schemas"]["HorizonOutlook"][];
+        };
+        /** OutlookBrief */
+        OutlookBrief: {
+            /**
+             * Short
+             * @enum {string}
+             */
+            short: "supports" | "mixed" | "against" | "insufficient";
+            /**
+             * Medium
+             * @enum {string}
+             */
+            medium: "supports" | "mixed" | "against" | "insufficient";
+            /**
+             * Long
+             * @enum {string}
+             */
+            long: "supports" | "mixed" | "against" | "insufficient";
+            /** Pro */
+            pro: number;
+            /** Contra */
+            contra: number;
         };
         /** PortfolioOut */
         PortfolioOut: {

@@ -38,6 +38,10 @@ export type AnalysisCreate = Pick<S["AnalysisCreate"], "symbol"> &
   Partial<Omit<S["AnalysisCreate"], "symbol">>;
 export type DecisionCard = NonNullable<AnalysisOut["card"]>;
 export type AnalysisQuota = S["AnalysisQuota"];
+export type Outlook = S["Outlook"];
+export type HorizonOutlook = S["HorizonOutlook"];
+export type OutlookEvidence = S["Evidence"];
+export type OutlookBrief = S["OutlookBrief"];
 export type ThesisSummary = S["ThesisSummary"];
 export type ThesisOut = S["ThesisOut"];
 export type ThesisRevisionOut = S["ThesisRevisionOut"];

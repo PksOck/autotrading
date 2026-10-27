@@ -1894,6 +1894,28 @@
             ],
             "title": "Finished At"
           },
+          "conviction": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conviction"
+          },
+          "outlook_brief": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OutlookBrief"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "horizon verdicts from the snapshot (ADR-0014)"
+          },
           "locale": {
             "type": "string",
             "title": "Locale"
@@ -1975,6 +1997,16 @@
             "anyOf": [
               {
                 "$ref": "#/components/schemas/DecisionCard"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "outlook": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Outlook"
               },
               {
                 "type": "null"
@@ -2156,6 +2188,28 @@
               }
             ],
             "title": "Finished At"
+          },
+          "conviction": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conviction"
+          },
+          "outlook_brief": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OutlookBrief"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "horizon verdicts from the snapshot (ADR-0014)"
           }
         },
         "type": "object",
@@ -3125,6 +3179,98 @@
         ],
         "title": "EventType"
       },
+      "Evidence": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "horizon": {
+            "type": "string",
+            "enum": [
+              "short",
+              "medium",
+              "long"
+            ],
+            "title": "Horizon"
+          },
+          "stance": {
+            "type": "string",
+            "enum": [
+              "pro",
+              "contra",
+              "neutral"
+            ],
+            "title": "Stance"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "reference": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reference"
+          },
+          "unit": {
+            "type": "string",
+            "enum": [
+              "pct",
+              "index",
+              "ratio"
+            ],
+            "title": "Unit"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          },
+          "as_of": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "As Of"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "horizon",
+          "stance",
+          "value",
+          "reference",
+          "unit",
+          "source",
+          "as_of"
+        ],
+        "title": "Evidence"
+      },
       "EvidenceRef": {
         "properties": {
           "kind": {
@@ -3212,6 +3358,78 @@
           "years"
         ],
         "title": "Horizon"
+      },
+      "HorizonOutlook": {
+        "properties": {
+          "horizon": {
+            "type": "string",
+            "enum": [
+              "short",
+              "medium",
+              "long"
+            ],
+            "title": "Horizon"
+          },
+          "verdict": {
+            "type": "string",
+            "enum": [
+              "supports",
+              "mixed",
+              "against",
+              "insufficient"
+            ],
+            "title": "Verdict"
+          },
+          "pro": {
+            "type": "integer",
+            "title": "Pro"
+          },
+          "contra": {
+            "type": "integer",
+            "title": "Contra"
+          },
+          "neutral": {
+            "type": "integer",
+            "title": "Neutral"
+          },
+          "balance": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Balance"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/Evidence"
+            },
+            "type": "array",
+            "title": "Evidence"
+          },
+          "missing": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Missing"
+          }
+        },
+        "type": "object",
+        "required": [
+          "horizon",
+          "verdict",
+          "pro",
+          "contra",
+          "neutral",
+          "balance",
+          "evidence",
+          "missing"
+        ],
+        "title": "HorizonOutlook"
       },
       "InstrumentDetail": {
         "properties": {
@@ -3471,6 +3689,79 @@
           "avg_alpha_pct"
         ],
         "title": "OutcomeStat"
+      },
+      "Outlook": {
+        "properties": {
+          "as_of": {
+            "type": "string",
+            "format": "date",
+            "title": "As Of"
+          },
+          "horizons": {
+            "items": {
+              "$ref": "#/components/schemas/HorizonOutlook"
+            },
+            "type": "array",
+            "title": "Horizons"
+          }
+        },
+        "type": "object",
+        "required": [
+          "as_of",
+          "horizons"
+        ],
+        "title": "Outlook"
+      },
+      "OutlookBrief": {
+        "properties": {
+          "short": {
+            "type": "string",
+            "enum": [
+              "supports",
+              "mixed",
+              "against",
+              "insufficient"
+            ],
+            "title": "Short"
+          },
+          "medium": {
+            "type": "string",
+            "enum": [
+              "supports",
+              "mixed",
+              "against",
+              "insufficient"
+            ],
+            "title": "Medium"
+          },
+          "long": {
+            "type": "string",
+            "enum": [
+              "supports",
+              "mixed",
+              "against",
+              "insufficient"
+            ],
+            "title": "Long"
+          },
+          "pro": {
+            "type": "integer",
+            "title": "Pro"
+          },
+          "contra": {
+            "type": "integer",
+            "title": "Contra"
+          }
+        },
+        "type": "object",
+        "required": [
+          "short",
+          "medium",
+          "long",
+          "pro",
+          "contra"
+        ],
+        "title": "OutlookBrief"
       },
       "PortfolioOut": {
         "properties": {

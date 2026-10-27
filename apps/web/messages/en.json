@@ -804,7 +804,153 @@
       "delta": "Since the last analysis",
       "previous": "Previous analysis: {rating}, {date}"
     },
-    "quota": "Today {used} of {limit}"
+    "quota": "Today {used} of {limit}",
+    "action": {
+      "Buy": "Buy",
+      "Overweight": "Add to position",
+      "Hold": "Hold",
+      "Underweight": "Trim position",
+      "Sell": "Sell",
+      "REVIEW": "Needs review"
+    },
+    "actionHint": {
+      "Buy": "The agents suggest opening or adding to a position.",
+      "Overweight": "Raise an existing position above its usual weight; a new one makes sense.",
+      "Hold": "Keep an existing position, no need to buy more.",
+      "Underweight": "Trim an existing position below its usual weight; do not open a new one.",
+      "Sell": "The agents suggest closing the position.",
+      "REVIEW": "The agents reached no clear rating. Read the reasoning."
+    },
+    "agentsSay": "The agents suggest",
+    "agentsLabel": "Agents' suggestion: {action}",
+    "englishRating": "agent label: {rating}",
+    "price": {
+      "label": "Current price",
+      "change": "{pct} last day",
+      "source": "{source}, {date}",
+      "none": "No price"
+    },
+    "position": {
+      "label": "In portfolio",
+      "none": "Not in portfolio",
+      "shares": "{qty, plural, one {# share} other {# shares}}",
+      "value": "worth {value}",
+      "pnl": "{pnl} unrealised"
+    },
+    "controlAgrees": "Control agrees",
+    "controlDiffers": "Control: {action}",
+    "outlook": {
+      "title": "Outlook by horizon",
+      "note": "Code computes the outlook from prices and fundamentals with fixed rules, not the agents. It is not a forecast.",
+      "none": "No outlook for this analysis (no price snapshot).",
+      "missing": "Missing: {items}",
+      "barLabel": "{title}: {pro} for, {neutral} neutral, {contra} against",
+      "show": "Show evidence: {title}"
+    },
+    "horizon": {
+      "short": "Short term",
+      "medium": "Medium term",
+      "long": "Long term",
+      "shortSpan": "up to 3 months",
+      "mediumSpan": "~1 year",
+      "longSpan": "3+ years",
+      "shortCol": "Short",
+      "mediumCol": "~1 year",
+      "longCol": "3+ years"
+    },
+    "verdict": {
+      "supports": "Supports growth",
+      "mixed": "Mixed",
+      "against": "Against growth",
+      "insufficient": "Too little data"
+    },
+    "change": {
+      "title": "What would change the rating",
+      "up": "Rating goes up if",
+      "down": "Rating goes down if"
+    },
+    "evidence": {
+      "title": "Evidence for and against",
+      "pick": "Evidence horizon",
+      "pro": "For growth",
+      "contra": "Against growth",
+      "neutral": "Neutral",
+      "empty": "No evidence.",
+      "provenance": "{source}, {date}",
+      "keys": {
+        "trend_sma50": {
+          "label": "Price vs 50-day average",
+          "text": "{value} from the average"
+        },
+        "rsi14": {
+          "label": "RSI (14 days)",
+          "text": "{value}: {stance, select, pro {oversold, often followed by a bounce} contra {overbought, often followed by a pause} other {within the usual 30–70 band}}"
+        },
+        "return_1m": {
+          "label": "Return over the last month",
+          "text": "{value} (threshold ±{reference})"
+        },
+        "volatility_atr": {
+          "label": "Daily volatility (ATR)",
+          "text": "{value} of the price per day"
+        },
+        "trend_sma200": {
+          "label": "Price vs 200-day average",
+          "text": "{value} from the average"
+        },
+        "cross_50_200": {
+          "label": "50- vs 200-day average",
+          "text": "{value}: {stance, select, pro {short trend above long} contra {short trend below long} other {trends are equal}}"
+        },
+        "momentum_12_1": {
+          "label": "12-month momentum (excluding last)",
+          "text": "{value} (threshold ±{reference})"
+        },
+        "valuation": {
+          "label": "Valuation vs own 5-year history",
+          "text": "{stance, select, pro {cheaper than usual} contra {pricier than usual} other {close to usual}} (score {value})"
+        },
+        "return_3y_cagr": {
+          "label": "Annual return over 3 years",
+          "text": "{value} per year (threshold {reference})"
+        },
+        "quality": {
+          "roe_pct": {
+            "label": "Return on equity (ROE)",
+            "text": "{value}"
+          },
+          "net_margin_pct": {
+            "label": "Net margin",
+            "text": "{value}"
+          },
+          "revenue_growth_pct": {
+            "label": "Revenue growth",
+            "text": "{value} per year"
+          },
+          "debt_to_equity": {
+            "label": "Debt to equity",
+            "text": "{value}"
+          }
+        }
+      }
+    },
+    "details": {
+      "reasoning": "Agents' reasoning",
+      "control": "Control score",
+      "steps": "Analyst steps ({count})",
+      "agentSteps": "{count, plural, one {# step} other {# steps}}"
+    },
+    "columns": {
+      "instrument": "Instrument",
+      "date": "Date",
+      "agents": "Agents",
+      "proContra": "For / against",
+      "conviction": "Conviction",
+      "held": "In portfolio",
+      "when": "Created"
+    },
+    "proContraValue": "{pro} ▲ · {contra} ▼",
+    "proContraLabel": "{pro} for, {contra} against"
   },
   "theses": {
     "review": {

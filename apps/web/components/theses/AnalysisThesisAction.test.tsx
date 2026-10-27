@@ -10,6 +10,8 @@ import type { AnalysisOut } from "@/lib/api/types";
 vi.mock("@/lib/api/hooks", () => ({
   useAnalysis: vi.fn(),
   useAnalysisStream: () => ({ steps: [], connected: false }),
+  useBars: () => ({ data: undefined }),
+  usePortfolio: () => ({ data: undefined }),
 }));
 vi.mock("@/components/theses/CreateThesisButton", () => ({
   CreateThesisButton: () => <button>Create thesis draft</button>,

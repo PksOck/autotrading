@@ -7,6 +7,8 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
+from preza.domain.outlook import Outlook, OutlookBrief
+
 
 class AnalysisStatus(StrEnum):
     QUEUED = "queued"
@@ -46,6 +48,10 @@ class AnalysisSummary(BaseModel):
     caveats: list[str]
     created_at: datetime
     finished_at: datetime | None
+    conviction: int | None = None
+    outlook_brief: OutlookBrief | None = Field(
+        default=None, description="horizon verdicts from the snapshot (ADR-0014)"
+    )
 
 
 class ControlScore(BaseModel):
@@ -89,4 +95,5 @@ class AnalysisOut(AnalysisSummary):
     started_at: datetime | None
     data_sources: dict[str, str | None]
     card: DecisionCard | None = None
+    outlook: Outlook | None = None
     steps: list[AnalysisStepOut]

@@ -12,7 +12,15 @@ const TONE: Record<string, string> = {
 const KNOWN = new Set(Object.keys(TONE));
 
 /** CMP-06: the agents' rating on the five-step scale (VOICE.md §4), or "Potreben pregled". */
-export function RatingPill({ rating, size = "sm", className }: { rating: string | null; size?: "sm" | "lg"; className?: string }) {
+export function RatingPill({
+  rating,
+  size = "sm",
+  className,
+}: {
+  rating: string | null;
+  size?: "sm" | "lg";
+  className?: string;
+}) {
   const t = useTranslations("analysisPage.rating");
   if (!rating) return null;
   const known = KNOWN.has(rating);

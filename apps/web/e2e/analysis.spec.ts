@@ -1,35 +1,63 @@
 import { expect, test } from "@playwright/test";
 
 async function runId(request: import("@playwright/test").APIRequestContext, symbol: string) {
-  const runs = (await (await request.get("/api/analyses")).json()) as { id: string; symbol: string }[];
+  const runs = (await (await request.get("/api/analyses")).json()) as {
+    id: string;
+    symbol: string;
+  }[];
   const run = runs.find((r) => r.symbol === symbol);
   if (!run) throw new Error(`no demo analysis for ${symbol}`);
   return run.id;
 }
 
-test("analysis: finished ASML run shows decision, rating and expandable report", async ({ page, request }) => {
+test("analysis: finished ASML run shows decision header, outlook and folded details", async ({
+  page,
+  request,
+}) => {
   await page.goto(`/analysis/${await runId(request, "ASML")}`);
   await expect(page.getByRole("heading", { level: 1, name: "Analiza" })).toBeVisible();
-  await expect(page.getByTestId("rating-pill").first()).toHaveText("Povečaj");
-  const decision = page.getByTestId("decision-panel");
-  await expect(decision.getByRole("heading", { name: "Končna odločitev" })).toBeVisible();
-  await expect(decision).toContainText("Povečaj pozicijo postopoma");
+  await expect(page.getByTestId("action-pill").first()).toHaveText("Povečaj delež");
+  await expect(page.getByTestId("header-conviction")).toContainText("6/10");
+  await expect(page.getByTestId("header-price")).toBeVisible();
+  await expect(page.getByTestId("header-position")).toBeVisible();
   await expect(page.getByText("mnenje agentov")).toBeVisible();
+
+  for (const h of ["short", "medium", "long"])
+    await expect(page.getByTestId(`horizon-${h}`)).toBeVisible();
+  await expect(page.getByTestId("horizon-medium")).toHaveAttribute("aria-pressed", "true");
+  await page.getByTestId("horizon-short").click();
+  await expect(page.getByTestId("horizon-short")).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByTestId("evidence-split")).toBeVisible();
+
+  const change = page.getByTestId("rating-change");
+  await expect(change.getByText("Ocena gre gor, če")).toBeVisible();
+  await expect(change.getByText("Ocena gre dol, če")).toBeVisible();
+
+  const decision = page.getByTestId("decision-panel");
+  await decision.getByText("Utemeljitev agentov").click();
+  await expect(decision.getByText("Povečaj pozicijo postopoma")).toBeVisible();
+
+  await page.getByText("Kontrolna ocena").click();
   const card = page.getByTestId("decision-card");
-  await expect(card.getByRole("heading", { name: "Kartica odločitve" })).toBeVisible();
   await expect(card.getByTestId("conviction")).toHaveText("6/10");
   await expect(card.getByTestId("size-class")).toContainText("2–4 % portfelja");
   await expect(card.getByText("na podlagi 100 % uteži")).toBeVisible();
-  await expect(card.getByText("Nadgradi, če")).toBeVisible();
-  await expect(card.getByText("Znižaj, če")).toBeVisible();
   await expect(card.getByTestId("low-confidence")).toHaveCount(0);
 
+  await page
+    .getByTestId("steps-section")
+    .getByText(/Koraki analitikov/)
+    .click();
   const timeline = page.getByTestId("agent-timeline");
   await expect(timeline.getByRole("heading", { name: "Debata" })).toBeVisible();
+  await timeline.locator('[data-testid="analyst-group"][data-agent="market"] summary').click();
   const expand = timeline.getByRole("button", { name: "Razširi: Tržno poročilo" });
   await expect(expand).toHaveAttribute("aria-expanded", "false");
   await expand.click();
-  await expect(timeline.getByRole("button", { name: "Skrči: Tržno poročilo" })).toHaveAttribute("aria-expanded", "true");
+  await expect(timeline.getByRole("button", { name: "Skrči: Tržno poročilo" })).toHaveAttribute(
+    "aria-expanded",
+    "true",
+  );
   await expect(timeline.getByText("Volumen pri zadnjih padcih")).toBeVisible();
   await expect(page.getByTestId("phase-live")).toHaveCount(0);
 });
