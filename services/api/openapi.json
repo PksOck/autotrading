@@ -1748,6 +1748,49 @@
           }
         }
       }
+    },
+    "/track-record": {
+      "get": {
+        "tags": [
+          "track-record"
+        ],
+        "summary": "Track Record",
+        "operationId": "track_record_track_record_get",
+        "parameters": [
+          {
+            "name": "horizon_days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "title": "Horizon Days"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrackRecordOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -2304,6 +2347,84 @@
           "provenance"
         ],
         "title": "BarsOut"
+      },
+      "CalibrationBucket": {
+        "properties": {
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          },
+          "hit_rate": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hit Rate",
+            "description": "Share of outcomes that moved in the signal direction, 0..1."
+          },
+          "avg_return_pct": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Return Pct"
+          },
+          "avg_alpha_pct": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Alpha Pct"
+          },
+          "low_sample": {
+            "type": "boolean",
+            "title": "Low Sample",
+            "description": "Fewer than 10 outcomes."
+          },
+          "strength_low": {
+            "type": "string",
+            "title": "Strength Low"
+          },
+          "strength_high": {
+            "type": "string",
+            "title": "Strength High"
+          },
+          "avg_strength": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Strength"
+          }
+        },
+        "type": "object",
+        "required": [
+          "count",
+          "hit_rate",
+          "avg_return_pct",
+          "avg_alpha_pct",
+          "low_sample",
+          "strength_low",
+          "strength_high",
+          "avg_strength"
+        ],
+        "title": "CalibrationBucket"
       },
       "CashIn": {
         "properties": {
@@ -5444,6 +5565,294 @@
           "updated_at"
         ],
         "title": "ThesisSummary"
+      },
+      "TrackGroup": {
+        "properties": {
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          },
+          "hit_rate": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hit Rate",
+            "description": "Share of outcomes that moved in the signal direction, 0..1."
+          },
+          "avg_return_pct": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Return Pct"
+          },
+          "avg_alpha_pct": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Alpha Pct"
+          },
+          "low_sample": {
+            "type": "boolean",
+            "title": "Low Sample",
+            "description": "Fewer than 10 outcomes."
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          }
+        },
+        "type": "object",
+        "required": [
+          "count",
+          "hit_rate",
+          "avg_return_pct",
+          "avg_alpha_pct",
+          "low_sample",
+          "kind",
+          "source"
+        ],
+        "title": "TrackGroup"
+      },
+      "TrackOrigin": {
+        "properties": {
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          },
+          "hit_rate": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hit Rate",
+            "description": "Share of outcomes that moved in the signal direction, 0..1."
+          },
+          "avg_return_pct": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Return Pct"
+          },
+          "avg_alpha_pct": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Alpha Pct"
+          },
+          "low_sample": {
+            "type": "boolean",
+            "title": "Low Sample",
+            "description": "Fewer than 10 outcomes."
+          },
+          "origin": {
+            "type": "string",
+            "enum": [
+              "user",
+              "system"
+            ],
+            "title": "Origin"
+          }
+        },
+        "type": "object",
+        "required": [
+          "count",
+          "hit_rate",
+          "avg_return_pct",
+          "avg_alpha_pct",
+          "low_sample",
+          "origin"
+        ],
+        "title": "TrackOrigin"
+      },
+      "TrackRecordOut": {
+        "properties": {
+          "horizon_days": {
+            "type": "integer",
+            "title": "Horizon Days"
+          },
+          "horizons": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Horizons"
+          },
+          "benchmark": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Benchmark"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "default": "signal_outcome"
+          },
+          "as_of": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "As Of",
+            "description": "Latest outcome computation time."
+          },
+          "min_sample": {
+            "type": "integer",
+            "title": "Min Sample",
+            "default": 10
+          },
+          "signals_total": {
+            "type": "integer",
+            "title": "Signals Total"
+          },
+          "measured": {
+            "type": "integer",
+            "title": "Measured"
+          },
+          "pending": {
+            "type": "integer",
+            "title": "Pending",
+            "description": "Signals without an outcome at this horizon yet."
+          },
+          "overall": {
+            "$ref": "#/components/schemas/TrackStat"
+          },
+          "by_origin": {
+            "items": {
+              "$ref": "#/components/schemas/TrackOrigin"
+            },
+            "type": "array",
+            "title": "By Origin"
+          },
+          "by_group": {
+            "items": {
+              "$ref": "#/components/schemas/TrackGroup"
+            },
+            "type": "array",
+            "title": "By Group"
+          },
+          "calibration": {
+            "items": {
+              "$ref": "#/components/schemas/CalibrationBucket"
+            },
+            "type": "array",
+            "title": "Calibration"
+          }
+        },
+        "type": "object",
+        "required": [
+          "horizon_days",
+          "horizons",
+          "benchmark",
+          "as_of",
+          "signals_total",
+          "measured",
+          "pending",
+          "overall",
+          "by_origin",
+          "by_group",
+          "calibration"
+        ],
+        "title": "TrackRecordOut"
+      },
+      "TrackStat": {
+        "properties": {
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          },
+          "hit_rate": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hit Rate",
+            "description": "Share of outcomes that moved in the signal direction, 0..1."
+          },
+          "avg_return_pct": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Return Pct"
+          },
+          "avg_alpha_pct": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Alpha Pct"
+          },
+          "low_sample": {
+            "type": "boolean",
+            "title": "Low Sample",
+            "description": "Fewer than 10 outcomes."
+          }
+        },
+        "type": "object",
+        "required": [
+          "count",
+          "hit_rate",
+          "avg_return_pct",
+          "avg_alpha_pct",
+          "low_sample"
+        ],
+        "title": "TrackStat"
       },
       "ValidationError": {
         "properties": {

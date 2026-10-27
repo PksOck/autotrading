@@ -4,6 +4,31 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 
 ---
 
+## S-011 · 2026-10-27 · Uspešnost in zaključek M5
+
+**Cilj:** zaključiti preostale naloge M5: BL-163, BL-161 in BL-102 (SCR-10).
+
+**Narejeno:**
+- BL-163: `vendor_local` piše CSV z `
+` na vseh platformah, zato se golden kontrolne vsote ujemajo tudi na Windows.
+- BL-161: različica osnutka teze ima `edit_count` in `edited_at` (migracija 0014). Urejanje pošlje `expected_edit_count`; zastarelo urejanje vrne 409 `revision_edit_conflict` s prijaznim sporočilom. `updated_at` zdaj upošteva tudi urejanja.
+- BL-102: `GET /track-record` (domena `track_record.py` je čista in brez I/O) in zaslon SCR-10. Zadetki in donos so v smeri signala, alfa je proti indeksu, shranjenemu ob izidu. Tvoji predlogi (`manual` ali s `proposal_id`) se merijo ločeno. Kalibracija ima 5 razredov moči. Pod 10 izidi je številka označena.
+- Proxy `app/api/[...path]` je imel seznam dovoljenih poti brez `track-record`; dodano.
+- Oznake mejnika v navigaciji so odstranjene pri izvedenih zaslonih (Vstopi, Teze, Uspešnost).
+- Demo seed doda 14 preteklih signalov; izidi se izračunajo iz demo sveč proti CSPX.
+- Preverjeno: API z bazo 281 testov, ruff, mypy; web tsc, eslint, vitest 108; e2e na demo skladu 34 uspešnih in 10 preskočenih; telefon brez vodoravnega drsenja.
+- Neodvisnega pregleda ni bilo, ker OpenCode Sol nima kvote.
+
+**Odločitve:** SCR-10 kalibracijo samo prikaže. Predlog novih uteži je ločena naloga (BL-103) in zahteva tvojo potrditev.
+
+**Odprto:**
+- Živa baza potrebuje migracijo 0014, ko se živi sklad zgradi iz te veje.
+- Osnutek teze ASML čaka tvojo potrditev, BL-097 je tvoja odločitev, IB še ni povezan.
+
+**Naslednji korak:** BL-103 kalibracija uteži, nato M6.
+
+---
+
 ## S-010 · 2026-10-27 · Demo sklad za e2e
 
 **Cilj:** e2e naj teče zeleno na vzorčnih podatkih, brez posega v živo bazo (BL-162).

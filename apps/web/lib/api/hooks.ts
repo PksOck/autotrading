@@ -25,6 +25,7 @@ import type {
   InstrumentOut,
   PortfolioOut,
   SystemStatus,
+  TrackRecordOut,
   WatchlistCreate,
   WatchlistOut,
   WatchlistUpdate,
@@ -61,6 +62,7 @@ export const keys = {
   thesisReviews: (id: string, limit = 30, offset = 0) =>
     ["thesis-reviews", id, limit, offset] as const,
   thesisReviewProposals: (id: string) => ["thesis-review-proposals", id] as const,
+  trackRecord: (horizonDays: number) => ["track-record", horizonDays] as const,
 };
 
 export const useSystemStatus = () =>
@@ -453,3 +455,11 @@ export function useAnalysisStream(
 
   return { steps, connected: live && connected };
 }
+
+/** SCR-10 track record at one horizon (BL-102). */
+export const useTrackRecord = (horizonDays: number) =>
+  useQuery({
+    queryKey: keys.trackRecord(horizonDays),
+    queryFn: () => api.get<TrackRecordOut>(`/track-record?horizon_days=${horizonDays}`),
+    placeholderData: keepPreviousData,
+  });

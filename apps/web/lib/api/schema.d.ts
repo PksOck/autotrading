@@ -572,6 +572,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/track-record": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Track Record */
+        get: operations["track_record_track_record_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -749,6 +766,31 @@ export interface components {
             /** Bars */
             bars: components["schemas"]["BarOut"][];
             provenance: components["schemas"]["Provenance"] | null;
+        };
+        /** CalibrationBucket */
+        CalibrationBucket: {
+            /** Count */
+            count: number;
+            /**
+             * Hit Rate
+             * @description Share of outcomes that moved in the signal direction, 0..1.
+             */
+            hit_rate: string | null;
+            /** Avg Return Pct */
+            avg_return_pct: string | null;
+            /** Avg Alpha Pct */
+            avg_alpha_pct: string | null;
+            /**
+             * Low Sample
+             * @description Fewer than 10 outcomes.
+             */
+            low_sample: boolean;
+            /** Strength Low */
+            strength_low: string;
+            /** Strength High */
+            strength_high: string;
+            /** Avg Strength */
+            avg_strength: string | null;
         };
         /** CashIn */
         CashIn: {
@@ -1839,6 +1881,112 @@ export interface components {
              * @description Latest creation, confirmation, draft edit or claim event time.
              */
             updated_at: string;
+        };
+        /** TrackGroup */
+        TrackGroup: {
+            /** Count */
+            count: number;
+            /**
+             * Hit Rate
+             * @description Share of outcomes that moved in the signal direction, 0..1.
+             */
+            hit_rate: string | null;
+            /** Avg Return Pct */
+            avg_return_pct: string | null;
+            /** Avg Alpha Pct */
+            avg_alpha_pct: string | null;
+            /**
+             * Low Sample
+             * @description Fewer than 10 outcomes.
+             */
+            low_sample: boolean;
+            /** Kind */
+            kind: string;
+            /** Source */
+            source: string;
+        };
+        /** TrackOrigin */
+        TrackOrigin: {
+            /** Count */
+            count: number;
+            /**
+             * Hit Rate
+             * @description Share of outcomes that moved in the signal direction, 0..1.
+             */
+            hit_rate: string | null;
+            /** Avg Return Pct */
+            avg_return_pct: string | null;
+            /** Avg Alpha Pct */
+            avg_alpha_pct: string | null;
+            /**
+             * Low Sample
+             * @description Fewer than 10 outcomes.
+             */
+            low_sample: boolean;
+            /**
+             * Origin
+             * @enum {string}
+             */
+            origin: "user" | "system";
+        };
+        /** TrackRecordOut */
+        TrackRecordOut: {
+            /** Horizon Days */
+            horizon_days: number;
+            /** Horizons */
+            horizons: number[];
+            /** Benchmark */
+            benchmark: string | null;
+            /**
+             * Source
+             * @default signal_outcome
+             */
+            source: string;
+            /**
+             * As Of
+             * @description Latest outcome computation time.
+             */
+            as_of: string | null;
+            /**
+             * Min Sample
+             * @default 10
+             */
+            min_sample: number;
+            /** Signals Total */
+            signals_total: number;
+            /** Measured */
+            measured: number;
+            /**
+             * Pending
+             * @description Signals without an outcome at this horizon yet.
+             */
+            pending: number;
+            overall: components["schemas"]["TrackStat"];
+            /** By Origin */
+            by_origin: components["schemas"]["TrackOrigin"][];
+            /** By Group */
+            by_group: components["schemas"]["TrackGroup"][];
+            /** Calibration */
+            calibration: components["schemas"]["CalibrationBucket"][];
+        };
+        /** TrackStat */
+        TrackStat: {
+            /** Count */
+            count: number;
+            /**
+             * Hit Rate
+             * @description Share of outcomes that moved in the signal direction, 0..1.
+             */
+            hit_rate: string | null;
+            /** Avg Return Pct */
+            avg_return_pct: string | null;
+            /** Avg Alpha Pct */
+            avg_alpha_pct: string | null;
+            /**
+             * Low Sample
+             * @description Fewer than 10 outcomes.
+             */
+            low_sample: boolean;
         };
         /** ValidationError */
         ValidationError: {
@@ -3041,6 +3189,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ClaimReviewProposalOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    track_record_track_record_get: {
+        parameters: {
+            query?: {
+                horizon_days?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrackRecordOut"];
                 };
             };
             /** @description Validation Error */

@@ -1003,5 +1003,42 @@
     "conservative": "Previden",
     "neutral": "Nevtralen",
     "portfolio_manager": "Portfeljski vodja"
+  },
+  "trackRecord": {
+    "title": "Uspešnost",
+    "subtitle": "Kako so se signali izkazali po izbranem horizontu. Tvoji predlogi se merijo ločeno od sistemskih.",
+    "horizon": "Horizont",
+    "horizonDays": "{days} d",
+    "sourceLine": "Vir: izidi signalov",
+    "hitRate": "Zadetki",
+    "hitRateHint": "Delež izidov z donosom v smeri signala",
+    "hitRateIn": "Zadetki pri {range}",
+    "avgReturn": "Povprečni donos",
+    "avgReturnHint": "V smeri signala, od cene ob signalu do konca horizonta",
+    "avgAlpha": "Alfa proti {benchmark}",
+    "avgAlphaPlain": "Alfa",
+    "avgAlphaHint": "Donos nad primerjalnim indeksom",
+    "measured": "Izmerjeno",
+    "measuredValue": "{measured} od {total}",
+    "pending": "Na izid čaka: {count}",
+    "count": "Število",
+    "countShort": "n = {count}",
+    "kind": "Vrsta",
+    "source": "Vir",
+    "lowSample": "Malo podatkov",
+    "lowSampleHint": "Manj kot {min} izidov, številka še ni zanesljiva.",
+    "lowSampleBanner": "Izidov je manj kot {min}. Številke so zgodnje in se bodo še premikale.",
+    "originTitle": "Tvoji predlogi proti sistemskim signalom",
+    "origin": {
+      "user": "Tvoji predlogi",
+      "system": "Sistemski signali"
+    },
+    "groupsTitle": "Po vrsti in viru",
+    "calibrationTitle": "Kalibracija moči",
+    "calibrationHint": "Ali močnejši signali pogosteje zadenejo? Pri dobri kalibraciji delež zadetkov raste z močjo.",
+    "strengthRange": "Moč {low}–{high}",
+    "empty": "Za horizont {days} d še ni izmerjenih izidov. Izid se izračuna, ko horizont poteče. Na izid čaka: {pending}.",
+    "error": "Uspešnosti ni bilo mogoče naložiti.",
+    "retry": "Poskusi znova"
   }
 }

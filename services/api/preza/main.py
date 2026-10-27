@@ -11,6 +11,7 @@ from preza.routes import (
     signals,
     system,
     theses,
+    track_record,
     watchlist,
 )
 
@@ -27,6 +28,7 @@ def create_app() -> FastAPI:
     app.include_router(entries.router)
     app.include_router(analyses.router)
     app.include_router(theses.router)
+    app.include_router(track_record.router)
     return app
 
 

@@ -11,14 +11,14 @@ export type NavItem = {
 export const NAV: NavItem[] = [
   { href: "/", key: "overview", screen: "SCR-01", main: true, shortcut: "o" },
   { href: "/radar", key: "radar", screen: "SCR-02", main: true, shortcut: "r" },
-  { href: "/entries", key: "entries", screen: "SCR-03", milestone: "M3", shortcut: "e" },
+  { href: "/entries", key: "entries", screen: "SCR-03", shortcut: "e" },
   { href: "/signals", key: "signals", screen: "SCR-04", main: true, shortcut: "s" },
   { href: "/proposals", key: "proposals", screen: "SCR-12" },
   { href: "/analysis", key: "analyses", screen: "SCR-06" },
   { href: "/portfolio", key: "portfolio", screen: "SCR-08", main: true, shortcut: "p" },
-  { href: "/theses", key: "theses", screen: "SCR-09", milestone: "M5" },
+  { href: "/theses", key: "theses", screen: "SCR-09" },
   { href: "/options", key: "options", screen: "SCR-07", milestone: "M6" },
-  { href: "/track-record", key: "trackRecord", screen: "SCR-10", milestone: "M5" },
+  { href: "/track-record", key: "trackRecord", screen: "SCR-10" },
   { href: "/settings", key: "settings", screen: "SCR-11", milestone: "M1" },
 ];
 

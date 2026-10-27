@@ -123,7 +123,8 @@
 |---|---|---|---|
 | BL-100 | Model teze, SCR-09, CMP-11 (sprožilci iz kartice odločitve BL-089 postanejo trditve teze). Modeli in migracija 0012, API (osnutek iz analize, urejanje, potrditev, status trditve z dokazi), SCR-09 seznam in podrobnosti, gumb na SCR-06 | research §5.6 | done |
 | BL-101 | Tedenski pregled tez (`cloud-deep`) + signal `thesis_break` (ADR-0012) | research §5.6 | done |
-| BL-102 | SCR-10 Uspešnost, kalibracija | research §5.8 | later |
+| BL-102 | SCR-10 Uspešnost: `GET /track-record?horizon_days=1|5|20|60`, zadetki in donos v smeri signala, alfa proti shranjenemu indeksu, tvoji predlogi ločeno od sistemskih, vrsta × vir, kalibracija moči v 5 razredih, oznaka pod 10 izidi; demo seed doda pretekle signale z izidi | research §5.8 | done |
+| BL-103 | Kalibracija uteži: iz izidov SCR-10 predlagaj nove uteži pravil in virov (deterministično, z intervalom zaupanja); sprememba uteži samo z izrecno potrditvijo | BL-102 | next |
 | BL-161 | Števec urejanj osnutka teze: `expected_version` zdaj preverja zaporedno številko različice, ne urejanj; `updated_at` ne sledi urejanju trditev | BL-100 | done |
 | BL-162 | Demo podatki za e2e: ločen sklad `preza-demo` (`infra/docker-compose.demo.yml`, web na :3100, `scripts/demo-stack.sh`), `seed_demo` zahteva `PREZA_DEMO_DB=1`, demo analize imajo sveče in temeljne podatke za obete. Lokalno se uporablja Chromium 1234 prek `CHROMIUM_PATH` | S-010 | done |
 | BL-163 | Regresijski testi agents: golden kontrolne vsote padejo na Windows zaradi CRLF (`.gitattributes` za `tests/regression` ali normalizacija pred hashem) | BL-101 | done |

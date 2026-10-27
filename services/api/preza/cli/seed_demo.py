@@ -9,7 +9,8 @@ import math
 import os
 import random
 import re
-from datetime import date, timedelta
+import uuid
+from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
 
 from sqlalchemy import delete, select
@@ -398,10 +399,66 @@ async def seed_entries() -> None:
     print(f"demo entries: {run.evaluated} evaluated, {run.active} active, {run.signals} signals")
 
 
+DEMO_TRACK_NS = uuid.UUID("6f1c0d1e-5b7a-4d0e-9a51-0c2d7e1b3a10")
+# (symbol, kind, source, strength, days ago): past signals whose outcomes SCR-10 measures.
+DEMO_TRACK = [
+    ("MSFT", "entry", "rule", "0.82", 150),
+    ("ASML", "entry", "rule", "0.74", 140),
+    ("AMZN", "catalyst", "radar", "0.66", 130),
+    ("V", "entry", "rule", "0.58", 125),
+    ("NVDA", "catalyst", "radar", "0.91", 120),
+    ("COST", "entry", "agent", "0.47", 115),
+    ("ORCL", "exit_warning", "rule", "0.35", 110),
+    ("MSFT", "catalyst", "manual", "0.70", 105),
+    ("ASML", "entry", "manual", "0.62", 100),
+    ("AMZN", "entry", "rule", "0.28", 96),
+    ("NVDA", "entry", "agent", "0.77", 92),
+    ("V", "catalyst", "radar", "0.53", 88),
+    ("COST", "exit_warning", "rule", "0.18", 70),
+    ("ORCL", "entry", "rule", "0.86", 45),
+]
+
+
+async def seed_track_record() -> None:
+    """Back-dated signals plus outcomes computed from the demo bars (BL-102)."""
+    from preza.models import Signal
+    from preza.services.outcomes import compute_outcomes
+
+    ids = [uuid.uuid5(DEMO_TRACK_NS, str(i)) for i in range(len(DEMO_TRACK))]
+    now = datetime.now(UTC)
+    async with get_sessionmaker()() as session:
+        await session.execute(delete(Signal).where(Signal.id.in_(ids)))
+        for sid, (symbol, kind, source, strength, days) in zip(ids, DEMO_TRACK, strict=True):
+            instrument = await session.scalar(select(Instrument).where(Instrument.symbol == symbol))
+            if instrument is None:
+                continue
+            session.add(
+                Signal(
+                    id=sid,
+                    instrument_id=instrument.id,
+                    kind=kind,
+                    source=source,
+                    direction="down" if kind == "exit_warning" else "up",
+                    horizon="weeks",
+                    strength=Decimal(strength),
+                    rationale=f"Demo {kind} signal for {symbol}.",
+                    evidence=[{"label": "demo", "url": None}],
+                    status="accepted" if source == "manual" else "dismissed",
+                    created_at=now - timedelta(days=days),
+                )
+            )
+        await session.flush()
+        # Demo data has no SPY; CSPX tracks the same index.
+        inserted = await compute_outcomes(session, "CSPX", now)
+        await session.commit()
+    print(f"demo track record: {len(ids)} signals, {inserted} outcomes")
+
+
 async def seed_all() -> None:
     await main()
     await seed_radar()
     await seed_entries()
+    await seed_track_record()
     from preza.cli.seed_demo_analysis import seed_analyses
 
     await seed_analyses()

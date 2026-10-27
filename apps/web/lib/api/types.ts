@@ -56,3 +56,5 @@ export type ReviewOut = S["ReviewOut"];
 export type ClaimReviewProposalOut = S["ClaimReviewProposalOut"];
 export type AcceptProposal = S["AcceptProposal"];
 export type DismissProposal = S["DismissProposal"];
+export type TrackRecordOut = S["TrackRecordOut"];
+export type TrackStat = S["TrackStat"];

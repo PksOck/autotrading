@@ -25,6 +25,16 @@ export function formatMoney(locale: AppLocale, value: number, currency = "USD", 
   }).format(value);
 }
 
+/** Share 0..1 as an unsigned percentage, e.g. "62 %" (VOICE.md §3). */
+export function formatShare(locale: AppLocale, ratio: number, digits = 0): string {
+  return new Intl.NumberFormat(intlLocale(locale), {
+    style: "percent",
+    useGrouping: "always",
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  }).format(ratio);
+}
+
 /** Signed percentage with arrow, e.g. "▲ +2,1 %" / "▼ −3,4 %" (CMP-09). */
 export function formatChange(locale: AppLocale, percent: number, digits = 1): string {
   const arrow = percent >= 0 ? "▲" : "▼";

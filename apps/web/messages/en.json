@@ -1003,5 +1003,42 @@
     "conservative": "Conservative",
     "neutral": "Neutral",
     "portfolio_manager": "Portfolio manager"
+  },
+  "trackRecord": {
+    "title": "Track record",
+    "subtitle": "How signals turned out at the chosen horizon. Your proposals are measured apart from system signals.",
+    "horizon": "Horizon",
+    "horizonDays": "{days} d",
+    "sourceLine": "Source: signal outcomes",
+    "hitRate": "Hit rate",
+    "hitRateHint": "Share of outcomes that moved in the signal's direction",
+    "hitRateIn": "Hit rate at {range}",
+    "avgReturn": "Average return",
+    "avgReturnHint": "In the signal's direction, from the signal price to the end of the horizon",
+    "avgAlpha": "Alpha vs {benchmark}",
+    "avgAlphaPlain": "Alpha",
+    "avgAlphaHint": "Return above the benchmark",
+    "measured": "Measured",
+    "measuredValue": "{measured} of {total}",
+    "pending": "Awaiting outcome: {count}",
+    "count": "Count",
+    "countShort": "n = {count}",
+    "kind": "Kind",
+    "source": "Source",
+    "lowSample": "Little data",
+    "lowSampleHint": "Fewer than {min} outcomes, the number is not reliable yet.",
+    "lowSampleBanner": "Fewer than {min} outcomes. These numbers are early and will still move.",
+    "originTitle": "Your proposals vs system signals",
+    "origin": {
+      "user": "Your proposals",
+      "system": "System signals"
+    },
+    "groupsTitle": "By kind and source",
+    "calibrationTitle": "Strength calibration",
+    "calibrationHint": "Do stronger signals hit more often? When well calibrated, the hit rate rises with strength.",
+    "strengthRange": "Strength {low}–{high}",
+    "empty": "No measured outcomes for the {days} d horizon yet. An outcome is computed once the horizon has passed. Awaiting outcome: {pending}.",
+    "error": "Could not load the track record.",
+    "retry": "Try again"
   }
 }
