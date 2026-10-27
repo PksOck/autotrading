@@ -32,6 +32,7 @@ from preza.services.instruments import find_by_symbol, get_or_create
 from preza.services.outcomes import compute_outcomes
 from preza.services.portfolio import record_sync, store_statement
 from preza.services.radar_views import user_symbols
+from preza.services.watchlist import fill_added_price
 
 SEC_TICKERS_URL = "https://www.sec.gov/files/company_tickers.json"
 
@@ -72,6 +73,18 @@ async def refresh_bars(ctx: dict[str, Any]) -> str:
             ok += await service.refresh(session, instrument)
             await session.commit()
     return f"{ok}/{len(targets)}"
+
+
+async def refresh_instrument_bars(ctx: dict[str, Any], instrument_id: int) -> str:
+    """Fetches bars for one instrument right after it is added, not at the next nightly run."""
+    async with get_sessionmaker()() as session:
+        instrument = await session.get(Instrument, instrument_id)
+        if instrument is None:
+            return "missing"
+        ok = await get_bars_service().refresh(session, instrument)
+        await fill_added_price(session, instrument_id)
+        await session.commit()
+    return "ok" if ok else "failed"
 
 
 def llm_client() -> LiteLlmClient:
@@ -269,6 +282,7 @@ class WorkerSettings:
     functions: ClassVar[list[Any]] = [
         sync_flex,
         refresh_bars,
+        refresh_instrument_bars,
         radar,
         analyze_proposal_job,
         sweep_proposals,

@@ -3,9 +3,11 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from preza.config import Settings, get_settings
 from preza.db import get_session
 from preza.domain.portfolio import WatchlistCreate, WatchlistOut, WatchlistUpdate
 from preza.models import WatchlistItem
+from preza.queue import enqueue
 from preza.services import watchlist
 
 router = APIRouter(prefix="/watchlist", tags=["watchlist"])
@@ -18,12 +20,18 @@ async def list_items(session: Session) -> list[WatchlistOut]:
 
 
 @router.post("", response_model=WatchlistOut, status_code=201)
-async def add(session: Session, data: WatchlistCreate) -> WatchlistOut:
+async def add(
+    session: Session, settings: Annotated[Settings, Depends(get_settings)], data: WatchlistCreate
+) -> WatchlistOut:
     try:
         item = await watchlist.add(session, data)
     except watchlist.AlreadyWatchedError as exc:
         raise HTTPException(409, detail="already_watched") from exc
-    return await watchlist.to_out(session, item)
+    out = await watchlist.to_out(session, item)
+    await session.commit()  # the worker must see the new instrument
+    # Prices arrive within a minute, not at the nightly refresh; no queue only delays them.
+    await enqueue(settings, "refresh_instrument_bars", item.instrument_id)
+    return out
 
 
 async def _item_or_404(session: AsyncSession, item_id: int) -> WatchlistItem:

@@ -55,6 +55,21 @@ async def list_items(session: AsyncSession) -> list[WatchlistOut]:
     return [await to_out(session, item) for item in items]
 
 
+async def fill_added_price(session: AsyncSession, instrument_id: int) -> None:
+    """An item added before its bars arrived takes the close of the day it was added."""
+    item = await session.scalar(
+        select(WatchlistItem).where(WatchlistItem.instrument_id == instrument_id)
+    )
+    if item is None or item.added_price is not None:
+        return
+    item.added_price = await session.scalar(
+        select(Bar.close)
+        .where(Bar.instrument_id == instrument_id, Bar.day <= item.added_at.date())
+        .order_by(Bar.day.desc())
+        .limit(1)
+    ) or await _last_close(session, instrument_id)
+
+
 async def add(session: AsyncSession, data: WatchlistCreate) -> WatchlistItem:
     instrument = await find_by_symbol(session, data.symbol) or await get_or_create(
         session, symbol=data.symbol, source="manual"

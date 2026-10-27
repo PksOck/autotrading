@@ -108,6 +108,34 @@ async def test_watchlist_crud_and_since_added(api: tuple[httpx.AsyncClient, Fake
     assert (await client.get("/watchlist")).json() == []
 
 
+async def test_adding_to_watchlist_fetches_prices_right_away(
+    api: tuple[httpx.AsyncClient, FakeRouter], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from preza import worker
+    from preza.routes import watchlist as watchlist_route
+    from preza.services.bars import BarsService
+
+    client, router = api
+    queued: list[tuple[str, tuple[object, ...]]] = []
+
+    async def fake_enqueue(settings, job, *args, job_id=None, queue_name=None):  # type: ignore[no-untyped-def]
+        queued.append((job, args))
+        return "job"
+
+    monkeypatch.setattr(watchlist_route, "enqueue", fake_enqueue)
+    item = (await client.post("/watchlist", json={"symbol": "ELF"})).json()
+    assert item["added_price"] is None and item["last_close"] is None
+    assert [job for job, _ in queued] == ["refresh_instrument_bars"]
+
+    # The worker job fetches the bars and takes the first close as the price when added.
+    router.bars = bars_until_today(5)
+    monkeypatch.setattr(worker, "get_bars_service", lambda: BarsService(router, 400))  # type: ignore[arg-type]
+    assert await worker.refresh_instrument_bars({}, *queued[0][1]) == "ok"
+    assert await worker.refresh_instrument_bars({}, 999_999) == "missing"
+    listed = (await client.get("/watchlist")).json()[0]
+    assert listed["last_close"] == listed["added_price"] == 104
+
+
 async def test_sync_requires_flex_configuration(api: tuple[httpx.AsyncClient, FakeRouter]) -> None:
     client, _ = api
     response = await client.post("/portfolio/sync")
