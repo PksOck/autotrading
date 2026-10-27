@@ -1,11 +1,11 @@
 """Turn scored events into catalyst signals; upgrade rumors on confirmation (BL-046, BL-047)."""
 
 from datetime import UTC, datetime, timedelta
-from decimal import Decimal
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from preza.domain.calibration import weighted_strength
 from preza.domain.radar import (
     Direction,
     EventStatus,
@@ -15,6 +15,7 @@ from preza.domain.radar import (
     SignalStatus,
 )
 from preza.models import Event, Signal
+from preza.services.calibration import active_weight
 
 HORIZON_BY_SENSITIVITY = {"hours": Horizon.DAYS, "days": Horizon.WEEKS, "weeks": Horizon.MONTHS}
 EXPIRY = {Horizon.DAYS: 5, Horizon.WEEKS: 21, Horizon.MONTHS: 90, Horizon.YEARS: 365}
@@ -49,8 +50,12 @@ async def upsert_signal(
     threshold: float,
     time_sensitivity: str = "days",
 ) -> Signal | None:
-    """One catalyst signal per event. Rumors are only watched, never acted on (AGENTS §3.4)."""
-    score = float(event.score or 0)
+    """One catalyst signal per event. Rumors are only watched, never acted on (AGENTS §3.4).
+
+    The confirmed calibration weight (BL-103) scales the score before the threshold."""
+    weight = await active_weight(session, SignalKind.CATALYST.value, SignalSource.RADAR.value)
+    strength = weighted_strength(event.score or 0, weight)
+    score = float(strength)
     existing = await session.scalar(select(Signal).where(Signal.event_id == event.id))
     if score < threshold:
         if existing is None:
@@ -74,7 +79,7 @@ async def upsert_signal(
     ):
         existing.status = SignalStatus.NEW.value  # confirmed by an official source
     existing.direction = _direction(event).value
-    existing.strength = Decimal(str(score))
+    existing.strength = strength
     existing.confidence = event.materiality
     existing.rationale = event.summary or event.title
     existing.rationale_i18n = dict(event.summary_i18n or {}) if event.summary else {}

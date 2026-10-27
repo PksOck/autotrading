@@ -26,6 +26,8 @@ import type {
   PortfolioOut,
   SystemStatus,
   TrackRecordOut,
+  CalibrationOut,
+  WeightSetOut,
   WatchlistCreate,
   WatchlistOut,
   WatchlistUpdate,
@@ -63,6 +65,7 @@ export const keys = {
     ["thesis-reviews", id, limit, offset] as const,
   thesisReviewProposals: (id: string) => ["thesis-review-proposals", id] as const,
   trackRecord: (horizonDays: number) => ["track-record", horizonDays] as const,
+  calibration: ["calibration"] as const,
 };
 
 export const useSystemStatus = () =>
@@ -463,3 +466,25 @@ export const useTrackRecord = (horizonDays: number) =>
     queryFn: () => api.get<TrackRecordOut>(`/track-record?horizon_days=${horizonDays}`),
     placeholderData: keepPreviousData,
   });
+
+export const useCalibration = () =>
+  useQuery({ queryKey: keys.calibration, queryFn: () => api.get<CalibrationOut>("/calibration") });
+
+/** Weight proposals change nothing until confirmed (ADR-0015). */
+function useCalibrationMutation<A>(mutationFn: (arg: A) => Promise<WeightSetOut>) {
+  const client = useQueryClient();
+  return useMutation({ mutationFn, onSettled: () => client.invalidateQueries({ queryKey: keys.calibration }) });
+}
+
+export const useProposeWeights = () =>
+  useCalibrationMutation((horizonDays: number) =>
+    api.send<WeightSetOut>(`/calibration/proposals?horizon_days=${horizonDays}`, "POST"),
+  );
+
+export const useConfirmWeights = () =>
+  useCalibrationMutation((id: string) =>
+    api.send<WeightSetOut>(`/calibration/${encodeURIComponent(id)}/confirm`, "POST", { confirm: true }),
+  );
+
+export const useRejectWeights = () =>
+  useCalibrationMutation((id: string) => api.send<WeightSetOut>(`/calibration/${encodeURIComponent(id)}/reject`, "POST"));

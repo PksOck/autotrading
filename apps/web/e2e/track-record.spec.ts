@@ -15,3 +15,20 @@ test("track record: horizons, your proposals apart, calibration", async ({ page 
   expect((await request).ok()).toBe(true);
   await expect(page.getByRole("radio", { name: "1 d" })).toBeChecked();
 });
+
+test("track record: weight proposal needs an explicit confirmation", async ({ page }) => {
+  await page.goto("/track-record", { waitUntil: "networkidle" });
+  const section = page.getByRole("region", { name: "Predlog uteži" });
+  await expect(section).toBeVisible();
+
+  const created = page.waitForResponse((r) => r.url().includes("/api/calibration/proposals?horizon_days=20"));
+  await section.getByRole("button", { name: "Izračunaj predlog (20 d)" }).click();
+  expect((await created).status()).toBe(201);
+  await expect(section.getByTestId("weight-entry-rule")).toBeVisible();
+  await expect(section.getByTestId("weight-catalyst-radar")).toBeVisible();
+
+  // Dismiss instead of confirming so the demo weights stay at their defaults.
+  await section.getByRole("button", { name: "Zavrzi predlog" }).click();
+  await expect(section.getByTestId("weight-entry-rule")).toBeHidden();
+  await expect(section.getByText("Uteži še niso potrjene: vsak vir šteje z 1,00.")).toBeVisible();
+});

@@ -8,6 +8,7 @@ import type { TrackRecordOut, TrackStat } from "@/lib/api/types";
 import { cn } from "@/lib/cn";
 import { formatChange, formatNumber, formatShare } from "@/lib/format";
 import { useAppLocale } from "@/lib/use-app-locale";
+import { WeightProposal } from "./WeightProposal";
 
 const HORIZONS = ["1", "5", "20", "60"] as const;
 type Horizon = (typeof HORIZONS)[number];
@@ -239,6 +240,7 @@ export function TrackRecord() {
           <Calibration data={data} />
         </>
       )}
+      {!isLoading && !error && <WeightProposal horizonDays={Number(horizon)} />}
     </div>
   );
 }

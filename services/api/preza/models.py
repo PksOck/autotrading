@@ -608,3 +608,18 @@ class ThesisClaimReviewProposal(Base):
     dismissal_reason: Mapped[str | None] = mapped_column(Text)
     accepted_event_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("thesis_claim_event.id"))
     signal_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("signal.id"), unique=True)
+
+
+class SignalWeightSet(Base):
+    """Versioned strength weights per signal group (BL-103). Only `active` is applied;
+    a `proposed` set becomes active only on explicit user confirmation (ADR-0015)."""
+
+    __tablename__ = "signal_weight_set"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    status: Mapped[str] = mapped_column(String(12), index=True)
+    horizon_days: Mapped[int] = mapped_column(Integer)
+    weights: Mapped[dict[str, str]] = mapped_column(JSONB, default=dict)
+    basis: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    decided_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

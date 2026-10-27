@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from preza import __version__
 from preza.routes import (
     analyses,
+    calibration,
     entries,
     instruments,
     portfolio,
@@ -29,6 +30,7 @@ def create_app() -> FastAPI:
     app.include_router(analyses.router)
     app.include_router(theses.router)
     app.include_router(track_record.router)
+    app.include_router(calibration.router)
     return app
 
 

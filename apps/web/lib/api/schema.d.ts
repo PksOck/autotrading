@@ -589,6 +589,74 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/calibration": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Calibration */
+        get: operations["get_calibration_calibration_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/calibration/proposals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create Proposal */
+        post: operations["create_proposal_calibration_proposals_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/calibration/{set_id}/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Confirm */
+        post: operations["confirm_calibration__set_id__confirm_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/calibration/{set_id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reject */
+        post: operations["reject_calibration__set_id__reject_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -792,6 +860,34 @@ export interface components {
             /** Avg Strength */
             avg_strength: string | null;
         };
+        /** CalibrationOut */
+        CalibrationOut: {
+            /** Tunable */
+            tunable: string[];
+            active: components["schemas"]["WeightSetOut"] | null;
+            proposal: components["schemas"]["WeightSetOut"] | null;
+        };
+        /** CalibrationProposal */
+        CalibrationProposal: {
+            /** Horizon Days */
+            horizon_days: number;
+            /**
+             * Min Sample
+             * @default 10
+             */
+            min_sample: number;
+            /**
+             * Baseline Hit Rate
+             * @description Hit rate of all system signals at this horizon.
+             */
+            baseline_hit_rate: string | null;
+            /** Baseline Count */
+            baseline_count: number;
+            /** Groups */
+            groups: components["schemas"]["GroupProposal"][];
+            /** Changed */
+            changed: boolean;
+        };
         /** CashIn */
         CashIn: {
             /** Account Id */
@@ -866,6 +962,14 @@ export interface components {
             accepted_event_id: string | null;
             /** Signal Id */
             signal_id: string | null;
+        };
+        /** ConfirmWeights */
+        ConfirmWeights: {
+            /**
+             * Confirm
+             * @constant
+             */
+            confirm: true;
         };
         /**
          * ControlScore
@@ -1109,6 +1213,30 @@ export interface components {
             /** Ref Id */
             ref_id?: string | null;
         };
+        /** GroupProposal */
+        GroupProposal: {
+            /** Kind */
+            kind: string;
+            /** Source */
+            source: string;
+            /** Count */
+            count: number;
+            /** Hits */
+            hits: number;
+            /** Hit Rate */
+            hit_rate: string | null;
+            /** @description 95 % Wilson interval for the hit rate. */
+            interval: components["schemas"]["Interval"] | null;
+            /** Current Weight */
+            current_weight: string;
+            /** Proposed Weight */
+            proposed_weight: string;
+            /**
+             * Reason
+             * @enum {string}
+             */
+            reason: "low_sample" | "not_significant" | "better" | "worse" | "no_baseline";
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -1196,6 +1324,13 @@ export interface components {
             ucits: boolean;
             /** Tradable For User */
             tradable_for_user: boolean;
+        };
+        /** Interval */
+        Interval: {
+            /** Low */
+            low: string;
+            /** High */
+            high: string;
         };
         /** LadderLevelOut */
         LadderLevelOut: {
@@ -2079,6 +2214,30 @@ export interface components {
             alert_above?: number | string | null;
             /** Reviewed */
             reviewed?: boolean | null;
+        };
+        /** WeightSetOut */
+        WeightSetOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Status */
+            status: string;
+            /** Horizon Days */
+            horizon_days: number;
+            /** Weights */
+            weights: {
+                [key: string]: string;
+            };
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Decided At */
+            decided_at: string | null;
+            proposal: components["schemas"]["CalibrationProposal"] | null;
         };
     };
     responses: never;
@@ -3220,6 +3379,123 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TrackRecordOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_calibration_calibration_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CalibrationOut"];
+                };
+            };
+        };
+    };
+    create_proposal_calibration_proposals_post: {
+        parameters: {
+            query?: {
+                horizon_days?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WeightSetOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    confirm_calibration__set_id__confirm_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                set_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfirmWeights"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WeightSetOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reject_calibration__set_id__reject_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                set_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WeightSetOut"];
                 };
             };
             /** @description Validation Error */

@@ -1791,6 +1791,166 @@
           }
         }
       }
+    },
+    "/calibration": {
+      "get": {
+        "tags": [
+          "calibration"
+        ],
+        "summary": "Get Calibration",
+        "operationId": "get_calibration_calibration_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalibrationOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/calibration/proposals": {
+      "post": {
+        "tags": [
+          "calibration"
+        ],
+        "summary": "Create Proposal",
+        "operationId": "create_proposal_calibration_proposals_post",
+        "parameters": [
+          {
+            "name": "horizon_days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "title": "Horizon Days"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeightSetOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/calibration/{set_id}/confirm": {
+      "post": {
+        "tags": [
+          "calibration"
+        ],
+        "summary": "Confirm",
+        "operationId": "confirm_calibration__set_id__confirm_post",
+        "parameters": [
+          {
+            "name": "set_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Set Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmWeights"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeightSetOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/calibration/{set_id}/reject": {
+      "post": {
+        "tags": [
+          "calibration"
+        ],
+        "summary": "Reject",
+        "operationId": "reject_calibration__set_id__reject_post",
+        "parameters": [
+          {
+            "name": "set_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Set Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeightSetOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -2426,6 +2586,93 @@
         ],
         "title": "CalibrationBucket"
       },
+      "CalibrationOut": {
+        "properties": {
+          "tunable": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tunable"
+          },
+          "active": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/WeightSetOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "proposal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/WeightSetOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "tunable",
+          "active",
+          "proposal"
+        ],
+        "title": "CalibrationOut"
+      },
+      "CalibrationProposal": {
+        "properties": {
+          "horizon_days": {
+            "type": "integer",
+            "title": "Horizon Days"
+          },
+          "min_sample": {
+            "type": "integer",
+            "title": "Min Sample",
+            "default": 10
+          },
+          "baseline_hit_rate": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline Hit Rate",
+            "description": "Hit rate of all system signals at this horizon."
+          },
+          "baseline_count": {
+            "type": "integer",
+            "title": "Baseline Count"
+          },
+          "groups": {
+            "items": {
+              "$ref": "#/components/schemas/GroupProposal"
+            },
+            "type": "array",
+            "title": "Groups"
+          },
+          "changed": {
+            "type": "boolean",
+            "title": "Changed"
+          }
+        },
+        "type": "object",
+        "required": [
+          "horizon_days",
+          "baseline_hit_rate",
+          "baseline_count",
+          "groups",
+          "changed"
+        ],
+        "title": "CalibrationProposal"
+      },
       "CashIn": {
         "properties": {
           "account_id": {
@@ -2623,6 +2870,20 @@
           "signal_id"
         ],
         "title": "ClaimReviewProposalOut"
+      },
+      "ConfirmWeights": {
+        "properties": {
+          "confirm": {
+            "type": "boolean",
+            "const": true,
+            "title": "Confirm"
+          }
+        },
+        "type": "object",
+        "required": [
+          "confirm"
+        ],
+        "title": "ConfirmWeights"
       },
       "ControlScore": {
         "properties": {
@@ -3439,6 +3700,80 @@
         ],
         "title": "EvidenceRef"
       },
+      "GroupProposal": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          },
+          "hits": {
+            "type": "integer",
+            "title": "Hits"
+          },
+          "hit_rate": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hit Rate"
+          },
+          "interval": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Interval"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "95 % Wilson interval for the hit rate."
+          },
+          "current_weight": {
+            "type": "string",
+            "title": "Current Weight"
+          },
+          "proposed_weight": {
+            "type": "string",
+            "title": "Proposed Weight"
+          },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "low_sample",
+              "not_significant",
+              "better",
+              "worse",
+              "no_baseline"
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kind",
+          "source",
+          "count",
+          "hits",
+          "hit_rate",
+          "interval",
+          "current_weight",
+          "proposed_weight",
+          "reason"
+        ],
+        "title": "GroupProposal"
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -3742,6 +4077,24 @@
           "tradable_for_user"
         ],
         "title": "InstrumentOut"
+      },
+      "Interval": {
+        "properties": {
+          "low": {
+            "type": "string",
+            "title": "Low"
+          },
+          "high": {
+            "type": "string",
+            "title": "High"
+          }
+        },
+        "type": "object",
+        "required": [
+          "low",
+          "high"
+        ],
+        "title": "Interval"
       },
       "LadderLevelOut": {
         "properties": {
@@ -6236,6 +6589,68 @@
         },
         "type": "object",
         "title": "WatchlistUpdate"
+      },
+      "WeightSetOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "horizon_days": {
+            "type": "integer",
+            "title": "Horizon Days"
+          },
+          "weights": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Weights"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "decided_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decided At"
+          },
+          "proposal": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CalibrationProposal"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "status",
+          "horizon_days",
+          "weights",
+          "created_at",
+          "decided_at",
+          "proposal"
+        ],
+        "title": "WeightSetOut"
       }
     }
   }

@@ -12,6 +12,7 @@ from decimal import Decimal
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from preza.domain.calibration import DEFAULT_WEIGHT, weighted_strength
 from preza.domain.radar import Direction, Horizon, SignalKind, SignalSource, SignalStatus
 from preza.entries.config import EntryRules, load_rules
 from preza.entries.dip import DipCause, analyze_dip, recent_events
@@ -20,6 +21,7 @@ from preza.entries.ladder import build_ladder
 from preza.entries.rules import Evaluation, EventFact, ZoneState, evaluate
 from preza.llm.client import Llm, LlmUnavailableError
 from preza.models import Bar, EntryCandidate, Event, Fundamentals, Instrument, Signal
+from preza.services.calibration import active_weight
 from preza.services.fundamentals import bands_for, bands_json
 from preza.services.instruments import find_by_symbol
 from preza.services.radar_views import user_symbols
@@ -106,6 +108,13 @@ async def _upsert_signal(
             candidate.signal_id = None  # left the zone: the next visit may signal again
         return False
 
+    # Only entries are calibrated (BL-103); thesis breaks are risk warnings at full strength.
+    # Read before a new signal is added so autoflush never sees it half-built.
+    weight = (
+        await active_weight(session, kind.value, SignalSource.RULE.value)
+        if kind == SignalKind.ENTRY
+        else DEFAULT_WEIGHT
+    )
     signal = await session.get(Signal, candidate.signal_id) if candidate.signal_id else None
     if signal is not None and (signal.status not in OPEN_STATUSES or signal.kind != kind.value):
         return False  # the user already decided on this visit to the zone
@@ -121,7 +130,7 @@ async def _upsert_signal(
         )
         session.add(signal)
     signal.direction = direction.value
-    signal.strength = Decimal(str(round(min(1.0, 0.35 + 0.15 * len(ev.hits)), 4)))
+    signal.strength = weighted_strength(min(1.0, 0.35 + 0.15 * len(ev.hits)), weight)
     signal.confidence = None
     signal.entry_low, signal.entry_high = candidate.zone_low, candidate.zone_high
     signal.stop = candidate.stop if kind == SignalKind.ENTRY else None

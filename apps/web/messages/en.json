@@ -1039,6 +1039,40 @@
     "strengthRange": "Strength {low}–{high}",
     "empty": "No measured outcomes for the {days} d horizon yet. An outcome is computed once the horizon has passed. Awaiting outcome: {pending}.",
     "error": "Could not load the track record.",
-    "retry": "Try again"
+    "retry": "Try again",
+    "weights": {
+      "title": "Weight proposal",
+      "hint": "From measured outcomes, the system proposes how much more or less to trust each signal source. A weight multiplies the strength of new signals. It only changes when the 95% interval clearly differs from the baseline, and only after you confirm.",
+      "defaults": "No weights confirmed yet: every source counts at 1.00.",
+      "activeSince": "Current weights confirmed {date}.",
+      "propose": "Calculate proposal ({days} d)",
+      "basis": "Proposal from {date} · {days}-day horizon · baseline {rate} over {count} system signals",
+      "group": "Source",
+      "count": "Signals",
+      "hitRate": "Hit rate",
+      "interval": "95% interval",
+      "intervalValue": "{low} – {high}",
+      "weight": "Weight",
+      "reasonTitle": "Why",
+      "reason": {
+        "low_sample": "Too few signals (under {min})",
+        "not_significant": "Not clearly different from the baseline",
+        "better": "Hits more often than the baseline",
+        "worse": "Hits less often than the baseline",
+        "no_baseline": "No baseline yet"
+      },
+      "unchanged": "No weight would change. You can dismiss this proposal.",
+      "apply": "Apply weights…",
+      "confirmText": "New weights will scale the strength of new signals from these sources. Existing signals stay as they are. You can calculate a new proposal at any time.",
+      "confirm": "Confirm weights",
+      "cancel": "Cancel",
+      "reject": "Dismiss proposal",
+      "error": {
+        "stale_proposal": "Weights changed after this proposal was made. Calculate a new one.",
+        "not_pending": "This proposal is no longer open. Calculate a new one.",
+        "no_changes": "This proposal changes nothing.",
+        "generic": "The action failed. Try again."
+      }
+    }
   }
 }

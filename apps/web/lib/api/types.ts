@@ -58,3 +58,6 @@ export type AcceptProposal = S["AcceptProposal"];
 export type DismissProposal = S["DismissProposal"];
 export type TrackRecordOut = S["TrackRecordOut"];
 export type TrackStat = S["TrackStat"];
+export type CalibrationOut = S["CalibrationOut"];
+export type WeightSetOut = S["WeightSetOut"];
+export type GroupProposal = S["GroupProposal"];

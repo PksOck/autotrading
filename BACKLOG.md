@@ -110,7 +110,7 @@
 | BL-094 | Relativno vrednotenje proti sorodnim podjetjem (Finnhub `/stock/peers`) in odkupi delnic (sprememba števila delnic) | research/trading-list §2 | later |
 | BL-095 | TER za ETF-je, kjer ga Yahoo ne vrne (Vanguard): vir iz KID izdajatelja v `ucits_etfs.yaml` z `source` in `as_of`, prednost pred Yahoo. VWRA/VWCE: 0,14 % iz KIID 2026-07-28 (`kid:vanguard`); stolpca `ter_source`, `ter_as_of` (migracija 0011) | ADR-0011 | done |
 | BL-096 | `index_name` za UCITS ETF-je iz `ucits_etfs.yaml` (Yahoo `categoryName` je prazen) | ADR-0011 | done |
-| BL-097 | Odločitev o ponudniku za `cloud-quick`: OpenCode Go zavrača klice brez glave `x-opencode-session`. Začasno: padec `cloud-quick` → `cloud-deep` (MiniMax) → `local-fast`. Čaka na uporabnika | ADR-0004 | next |
+| BL-097 | Ponudnik za `cloud-quick`: OpenCode Go sprejema samo klice iz OpenCode, zato `cloud-quick` in `cloud-deep` tečeta na MiniMax (časovna meja 300 s oziroma 600 s, brez ponavljanja ob timeoutu), padec na lokalni vlogi | ADR-0004 | done |
 | BL-090 | Ročni predlog → standardna/globoka analiza: hipoteza uporabnika v kontekstu, izrecna potrditev/ovržba v izhodu (hitra in standardna globina že delujeta v M2) | DESIGN §11 | done |
 | BL-091 | Preveri Yahoo `funds_data` za UCITS kotacije (LSE, Xetra) na pravem omrežju: TER, top pozicije, sektorji. Preverjeno 2026-10-25: pozicije in sektorji za vse; TER manjka za Vanguard (VWRA, VWCE); `categoryName` je vedno prazen (glej BL-095, BL-096) | ADR-0011 | done |
 | BL-092 | Živi preizkus globoke analize prek LiteLLM (`cloud-quick`/`cloud-deep` z OpenCode Go/MiniMax): klici orodij, čas in cena enega zagona. 2026-10-25: ASML uspešno prek MiniMax v 1501 s (Underweight, 6 sprožilcev); najdaljša koraka debata bull 407 s, conservative 291 s | ADR-0011 | done |
@@ -124,12 +124,14 @@
 | BL-100 | Model teze, SCR-09, CMP-11 (sprožilci iz kartice odločitve BL-089 postanejo trditve teze). Modeli in migracija 0012, API (osnutek iz analize, urejanje, potrditev, status trditve z dokazi), SCR-09 seznam in podrobnosti, gumb na SCR-06 | research §5.6 | done |
 | BL-101 | Tedenski pregled tez (`cloud-deep`) + signal `thesis_break` (ADR-0012) | research §5.6 | done |
 | BL-102 | SCR-10 Uspešnost: `GET /track-record?horizon_days=1|5|20|60`, zadetki in donos v smeri signala, alfa proti shranjenemu indeksu, tvoji predlogi ločeno od sistemskih, vrsta × vir, kalibracija moči v 5 razredih, oznaka pod 10 izidi; demo seed doda pretekle signale z izidi | research §5.8 | done |
-| BL-103 | Kalibracija uteži: iz izidov SCR-10 predlagaj nove uteži pravil in virov (deterministično, z intervalom zaupanja); sprememba uteži samo z izrecno potrditvijo | BL-102 | next |
+| BL-103 | Kalibracija uteži: iz izidov SCR-10 predlagaj nove uteži pravil in virov (deterministično, z intervalom zaupanja); sprememba uteži samo z izrecno potrditvijo (ADR-0015) | BL-102 | done |
 | BL-161 | Števec urejanj osnutka teze: `expected_version` zdaj preverja zaporedno številko različice, ne urejanj; `updated_at` ne sledi urejanju trditev | BL-100 | done |
 | BL-162 | Demo podatki za e2e: ločen sklad `preza-demo` (`infra/docker-compose.demo.yml`, web na :3100, `scripts/demo-stack.sh`), `seed_demo` zahteva `PREZA_DEMO_DB=1`, demo analize imajo sveče in temeljne podatke za obete. Lokalno se uporablja Chromium 1234 prek `CHROMIUM_PATH` | S-010 | done |
 | BL-163 | Regresijski testi agents: golden kontrolne vsote padejo na Windows zaradi CRLF (`.gitattributes` za `tests/regression` ali normalizacija pred hashem) | BL-101 | done |
 | BL-164 | Oblikovanje za Android in Windows (ADR-0013): bližnjice po platformi, segmentirani gumbi M3, brez zameglitve, 48 px na dotik, navigacijska vrstica M3, manifest, tipka nazaj | S-008 | done |
 | BL-165 | Analiza za odločitev (ADR-0014): obeti kratko/~1 leto/3+ let iz posnetka, dokazi za in proti, cena in pozicija v glavi, koraki analitikov v spustnem seznamu, več stolpcev v `/analysis` | S-009 | done |
+| BL-166 | Cene ob dodajanju na watchlisto: posel `refresh_instrument_bars` takoj prenese dnevne sveče in izpolni ceno ob dodajanju (zaključni tečaj na dan dodajanja); prej samo nočni `refresh_bars` ob 21:30 UTC | S-012 | done |
+| BL-167 | Analiza porabi manj žetonov: deterministična koda pripravi zgoščene vhode, LLM samo presodi in združi (poročilo 25. 10.: ~3 M žetonov na MiniMax) | S-012 | doing |
 
 ## M6: Opcije
 

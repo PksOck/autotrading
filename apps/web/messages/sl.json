@@ -1039,6 +1039,40 @@
     "strengthRange": "Moč {low}–{high}",
     "empty": "Za horizont {days} d še ni izmerjenih izidov. Izid se izračuna, ko horizont poteče. Na izid čaka: {pending}.",
     "error": "Uspešnosti ni bilo mogoče naložiti.",
-    "retry": "Poskusi znova"
+    "retry": "Poskusi znova",
+    "weights": {
+      "title": "Predlog uteži",
+      "hint": "Sistem iz izmerjenih izidov predlaga, koliko bolj ali manj zaupati posameznemu viru signalov. Utež pomnoži moč novih signalov. Spremeni se le, ko se 95-% interval jasno razlikuje od izhodišča, in šele po tvoji potrditvi.",
+      "defaults": "Uteži še niso potrjene: vsak vir šteje z 1,00.",
+      "activeSince": "Trenutne uteži potrjene {date}.",
+      "propose": "Izračunaj predlog ({days} d)",
+      "basis": "Predlog z dne {date} · obdobje {days} dni · izhodišče {rate} na {count} sistemskih signalih",
+      "group": "Vir",
+      "count": "Signali",
+      "hitRate": "Zadetki",
+      "interval": "95-% interval",
+      "intervalValue": "{low} – {high}",
+      "weight": "Utež",
+      "reasonTitle": "Zakaj",
+      "reason": {
+        "low_sample": "Premalo signalov (manj kot {min})",
+        "not_significant": "Ni jasno drugačen od izhodišča",
+        "better": "Zadene pogosteje od izhodišča",
+        "worse": "Zadene redkeje od izhodišča",
+        "no_baseline": "Izhodišča še ni"
+      },
+      "unchanged": "Nobena utež se ne bi spremenila. Predlog lahko zavržeš.",
+      "apply": "Uveljavi uteži…",
+      "confirmText": "Nove uteži bodo spremenile moč novih signalov iz teh virov. Obstoječi signali ostanejo, kot so. Nov predlog lahko izračunaš kadarkoli.",
+      "confirm": "Potrdi uteži",
+      "cancel": "Prekliči",
+      "reject": "Zavrzi predlog",
+      "error": {
+        "stale_proposal": "Uteži so se spremenile po izdelavi predloga. Izračunaj novega.",
+        "not_pending": "Ta predlog ni več odprt. Izračunaj novega.",
+        "no_changes": "Ta predlog ničesar ne spremeni.",
+        "generic": "Dejanje ni uspelo. Poskusi znova."
+      }
+    }
   }
 }

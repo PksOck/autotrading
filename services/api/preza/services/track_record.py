@@ -7,9 +7,7 @@ from preza.domain.track_record import OutcomeRow, TrackRecordOut, origin_of, tra
 from preza.models import Signal, SignalOutcome
 
 
-async def load_track_record(
-    session: AsyncSession, horizon_days: int, benchmark: str | None
-) -> TrackRecordOut:
+async def load_outcome_rows(session: AsyncSession, horizon_days: int) -> list[OutcomeRow]:
     rows = await session.execute(
         select(
             Signal.kind,
@@ -22,7 +20,7 @@ async def load_track_record(
         .join(Signal, Signal.id == SignalOutcome.signal_id)
         .where(SignalOutcome.horizon_days == horizon_days)
     )
-    items = [
+    return [
         OutcomeRow(
             kind=kind,
             source=source,
@@ -33,6 +31,12 @@ async def load_track_record(
         )
         for kind, source, proposal_id, strength, return_pct, alpha_pct in rows
     ]
+
+
+async def load_track_record(
+    session: AsyncSession, horizon_days: int, benchmark: str | None
+) -> TrackRecordOut:
+    items = await load_outcome_rows(session, horizon_days)
     signals_total = await session.scalar(select(func.count()).select_from(Signal)) or 0
     as_of = await session.scalar(
         select(func.max(SignalOutcome.computed_at)).where(

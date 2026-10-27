@@ -4,6 +4,25 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 
 ---
 
+## S-012 · 2026-10-27 · Kalibracija uteži, LiteLLM in cene na watchlisti
+
+**Cilj:** BL-103, popraviti padlo analizo (LiteLLM) in hitrejše cene na watchlisti.
+
+**Narejeno:**
+- BL-103 (ADR-0015): predlog uteži iz izidov (Wilsonov interval, krčenje proti osnovi, meje 0,50–1,50), tabela `signal_weight_set` (migracija 0015), `GET/POST /calibration`, potrditev samo z `{"confirm": true}`, utež pomnoži moč novih signalov radarja in pravil. SCR-10 ima razdelek »Predlog uteži«.
+- BL-097: analiza je padla po 24 minutah, ker OpenCode Go zavrne klice brez seje OpenCode, nadomestni klici pa so se ponavljali. `cloud-quick` in `cloud-deep` sta zdaj na MiniMax, timeout 600 s za `cloud-deep`, brez ponavljanja ob timeoutu. Ponovna analiza AMD je uspela (42 min, 15 korakov).
+- BL-166: dodajanje na watchlisto takoj sproži prenos cen; prej so prišle šele ob 21:30 UTC ob delavnikih. ELF, O, UNH, NVO in MSFT so dobili cene in ceno ob dodajanju.
+- Živi sklad: varnostna kopija v `preza-backups`, migraciji 0014 in 0015 uveljavljeni.
+- Preverjeno: API 289 testov, ruff, mypy; web vitest, tsc, eslint; e2e SCR-10 na demo skladu (namizje in telefon).
+
+**Odločitve:** ADR-0015. Glave `x-opencode-session` ne ponarejamo.
+
+**Odprto:** poraba žetonov pri analizi je previsoka (BL-167).
+
+**Naslednji korak:** BL-167.
+
+---
+
 ## S-011 · 2026-10-27 · Uspešnost in zaključek M5
 
 **Cilj:** zaključiti preostale naloge M5: BL-163, BL-161 in BL-102 (SCR-10).

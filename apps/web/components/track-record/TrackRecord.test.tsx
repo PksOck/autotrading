@@ -7,6 +7,7 @@ import type { TrackRecordOut } from "@/lib/api/types";
 import { TrackRecord } from "./TrackRecord";
 
 vi.mock("@/lib/api/hooks", () => ({ useTrackRecord: vi.fn() }));
+vi.mock("./WeightProposal", () => ({ WeightProposal: () => null }));
 const useRecord = vi.mocked(useTrackRecord);
 const refetch = vi.fn();
 
