@@ -359,6 +359,7 @@ function DraftEditor({ revision }: { revision: ThesisRevisionOut }) {
           patch.mutate(
             {
               expected_version: revision.version,
+              expected_edit_count: revision.edit_count,
               claims: changed.map((claim) => ({
                 ...claim,
                 statement: claim.statement.trim(),

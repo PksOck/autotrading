@@ -155,6 +155,8 @@ async def patch_revision(
         raise HTTPException(409, detail="revision_not_draft")
     if body.expected_version is not None and body.expected_version != revision.version:
         raise HTTPException(409, detail="revision_version_conflict")
+    if body.expected_edit_count is not None and body.expected_edit_count != revision.edit_count:
+        raise HTTPException(409, detail="revision_edit_conflict")
     claims = {
         c.id: c
         for c in await session.scalars(
@@ -171,6 +173,8 @@ async def patch_revision(
             claim.invalidated_if = patch.invalidated_if
         if "expires_at" in patch.model_fields_set:
             claim.expires_at = patch.expires_at
+    revision.edit_count += 1
+    revision.edited_at = datetime.now(UTC)
     await session.flush()
     return revision
 
@@ -245,6 +249,8 @@ async def detail(session: AsyncSession, thesis: Thesis) -> ThesisOut:
         times.append(revision.created_at)
         if revision.confirmed_at:
             times.append(revision.confirmed_at)
+        if revision.edited_at:
+            times.append(revision.edited_at)
         for claim in revision.claims:
             times.extend(event.created_at for event in claim.events)
     return ThesisOut(
@@ -283,6 +289,7 @@ async def list_theses(
             updated[revision.thesis_id],
             revision.created_at,
             revision.confirmed_at or revision.created_at,
+            revision.edited_at or revision.created_at,
         )
     # Summaries never load claim bodies or the potentially large audit payloads.
     count_rows = await session.execute(

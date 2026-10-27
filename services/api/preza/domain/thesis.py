@@ -46,6 +46,11 @@ class ThesisRevisionPatch(ThesisRequest):
         ge=1,
         description="Checks the revision sequence number, not a mutable edit counter.",
     )
+    expected_edit_count: int | None = Field(
+        default=None,
+        ge=0,
+        description="Edit counter the client last saw; a mismatch means someone else saved.",
+    )
     claims: list[ThesisClaimPatch] = Field(min_length=1, max_length=200)
 
     @model_validator(mode="after")
@@ -139,6 +144,8 @@ class ThesisRevisionOut(BaseModel):
     as_of: AwareDatetime
     created_at: AwareDatetime
     confirmed_at: AwareDatetime | None
+    edit_count: int
+    edited_at: AwareDatetime | None
     claims: list[ThesisClaimOut] = Field(default_factory=list)
 
 
@@ -149,10 +156,7 @@ class ThesisSummary(BaseModel):
     claim_status_counts: dict[ClaimStatus, int]
     latest_draft_id: uuid.UUID | None
     updated_at: AwareDatetime = Field(
-        description=(
-            "Latest creation, confirmation or claim event time; "
-            "draft edits have no stored timestamp."
-        )
+        description=("Latest creation, confirmation, draft edit or claim event time.")
     )
 
 
@@ -163,9 +167,6 @@ class ThesisOut(BaseModel):
     as_of: AwareDatetime
     created_at: AwareDatetime
     updated_at: AwareDatetime = Field(
-        description=(
-            "Latest creation, confirmation or claim event time; "
-            "draft edits have no stored timestamp."
-        )
+        description=("Latest creation, confirmation, draft edit or claim event time.")
     )
     revisions: list[ThesisRevisionOut]

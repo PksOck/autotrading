@@ -121,6 +121,7 @@ describe("ThesisDetail", () => {
     expect(patch).toHaveBeenCalledWith(
       {
         expected_version: 1,
+        expected_edit_count: 0,
         claims: [{ id: claim.id, statement: "Revenue grows", invalidated_if: "Revenue declines" }],
       },
       expect.any(Object),
@@ -157,6 +158,7 @@ describe("ThesisDetail", () => {
     expect(patch).toHaveBeenCalledWith(
       {
         expected_version: 1,
+        expected_edit_count: 0,
         claims: [
           {
             id: claim.id,

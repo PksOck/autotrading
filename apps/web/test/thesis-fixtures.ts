@@ -67,6 +67,8 @@ export const revision: ThesisRevisionOut = {
   as_of: asOf,
   created_at: asOf,
   confirmed_at: asOf,
+  edit_count: 0,
+  edited_at: null,
   claims: [claim],
 };
 export const thesis: ThesisOut = {

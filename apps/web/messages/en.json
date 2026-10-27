@@ -229,6 +229,7 @@
       "analysis_has_no_triggers": "The analysis has no triggers to copy into a thesis.",
       "revision_not_draft": "This revision is no longer a draft. Reload to review the active revision.",
       "revision_version_conflict": "The revision version changed. Reload and review it before saving again.",
+      "revision_edit_conflict": "Someone saved this draft in the meantime. Reload it and check the changes before saving again.",
       "claim_revision_not_active": "This claim is not in the active revision. Reload and use the active revision.",
       "claim_status_conflict": "The claim status changed. Reload and review the evidence before saving again.",
       "evidenceRequired": "Enter a rationale. For a non-open status, add evidence with source, date and URL or reference. Complete every evidence row."

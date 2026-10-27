@@ -124,9 +124,9 @@
 | BL-100 | Model teze, SCR-09, CMP-11 (sprožilci iz kartice odločitve BL-089 postanejo trditve teze). Modeli in migracija 0012, API (osnutek iz analize, urejanje, potrditev, status trditve z dokazi), SCR-09 seznam in podrobnosti, gumb na SCR-06 | research §5.6 | done |
 | BL-101 | Tedenski pregled tez (`cloud-deep`) + signal `thesis_break` (ADR-0012) | research §5.6 | done |
 | BL-102 | SCR-10 Uspešnost, kalibracija | research §5.8 | later |
-| BL-161 | Števec urejanj osnutka teze: `expected_version` zdaj preverja zaporedno številko različice, ne urejanj; `updated_at` ne sledi urejanju trditev | BL-100 | later |
+| BL-161 | Števec urejanj osnutka teze: `expected_version` zdaj preverja zaporedno številko različice, ne urejanj; `updated_at` ne sledi urejanju trditev | BL-100 | done |
 | BL-162 | Demo podatki za e2e: ločen sklad `preza-demo` (`infra/docker-compose.demo.yml`, web na :3100, `scripts/demo-stack.sh`), `seed_demo` zahteva `PREZA_DEMO_DB=1`, demo analize imajo sveče in temeljne podatke za obete. Lokalno se uporablja Chromium 1234 prek `CHROMIUM_PATH` | S-010 | done |
-| BL-163 | Regresijski testi agents: golden kontrolne vsote padejo na Windows zaradi CRLF (`.gitattributes` za `tests/regression` ali normalizacija pred hashem) | BL-101 | later |
+| BL-163 | Regresijski testi agents: golden kontrolne vsote padejo na Windows zaradi CRLF (`.gitattributes` za `tests/regression` ali normalizacija pred hashem) | BL-101 | done |
 | BL-164 | Oblikovanje za Android in Windows (ADR-0013): bližnjice po platformi, segmentirani gumbi M3, brez zameglitve, 48 px na dotik, navigacijska vrstica M3, manifest, tipka nazaj | S-008 | done |
 | BL-165 | Analiza za odločitev (ADR-0014): obeti kratko/~1 leto/3+ let iz posnetka, dokazi za in proti, cena in pozicija v glavi, koraki analitikov v spustnem seznamu, več stolpcev v `/analysis` | S-009 | done |
 

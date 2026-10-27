@@ -5198,7 +5198,7 @@
             "type": "string",
             "format": "date-time",
             "title": "Updated At",
-            "description": "Latest creation, confirmation or claim event time; draft edits have no stored timestamp."
+            "description": "Latest creation, confirmation, draft edit or claim event time."
           },
           "revisions": {
             "items": {
@@ -5291,6 +5291,22 @@
             ],
             "title": "Confirmed At"
           },
+          "edit_count": {
+            "type": "integer",
+            "title": "Edit Count"
+          },
+          "edited_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edited At"
+          },
           "claims": {
             "items": {
               "$ref": "#/components/schemas/ThesisClaimOut"
@@ -5311,7 +5327,9 @@
           "source",
           "as_of",
           "created_at",
-          "confirmed_at"
+          "confirmed_at",
+          "edit_count",
+          "edited_at"
         ],
         "title": "ThesisRevisionOut"
       },
@@ -5329,6 +5347,19 @@
             ],
             "title": "Expected Version",
             "description": "Checks the revision sequence number, not a mutable edit counter."
+          },
+          "expected_edit_count": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Edit Count",
+            "description": "Edit counter the client last saw; a mismatch means someone else saved."
           },
           "claims": {
             "items": {
@@ -5400,7 +5431,7 @@
             "type": "string",
             "format": "date-time",
             "title": "Updated At",
-            "description": "Latest creation, confirmation or claim event time; draft edits have no stored timestamp."
+            "description": "Latest creation, confirmation, draft edit or claim event time."
           }
         },
         "type": "object",

@@ -113,6 +113,9 @@ def test_patch_optional_fields_and_unique_ids() -> None:
         ThesisRevisionPatch(claims=[])
     with pytest.raises(ValidationError):
         ThesisRevisionPatch(claims=[patch], expected_version=0)
+    with pytest.raises(ValidationError):
+        ThesisRevisionPatch(claims=[patch], expected_edit_count=-1)
+    assert ThesisRevisionPatch(claims=[patch], expected_edit_count=0).expected_edit_count == 0
 
 
 def test_client_cannot_supply_triggers() -> None:

@@ -8,6 +8,7 @@ it.each([
   "analysis_has_no_triggers",
   "revision_not_draft",
   "revision_version_conflict",
+  "revision_edit_conflict",
   "claim_revision_not_active",
   "claim_status_conflict",
 ])("maps conflict %s to an existing friendly message in both languages", (detail) => {

@@ -160,8 +160,12 @@ async def test_patch_and_confirm_supersedes_without_confirming_claims(api: Any) 
         ],
     }
     assert (await client.patch(path, json={**patch, "expected_version": 2})).status_code == 409
-    response = await client.patch(path, json=patch)
+    assert first["edit_count"] == 0 and first["edited_at"] is None
+    response = await client.patch(path, json={**patch, "expected_edit_count": 0})
     assert response.status_code == 200
+    assert response.json()["edit_count"] == 1 and response.json()["edited_at"]
+    stale = await client.patch(path, json={**patch, "expected_edit_count": 0})
+    assert stale.status_code == 409 and stale.json()["detail"] == "revision_edit_conflict"
     claim = response.json()["claims"][0]
     assert (
         claim["statement"] == "Adjusted by user" and claim["original_text"] == "Revenue grows 10%"
@@ -169,6 +173,7 @@ async def test_patch_and_confirm_supersedes_without_confirming_claims(api: Any) 
     assert claim["invalidated_if"] == "Report withdrawn" and claim["expires_at"] is not None
     cleared = await client.patch(path, json={"claims": [{"id": claim["id"], "expires_at": None}]})
     assert cleared.json()["claims"][0]["expires_at"] is None
+    assert cleared.json()["edit_count"] == 2
     assert cleared.json()["claims"][0]["statement"] == "Adjusted by user"
     active = await client.post(path + "/confirm")
     assert active.status_code == 200 and active.json()["confirmed_at"]

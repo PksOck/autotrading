@@ -1747,7 +1747,7 @@ export interface components {
             /**
              * Updated At
              * Format: date-time
-             * @description Latest creation, confirmation or claim event time; draft edits have no stored timestamp.
+             * @description Latest creation, confirmation, draft edit or claim event time.
              */
             updated_at: string;
             /** Revisions */
@@ -1795,6 +1795,10 @@ export interface components {
             created_at: string;
             /** Confirmed At */
             confirmed_at: string | null;
+            /** Edit Count */
+            edit_count: number;
+            /** Edited At */
+            edited_at: string | null;
             /** Claims */
             claims?: components["schemas"]["ThesisClaimOut"][];
         };
@@ -1805,6 +1809,11 @@ export interface components {
              * @description Checks the revision sequence number, not a mutable edit counter.
              */
             expected_version?: number | null;
+            /**
+             * Expected Edit Count
+             * @description Edit counter the client last saw; a mismatch means someone else saved.
+             */
+            expected_edit_count?: number | null;
             /** Claims */
             claims: components["schemas"]["ThesisClaimPatch"][];
         };
@@ -1827,7 +1836,7 @@ export interface components {
             /**
              * Updated At
              * Format: date-time
-             * @description Latest creation, confirmation or claim event time; draft edits have no stored timestamp.
+             * @description Latest creation, confirmation, draft edit or claim event time.
              */
             updated_at: string;
         };

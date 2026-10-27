@@ -229,6 +229,7 @@
       "analysis_has_no_triggers": "Analiza nima sprožilcev za prenos v tezo.",
       "revision_not_draft": "Ta različica ni več osnutek. Osveži in preglej aktivno različico.",
       "revision_version_conflict": "Različica se je spremenila. Pred ponovnim shranjevanjem jo osveži in preglej.",
+      "revision_edit_conflict": "Osnutek je medtem shranil nekdo drug. Osveži ga in preglej spremembe pred ponovnim shranjevanjem.",
       "claim_revision_not_active": "Trditev ni v aktivni različici. Osveži in uporabi aktivno različico.",
       "claim_status_conflict": "Stanje trditve se je spremenilo. Pred ponovnim shranjevanjem osveži in preglej dokaze.",
       "evidenceRequired": "Vnesi utemeljitev. Za stanje, ki ni odprto, dodaj dokaz z virom, datumom in povezavo ali sklicem. Izpolni vsako vrstico dokazov."

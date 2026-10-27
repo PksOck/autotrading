@@ -491,6 +491,9 @@ class ThesisRevision(Base):
     as_of: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     confirmed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    # Bumped on every draft edit; clients send it back to detect a stale editor.
+    edit_count: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    edited_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
 
 class ThesisClaim(Base):

@@ -37,6 +37,7 @@ test("theses: list, explicit draft save and confirm, claim evidence and history 
     if (request.method() === "PATCH") {
       const body = request.postDataJSON() as ThesisRevisionPatch;
       expect(body.expected_version).toBe(1);
+      expect(body.expected_edit_count).toBe(0);
       detail = {
         ...detail,
         revisions: [
