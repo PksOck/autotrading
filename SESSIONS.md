@@ -4,6 +4,30 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 
 ---
 
+## S-010 · 2026-10-27 · Demo sklad za e2e
+
+**Cilj:** e2e naj teče zeleno na vzorčnih podatkih, brez posega v živo bazo (BL-162).
+
+**Narejeno:**
+- `infra/docker-compose.demo.yml`: ločen projekt `preza-demo` z lastno bazo, Redisom, API-jem in webom na `127.0.0.1:3100`. Brez LiteLLM, workerja, agentov in obvestil. Yahoo, Stooq in RSS so izklopljeni.
+- `infra/scripts/demo-stack.sh` (`up`, `seed`, `stop`).
+- `seed_demo` se brez `PREZA_DEMO_DB=1` ustavi, ker pobriše vse vstope in signale pravil.
+- Demo analize imajo v posnetku sveče in temeljne podatke, zato so obeti (ADR-0014) izpolnjeni.
+- Besedilo praznega portfelja in README-ji kažejo na nov ukaz.
+- e2e na demo skladu: 32 uspešnih in 10 namerno preskočenih (delitev telefon/namizje). Prej je bilo 13 neuspešnih.
+- Neodvisnega pregleda ni bilo, ker OpenCode Sol nima kvote.
+
+**Odločitve:** vzorčni podatki samo v ločenem skladu, nikoli v živem (`preza`).
+
+**Odprto:**
+- Ob `--repeat-each` z več delavci se kopije testa watchliste (NVDA) med seboj motijo. Običajen zagon ni prizadet.
+- Na disku C: sprosti prostor (97 %).
+- Osnutek teze ASML čaka tvojo potrditev, BL-097 je tvoja odločitev, IB še ni povezan.
+
+**Naslednji korak:** naslednja naloga M5.
+
+---
+
 ## S-009 · 2026-10-27 · Analiza za odločitev
 
 **Cilj:** stran analize naj pokaže samo tisto, kar potrebuješ za odločitev (uporabnikova pripomba: preveč podatkov naenkrat, "Underweight" ni razumljiv, manjkajo obeti po obdobjih).

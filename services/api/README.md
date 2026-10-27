@@ -10,7 +10,7 @@ uv run uvicorn preza.main:app --reload          # http://localhost:8000/docs
 uv run arq preza.worker.WorkerSettings          # worker (potrebuje Redis)
 uv run alembic upgrade head                     # migracije (potrebuje Postgres + Timescale)
 uv run python -m preza.cli.load_universe       # UCITS ETF-ji iz preza/universe/ucits_etfs.yaml
-uv run python -m preza.cli.seed_demo           # demo podatki za razvoj (source=demo)
+../../infra/scripts/demo-stack.sh up           # demo podatki v ločenem skladu (:3100); seed_demo briše vstope
 TEST_DATABASE_URL=postgresql+asyncpg://... uv run pytest -q   # vključi integracijske teste
 uv run pytest -q && uv run ruff check . && uv run mypy
 uv run python -m preza.cli.export_openapi openapi.json   # nato v apps/web: pnpm gen:api

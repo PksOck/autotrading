@@ -1,0 +1,67 @@
+# Preža demo: a separate stack with demo data only, for e2e and development (BL-162).
+# Its own project, database and port; it never touches the live stack.
+# Start: infra/scripts/demo-stack.sh up   (web on http://127.0.0.1:3100)
+name: preza-demo
+
+x-api-env: &api-env
+  APP_ENV: development
+  # Throwaway local database without a published port; not a secret.
+  DATABASE_URL: postgresql+asyncpg://preza:preza-demo@postgres:5432/preza
+  REDIS_URL: redis://redis:6379/0
+  BASE_CURRENCY: EUR
+  IB_GATEWAY_ENABLED: "false"
+  # No external sources: every row comes from preza.cli.seed_demo.
+  YAHOO_ENABLED: "false"
+  STOOQ_ENABLED: "false"
+  RSS_ENABLED: "false"
+  APP_BASE_URL: http://127.0.0.1:3100
+
+services:
+  postgres:
+    image: timescale/timescaledb-ha:pg17
+    environment:
+      POSTGRES_USER: preza
+      POSTGRES_PASSWORD: preza-demo
+      POSTGRES_DB: preza
+    volumes:
+      - pgdata:/home/postgres/pgdata/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U preza -d preza"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build: ../services/api
+    command: ["sh", "-c", "alembic upgrade head && uvicorn preza.main:app --host 0.0.0.0 --port 8000"]
+    environment: *api-env
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  web:
+    build:
+      context: ..
+      dockerfile: apps/web/Dockerfile
+    environment:
+      API_URL: http://api:8000
+    ports:
+      - "127.0.0.1:3100:3000"
+    depends_on:
+      api: { condition: service_healthy }
+
+volumes:
+  pgdata:

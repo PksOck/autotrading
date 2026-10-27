@@ -23,6 +23,18 @@ Ollama teče na ločeni GPU napravi v LAN (`OLLAMA_BASE_URL`), model `LOCAL_MODE
 
 Ref: ADR-0001, BL-006, BL-011, BL-016, BL-023.
 
+## Demo sklad za e2e (BL-162)
+
+`docker-compose.demo.yml` je ločen projekt `preza-demo` z lastno bazo, brez LiteLLM, workerja in zunanjih virov. Web teče na `http://127.0.0.1:3100`. `seed_demo` pobriše vse vstope in signale pravil, zato teče samo tu (zahteva `PREZA_DEMO_DB=1`).
+
+```bash
+scripts/demo-stack.sh up      # build, zagon, demo podatki
+scripts/demo-stack.sh seed    # ponovno naloži demo podatke
+scripts/demo-stack.sh stop    # ustavi, baza ostane
+# v apps/web:
+BASE_URL=http://127.0.0.1:3100 pnpm exec playwright test
+```
+
 ## Preizkus globoke analize (BL-092)
 
 1. V `.env` izpolni `LITELLM_MASTER_KEY`, `OPENCODE_API_KEY`, `MINIMAX_API_KEY` in imena modelov (`OPENCODE_QUICK_MODEL`, `MINIMAX_MODEL`).

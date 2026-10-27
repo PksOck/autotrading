@@ -108,10 +108,28 @@ CARD = {
 }
 
 
-def _snapshot(as_of: date) -> dict[str, object]:
+def _snapshot(symbol: str, as_of: date) -> dict[str, object]:
+    """Same bars and fundamentals as seed_demo, so the outlook (ADR-0014) has data."""
+    from preza.cli.seed_demo import STOCKS, demo_bars, demo_fundamentals
+
+    price = next(p for s, _, _, p in STOCKS if s == symbol)
+    current, history = demo_fundamentals(symbol, as_of)
     return {
         "as_of": as_of.isoformat(),
+        "bars": [
+            {
+                "day": b.day.isoformat(),
+                "open": float(b.open),
+                "high": float(b.high),
+                "low": float(b.low),
+                "close": float(b.close),
+                "volume": b.volume,
+            }
+            for b in demo_bars(symbol, price)
+        ],
         "bars_source": SOURCE,
+        "fundamentals": current,
+        "fundamentals_history": history,
         "fundamentals_source": SOURCE,
         "fundamentals_as_of": as_of.isoformat(),
     }
@@ -155,7 +173,7 @@ async def seed_analyses() -> None:
                 ),
                 caveats=[],
                 card=CARD if done else None,
-                snapshot=_snapshot(today),
+                snapshot=_snapshot(symbol, today),
                 models={"quick": SOURCE, "deep": SOURCE},
                 created_at=started,
                 started_at=started,

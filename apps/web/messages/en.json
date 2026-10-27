@@ -261,7 +261,7 @@
     "lastSync": "Last sync: {time}",
     "never": "Never synced",
     "emptyTitle": "Portfolio is empty",
-    "emptyBody": "Once IBKR Flex is configured (token and a Flex Query with OpenPositions, Trades, CashReport), positions load every morning at 7:15. For development load demo data: python -m preza.cli.seed_demo.",
+    "emptyBody": "Once IBKR Flex is configured (token and a Flex Query with OpenPositions, Trades, CashReport), positions load every morning at 7:15. For development, demo data runs in a separate stack: infra/scripts/demo-stack.sh up.",
     "cash": "Cash",
     "col": {
       "instrument": "Instrument",

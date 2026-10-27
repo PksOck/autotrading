@@ -261,7 +261,7 @@
     "lastSync": "Zadnja sinhronizacija: {time}",
     "never": "Še ni bilo sinhronizacije",
     "emptyTitle": "Portfelj je prazen",
-    "emptyBody": "Ko nastaviš IBKR Flex (token in Flex Query z OpenPositions, Trades, CashReport), se pozicije naložijo vsako jutro ob 7:15. Za razvoj lahko naložiš demo podatke: python -m preza.cli.seed_demo.",
+    "emptyBody": "Ko nastaviš IBKR Flex (token in Flex Query z OpenPositions, Trades, CashReport), se pozicije naložijo vsako jutro ob 7:15. Za razvoj demo podatki tečejo v ločenem skladu: infra/scripts/demo-stack.sh up.",
     "cash": "Gotovina",
     "col": {
       "instrument": "Instrument",

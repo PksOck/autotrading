@@ -1,11 +1,12 @@
 """Demo data for local development without IBKR or market data access.
 
 Every row is marked source="demo" and the UI shows it as such. Never run against production data.
-Run: python -m preza.cli.seed_demo
+Run: infra/scripts/demo-stack.sh up (a separate stack; refuses to run without PREZA_DEMO_DB=1)
 """
 
 import asyncio
 import math
+import os
 import random
 import re
 from datetime import date, timedelta
@@ -406,5 +407,15 @@ async def seed_all() -> None:
     await seed_analyses()
 
 
+def require_demo_db() -> None:
+    """seed_entries clears every entry candidate and rule signal, so never run it on real data."""
+    if os.environ.get("PREZA_DEMO_DB") != "1":
+        raise SystemExit(
+            "seed_demo replaces entries and rule signals. Run it only on a throwaway demo "
+            "database (infra/scripts/demo-stack.sh) with PREZA_DEMO_DB=1."
+        )
+
+
 if __name__ == "__main__":
+    require_demo_db()
     asyncio.run(seed_all())
