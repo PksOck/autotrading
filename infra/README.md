@@ -37,7 +37,7 @@ BASE_URL=http://127.0.0.1:3100 pnpm exec playwright test
 
 ## Preizkus globoke analize (BL-092)
 
-1. V `.env` izpolni `LITELLM_MASTER_KEY`, `OPENCODE_API_KEY`, `MINIMAX_API_KEY` in imena modelov (`OPENCODE_QUICK_MODEL`, `MINIMAX_MODEL`).
+1. V `.env` izpolni `LITELLM_MASTER_KEY`, `MINIMAX_API_KEY` in ime modela `MINIMAX_MODEL`. Oblačni vlogi `cloud-quick` in `cloud-deep` tečeta na MiniMax; OpenCode Go sprejema samo klice iz OpenCode (BL-097).
 2. `docker compose --env-file ../.env up -d --build` (storitev `agents` je del jedra).
 3. V brskalniku odpri instrument (npr. `/i/ASML`, ob odprtju se naložijo sveče) in klikni "Globoka analiza".
 4. Ko se konča: `scripts/collect-analysis.sh` zapakira zagon in dnevnike v `infra/analysis-<id>.tar.gz`. Ključe iz dnevnika LiteLLM odstrani, pred pošiljanjem pa arhiv vseeno preglej.

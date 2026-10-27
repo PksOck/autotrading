@@ -1,6 +1,5 @@
 # LLM vloge (ADR-0004). Koda kliče samo imena vlog, nikoli ponudnikov.
-# Modele zamenjaš v .env (LOCAL_MODEL, OPENCODE_*_MODEL) brez spremembe kode.
-# Imena modelov OpenCode Go preveri na https://opencode.ai/zen/go/v1/models (BL-011).
+# Modele zamenjaš v .env (LOCAL_MODEL, MINIMAX_MODEL) brez spremembe kode.
 
 model_list:
   # --- lokalno (GPU naprava v LAN, Ollama) ---
@@ -23,40 +22,40 @@ model_list:
       think: true
       timeout: 300
 
-  # --- oblak: OpenCode Go (OpenAI-kompatibilen) ---
+  # --- oblak: MiniMax (OpenAI-kompatibilen) ---
+  # OpenCode Go sprejema samo klice iz OpenCode (glava x-opencode-session), zato ga
+  # LiteLLM ne uporablja (BL-097). Obe oblačni vlogi gresta na MiniMax.
   - model_name: cloud-quick
     litellm_params:
-      model: os.environ/OPENCODE_QUICK_MODEL
-      api_base: https://opencode.ai/zen/go/v1
-      api_key: os.environ/OPENCODE_API_KEY
+      model: os.environ/MINIMAX_MODEL
+      api_base: https://api.minimax.io/v1
+      api_key: os.environ/MINIMAX_API_KEY
+      timeout: 300
 
-  # --- oblak: MiniMax (OpenAI-kompatibilen) za globoke odločitve ---
+  # globoke odločitve: posamezen korak debate traja tudi do ~7 min (BL-092)
   - model_name: cloud-deep
     litellm_params:
       model: os.environ/MINIMAX_MODEL
       api_base: https://api.minimax.io/v1
       api_key: os.environ/MINIMAX_API_KEY
-
-  # rezerva za cloud-deep, ko MiniMax ni dosegljiv ali je proračun porabljen
-  - model_name: cloud-deep-backup
-    litellm_params:
-      model: os.environ/OPENCODE_DEEP_MODEL
-      api_base: https://opencode.ai/zen/go/v1
-      api_key: os.environ/OPENCODE_API_KEY
+      timeout: 600
 
 router_settings:
   fallbacks:
-    # OpenCode Go (cloud-quick, cloud-deep-backup) rejects calls without the
-    # x-opencode-session header, so MiniMax and the local model carry the load
-    # until BL-097 picks a provider.
     - cloud-deep: ["local-reason"]
-    - cloud-quick: ["cloud-deep", "local-fast"]
+    - cloud-quick: ["local-fast"]
     - local-fast: ["cloud-quick"]
   num_retries: 1
+  # A timed-out or rejected call is not repeated: go straight to the fallback.
+  retry_policy:
+    TimeoutErrorRetries: 0
+    BadRequestErrorRetries: 0
+    AuthenticationErrorRetries: 0
+    ContentPolicyViolationErrorRetries: 0
 
 litellm_settings:
   drop_params: true
-  request_timeout: 300
+  request_timeout: 600
 
 general_settings:
   master_key: os.environ/LITELLM_MASTER_KEY
