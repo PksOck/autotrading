@@ -4,6 +4,29 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 
 ---
 
+## S-009 · 2026-10-27 · Analiza za odločitev
+
+**Cilj:** stran analize naj pokaže samo tisto, kar potrebuješ za odločitev (uporabnikova pripomba: preveč podatkov naenkrat, "Underweight" ni razumljiv, manjkajo obeti po obdobjih).
+
+**Narejeno:**
+- ADR-0014: obeti za kratko (do 3 mesecev), srednje (~1 leto) in dolgo obdobje (3+ let) računa deterministična koda iz posnetka podatkov (`domain/outlook.py`). Agenti jih ne ocenjujejo. Vsak dokaz ima vir, čas, vrednost in prag.
+- API: `AnalysisOut.outlook`, `AnalysisSummary.conviction` in `outlook_brief`.
+- Web (BL-165): glava z dejanjem v navadnem jeziku ("Zmanjšaj delež" namesto "Underweight"), prepričanjem, trenutno ceno in pozicijo; tri kartice obetov; dokazi za rast levo in proti desno; "Ocena gre gor/dol, če". Utemeljitev, kontrolna ocena in koraki analitikov so zloženi, koraki so razvrščeni po agentu. `/analysis` ima tabelo s stolpci za dejanje, obdobja, za/proti, prepričanje in delnice v portfelju, na telefonu pa kartice.
+- Testi: API 223, web 103 enotskih, tsc, eslint in i18n so čisti. Preverjeno v brskalniku na živi analizi ASML (namizje in 375 px, brez prelivanja). e2e: 19 uspešnih in 13 neuspešnih, vsi neuspešni potrebujejo vzorčne podatke, ki jih živa baza nima (BL-162).
+- Neodvisnega pregleda ni bilo, ker OpenCode Sol nima kvote.
+- Docker Desktop se je sesul (containerd SIGBUS, disk C: 97 % poln). Pomagalo je zaporedje `docker desktop stop`, `wsl --shutdown`, `docker desktop start`.
+
+**Odločitve:** ADR-0014.
+
+**Odprto:**
+- BL-162: e2e potrebuje vzorčne podatke, ker test ASML preverja vzorčne vrednosti.
+- Na disku C: sprosti prostor, sicer se Docker lahko spet sesuje.
+- Osnutek teze ASML čaka tvojo potrditev, BL-097 je tvoja odločitev, IB še ni povezan.
+
+**Naslednji korak:** BL-162 (vzorčni podatki za e2e), nato naslednja naloga M5.
+
+---
+
 ## S-008 · 2026-10-25 · Oblikovanje za Android in Windows
 
 **Cilj:** vmesnik naj na Androidu in Windows ne deluje kot aplikacija za Apple (uporabnikova pripomba).

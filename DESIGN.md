@@ -103,7 +103,7 @@ Ciljni napravi sta Android (dotik) in Windows (miška, tipkovnica). Vmesnik je e
 | CMP-09 | ChangeValue | ▲ +2,1 % / ▼ −3,4 % z barvo in predznakom | povsod |
 | CMP-10 | CauseBadge | vzrok padca: trg / sektor / začasno / temeljno / neznano | SCR-03 |
 | CMP-11 | ThesisCheck | izvedeno BL-100: ikona in besedilo za odprto, drži, šibi, ovrženo in poteklo stanje; zgodovina dokazov z vidno oznako govorice | SCR-05, 09 |
-| CMP-12 | AgentTimeline | koraki agentov v živo (SSE), razvrščeni v faze (Analitiki, Debata, Načrt, Tveganja, Odločitev), bik/medved v dveh stolpcih od `md`, zaprt korak pokaže 3 vrstice, odprt cel markdown, novi koraki pridejo z MO-03 | SCR-06 |
+| CMP-12 | AgentTimeline | koraki agentov v živo (SSE), razvrščeni v faze (Analitiki, Debata, Načrt, Tveganja, Odločitev), koraki analitikov zloženi po agentu (odprt samo zadnji med tekom), bik/medved v dveh stolpcih od `md`, zaprt korak pokaže 3 vrstice, odprt cel markdown, novi koraki pridejo z MO-03 | SCR-06 |
 | CMP-13 | PriceChart | lightweight-charts + indikatorji (trading-signals) + oznake dogodkov in signalov | SCR-05 |
 | CMP-14 | PayoffChart | profil dobička in izgube opcijske strukture, break-even, max izguba | SCR-07 |
 | CMP-15 | LadderTable | lestvica postopnega nakupa (deleži, cene) | SCR-03, 04 |
@@ -122,6 +122,8 @@ Ciljni napravi sta Android (dotik) in Windows (miška, tipkovnica). Vmesnik je e
 | CMP-28 | RegimeStrip | trak tržnega režima (OV-04) | SCR-01 |
 | CMP-29 | Sparkline | iskrica (OV-07) | povsod |
 | CMP-30 | ProposalComposer | ročni predlog za analizo (§11) | glava, ⌘K, SCR-02, SCR-12 |
+| CMP-31 | HorizonCard | obdobje (kratko, ~1 leto, 3+ let): sodba (podpira rast, mešano, proti rasti, premalo podatkov), trak za/nevtralno/proti s števili, 2 najmočnejša dokaza, manjkajoči podatki | SCR-06 |
+| CMP-32 | EvidenceSplit | dokazi enega obdobja v dveh stolpcih: Za (pos) levo, Proti (neg) desno, nevtralni pod njima; vrstica = besedilo iz ključa, vrednost proti primerjavi, vir in čas | SCR-06 |
 
 Osnova je **shadcn/ui** (Radix): Button, Tabs, Dialog, DropdownMenu, Tooltip, Table, Badge, Toggle, Command (iskanje ⌘K). Komponente CMP-xx so kompozicije nad njimi.
 
@@ -134,7 +136,7 @@ Osnova je **shadcn/ui** (Radix): Button, Tabs, Dialog, DropdownMenu, Tooltip, Ta
 | SCR-03 | Vstopi | `/entries?view=all\|portfolio\|watchlist&symbol=…` | zemljevid vstopov (OV-05), kandidati s filtri (kandidati, v coni, blizu, vse), cona in stop (CMP-07), vzrok padca (CMP-10), sprožena pravila, pasovi vrednotenja, lestvica z zneskom (CMP-15) | M3 |
 | SCR-04 | Signali | `/signals` | nabiralnik, statusi, filtri, množična dejanja | M2 |
 | SCR-05 | Instrument | `/i/[symbol]` | graf, ključni podatki ali ETF profil, signali, analize, teze | M1→M4 |
-| SCR-06 | Analiza | `/analysis`, `/analysis/[runId]` | seznam zagonov; glava z oceno, motorjem (TradingAgents ali ETF), viri in opozorili; panel "Tvoja hipoteza" pri globokem predlogu; končna odločitev; kartica odločitve (kontrolna ocena, prepričanje, razred velikosti, sprožilci, sprememba od prejšnje); CMP-12 | M4 |
+| SCR-06 | Analiza | `/analysis`, `/analysis/[runId]` | seznam zagonov kot tabela (instrument, datum, ocena agentov v navadnem jeziku, sodbe treh obdobij, za/proti, prepričanje, pozicija); detajl: zgoraj odločitvena glava (cena z virom, pozicija, ocena agentov z razlago, prepričanje, velikost, CMP-31 ×3, kaj bi spremenilo oceno), spodaj zaprte podrobnosti (CMP-32 dokazi za in proti, utemeljitev agentov, kontrolna ocena, CMP-12 po analitikih) (ADR-0014) | M4 |
 | SCR-07 | Opcije | `/options/[symbol]` | predlagane strukture, payoff, veriga, tveganja | M6 |
 | SCR-08 | Portfelj | `/portfolio` | pozicije, teže, izpostavljenost (skozi ETF), stanje tez | M1 |
 | SCR-09 | Teze | `/theses` | izvedeno BL-100: seznam, filter, strani in `/theses/[thesisId]`; ročno ustvarjanje iz analize, urejanje in potrditev osnutka, stanja trditev z dokazi in zgodovino, viri in lokalni čas; BL-101: tedenski predlogi pregleda ločeno od dejanskega stanja (značka »Predlog pregleda«, sprejem z izrecno potrditvijo, zavrnitev z razlogom, pokritost in napake pregleda) | M5 |

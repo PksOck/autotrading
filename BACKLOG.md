@@ -128,6 +128,7 @@
 | BL-162 | Demo podatki za e2e (NVDA/ASML analize), da `analysis.spec.ts` in ostali e2e tečejo brez žive baze; Playwright brskalnik 1248 manjka lokalno | BL-100 | later |
 | BL-163 | Regresijski testi agents: golden kontrolne vsote padejo na Windows zaradi CRLF (`.gitattributes` za `tests/regression` ali normalizacija pred hashem) | BL-101 | later |
 | BL-164 | Oblikovanje za Android in Windows (ADR-0013): bližnjice po platformi, segmentirani gumbi M3, brez zameglitve, 48 px na dotik, navigacijska vrstica M3, manifest, tipka nazaj | S-008 | done |
+| BL-165 | Analiza za odločitev (ADR-0014): obeti kratko/~1 leto/3+ let iz posnetka, dokazi za in proti, cena in pozicija v glavi, koraki analitikov v spustnem seznamu, več stolpcev v `/analysis` | S-009 | done |
 
 ## M6: Opcije
 
