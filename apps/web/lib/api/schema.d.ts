@@ -92,6 +92,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/portfolio/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Import Statement */
+        post: operations["import_statement_portfolio_import_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/portfolio": {
         parameters: {
             query?: never;
@@ -1388,6 +1405,15 @@ export interface components {
             /** Contra */
             contra: number;
         };
+        /** PortfolioImportOut */
+        PortfolioImportOut: {
+            /** Counts */
+            counts: {
+                [key: string]: number;
+            };
+            /** As Of */
+            as_of: string | null;
+        };
         /** PortfolioOut */
         PortfolioOut: {
             /** As Of */
@@ -2380,6 +2406,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    import_statement_portfolio_import_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PortfolioImportOut"];
                 };
             };
         };

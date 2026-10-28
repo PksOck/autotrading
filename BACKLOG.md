@@ -40,6 +40,7 @@
 | BL-020 | Pogodba vira podatkov (Protocol + skupni pytest nabor), prepis iz legacy `provider-contract.ts` | research §3.6 | done |
 | BL-021 | Router virov s kvotami in fallbackom (prepis legacy `composite-provider` + `quota-tracker`) | research §3.6 | done |
 | BL-022 | IBKR Flex: token, Flex Query (pozicije, posli, gotovina, dividende), parser, nočna sinhronizacija | PLAN §5.1 | done |
+| BL-187 | Ročni uvoz izpisa Flex XML na Portfelju (`POST /portfolio/import`, surovo telo XML do 10 MB, brez tokena); zapis v zadnjo sinhronizacijo in osvežitev tečajev | BL-022 | done |
 | BL-023 | IB Gateway Docker (`gnzsnz/ib-gateway`, READ_ONLY_API, IBC auto-restart), ločen API uporabnik (compose profil `broker` narejen; živi preizkus na strežniku) | ADR-0006 | doing |
 | BL-024 | `services/broker`: ib_async klient (EOD svečke, contract details), prepis delov Vibe-Trading `ibkr/local.py` | research §3.2 | done |
 | BL-025 | Tabele `instrument`, `bar` (hypertable), `position`, `trade`, `cash`, `watchlist` | research §4.2 | done |

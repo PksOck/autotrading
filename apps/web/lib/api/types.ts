@@ -11,6 +11,7 @@ export type BarsOut = S["BarsOut"];
 export type Bar = S["BarOut"];
 export type Provenance = S["Provenance"];
 export type PortfolioOut = S["PortfolioOut"];
+export type PortfolioImportOut = S["PortfolioImportOut"];
 export type PositionOut = S["PositionOut"];
 export type WatchlistOut = S["WatchlistOut"];
 // Fields with server defaults are optional for callers.

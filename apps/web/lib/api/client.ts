@@ -18,6 +18,8 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export const api = {
+  raw: <T>(path: string, body: string, contentType: string) =>
+    request<T>(path, { method: "POST", headers: { "content-type": contentType }, body }),
   get: <T>(path: string) => request<T>(path),
   send: <T>(path: string, method: "POST" | "PATCH" | "DELETE", body?: unknown) =>
     request<T>(path, {

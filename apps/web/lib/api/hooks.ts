@@ -23,6 +23,7 @@ import type {
   BarsRange,
   InstrumentDetail,
   InstrumentOut,
+  PortfolioImportOut,
   PortfolioOut,
   SystemStatus,
   TrackRecordOut,
@@ -77,6 +78,17 @@ export const useSystemStatus = () =>
 
 export const usePortfolio = () =>
   useQuery({ queryKey: keys.portfolio, queryFn: () => api.get<PortfolioOut>("/portfolio") });
+
+export function usePortfolioImport() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: async (file: File) => {
+      if (file.size > 10 * 1024 * 1024) throw new ApiError(413, "flex_too_large");
+      return api.raw<PortfolioImportOut>("/portfolio/import", await file.text(), "application/xml");
+    },
+    onSuccess: () => client.invalidateQueries({ queryKey: keys.portfolio }),
+  });
+}
 
 export const useWatchlist = () =>
   useQuery({ queryKey: keys.watchlist, queryFn: () => api.get<WatchlistOut[]>("/watchlist") });

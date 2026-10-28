@@ -3,11 +3,12 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useFormatter, useTranslations } from "next-intl";
 import { toast } from "sonner";
+import { useRef } from "react";
 import { AnimatedNumber } from "@/components/common/AnimatedNumber";
 import { EntityLink } from "@/components/common/EntityLink";
 import { Treemap, type TreemapItem } from "@/components/overview/Treemap";
 import { ApiError } from "@/lib/api/client";
-import { usePortfolio, usePortfolioSync } from "@/lib/api/hooks";
+import { usePortfolio, usePortfolioImport, usePortfolioSync } from "@/lib/api/hooks";
 import type { PortfolioOut } from "@/lib/api/types";
 import { cn } from "@/lib/cn";
 import { formatChange, formatMoney, formatNumber } from "@/lib/format";
@@ -21,6 +22,24 @@ export function PositionsPanel() {
   const locale = useAppLocale();
   const { data, isLoading, error } = usePortfolio();
   const sync = usePortfolioSync();
+  const upload = usePortfolioImport();
+  const fileInput = useRef<HTMLInputElement>(null);
+  const runImport = async (file: File) => {
+    try {
+      const result = await upload.mutateAsync(file);
+      toast.success(t("portfolio.importSuccess", result.counts));
+    } catch (e) {
+      toast.error(
+        t(
+          e instanceof ApiError && e.detail === "flex_invalid"
+            ? "portfolio.importInvalid"
+            : e instanceof ApiError && e.status === 413
+              ? "portfolio.importTooLarge"
+              : "portfolio.importFailed",
+        ),
+      );
+    }
+  };
   const hovered = useFocusStore((s) => s.hovered);
   const setHovered = useFocusStore((s) => s.setHovered);
 
@@ -74,14 +93,36 @@ export function PositionsPanel() {
           )}
         </div>
       </div>
-      <button
-        type="button"
-        onClick={runSync}
-        disabled={sync.isPending}
-        className="h-10 rounded-md border border-border px-4 font-medium hover:bg-surface-2 disabled:opacity-60"
-      >
-        {sync.isPending ? t("portfolio.syncing") : t("portfolio.sync")}
-      </button>
+      <div className="flex flex-wrap gap-2">
+        <input
+          ref={fileInput}
+          type="file"
+          hidden
+          accept=".xml,application/xml,text/xml"
+          aria-label={t("portfolio.import")}
+          onChange={(event) => {
+            const file = event.target.files?.[0];
+            event.target.value = "";
+            if (file) void runImport(file);
+          }}
+        />
+        <button
+          type="button"
+          onClick={() => fileInput.current?.click()}
+          disabled={upload.isPending || sync.isPending}
+          className="h-10 rounded-md border border-border px-4 font-medium hover:bg-surface-2 disabled:opacity-60"
+        >
+          {upload.isPending ? t("portfolio.importing") : t("portfolio.import")}
+        </button>
+        <button
+          type="button"
+          onClick={runSync}
+          disabled={sync.isPending || upload.isPending}
+          className="h-10 rounded-md border border-border px-4 font-medium hover:bg-surface-2 disabled:opacity-60"
+        >
+          {sync.isPending ? t("portfolio.syncing") : t("portfolio.sync")}
+        </button>
+      </div>
     </div>
   );
 

@@ -201,6 +201,27 @@
         }
       }
     },
+    "/portfolio/import": {
+      "post": {
+        "tags": [
+          "portfolio"
+        ],
+        "summary": "Import Statement",
+        "operationId": "import_statement_portfolio_import_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PortfolioImportOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/portfolio": {
       "get": {
         "tags": [
@@ -4234,6 +4255,35 @@
           "contra"
         ],
         "title": "OutlookBrief"
+      },
+      "PortfolioImportOut": {
+        "properties": {
+          "counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Counts"
+          },
+          "as_of": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "As Of"
+          }
+        },
+        "type": "object",
+        "required": [
+          "counts",
+          "as_of"
+        ],
+        "title": "PortfolioImportOut"
       },
       "PortfolioOut": {
         "properties": {

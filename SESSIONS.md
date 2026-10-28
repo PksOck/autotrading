@@ -29,6 +29,7 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 - Preverjeno: API 425 testov z bazo, agenti 216 testov z bazo, ruff, format, mypy; sklad (api, agents) ponovno zgrajen. Ni preverjeno: celoten radar na živih novicah in uveljavljanje `json_schema` pri MiniMax (BL-181).
 - BL-179: pregled teze ohrani kodo `output_truncated` ali `schema_validation_failed`, ostale napake LLM ostanejo `role_unavailable`. Implementacija prek OpenCode Sol, preverjeno: agenti 218 in API 428 testov z bazo, ruff, mypy.
 - Nove ideje v BACKLOG: spremljani viri (osebe, YouTube, Instagram, spletne strani; BL-182 do BL-185) in predlog iz posnetka zaslona s potrditvijo simbolov in hitro analizo (BL-186).
+- BL-187: na Portfelju gumb Uvozi Flex XML za izpis, prenesen iz IBKR, deluje brez tokena. API `POST /portfolio/import` sprejme surovo telo XML (do 10 MB), neveljavno datoteko zavrne s kodo `flex_invalid` brez vsebine datoteke in ponoven uvoz iste datoteke ne podvoji poslov. Implementacija prek OpenCode Sol (tek se je ustavil, dokončal glavni agent). Pregled Sol je našel, da spletni proxy vsako telo pošlje kot JSON in da se telo bere v celoti pred preverjanjem velikosti; oboje popravljeno (proxy posreduje tip XML, API bere tok do 10 MB). Popravek je naredil glavni agent, ker ponudnik Sol ni imel kvote. Preverjeno: API 447 in web 118 testov, ruff, eslint, tsc.
 
 **Odločitve:** ADR-0016. TradingAgents za delnice ni več v uporabi (odstranitev BL-171).
 

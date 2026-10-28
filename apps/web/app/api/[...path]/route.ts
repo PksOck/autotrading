@@ -8,6 +8,14 @@ export const dynamic = "force-dynamic";
 
 const ALLOWED = new Set(["system", "instruments", "portfolio", "watchlist", "radar", "signals", "proposals", "entries", "analyses", "theses", "track-record", "calibration"]);
 
+// XML passes through for the Flex statement import; every other body is JSON.
+const XML_TYPES = new Set(["application/xml", "text/xml"]);
+
+function forwardedType(contentType: string | null): string {
+  const media = (contentType ?? "").split(";")[0]!.trim().toLowerCase();
+  return XML_TYPES.has(media) ? media : "application/json";
+}
+
 async function forward(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
   const { path } = await params;
   if (!path.length || !ALLOWED.has(path[0]!)) return Response.json({ detail: "not_found" }, { status: 404 });
@@ -17,7 +25,7 @@ async function forward(request: NextRequest, { params }: { params: Promise<{ pat
   const hasBody = !["GET", "HEAD"].includes(request.method);
   const wantsStream = request.headers.get("accept")?.includes("text/event-stream") ?? false;
   const headers: Record<string, string> = {};
-  if (hasBody) headers["content-type"] = "application/json";
+  if (hasBody) headers["content-type"] = forwardedType(request.headers.get("content-type"));
   const lastEventId = request.headers.get("last-event-id");
   if (lastEventId) headers["last-event-id"] = lastEventId;
   try {
