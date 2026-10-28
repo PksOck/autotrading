@@ -4,12 +4,16 @@ from __future__ import annotations
 
 import os
 import subprocess
+import uuid
 from collections.abc import AsyncIterator
 from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
 from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import AsyncMock
 
 import pytest
+from arq.jobs import Job, JobStatus
 from sqlalchemy import select, text
 
 from preza import db
@@ -154,6 +158,88 @@ async def test_deep_analysis_job(session, monkeypatch: pytest.MonkeyPatch) -> No
     assert second.card["previous"]["id"] == str(run.id)
     assert second.card["delta_note"]
     assert len(next_llm.calls) == 6
+
+
+@pytest.mark.parametrize(
+    ("status", "alive"),
+    [
+        (JobStatus.deferred, True),
+        (JobStatus.queued, True),
+        (JobStatus.in_progress, True),
+        (JobStatus.complete, False),
+        (JobStatus.not_found, False),
+    ],
+)
+async def test_job_alive(monkeypatch: pytest.MonkeyPatch, status: JobStatus, alive: bool) -> None:
+    redis = SimpleNamespace()
+    run_id = uuid.uuid4()
+
+    async def job_status(job: Job) -> JobStatus:
+        assert job.job_id == f"analysis:{run_id}"
+        assert job._redis is redis
+        assert job._queue_name == worker.AGENTS_QUEUE
+        return status
+
+    monkeypatch.setattr(Job, "status", job_status)
+    assert await worker._job_alive(redis, run_id) is alive
+
+
+async def test_sweep_runs_closes_only_stale_running_runs(  # type: ignore[no-untyped-def]
+    session, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    now = datetime.now(UTC)
+    monkeypatch.setattr(worker, "_utcnow", lambda: now)
+    stale_start = now - timedelta(seconds=worker.STALE_RUN_S + 1)
+    instrument = Instrument(symbol="SWEEP", kind="stock", currency="USD", source="test")
+    session.add(instrument)
+    await session.flush()
+    runs = [
+        AnalysisRun(
+            instrument_id=instrument.id,
+            engine="tradingagents",
+            trade_date=now.date(),
+            locale="en",
+            status=status,
+            started_at=started_at,
+            finished_at=now if status in ("done", "failed") else None,
+            error="original failure" if status == "failed" else None,
+            created_at=now - timedelta(minutes=3),
+        )
+        for status, started_at in (
+            ("running", stale_start),
+            ("running", now - timedelta(seconds=worker.STALE_RUN_S - 1)),
+            ("running", now - timedelta(seconds=worker.STALE_RUN_S)),
+            ("running", None),
+            ("done", stale_start),
+            ("failed", stale_start),
+            ("queued", None),
+            ("running", stale_start),
+        )
+    ]
+    session.add_all(runs)
+    await session.commit()
+    before = [(r.status, r.started_at, r.finished_at, r.error) for r in runs]
+    redis = SimpleNamespace(enqueue_job=AsyncMock())
+    job_alive = AsyncMock(side_effect=lambda redis, run_id: run_id == runs[-1].id)
+    monkeypatch.setattr(worker, "_job_alive", job_alive)
+
+    assert await worker.sweep_runs({"redis": redis}) == 1
+
+    for run in runs:
+        await session.refresh(run)
+    assert runs[0].status == "failed"
+    assert runs[0].started_at == stale_start
+    assert runs[0].finished_at == now
+    assert runs[0].error == "interrupted: no result within the job timeout"
+    assert [(r.status, r.started_at, r.finished_at, r.error) for r in runs[1:]] == before[1:]
+    assert job_alive.await_count == 2
+    assert {call.args[1] for call in job_alive.await_args_list} == {runs[0].id, runs[-1].id}
+    redis.enqueue_job.assert_awaited_once_with(
+        "deep_analysis",
+        str(runs[-2].id),
+        _job_id=f"analysis:{runs[-2].id}",
+        _queue_name=worker.AGENTS_QUEUE,
+    )
 
 
 async def test_invalid_stock_decision_uses_worker_failure_path(session) -> None:  # type: ignore[no-untyped-def]

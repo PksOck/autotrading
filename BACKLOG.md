@@ -141,7 +141,7 @@
 | BL-174 | Ročno dodan instrument (npr. AMD) ima `kind=unknown` brez borze in valute: dopolni podatke iz profila Finnhub; tedenski posel temeljev naj zapiše `sync_run` | BL-173 | next |
 | BL-175 | Novice Finnhub (shranjene in sveže) imajo vedno `is_rumor=False`, zato nepotrjen prevzem šteje kot potrjen dokaz. Dodaj determinističen klasifikator govoric (npr. "reportedly", "according to sources", "v pogovorih") pred registrom dokazov | BL-173 | next |
 | BL-176 | `models.usage` naj pri vsakem klicu zapiše število poskusov; zdaj se vhod popravnega poskusa prišteje in klic na videz preseže 16k | BL-167 | next |
-| BL-177 | `sweep_runs` naj teke, ki so predolgo v stanju `running` (npr. po ustavitvi sklada), označi kot `failed` z razlogom; zdaj pobere samo `queued` | BL-173 | next |
+| BL-177 | `sweep_runs` naj teke, ki so predolgo v stanju `running` in nimajo živega arq opravila, označi kot `failed` z razlogom | BL-173 | done |
 
 ## M6: Opcije
 

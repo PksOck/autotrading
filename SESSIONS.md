@@ -22,16 +22,16 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 - Tek AMD `9d4dfe69` (pred popravki pregleda): uspel, Underweight, 0 `[?]` (prej 57), temelji Finnhub prisotni, 248 novic, 6 klicev, okoli 46 tisoč vhodnih in 48 tisoč izhodnih žetonov, 8 minut. Klica medveda in odločevalca sta potrebovala popravni poskus; vsak posamezen klic je pod 16k.
 - Preverjeno: agenti 192 testov z bazo, ruff, mypy; API 289 testov z bazo, ruff.
 - Tek AMD `3bd633f4` na končni različici: uspel, Overweight, 248 novic, temelji Finnhub z današnjim datumom, 6 klicev brez popravnih poskusov, okoli 38 tisoč vhodnih in 38 tisoč izhodnih žetonov, 5,6 minute. En `[?]` (odstotek rasti prihodkov, ki ga ni med dejstvi) in opozorilo `unverified_numbers`: preverjanje številk deluje, kot mora.
+- BL-177: `sweep_runs` zaključi tek v stanju `running` kot `failed`, ko je starejši od časovne omejitve opravila (3 h + 15 min) in arq zanj nima več živega opravila. Samo starost ne zadošča: tek `b063971d`, prekinjen ob ustavitvi sklada, je arq po zagonu ponovil z izvirnim `started_at` in se je končal `done`. Implementacija in pregled prek OpenCode Sol, preverjeno: agenti 198 testov z bazo, ruff, mypy; poizvedba stanja opravila in pometanje na živem Redisu.
 
 **Odločitve:** ADR-0016. TradingAgents za delnice ni več v uporabi (odstranitev BL-171).
 
 **Odprto:**
 - Razmišljanje MiniMax je okoli polovice izhodnih žetonov (BL-168).
 - Kartica je imela prepričanje 6 in oceno Hold, odločitev pa Overweight.
-- Tek `b063971d` je ostal v stanju `running`, ker je bil sklad med njim ustavljen. Pometanje pobere samo `queued` teke, zato osirotelih `running` vrstic nihče ne zaključi (BL-177).
 - Novice Finnhub se ne klasificirajo kot govorice (BL-175). Poraba ne beleži števila poskusov (BL-176).
 
-**Naslednji korak:** BL-175, BL-177, nato BL-168.
+**Naslednji korak:** BL-175, nato BL-168.
 
 ---
 

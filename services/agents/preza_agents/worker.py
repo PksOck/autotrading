@@ -19,8 +19,9 @@ from typing import Any, ClassVar, cast
 
 from arq import cron
 from arq.connections import RedisSettings
+from arq.jobs import Job, JobStatus
 from arq.worker import func as arq_func
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from preza.config import Settings, get_settings
@@ -57,6 +58,8 @@ log = logging.getLogger(__name__)
 FLUSH_S = 0.5
 MAX_CONTENT = 20_000
 RUN_TIMEOUT_S = 3 * 60 * 60
+# Only close runs this old when arq has no queued, deferred or in-progress job.
+STALE_RUN_S = RUN_TIMEOUT_S + 15 * 60
 
 
 def deep_settings(settings: Settings) -> adapter.DeepSettings:
@@ -417,10 +420,39 @@ async def _card(
     return build_card(result.rating, control_score(snapshot), draft, previous), model
 
 
+async def _job_alive(redis: Any, run_id: uuid.UUID) -> bool:
+    status = await Job(f"analysis:{run_id}", redis, _queue_name=AGENTS_QUEUE).status()
+    return status in (JobStatus.deferred, JobStatus.queued, JobStatus.in_progress)
+
+
 async def sweep_runs(ctx: dict[str, Any]) -> int:
-    """Queue runs stored while Redis was down; arq's job id keeps this from doubling a run."""
-    cutoff = _utcnow() - timedelta(minutes=2)
+    """Fail stale runs without live arq jobs; re-queue queued runs with deduplicated IDs."""
+    now = _utcnow()
+    cutoff = now - timedelta(minutes=2)
     async with get_sessionmaker()() as session:
+        candidates = list(
+            await session.scalars(
+                select(AnalysisRun.id).where(
+                    AnalysisRun.status == "running",
+                    AnalysisRun.started_at < now - timedelta(seconds=STALE_RUN_S),
+                )
+            )
+        )
+        abandoned = [run_id for run_id in candidates if not await _job_alive(ctx["redis"], run_id)]
+        closed = []
+        if abandoned:
+            closed = list(
+                await session.scalars(
+                    update(AnalysisRun)
+                    .where(AnalysisRun.id.in_(abandoned), AnalysisRun.status == "running")
+                    .values(
+                        status="failed",
+                        finished_at=now,
+                        error="interrupted: no result within the job timeout",
+                    )
+                    .returning(AnalysisRun.id)
+                )
+            )
         stuck = list(
             await session.scalars(
                 select(AnalysisRun.id).where(
@@ -428,6 +460,9 @@ async def sweep_runs(ctx: dict[str, Any]) -> int:
                 )
             )
         )
+        await session.commit()
+    if closed:
+        log.warning("closed %d interrupted analysis runs", len(closed))
     for run_id in stuck:
         await ctx["redis"].enqueue_job(
             "deep_analysis", str(run_id), _job_id=f"analysis:{run_id}", _queue_name=AGENTS_QUEUE
