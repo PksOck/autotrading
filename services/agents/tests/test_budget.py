@@ -157,8 +157,43 @@ async def test_real_client_repair_is_reserved_and_capped() -> None:
             "cloud-quick", "system", "u" * 20_000, SmallOutput, max_output_tokens=1500
         )
     assert result.attempts == 2 and result.value.text == "fixed"
-    assert [b["max_tokens"] for b in bodies] == [1500, 1500]
+    assert [b["max_completion_tokens"] for b in bodies] == [1500, 1500]
     assert usage.calls[0]["repair_input_estimate"] <= MAX_INPUT_TOKENS
     second = sum(estimate_tokens(m["content"]) + 16 for m in bodies[1]["messages"])
     second += estimate_tokens(json.dumps(SmallOutput.model_json_schema()))
     assert second <= usage.calls[0]["repair_input_estimate"]
+
+
+@pytest.mark.parametrize("finish_reason", ["length", "stop"])
+async def test_usage_distinguishes_truncation_from_schema_failure(finish_reason: str) -> None:
+    import httpx
+
+    from preza.llm.client import LiteLlmClient, LlmUnavailableError
+
+    bodies = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        bodies.append(json.loads(request.content))
+        return httpx.Response(
+            200,
+            json={
+                "choices": [{"finish_reason": finish_reason, "message": {"content": "{}"}}],
+                "usage": {"prompt_tokens": 7, "completion_tokens": 3},
+            },
+        )
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+        usage = UsageLlm(LiteLlmClient("http://test.invalid", None, client))
+        with pytest.raises(LlmUnavailableError):
+            await usage.complete_json(
+                "cloud-quick", "system", "user", SmallOutput, max_output_tokens=100
+            )
+    truncated = finish_reason == "length"
+    attempts = 1 if truncated else 2
+    assert len(bodies) == attempts
+    assert usage.calls[0]["status"] == "failed"
+    assert usage.calls[0]["error_code"] == (
+        "output_truncated" if truncated else "schema_validation_failed"
+    )
+    assert usage.calls[0]["prompt_tokens"] == 7 * attempts
+    assert usage.calls[0]["completion_tokens"] == 3 * attempts

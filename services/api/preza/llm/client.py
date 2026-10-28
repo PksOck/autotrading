@@ -6,6 +6,7 @@ error.
 """
 
 import json
+import logging
 import re
 from dataclasses import dataclass
 from decimal import Decimal
@@ -18,6 +19,11 @@ Role = Literal["local-fast", "local-reason", "cloud-quick", "cloud-deep"]
 T = TypeVar("T", bound=BaseModel)
 
 FENCE = re.compile(r"^```(?:json)?\s*|\s*```$", re.MULTILINE)
+logger = logging.getLogger(__name__)
+
+# Proxy request_timeout is 600 s in infra/litellm/config.yaml. Leave 60 s for
+# cancellation/worker cleanup. Apply this even to an injected HTTP client.
+CLIENT_TIMEOUT_SECONDS = 540
 
 
 class LlmUnavailableError(Exception):
@@ -27,6 +33,19 @@ class LlmUnavailableError(Exception):
     prompt_tokens: int = 0
     completion_tokens: int = 0
     cost: Decimal | None = None
+    error_code = "llm_unavailable"
+
+
+class LlmTruncatedError(LlmUnavailableError):
+    """The output budget was exhausted. Do not repair with the same budget."""
+
+    error_code = "output_truncated"
+
+
+class LlmSchemaError(LlmUnavailableError):
+    """The completed response still failed schema validation after repair."""
+
+    error_code = "schema_validation_failed"
 
 
 @dataclass
@@ -65,13 +84,15 @@ class LiteLlmClient:
     def __init__(self, base_url: str, api_key: str | None, client: httpx.AsyncClient | None = None):
         self._base = base_url.rstrip("/")
         headers = {"Authorization": f"Bearer {api_key}"} if api_key else {}
-        self._client = client or httpx.AsyncClient(timeout=300, headers=headers)
+        self._client = client or httpx.AsyncClient(timeout=CLIENT_TIMEOUT_SECONDS, headers=headers)
         if client is not None and api_key:
             self._client.headers.update(headers)
 
     async def _post(self, path: str, body: dict[str, object]) -> dict[str, object]:
         try:
-            response = await self._client.post(f"{self._base}{path}", json=body)
+            response = await self._client.post(
+                f"{self._base}{path}", json=body, timeout=CLIENT_TIMEOUT_SECONDS
+            )
         except httpx.HTTPError as exc:
             raise LlmUnavailableError(type(exc).__name__) from exc
         if response.status_code >= 400:
@@ -121,7 +142,10 @@ class LiteLlmClient:
                 "response_format": response_format,
             }
             if max_output_tokens is not None:
-                body["max_tokens"] = max_output_tokens
+                # Preserve Ollama's max_tokens -> num_predict mapping. Cloud
+                # OpenAI-compatible routes accept max_completion_tokens directly.
+                token_param = "max_tokens" if role.startswith("local-") else "max_completion_tokens"
+                body[token_param] = max_output_tokens
             try:
                 data = await self._post("/v1/chat/completions", body)
             except LlmUnavailableError as exc:
@@ -142,6 +166,29 @@ class LiteLlmClient:
             # Only a proxy-reported cost is authoritative. Never estimate provider prices.
             raw_cost = data.get("response_cost")
             costs.append(Decimal(str(raw_cost)) if raw_cost is not None else None)
+            if (
+                isinstance(choices, list)
+                and choices
+                and choices[0].get("finish_reason") == "length"
+            ):
+                error: LlmUnavailableError = LlmTruncatedError(
+                    "output_truncated: finish_reason=length; no repair attempted"
+                )
+                error.attempts = _attempt + 1
+                error.prompt_tokens = prompt_tokens
+                error.completion_tokens = completion_tokens
+                error.cost = (
+                    sum((c for c in costs if c is not None), Decimal("0"))
+                    if all(c is not None for c in costs)
+                    else None
+                )
+                logger.warning(
+                    "LLM output_truncated role=%s attempt=%s finish_reason=length budget=%s",
+                    role,
+                    error.attempts,
+                    max_output_tokens,
+                )
+                raise error
             try:
                 value = schema.model_validate_json(FENCE.sub("", content).strip())
             except ValidationError as exc:
@@ -165,7 +212,7 @@ class LiteLlmClient:
                 if all(c is not None for c in costs)
                 else None,
             )
-        error = LlmUnavailableError(f"invalid structured output: {last_error}")
+        error = LlmSchemaError(f"invalid structured output: {last_error}")
         error.attempts = 2
         error.prompt_tokens = prompt_tokens
         error.completion_tokens = completion_tokens
@@ -174,6 +221,7 @@ class LiteLlmClient:
             if all(c is not None for c in costs)
             else None
         )
+        logger.warning("LLM schema_validation_failed role=%s attempts=%s", role, error.attempts)
         raise error
 
     async def embed(self, texts: list[str]) -> list[list[float]]:

@@ -25,6 +25,10 @@ model_list:
   # --- oblak: MiniMax (OpenAI-kompatibilen) ---
   # OpenCode Go sprejema samo klice iz OpenCode (glava x-opencode-session), zato ga
   # LiteLLM ne uporablja (BL-097). Obe oblačni vlogi gresta na MiniMax.
+  # Structured calls keep response_format=json_schema plus prompt/local validation.
+  # OpenAI-compatible parameter acceptance is not proof of MiniMax schema enforcement.
+  # Thinking is not switched off: the deployed MiniMax-M3.1-Flash rejects
+  # thinking=disabled (BL-168). Output budgets therefore include reasoning tokens.
   - model_name: cloud-quick
     litellm_params:
       model: os.environ/MINIMAX_MODEL
@@ -55,6 +59,7 @@ router_settings:
 
 litellm_settings:
   drop_params: true
+  # Client deadline is CLIENT_TIMEOUT_SECONDS=540, leaving a 60 s margin.
   request_timeout: 600
 
 general_settings:

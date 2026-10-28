@@ -185,6 +185,7 @@ class UsageLlm:
                     + min(max_output_tokens, REPAIR_CONTENT_TOKENS)
                     + REPAIR_OVERHEAD_TOKENS,
                     "status": "failed",
+                    "error_code": getattr(exc, "error_code", "llm_unavailable"),
                 }
             )
             raise
