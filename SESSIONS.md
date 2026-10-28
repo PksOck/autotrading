@@ -27,6 +27,8 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 - BL-178: radar uporablja isti klasifikator. Neuradna novica z obotavljivim besedilom označi nov dogodek kot govorico, priključitev k obstoječemu dogodku zastavico ohrani (grozdenje ni potrditev). Triaža LLM determinističnega znaka ne more več preglasiti; potrdi ga samo sporočilo za javnost ali vloga. Signal, ki pade pod prag zaradi kazni za govorico, ni več prikazan kot potrjen (`new` → `watching`). Seznam uradnih vrst je zdaj samo v `preza.domain.rumor`. Implementacija in dva pregleda prek OpenCode Sol.
 - BL-168: odjemalec LLM pošlje `max_completion_tokens` za oblačne vloge in `max_tokens` za lokalne, rok odjemalca je 540 s (proxy 600 s). `finish_reason=length` je zdaj ločena napaka `output_truncated` brez popravnega poskusa; neveljavna shema po popravku je `schema_validation_failed`, obe se zapišeta v porabo. Razmišljanja ni mogoče izklopiti, ker MiniMax-M3.1-Flash zavrne `thinking=disabled`, zato izhodne meje vključujejo žetone razmišljanja. Živo preverjeno prek LiteLLM: omejitev 16 žetonov upoštevajo `cloud-quick`, `local-fast` in `local-reason` z obema imenoma parametra (`finish_reason=length`, 16 izhodnih žetonov), torej zdrži tudi ob fallbacku.
 - Preverjeno: API 425 testov z bazo, agenti 216 testov z bazo, ruff, format, mypy; sklad (api, agents) ponovno zgrajen. Ni preverjeno: celoten radar na živih novicah in uveljavljanje `json_schema` pri MiniMax (BL-181).
+- BL-179: pregled teze ohrani kodo `output_truncated` ali `schema_validation_failed`, ostale napake LLM ostanejo `role_unavailable`. Implementacija prek OpenCode Sol, preverjeno: agenti 218 in API 428 testov z bazo, ruff, mypy.
+- Nove ideje v BACKLOG: spremljani viri (osebe, YouTube, Instagram, spletne strani; BL-182 do BL-185) in predlog iz posnetka zaslona s potrditvijo simbolov in hitro analizo (BL-186).
 
 **Odločitve:** ADR-0016. TradingAgents za delnice ni več v uporabi (odstranitev BL-171).
 
@@ -35,7 +37,7 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 - Kartica je imela prepričanje 6 in oceno Hold, odločitev pa Overweight.
 - Novice Finnhub se ne klasificirajo kot govorice (BL-175). Poraba ne beleži števila poskusov (BL-176).
 
-**Naslednji korak:** BL-179, BL-176 ali BL-174.
+**Naslednji korak:** BL-176 ali BL-174; za BL-182 in BL-186 najprej odločitev o virih in vlogi za slike.
 
 ---
 

@@ -77,6 +77,11 @@
 | BL-057 | Telegram bot: besedila odgovorov (/start, /predlog, gumbi) v messages, ne v kodi | VOICE §6 | later |
 | BL-058 | Jutranji povzetek ob 7:30 po lokalnem času (zdaj 05:30 UTC, pozimi 6:30) | ADR-0007 | later |
 | BL-059 | RSS in EDGAR preverjena v živo: ohranjen samo PR Newswire; GlobeNewswire in Business Wire opuščena kot nebrezplačna vira; oblika EDGAR feeda potrjena | research §5.1 | done |
+| BL-182 | Spremljani viri (osebe, kanali, strani): model `watched_source` (vrsta, URL, oznaka, aktivno), API in seznam v nastavitvah. Vse objave so vrste `social`, torej govorica, dokler je ne potrdi uradni vir (AGENTS §3.4). Primera: YouTube `@jeremylefebvremakesmoney7934`, Instagram `moby.invest` | AGENTS §3.4 | later |
+| BL-183 | YouTube: nove objave kanala prek YouTube Data API (seznam naloženih videov), prepis podnapisov, povzetek `local-fast`/`cloud-quick` s simboli in trditvami v `event`. Številke iz videa so trditve avtorja, ne dejstva. Preveri kvoto API in pravno podlago za prepise (uradni API daje podnapise samo lastniku kanala) | BL-182 | later |
+| BL-184 | Instagram: uradni Graph API bere tuje račune samo prek lastnega poslovnega računa (Business Discovery), strganje krši pogoje uporabe. Odloči: Business Discovery, ročno posredovanje objav (Telegram `/predlog`, BL-053) ali opustitev vira | BL-182 | later |
+| BL-185 | Spletne strani: RSS, kjer obstaja, sicer periodično branje strani s primerjavo vsebine (spoštuj `robots.txt`), nova vsebina gre v isti cevovod kot novice | BL-182 | later |
+| BL-186 | Predlog iz slike: prilepljen posnetek zaslona (CMP-30 v spletu, fotografija v Telegramu) → izluščeni simboli s kratkim kontekstom → uporabnik potrdi, katere doda na watchlisto → takoj hitra analiza (`depth=quick`), globoka v nizko prioritetni vrsti, ko je delavec prost. Potrebuje vlogo LiteLLM s podporo slikam (sprememba ADR-0004) ali lokalni OCR pred `local-fast`. Številke s slike niso dejstva | BL-053 | later |
 
 ## M3: Vstopi
 
@@ -143,7 +148,7 @@
 | BL-176 | `models.usage` naj pri vsakem klicu zapiše število poskusov; zdaj se vhod popravnega poskusa prišteje in klic na videz preseže 16k | BL-167 | next |
 | BL-177 | `sweep_runs` naj teke, ki so predolgo v stanju `running` in nimajo živega arq opravila, označi kot `failed` z razlogom | BL-173 | done |
 | BL-178 | Radar (`radar/cluster.py`) naj za neuradne dogodke uporabi isti `looks_like_rumor`; zdaj označi govorico samo pri vrsti `social` | BL-175 | done |
-| BL-179 | `thesis_tracker/runner.py` preslika vse napake LLM v `role_unavailable`; ohrani `error_code` (`output_truncated`, `schema_validation_failed`) za diagnostiko | BL-168 | next |
+| BL-179 | `thesis_tracker/runner.py` preslika vse napake LLM v `role_unavailable`; ohrani `error_code` (`output_truncated`, `schema_validation_failed`) za diagnostiko | BL-168 | done |
 | BL-180 | Rok 540 s velja za posamezen HTTP klic; s popravnim poskusom lahko klic `complete_json` traja do dvakrat dlje. Dodaj skupni rok za celoten klic | BL-168 | later |
 | BL-181 | Preveri, ali MiniMax prek LiteLLM res uveljavi `json_schema` (zdaj ščiti samo lokalno preverjanje in popravni poskus) | BL-168 | later |
 
