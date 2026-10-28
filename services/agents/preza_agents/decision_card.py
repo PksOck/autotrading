@@ -10,7 +10,6 @@ the control score lowers the confidence and caps the size; it never changes the 
 
 from __future__ import annotations
 
-import json
 from typing import Literal
 
 from pydantic import BaseModel, Field
@@ -20,6 +19,7 @@ from preza.domain.quality import quality_score
 from preza.domain.valuation import HIGHER_IS_CHEAPER, valuation_bands
 from preza.entries.indicators import compute, last
 from preza.llm.client import Llm, Role
+from preza_agents.budget import DECISION_OUTPUT_TOKENS, UsageLlm, guard_payload
 from preza_agents.deep_research.snapshot import DataSnapshot
 
 # Research weights: fundamentals 25 %, relative value 15 %, technicals 15 %, risk 15 %.
@@ -167,17 +167,24 @@ async def draft_card(
     locale: str,
     role: Role = "cloud-quick",
 ) -> tuple[CardDraft, str]:
-    payload = json.dumps(
+    system = SYSTEM.format(language=LANGUAGES.get(locale, "English"))
+    payload = guard_payload(
+        system,
         {
             "rating": rating,
             "final_decision": (decision or "")[:MAX_REPORT],
             "reports": {k: v[:MAX_REPORT] for k, v in reports.items() if v},
-            "previous_run": previous,
+            "previous_run": None
+            if previous is None
+            else {k: (v or "")[:MAX_REPORT] for k, v in previous.items()},
         },
-        ensure_ascii=False,
+        trimmable=("reports", "final_decision"),
+        schema=CardDraft,
+        max_output_tokens=DECISION_OUTPUT_TOKENS,
     )
-    result = await llm.complete_json(
-        role, SYSTEM.format(language=LANGUAGES.get(locale, "English")), payload, CardDraft
+    usage = llm if isinstance(llm, UsageLlm) else UsageLlm(llm)
+    result = await usage.complete_json(
+        role, system, payload, CardDraft, max_output_tokens=DECISION_OUTPUT_TOKENS
     )
     return result.value, result.model
 

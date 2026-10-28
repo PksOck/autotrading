@@ -17,7 +17,6 @@ from preza.config import get_settings
 from preza.models import AnalysisRun, AnalysisStep, Bar, Instrument, NewsItem
 from preza_agents import worker
 from tests.conftest import make_snapshot
-from tests.fake_llm import FakeChat, FakeClient
 from tests.fake_role_llm import FakeRoleLlm
 
 API_ROOT = Path(__file__).parents[2] / "api"
@@ -54,10 +53,7 @@ async def session(
 
 
 async def test_deep_analysis_job(session, monkeypatch: pytest.MonkeyPatch) -> None:  # type: ignore[no-untyped-def]
-    from tradingagents.graph import trading_graph
-
-    llm = FakeChat(rating="Hold", seen_tool_output=[])
-    monkeypatch.setattr(trading_graph, "create_tier_client", lambda *a, **k: FakeClient(llm))
+    llm = FakeRoleLlm()
 
     fixture = make_snapshot()
     instrument = Instrument(
@@ -98,11 +94,15 @@ async def test_deep_analysis_job(session, monkeypatch: pytest.MonkeyPatch) -> No
         engine="tradingagents",
         trade_date=date(2026, 10, 20),
         locale="sl",
+        hypothesis="Rast naročil.",
     )
     session.add(run)
     await session.commit()
 
-    assert await worker.deep_analysis({}, str(run.id)) == "done"
+    assert (
+        await worker.deep_analysis({"llm": llm, "statement_fetcher": lambda *_: {}}, str(run.id))
+        == "done"
+    )
 
     await session.refresh(run)
     assert run.rating == "Hold"
@@ -117,10 +117,65 @@ async def test_deep_analysis_job(session, monkeypatch: pytest.MonkeyPatch) -> No
     assert [s.seq for s in steps] == list(range(1, len(steps) + 1))
     assert steps[0].title == "started" and steps[-1].title == "done"
     assert any(s.kind == "decision" for s in steps)
-    assert any("ASML wins a large order" in out for out in llm.seen_tool_output)
+    assert any("ASML wins a large order" in s.content for s in steps if s.kind == "report")
+    assert len(llm.calls) == 6
+    assert len(run.models["usage"]["calls"]) == 6
+    assert all(c["input_token_estimate"] <= 12_000 for c in run.models["usage"]["calls"])
+    assert [c["max_output_tokens"] for c in run.models["usage"]["calls"]] == [6000] * 5 + [10_000]
+    assert "### Sources" in run.decision and "as_of:" in run.decision
+    assert run.card["conviction"] == 6
+    assert "delno potrjena" in run.reports["hypothesis_check"]
+    assert run.models["hypothesis"] == run.models["deep"]
 
     # A finished run is not run again.
     assert await worker.deep_analysis({}, str(run.id)) == "done"
+
+    second = AnalysisRun(
+        instrument_id=instrument.id,
+        engine="tradingagents",
+        trade_date=run.trade_date,
+        locale="sl",
+    )
+    session.add(second)
+    await session.commit()
+    next_llm = FakeRoleLlm(rating="Overweight")
+    assert (
+        await worker.deep_analysis(
+            {"llm": next_llm, "statement_fetcher": lambda *_: {}}, str(second.id)
+        )
+        == "done"
+    )
+    await session.refresh(second)
+    assert second.card["previous"]["id"] == str(run.id)
+    assert second.card["delta_note"]
+    assert len(next_llm.calls) == 6
+
+
+async def test_invalid_stock_decision_uses_worker_failure_path(session) -> None:  # type: ignore[no-untyped-def]
+    instrument = Instrument(symbol="FAIL", kind="stock", currency="USD", source="test")
+    session.add(instrument)
+    await session.flush()
+    run = AnalysisRun(
+        instrument_id=instrument.id,
+        engine="tradingagents",
+        trade_date=date(2026, 10, 20),
+        locale="en",
+    )
+    session.add(run)
+    await session.commit()
+    llm = FakeRoleLlm(decision_fails=True)
+    assert (
+        await worker.deep_analysis({"llm": llm, "statement_fetcher": lambda *_: {}}, str(run.id))
+        == "failed"
+    )
+    await session.refresh(run)
+    assert run.rating is None and run.decision is None and run.card is None
+    assert "invalid structured output" in run.error
+    assert run.models["usage"]["calls"][-1]["status"] == "failed"
+    kinds = list(
+        await session.scalars(select(AnalysisStep.kind).where(AnalysisStep.run_id == run.id))
+    )
+    assert "decision" not in kinds
 
 
 async def _etf_run(session, hypothesis: str | None = None) -> AnalysisRun:  # type: ignore[no-untyped-def]

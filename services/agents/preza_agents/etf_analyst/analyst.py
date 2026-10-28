@@ -8,7 +8,6 @@ same five-step scale, so SCR-06 treats stocks and ETFs alike.
 
 from __future__ import annotations
 
-import json
 from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
 from datetime import date
@@ -18,6 +17,12 @@ from pydantic import BaseModel, Field
 
 from preza.entries.indicators import compute, last
 from preza.llm.client import Llm, Role
+from preza_agents.budget import (
+    ANALYST_OUTPUT_TOKENS,
+    DECISION_OUTPUT_TOKENS,
+    UsageLlm,
+    guard_payload,
+)
 from preza_agents.deep_research.adapter import DeepResult
 from preza_agents.deep_research.snapshot import DataSnapshot
 from preza_agents.deep_research.timeline import Step
@@ -323,6 +328,7 @@ async def run_etf(
     quick_role: Role = "cloud-quick",
     deep_role: Role = "cloud-deep",
 ) -> DeepResult:
+    usage = llm if isinstance(llm, UsageLlm) else UsageLlm(llm)
     lang = locale if locale in LABELS else "en"
     language = LANGUAGES.get(lang, "English")
     reports = {
@@ -337,20 +343,25 @@ async def run_etf(
     ):
         on_step(Step(agent=agent, kind="report", title=key, content=reports[key]))
 
-    payload = json.dumps(facts_payload(facts), ensure_ascii=False, default=str)
-    theme = await llm.complete_json(
-        quick_role, THEME_SYSTEM.format(language=language), payload, EtfTheme
+    system = THEME_SYSTEM.format(language=language)
+    payload = guard_payload(
+        system, facts_payload(facts), schema=EtfTheme, max_output_tokens=ANALYST_OUTPUT_TOKENS
+    )
+    theme = await usage.complete_json(
+        quick_role, system, payload, EtfTheme, max_output_tokens=ANALYST_OUTPUT_TOKENS
     )
     reports["news_report"] = theme_md(theme.value, lang)
     on_step(Step(agent="news", kind="report", title="news_report", content=reports["news_report"]))
 
-    decision_input = json.dumps(
+    system = DECISION_SYSTEM.format(language=language)
+    decision_input = guard_payload(
+        system,
         {"facts": facts_payload(facts), "theme": theme.value.model_dump()},
-        ensure_ascii=False,
-        default=str,
+        schema=EtfDecision,
+        max_output_tokens=DECISION_OUTPUT_TOKENS,
     )
-    decision = await llm.complete_json(
-        deep_role, DECISION_SYSTEM.format(language=language), decision_input, EtfDecision
+    decision = await usage.complete_json(
+        deep_role, system, decision_input, EtfDecision, max_output_tokens=DECISION_OUTPUT_TOKENS
     )
     text = decision_md(decision.value, lang)
     reports["final_trade_decision"] = text

@@ -1,14 +1,13 @@
 """arq worker for agent runs (M4). Its own queue, one run at a time.
 
-Run with `arq preza_agents.worker.WorkerSettings`. The run itself is blocking
-(LangGraph, worker threads); it runs in a thread while this loop writes its steps
-to the database every half second, which is what the timeline streams (BL-082).
+Run with `arq preza_agents.worker.WorkerSettings`. Stock and ETF role calls are
+sequential and asynchronous; blocking SEC fetches run in a thread. The loop writes
+steps every half second for the streamed timeline (BL-082).
 """
 
 from __future__ import annotations
 
 import asyncio
-import functools
 import logging
 import os
 import queue
@@ -31,6 +30,7 @@ from preza.llm.client import LiteLlmClient, Llm, Role
 from preza.models import AnalysisRun, AnalysisStep, ThesisReview, ThesisRevision
 from preza.queue import AGENTS_QUEUE
 from preza.services.thesis_reviews import week_start
+from preza_agents.budget import UsageLlm
 from preza_agents.decision_card import build_card, control_score, draft_card
 from preza_agents.deep_research import adapter
 from preza_agents.deep_research.snapshot import DataSnapshot, build_snapshot
@@ -39,6 +39,7 @@ from preza_agents.etf_analyst.analyst import run_etf
 from preza_agents.etf_analyst.context import build_etf_facts
 from preza_agents.etf_analyst.profile import fetch_profile, store_profile, user_etfs
 from preza_agents.hypothesis import check_hypothesis, check_md
+from preza_agents.stock_analyst.analyst import StockResult, run_stock
 from preza_agents.thesis_tracker.runner import thesis_review
 
 log = logging.getLogger(__name__)
@@ -96,6 +97,66 @@ async def _flush(
     return seq
 
 
+def _fetch_stock_statements(snapshot: DataSnapshot, settings: Settings) -> dict[str, str]:
+    """Blocking SEC adapter, called only in a worker thread with a configured contact."""
+    if not settings.sec_edgar_user_agent:
+        raise ValueError("SEC EDGAR contact is not configured")
+    from tradingagents.dataflows.config import run_config
+    from tradingagents.dataflows.vendors import sec_edgar
+
+    os.environ.setdefault("SEC_EDGAR_USER_AGENT", settings.sec_edgar_user_agent)
+    with run_config({"data_cache_dir": str(Path(settings.agents_home) / "cache")}):
+        return {
+            name: fetch(snapshot.symbol, "quarterly", snapshot.as_of.isoformat())
+            for name, fetch in (
+                ("income_statement", sec_edgar.get_income_statement),
+                ("balance_sheet", sec_edgar.get_balance_sheet),
+                ("cashflow", sec_edgar.get_cashflow),
+            )
+        }
+
+
+async def _stock_work(
+    ctx: dict[str, Any],
+    settings: Settings,
+    llm: Llm,
+    snapshot: DataSnapshot,
+    locale: str,
+    on_step: Callable[[Step], None],
+    hypothesis: str | None,
+    previous: dict[str, str | None] | None,
+) -> StockResult:
+    # Tests inject a pure fetcher. Neither model code nor digests can perform I/O.
+    fetcher = ctx.get("statement_fetcher", _fetch_stock_statements)
+    unavailable = False
+    try:
+        statements = await asyncio.to_thread(fetcher, snapshot, settings)
+        if not isinstance(statements, dict) or not all(
+            isinstance(k, str) and isinstance(v, str) for k, v in statements.items()
+        ):
+            raise ValueError("SEC statement fetcher must return a text mapping")
+        unavailable = not bool(statements)
+    except Exception:
+        log.warning("SEC statements unavailable for %s", snapshot.symbol)
+        statements = None
+        unavailable = True
+    result = await run_stock(
+        llm,
+        snapshot,
+        locale,
+        on_step,
+        cast(Role, settings.deep_quick_role),
+        cast(Role, settings.deep_deep_role),
+        cast(Role | None, settings.deep_compose_role),
+        hypothesis,
+        previous,
+        statements,
+    )
+    if unavailable:
+        result.caveats.append("statements_unavailable")
+    return result
+
+
 async def deep_analysis(
     ctx: dict[str, Any], run_id: str, graph_factory: Callable[..., Any] | None = None
 ) -> str:
@@ -118,8 +179,8 @@ async def deep_analysis(
         deep = deep_settings(settings)
         extra: list[str] = []
         work: Awaitable[adapter.DeepResult]
-        llm = ctx.get("llm") or LiteLlmClient(
-            settings.litellm_base_url, settings.litellm_master_key
+        llm = UsageLlm(
+            ctx.get("llm") or LiteLlmClient(settings.litellm_base_url, settings.litellm_master_key)
         )
         if run.engine == "etf":
             facts = await build_etf_facts(session, run.instrument, snapshot, settings.base_currency)
@@ -134,13 +195,26 @@ async def deep_analysis(
                 cast(Role, deep.deep_role),
             )
         else:
-            config = adapter.build_config(deep, run.locale)
-            run_deep = (
-                functools.partial(adapter.run_deep, graph_factory=graph_factory)
-                if graph_factory
-                else adapter.run_deep
+            before = await _previous_run(session, run)
+            previous = (
+                None
+                if before is None
+                else {
+                    "trade_date": before.trade_date.isoformat(),
+                    "rating": before.rating,
+                    "decision": (before.decision or "")[:3000],
+                }
             )
-            work = asyncio.to_thread(run_deep, snapshot, config, steps.put)
+            work = _stock_work(
+                ctx,
+                settings,
+                llm,
+                snapshot,
+                run.locale,
+                steps.put,
+                run.hypothesis,
+                previous,
+            )
         task = asyncio.ensure_future(work)
         while not task.done():
             seq = await _flush(session, run.id, steps, seq)
@@ -153,10 +227,23 @@ async def deep_analysis(
             await _flush(session, run.id, steps, seq)
             run.status = "failed"
             run.error = f"{type(exc).__name__}: {str(exc)[:500]}"
+            failed_models: dict[str, Any] = {**(run.models or {}), "usage": llm.usage()}
+            run.models = failed_models
             run.finished_at = _utcnow()
             await session.commit()
             return run.status
-        if run.hypothesis:
+        if isinstance(result, StockResult):
+            extra.extend(result.caveats)
+        if run.hypothesis and isinstance(result, StockResult):
+            if result.hypothesis_check is not None:
+                text = check_md(run.hypothesis, result.hypothesis_check, run.locale)
+                if sources := result.reports.get("evidence_sources"):
+                    text += "\n\n" + sources
+                result.reports["hypothesis_check"] = text
+                steps.put(
+                    Step(agent="hypothesis", kind="report", title="hypothesis_check", content=text)
+                )
+        elif run.hypothesis:
             try:
                 check, model = await check_hypothesis(
                     llm,
@@ -189,15 +276,30 @@ async def deep_analysis(
         run.rating = result.rating
         run.decision = result.decision
         run.reports = result.reports
+        result.models["usage"] = llm.usage()  # type: ignore[assignment]
         run.models = result.models
         found = adapter.caveats(snapshot, result.rating)
         if run.engine == "etf":  # a fund has no company fundamentals to miss
             found = [c for c in found if c != "no_fundamentals"]
-        run.caveats = found + extra
+        run.caveats = list(dict.fromkeys(found + extra))
         run.status = "done"
         run.finished_at = _utcnow()
         await session.commit()
         return run.status
+
+
+async def _previous_run(session: AsyncSession, run: AnalysisRun) -> AnalysisRun | None:
+    return await session.scalar(
+        select(AnalysisRun)
+        .where(
+            AnalysisRun.instrument_id == run.instrument_id,
+            AnalysisRun.status == "done",
+            AnalysisRun.id != run.id,
+            AnalysisRun.created_at < run.created_at,
+        )
+        .order_by(AnalysisRun.created_at.desc())
+        .limit(1)
+    )
 
 
 async def _card(
@@ -209,23 +311,17 @@ async def _card(
     deep: adapter.DeepSettings,
 ) -> tuple[DecisionCard, str | None]:
     """The decision card; without the model's half it still carries the control score."""
-    before = await session.scalar(
-        select(AnalysisRun)
-        .where(
-            AnalysisRun.instrument_id == run.instrument_id,
-            AnalysisRun.status == "done",
-            AnalysisRun.id != run.id,
-            AnalysisRun.created_at < run.created_at,
-        )
-        .order_by(AnalysisRun.created_at.desc())
-        .limit(1)
-    )
+    before = await _previous_run(session, run)
     previous = (
         PreviousRun(id=before.id, trade_date=before.trade_date, rating=before.rating)
         if before is not None
         else None
     )
     draft, model = None, None
+    if isinstance(result, StockResult):
+        return build_card(
+            result.rating, control_score(snapshot), result.card_draft, previous
+        ), result.models.get("deep")
     try:
         draft, model = await draft_card(
             llm,

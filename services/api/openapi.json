@@ -2153,9 +2153,7 @@
             "title": "Reports"
           },
           "models": {
-            "additionalProperties": {
-              "type": "string"
-            },
+            "additionalProperties": true,
             "type": "object",
             "title": "Models"
           },

@@ -4,6 +4,31 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 
 ---
 
+## S-013 · 2026-10-28 · Vitka zaporedna analiza delnice
+
+**Cilj:** BL-167: manj žetonov na analizo delnice, vsak klic pod 16 tisoč vhodnih žetonov. Čim več dela opravi koda, AI samo presodi in združi.
+
+**Narejeno:**
+- ADR-0016: koda pripravi povzetke trga, temeljev in novic ter register dokazov. Trije analitiki tečejo zaporedno, sledita bik in medved ter en odločevalec, ki pri delnicah nadomesti kartico in preverjanje hipoteze. Lokalni povzetek je neobvezen.
+- `budget.py`: ocena vhoda, delovna meja 12 tisoč, trda 16 tisoč, meje izhoda po vlogah (6000, 10.000, 2000). Poraba po klicih se shrani v `models.usage`. API in UI prikažeta nov zapis modelov.
+- Preverjanje številk: številke brez opore v registru postanejo `[?]`. Obdobja (tudi »200-dnevno«, »20- in 50-dnevnega«), datumi (»30. junija 2026«) in predznak, izražen z besedo (»padec«, »odtok«), niso več napačno označeni.
+- Prvi živi tek je padel s praznim odgovorom: splošne novice so izrinile dejstva o AMD, model ni vedel, katero podjetje analizira, MiniMax pa ne upošteva `response_format`. Popravki: prednostni red v registru, splošne novice (`G`) največ 5 in nikoli uradne, polje `instrument`, shema tudi v sistemskem pozivu, višje meje izhoda.
+- Živi tek AMD (`b782bf65`) je uspel: 6 klicev, okoli 76 tisoč žetonov namesto 353 tisoč (−78 %), največji vhod okoli 8,4 tisoč, 6,5 minute namesto 42.
+- Sklad je bil ponovno zgrajen in zagnan.
+- Preverjeno: agenti 182 testov z bazo, ruff, mypy za nove module; API 289 testov.
+
+**Odločitve:** ADR-0016. TradingAgents za delnice ni več v uporabi (odstranitev BL-171).
+
+**Odprto:**
+- Razmišljanje MiniMax je okoli polovice izhodnih žetonov (BL-168).
+- Kartica je imela prepričanje 6 in oceno Hold, odločitev pa Overweight.
+- AMD je imel opozorilo `no_fundamentals` in nobene novice o instrumentu.
+- Popravki preverjanja številk še niso preverjeni na živem teku. Neodvisnega pregleda zadnjih popravkov ni bilo.
+
+**Naslednji korak:** BL-168, nato ponovni tek AMD.
+
+---
+
 ## S-012 · 2026-10-27 · Kalibracija uteži, LiteLLM in cene na watchlisti
 
 **Cilj:** BL-103, popraviti padlo analizo (LiteLLM) in hitrejše cene na watchlisti.

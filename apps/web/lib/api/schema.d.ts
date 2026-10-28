@@ -726,7 +726,7 @@ export interface components {
             };
             /** Models */
             models: {
-                [key: string]: string;
+                [key: string]: unknown;
             };
             /** Error */
             error: string | null;

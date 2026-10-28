@@ -29,11 +29,16 @@ function Provenance({ run }: { run: AnalysisOut }) {
         : t("noFundamentals")}
       {" · "}
       {t("models", {
-        quick: run.models.quick ?? t("unknown"),
-        deep: run.models.deep ?? t("unknown"),
+        quick: modelName(run.models.quick) ?? t("unknown"),
+        deep: modelName(run.models.deep) ?? t("unknown"),
       })}
     </p>
   );
+}
+
+// `models` also carries structured entries such as `usage`; only string values are model names.
+function modelName(value: unknown): string | undefined {
+  return typeof value === "string" ? value : undefined;
 }
 
 function Skeleton() {

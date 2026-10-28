@@ -126,12 +126,15 @@ async def test_detail_carries_the_decision_card(api: Any) -> None:
             status="done",
             rating="Overweight",
             card=CARD,
+            models={"quick": "m-quick", "usage": {"calls": [], "prompt_tokens": 120}},
         )
         session.add(run)
         await session.commit()
-    card = (await client.get(f"/analyses/{run.id}")).json()["card"]
+    detail = (await client.get(f"/analyses/{run.id}")).json()
+    card = detail["card"]
     assert card["size_class"] == "normal" and card["control"]["implied_rating"] == "Overweight"
     assert len(card["upgrade_if"]) == 2
+    assert detail["models"]["usage"]["prompt_tokens"] == 120
 
 
 async def test_daily_limit(api: Any, monkeypatch: pytest.MonkeyPatch) -> None:

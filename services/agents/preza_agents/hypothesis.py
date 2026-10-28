@@ -7,12 +7,12 @@ reports, it does not compute: numbers it may repeat are already in them.
 
 from __future__ import annotations
 
-import json
 from typing import Literal
 
 from pydantic import BaseModel, Field
 
 from preza.llm.client import Llm, Role
+from preza_agents.budget import DECISION_OUTPUT_TOKENS, UsageLlm, guard_payload
 
 MAX_REPORT = 6000
 LANGUAGES = {"sl": "Slovenian", "en": "English"}
@@ -85,15 +85,20 @@ async def check_hypothesis(
     role: Role = "cloud-deep",
 ) -> tuple[HypothesisCheck, str]:
     """Returns the check and the model that answered."""
-    payload = json.dumps(
+    system = SYSTEM.format(language=LANGUAGES.get(locale, "English"))
+    payload = guard_payload(
+        system,
         {
             "hypothesis": hypothesis,
             "rating": rating,
             "reports": {k: v[:MAX_REPORT] for k, v in reports.items() if v},
         },
-        ensure_ascii=False,
+        trimmable=("reports",),
+        schema=HypothesisCheck,
+        max_output_tokens=DECISION_OUTPUT_TOKENS,
     )
-    result = await llm.complete_json(
-        role, SYSTEM.format(language=LANGUAGES.get(locale, "English")), payload, HypothesisCheck
+    usage = llm if isinstance(llm, UsageLlm) else UsageLlm(llm)
+    result = await usage.complete_json(
+        role, system, payload, HypothesisCheck, max_output_tokens=DECISION_OUTPUT_TOKENS
     )
     return result.value, result.model

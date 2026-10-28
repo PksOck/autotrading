@@ -1,7 +1,8 @@
 """LLM access by role through LiteLLM (ADR-0004). Code never names a provider or model.
 
-Structured output: the JSON schema of a Pydantic model is sent as `response_format`; the
-reply is validated, and one repair attempt is made with the validation error.
+Structured output: the JSON schema of a Pydantic model is sent as `response_format` and in
+the system prompt; the reply is validated, and one repair attempt is made with the validation
+error.
 """
 
 import json
@@ -97,13 +98,19 @@ class LiteLlmClient:
             raise ValueError("max_output_tokens must be positive")
         prompt_tokens = completion_tokens = 0
         costs: list[Decimal | None] = []
+        schema_json = schema.model_json_schema()
+        # Some providers drop `response_format`, so the schema also goes into the prompt.
         messages: list[dict[str, str]] = [
-            {"role": "system", "content": system},
+            {
+                "role": "system",
+                "content": f"{system}\n\nReply with one JSON object matching this JSON schema, "
+                f"no other keys:\n{json.dumps(schema_json, separators=(',', ':'))}",
+            },
             {"role": "user", "content": user},
         ]
         response_format = {
             "type": "json_schema",
-            "json_schema": {"name": schema.__name__, "schema": schema.model_json_schema()},
+            "json_schema": {"name": schema.__name__, "schema": schema_json},
         }
         last_error = ""
         for _attempt in range(2):

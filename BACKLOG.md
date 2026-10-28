@@ -131,7 +131,12 @@
 | BL-164 | Oblikovanje za Android in Windows (ADR-0013): bližnjice po platformi, segmentirani gumbi M3, brez zameglitve, 48 px na dotik, navigacijska vrstica M3, manifest, tipka nazaj | S-008 | done |
 | BL-165 | Analiza za odločitev (ADR-0014): obeti kratko/~1 leto/3+ let iz posnetka, dokazi za in proti, cena in pozicija v glavi, koraki analitikov v spustnem seznamu, več stolpcev v `/analysis` | S-009 | done |
 | BL-166 | Cene ob dodajanju na watchlisto: posel `refresh_instrument_bars` takoj prenese dnevne sveče in izpolni ceno ob dodajanju (zaključni tečaj na dan dodajanja); prej samo nočni `refresh_bars` ob 21:30 UTC | S-012 | done |
-| BL-167 | Analiza porabi manj žetonov: deterministična koda pripravi zgoščene vhode, LLM samo presodi in združi (poročilo 25. 10.: ~3 M žetonov na MiniMax) | S-012 | doing |
+| BL-167 | Analiza porabi manj žetonov: deterministična koda pripravi zgoščene vhode, LLM samo presodi in združi (poročilo 25. 10.: ~3 M žetonov na MiniMax) | S-012 | done |
+| BL-168 | Nastavitve žetonov v LiteLLM in `client.py`: `max_completion_tokens` namesto `max_tokens` za MiniMax, izklop razmišljanja za analitike, preveri podporo `json_schema`, loči `finish_reason=length` od napake sheme, uskladi timeout odjemalca (300 s) in proxyja (600 s). Pri prvi vitki analizi AMD je bilo razmišljanje okoli 48 % vseh žetonov | BL-167 | next |
+| BL-169 | Radar: predpomnilnik triaže po hashu vsebine (danes ob novem članu grozda znova pošlje vse stare, ~450 k žetonov na dan na `local-fast`), prevodi dogodkov se razveljavijo, ko se povzetek spremeni | BL-167 | next |
+| BL-170 | Vstopne točke: `analyze_dip` skrajša naslov in povzetek dogodka, da vhod ostane pod 16 k | BL-167 | next |
+| BL-171 | Odstrani TradingAgents iz poti delnic: knjižnica, `deep_research/` graf in njegovi testi (ostane posnetek in vir EDGAR) | BL-167 | later |
+| BL-172 | Poraba žetonov v UI: `models.usage` analize prikaži v podrobnostih (klici, vhod, izhod) | BL-167 | later |
 
 ## M6: Opcije
 

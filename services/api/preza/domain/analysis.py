@@ -3,7 +3,7 @@
 import uuid
 from datetime import date, datetime
 from enum import StrEnum
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
@@ -90,7 +90,7 @@ class AnalysisOut(AnalysisSummary):
     hypothesis: str | None
     decision: str | None
     reports: dict[str, str]
-    models: dict[str, str]
+    models: dict[str, Any]
     error: str | None
     started_at: datetime | None
     data_sources: dict[str, str | None]

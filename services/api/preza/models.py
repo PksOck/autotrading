@@ -381,7 +381,7 @@ class AnalysisRun(Base):
     caveats: Mapped[list[str]] = mapped_column(JSONB, default=list)
     snapshot: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     card: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
-    models: Mapped[dict[str, str]] = mapped_column(JSONB, default=dict)
+    models: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
     error: Mapped[str | None] = mapped_column(Text)
     signal_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey("signal.id", ondelete="SET NULL")
