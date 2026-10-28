@@ -2,6 +2,9 @@
 
 import re
 
+# Filings and press releases are the confirming sources; their wording is never treated as hedging.
+OFFICIAL_KINDS = frozenset({"press_release", "filing"})
+
 _PATTERNS = tuple(
     re.compile(r"\b(?:" + phrase + r")\b", re.IGNORECASE)
     for phrase in (
@@ -49,3 +52,8 @@ def looks_like_rumor(title: str, summary: str | None) -> bool:
         _SOURCE_SUFFIX.search(text) or any(pattern.search(text) for pattern in _PATTERNS)
         for text in (title, summary or "")
     )
+
+
+def item_is_rumor(kind: str, title: str, summary: str | None) -> bool:
+    """Classify hedging only for non-official news kinds."""
+    return kind not in OFFICIAL_KINDS and looks_like_rumor(title, summary)

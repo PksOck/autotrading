@@ -12,6 +12,7 @@ from datetime import UTC, datetime, timedelta
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from preza.domain.rumor import item_is_rumor
 from preza.llm.client import Llm, LlmUnavailableError
 from preza.models import Event, NewsItem
 
@@ -82,6 +83,7 @@ async def assign_events(
     candidates = list(await session.scalars(select(Event).where(Event.last_seen_at >= since)))
     touched: dict[int, Event] = {}
     for item in items:
+        hedged = item_is_rumor(item.kind, item.title, item.summary)
         best: Event | None = None
         best_score = 0.0
         for event in candidates:
@@ -107,7 +109,7 @@ async def assign_events(
                 title=item.title,
                 summary=item.summary,
                 symbols=list(item.symbols),
-                is_rumor=item.kind == "social",
+                is_rumor=item.kind == "social" or hedged,
                 first_seen_at=item.published_at,
                 last_seen_at=item.published_at,
             )
@@ -115,6 +117,8 @@ async def assign_events(
             await session.flush()
             candidates.append(best)
         else:
+            # Clustering is not confirmation; hedged wording keeps the event a rumour.
+            best.is_rumor = best.is_rumor or hedged
             best.symbols = sorted(set(best.symbols) | set(item.symbols))
             best.last_seen_at = max(best.last_seen_at, item.published_at)
             best.triaged_at = None  # new information: triage again

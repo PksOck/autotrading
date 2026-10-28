@@ -15,21 +15,20 @@ from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from preza.domain.rumor import looks_like_rumor
+from preza.domain.rumor import item_is_rumor
 from preza.models import Bar, Event, Fundamentals, Instrument, NewsItem
 
 BAR_DAYS = 800  # enough for a 200-day average a year back
 NEWS_DAYS = 30
 GLOBAL_NEWS_LIMIT = 40
 INSIDER_FORMS = ("4", "4/A")
-OFFICIAL_KINDS = {"press_release", "filing"}
 
 
 def news_is_rumor(
     kind: str, title: str, summary: str | None, event_flag: bool | None = None
 ) -> bool:
     """Preserve radar flags; classify hedging only for non-official news."""
-    return bool(event_flag) or (kind not in OFFICIAL_KINDS and looks_like_rumor(title, summary))
+    return bool(event_flag) or item_is_rumor(kind, title, summary)
 
 
 class BarRow(BaseModel):

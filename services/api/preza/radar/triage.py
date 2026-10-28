@@ -7,12 +7,12 @@ from decimal import Decimal
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from preza.domain.radar import EventType, TriageResult
+from preza.domain.rumor import OFFICIAL_KINDS, item_is_rumor
 from preza.llm.client import Llm
 from preza.models import Event
 from preza.radar.prompts import TRIAGE_SYSTEM, triage_user
 
 TICKER = re.compile(r"^[A-Z][A-Z0-9.]{0,9}$")
-CONFIRMING_KINDS = {"filing", "press_release"}
 
 
 async def triage_event(session: AsyncSession, event: Event, llm: Llm) -> TriageResult:
@@ -26,13 +26,15 @@ async def triage_event(session: AsyncSession, event: Event, llm: Llm) -> TriageR
         TriageResult,
     )
     triage = result.value
-    official = any(i.kind in CONFIRMING_KINDS for i in event.items)
+    official = any(i.kind in OFFICIAL_KINDS for i in event.items)
+    # Deterministic hedging survives an LLM verdict that misses it.
+    hedged = any(item_is_rumor(i.kind, i.title, i.summary) for i in event.items)
     only_social = all(i.kind == "social" for i in event.items)
 
     event.summary = triage.summary
     event.event_type = triage.event_type.value
     # A rumor stays a rumor until an official source (filing, press release) joins the event.
-    event.is_rumor = (triage.is_rumor or only_social) and not official
+    event.is_rumor = (triage.is_rumor or only_social or hedged) and not official
     if event.is_rumor and triage.event_type != EventType.RUMOR and only_social:
         event.event_type = EventType.RUMOR.value
     event.sentiment = Decimal(str(round(triage.sentiment, 4)))

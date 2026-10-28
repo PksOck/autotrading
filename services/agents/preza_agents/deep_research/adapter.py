@@ -19,8 +19,9 @@ from tradingagents.dataflows.config import run_config
 from tradingagents.default_config import DEFAULT_CONFIG
 from tradingagents.graph.trading_graph import TradingAgentsGraph
 
+from preza.domain.rumor import OFFICIAL_KINDS
 from preza_agents.deep_research import vendor_local
-from preza_agents.deep_research.snapshot import OFFICIAL_KINDS, DataSnapshot
+from preza_agents.deep_research.snapshot import DataSnapshot
 from preza_agents.deep_research.timeline import Step, Timeline
 
 # The social analyst reads Reddit and StockTwits directly; our news store already

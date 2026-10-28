@@ -60,6 +60,11 @@ async def upsert_signal(
     if score < threshold:
         if existing is None:
             event.status = EventStatus.BELOW_THRESHOLD.value
+        elif event.is_rumor and not existing.is_rumor:
+            # The rumour penalty can drop the score; the signal must not stay marked as confirmed.
+            existing.is_rumor = True
+            if existing.status == SignalStatus.NEW.value:
+                existing.status = SignalStatus.WATCHING.value
         return existing
 
     horizon = HORIZON_BY_SENSITIVITY.get(time_sensitivity, Horizon.WEEKS)
