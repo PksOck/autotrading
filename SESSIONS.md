@@ -23,6 +23,7 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 - Preverjeno: agenti 192 testov z bazo, ruff, mypy; API 289 testov z bazo, ruff.
 - Tek AMD `3bd633f4` na končni različici: uspel, Overweight, 248 novic, temelji Finnhub z današnjim datumom, 6 klicev brez popravnih poskusov, okoli 38 tisoč vhodnih in 38 tisoč izhodnih žetonov, 5,6 minute. En `[?]` (odstotek rasti prihodkov, ki ga ni med dejstvi) in opozorilo `unverified_numbers`: preverjanje številk deluje, kot mora.
 - BL-177: `sweep_runs` zaključi tek v stanju `running` kot `failed`, ko je starejši od časovne omejitve opravila (3 h + 15 min) in arq zanj nima več živega opravila. Samo starost ne zadošča: tek `b063971d`, prekinjen ob ustavitvi sklada, je arq po zagonu ponovil z izvirnim `started_at` in se je končal `done`. Implementacija in pregled prek OpenCode Sol, preverjeno: agenti 198 testov z bazo, ruff, mypy; poizvedba stanja opravila in pometanje na živem Redisu.
+- BL-175: determinističen klasifikator govoric `preza.domain.rumor.looks_like_rumor` (angleški in slovenski izrazi za nepotrjene posle, pripis anonimnim virom, `- sources` na koncu naslova). Velja za shranjene in sveže neuradne novice v posnetku; sporočila za javnost in vloge (filing) se po besedilu ne razvrščajo, zastavica radarja ostane. Pregled Sol je zahteval širši nabor izrazov in ožja sprožilca `speculation` in `in talks`; oboje popravljeno. Preverjeno: API 332 testov z bazo in 94 testov klasifikatorja, agenti 214 testov z bazo (vključno z `Buy` → `Hold` pri nepotrjenem prevzemu), ruff, mypy; na 538 shranjenih novicah označi 1 ("two sources say"). Popravek po pregledu ni dobil drugega pregleda.
 
 **Odločitve:** ADR-0016. TradingAgents za delnice ni več v uporabi (odstranitev BL-171).
 
@@ -31,7 +32,7 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 - Kartica je imela prepričanje 6 in oceno Hold, odločitev pa Overweight.
 - Novice Finnhub se ne klasificirajo kot govorice (BL-175). Poraba ne beleži števila poskusov (BL-176).
 
-**Naslednji korak:** BL-175, nato BL-168.
+**Naslednji korak:** BL-178, nato BL-168.
 
 ---
 

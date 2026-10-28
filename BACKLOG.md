@@ -139,9 +139,10 @@
 | BL-172 | Poraba žetonov v UI: `models.usage` analize prikaži v podrobnostih (klici, vhod, izhod) | BL-167 | later |
 | BL-173 | Analiza delnice pred začetkom naloži manjkajoče temelje in novice Finnhub za simbol, ki ni na watchlisti ali v portfelju | BL-167 | done |
 | BL-174 | Ročno dodan instrument (npr. AMD) ima `kind=unknown` brez borze in valute: dopolni podatke iz profila Finnhub; tedenski posel temeljev naj zapiše `sync_run` | BL-173 | next |
-| BL-175 | Novice Finnhub (shranjene in sveže) imajo vedno `is_rumor=False`, zato nepotrjen prevzem šteje kot potrjen dokaz. Dodaj determinističen klasifikator govoric (npr. "reportedly", "according to sources", "v pogovorih") pred registrom dokazov | BL-173 | next |
+| BL-175 | Novice Finnhub (shranjene in sveže) imajo vedno `is_rumor=False`, zato nepotrjen prevzem šteje kot potrjen dokaz. Dodaj determinističen klasifikator govoric (npr. "reportedly", "according to sources", "v pogovorih") pred registrom dokazov | BL-173 | done |
 | BL-176 | `models.usage` naj pri vsakem klicu zapiše število poskusov; zdaj se vhod popravnega poskusa prišteje in klic na videz preseže 16k | BL-167 | next |
 | BL-177 | `sweep_runs` naj teke, ki so predolgo v stanju `running` in nimajo živega arq opravila, označi kot `failed` z razlogom | BL-173 | done |
+| BL-178 | Radar (`radar/cluster.py`) naj za neuradne dogodke uporabi isti `looks_like_rumor`; zdaj označi govorico samo pri vrsti `social` | BL-175 | next |
 
 ## M6: Opcije
 

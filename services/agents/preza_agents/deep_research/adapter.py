@@ -20,7 +20,7 @@ from tradingagents.default_config import DEFAULT_CONFIG
 from tradingagents.graph.trading_graph import TradingAgentsGraph
 
 from preza_agents.deep_research import vendor_local
-from preza_agents.deep_research.snapshot import DataSnapshot
+from preza_agents.deep_research.snapshot import OFFICIAL_KINDS, DataSnapshot
 from preza_agents.deep_research.timeline import Step, Timeline
 
 # The social analyst reads Reddit and StockTwits directly; our news store already
@@ -28,7 +28,6 @@ from preza_agents.deep_research.timeline import Step, Timeline
 ANALYSTS: tuple[str, ...] = ("market", "news", "fundamentals")
 LANGUAGES = {"sl": "Slovenian", "en": "English"}
 BULLISH = {"Buy", "Overweight"}
-OFFICIAL_KINDS = {"press_release", "filing"}
 MIN_BARS = 200
 
 

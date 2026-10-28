@@ -44,7 +44,13 @@ from preza.services.thesis_reviews import week_start
 from preza_agents.budget import UsageLlm
 from preza_agents.decision_card import build_card, control_score, draft_card
 from preza_agents.deep_research import adapter
-from preza_agents.deep_research.snapshot import NEWS_DAYS, DataSnapshot, NewsRow, build_snapshot
+from preza_agents.deep_research.snapshot import (
+    NEWS_DAYS,
+    DataSnapshot,
+    NewsRow,
+    build_snapshot,
+    news_is_rumor,
+)
 from preza_agents.deep_research.timeline import Step
 from preza_agents.etf_analyst.analyst import run_etf
 from preza_agents.etf_analyst.context import build_etf_facts
@@ -175,6 +181,7 @@ async def _fresh_inputs(
             source=item.source,
             url=item.url,
             kind=item.kind,
+            is_rumor=news_is_rumor(item.kind, item.title, item.summary),
             symbols=item.symbols,
         )
         for item in items

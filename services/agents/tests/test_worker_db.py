@@ -32,6 +32,27 @@ TEST_DB = os.environ.get("TEST_DATABASE_URL")
 pytestmark = pytest.mark.skipif(not TEST_DB, reason="TEST_DATABASE_URL not set")
 
 
+async def test_snapshot_classifies_stored_hedging(session) -> None:  # type: ignore[no-untyped-def]
+    instrument = Instrument(symbol="AMD", kind="stock", source="test")
+    session.add(instrument)
+    for kind in ("news", "filing", "press_release"):
+        session.add(
+            NewsItem(
+                source="test",
+                url=f"https://example.com/{kind}",
+                title="AMD reportedly in talks to acquire a company",
+                kind=kind,
+                symbols=["AMD"],
+                published_at=datetime(2026, 10, 20, 8, tzinfo=UTC),
+            )
+        )
+    await session.commit()
+    snapshot = await worker.build_snapshot(session, instrument, date(2026, 10, 20))
+    expected = {"news": True, "filing": False, "press_release": False}
+    assert {n.kind: n.is_rumor for n in snapshot.news} == expected
+    assert {n.kind: n.is_rumor for n in snapshot.global_news} == expected
+
+
 @pytest.fixture(scope="module")
 def migrated() -> str:
     assert TEST_DB
