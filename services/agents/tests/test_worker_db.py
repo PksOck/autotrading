@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 import subprocess
 from collections.abc import AsyncIterator
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
 from pathlib import Path
 
@@ -14,7 +14,10 @@ from sqlalchemy import select, text
 
 from preza import db
 from preza.config import get_settings
-from preza.models import AnalysisRun, AnalysisStep, Bar, Instrument, NewsItem
+from preza.domain.radar import NewsIn
+from preza.fundamentals.finnhub import FundamentalsSnapshot
+from preza.ingest.base import SourceUnavailableError
+from preza.models import AnalysisRun, AnalysisStep, Bar, Fundamentals, Instrument, NewsItem
 from preza_agents import worker
 from tests.conftest import make_snapshot
 from tests.fake_role_llm import FakeRoleLlm
@@ -46,7 +49,9 @@ async def session(
     db.get_engine.cache_clear()
     db.get_sessionmaker.cache_clear()
     async with db.get_engine().begin() as conn:
-        await conn.execute(text("TRUNCATE news_item, bar, instrument RESTART IDENTITY CASCADE"))
+        await conn.execute(
+            text("TRUNCATE news_item, bar, fundamentals, instrument RESTART IDENTITY CASCADE")
+        )
     async with db.get_sessionmaker()() as s:
         yield s
     await db.get_engine().dispose()
@@ -288,3 +293,95 @@ async def test_card_compares_with_the_previous_run(session) -> None:  # type: ig
     assert card["delta_note"] and '"rating": "Hold"' in llm.calls[-1][2]
     assert card["size_class"] in ("increased", "small")  # small only when the control disagrees
     assert ("control_disagrees" in second.caveats) == (card["size_class"] == "small")
+
+
+class _FakeFundamentals:
+    def __init__(self) -> None:
+        self.calls = 0
+
+    async def fetch(self, symbol: str) -> FundamentalsSnapshot:
+        self.calls += 1
+        return FundamentalsSnapshot(symbol=symbol, as_of=date.today(), metrics={"pe_ttm": 30.0})
+
+
+class _FakeNews:
+    def __init__(self, fail: bool = False, error: Exception | None = None) -> None:
+        self.error = error or (SourceUnavailableError("finnhub: ReadTimeout") if fail else None)
+
+    async def company_news(self, symbol: str, start: str, end: str) -> list[NewsIn]:
+        if self.error:
+            raise self.error
+        now = datetime.now(UTC)
+        return [
+            NewsIn(
+                source="finnhub",
+                url="https://example.com/amd",
+                title="AMD launches a chip",
+                published_at=now,
+                symbols=[symbol],
+                kind="news",
+            )
+        ]
+
+
+async def test_fresh_inputs_fill_gaps_for_an_unwatched_symbol(  # type: ignore[no-untyped-def]
+    session, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("FINNHUB_API_KEY", "test-key")
+    get_settings.cache_clear()
+    instrument = Instrument(symbol="AMD", kind="unknown", source="manual")
+    session.add(instrument)
+    await session.commit()
+    funds = _FakeFundamentals()
+    today = datetime.now(UTC).date()
+
+    news = await worker._fresh_inputs(
+        session, instrument, today, get_settings(), funds, _FakeNews()
+    )
+    assert [n.title for n in news] == ["AMD launches a chip"]
+    assert news[0].symbols == ["AMD"] and news[0].source == "finnhub"
+    row = await session.get(Fundamentals, instrument.id)
+    assert row is not None and row.metrics == {"pe_ttm": 30.0}
+    # News is not stored, so a later radar run still sees the URL as new.
+    assert not list(await session.scalars(select(NewsItem)))
+
+    # Fresh fundamentals are kept; a news outage only drops the news.
+    assert not await worker._fresh_inputs(
+        session, instrument, today, get_settings(), funds, _FakeNews(fail=True)
+    )
+    assert funds.calls == 1
+
+    # A past run never sees data fetched today.
+    past = today - timedelta(days=10)
+    assert not await worker._fresh_inputs(
+        session, instrument, past, get_settings(), _FakeFundamentals(), _FakeNews()
+    )
+
+
+class _BrokenFundamentals:
+    async def fetch(self, symbol: str) -> FundamentalsSnapshot:
+        raise RuntimeError("unexpected payload")
+
+
+async def test_fresh_input_failures_leave_the_run_usable(  # type: ignore[no-untyped-def]
+    session, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("FINNHUB_API_KEY", "test-key")
+    get_settings.cache_clear()
+    instrument = Instrument(symbol="AMD", kind="unknown", source="manual")
+    session.add(instrument)
+    await session.commit()
+    instrument.name = "Pending change"  # stands in for the run row marked running
+
+    news = await worker._fresh_inputs(
+        session,
+        instrument,
+        datetime.now(UTC).date(),
+        get_settings(),
+        _BrokenFundamentals(),
+        _FakeNews(error=OverflowError("timestamp out of range")),
+    )
+    assert news == []
+    assert await session.get(Fundamentals, instrument.id) is None
+    await session.commit()  # the savepoint rolled back only the failed write
+    assert instrument.name == "Pending change"

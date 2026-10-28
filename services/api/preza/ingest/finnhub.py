@@ -73,6 +73,12 @@ class FinnhubSource:
             raise SourceUnavailableError("finnhub: unexpected payload")
         return [row for row in payload if isinstance(row, dict)]
 
+    async def company_news(self, symbol: str, start: str, end: str) -> list[NewsIn]:
+        rows = await self._get(
+            "company-news", {"symbol": symbol, "from": start, "to": end}, skip_4xx=True
+        )
+        return parse_company_news(rows, symbol)
+
     async def fetch(self, since: datetime) -> list[NewsIn]:
         cutoff = since if since.tzinfo else since.replace(tzinfo=UTC)
         start = cutoff.astimezone(UTC).date().isoformat()
@@ -91,10 +97,7 @@ class FinnhubSource:
                     seen.symbols = list(dict.fromkeys([*seen.symbols, *item.symbols]))
 
         for symbol in self._symbols:
-            rows = await self._get(
-                "company-news", {"symbol": symbol, "from": start, "to": end}, skip_4xx=True
-            )
-            add(parse_company_news(rows, symbol))
+            add(await self.company_news(symbol, start, end))
         rows = await self._get("news", {"category": "general"}, skip_4xx=False)
         add(parse_company_news(rows, None))
         return list(by_key.values())

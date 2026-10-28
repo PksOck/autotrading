@@ -14,18 +14,23 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 - Preverjanje številk: številke brez opore v registru postanejo `[?]`. Obdobja (tudi »200-dnevno«, »20- in 50-dnevnega«), datumi (»30. junija 2026«) in predznak, izražen z besedo (»padec«, »odtok«), niso več napačno označeni.
 - Prvi živi tek je padel s praznim odgovorom: splošne novice so izrinile dejstva o AMD, model ni vedel, katero podjetje analizira, MiniMax pa ne upošteva `response_format`. Popravki: prednostni red v registru, splošne novice (`G`) največ 5 in nikoli uradne, polje `instrument`, shema tudi v sistemskem pozivu, višje meje izhoda.
 - Živi tek AMD (`b782bf65`) je uspel: 6 klicev, okoli 76 tisoč žetonov namesto 353 tisoč (−78 %), največji vhod okoli 8,4 tisoč, 6,5 minute namesto 42.
+- AMD ni imel temeljev in ne novic o podjetju, ker ni na watchlisti in ga nimaš v portfelju. Finnhub novice in temelje dobijo samo ti simboli, temelje samo ob nedeljah. Zdaj analiza delnice pred začetkom sama naloži manjkajoče ali več kot 7 dni stare temelje in novice Finnhub za ta simbol. Novice gredo samo v posnetek analize, ne v bazo, da jih radar pozneje še vedno obdela. Pri analizi za datum, starejši od 3 dni, se nič ne naloži, ker bi to pomenilo pogled v prihodnost.
 - Sklad je bil ponovno zgrajen in zagnan.
-- Preverjeno: agenti 182 testov z bazo, ruff, mypy za nove module; API 289 testov.
+- Ponovni tek AMD (`0098df84`) je padel, ker je medved vrnil 6 citatov namesto največ 4. Zdaj shema modelu še vedno sporoča kratke meje, sprejme pa do 16 citatov in 6 točk. Nič se ne reže pred preverjanjem govoric; na javne meje kartice se skrajša šele po njem (neodvisni pregled je pokazal, da bi rezanje lahko skrilo govorico za nakupom).
+- Preverjanje številk sprejme "3-, 6-mesečni" ter "RSI 14", "ATR 14" in "SMA 200" s presledkom. "RSI 70", "ATR 14 %" in "SMA 200 000" se še vedno preverjajo.
+- Napaka pri nalaganju temeljev ali novic ne pusti več analize v stanju `running`: zapis temeljev je v savepointu, vsaka napaka pa se samo zabeleži.
+- Tek AMD `9d4dfe69` (pred popravki pregleda): uspel, Underweight, 0 `[?]` (prej 57), temelji Finnhub prisotni, 248 novic, 6 klicev, okoli 46 tisoč vhodnih in 48 tisoč izhodnih žetonov, 8 minut. Klica medveda in odločevalca sta potrebovala popravni poskus; vsak posamezen klic je pod 16k.
+- Preverjeno: agenti 192 testov z bazo, ruff, mypy; API 289 testov z bazo, ruff.
 
 **Odločitve:** ADR-0016. TradingAgents za delnice ni več v uporabi (odstranitev BL-171).
 
 **Odprto:**
 - Razmišljanje MiniMax je okoli polovice izhodnih žetonov (BL-168).
 - Kartica je imela prepričanje 6 in oceno Hold, odločitev pa Overweight.
-- AMD je imel opozorilo `no_fundamentals` in nobene novice o instrumentu.
-- Popravki preverjanja številk še niso preverjeni na živem teku. Neodvisnega pregleda zadnjih popravkov ni bilo.
+- Končna različica (po popravkih pregleda) ni preverjena na živem teku: sklad je bil med tekom `b063971d` ustavljen.
+- Novice Finnhub se ne klasificirajo kot govorice (BL-175). Poraba ne beleži števila poskusov (BL-176).
 
-**Naslednji korak:** BL-168, nato ponovni tek AMD.
+**Naslednji korak:** ponovni tek AMD na končni različici, nato BL-175 in BL-168.
 
 ---
 

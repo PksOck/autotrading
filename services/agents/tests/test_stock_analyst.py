@@ -443,6 +443,9 @@ def test_numbers_use_only_structured_facts_with_matching_units(text: str, bad: l
         "52-tedenski razpon",
         "do 30. junija 2026",
         "as of June 30, 2026",
+        "3-, 6-mesečni in letni donosi",
+        "RSI 14 je pri nevtralni ravni",
+        "nad SMA 200",
     ],
 )
 def test_periods_and_indicator_names_are_not_claimed_levels(text: str) -> None:
@@ -466,6 +469,10 @@ def test_periods_and_indicator_names_are_not_claimed_levels(text: str) -> None:
         ("500- in 20-dnevno", ["20", "500"]),
         ("12 % pod 12-mesečnim vrhom", ["12"]),
         ("5 majhnih podjetij", ["5"]),
+        ("RSI 70 pomeni prekupljenost", ["70"]),
+        ("ATR 14 % cene", ["14"]),
+        ("nad SMA 200 000", ["200 000"]),
+        ("RSI 14,5", ["14,5"]),
     ],
 )
 def test_levels_and_unbounded_periods_are_still_checked(text: str, expected: list[str]) -> None:
@@ -534,3 +541,30 @@ def test_sign_in_prose_matches_a_negative_fact() -> None:
     assert _supported("7,92", {Decimal("-7.92")})
     assert _supported("-5415", {Decimal("5415")})
     assert not _supported("7,9", {Decimal("-7.82")})
+
+
+def test_extra_items_are_kept_for_the_rumour_gate() -> None:
+    # The fifth citation and fourth reason exceed the advertised limits; trimming them
+    # before the gate would hide the rumour and keep the Buy.
+    value = StockDecision.model_validate(
+        {
+            "rating": "Buy",
+            "rationale": "Opinion",
+            "conviction": 6,
+            "reasons": [
+                {"text": "Reason", "evidence_ids": ["M1", "F1", "N2", "N3", "N1"]},
+                {"text": "Reason", "evidence_ids": ["M1"]},
+                {"text": "Reason", "evidence_ids": ["M1"]},
+                {"text": "Reason", "evidence_ids": ["N1"]},
+            ],
+        }
+    )
+    assert len(value.reasons) == 4
+    assert len(value.reasons[0].evidence_ids) == 5
+    found: list[str] = []
+    _gate(value, claim_register(), found)
+    assert value.rating == "Hold"
+    assert found == ["rumor_unconfirmed"]
+    schema = StockDecision.model_json_schema()
+    assert schema["properties"]["reasons"]["maxItems"] == 3
+    assert schema["$defs"]["EvidencePoint"]["properties"]["evidence_ids"]["maxItems"] == 4

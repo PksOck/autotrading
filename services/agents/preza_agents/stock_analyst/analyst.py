@@ -36,12 +36,22 @@ from preza_agents.stock_analyst.digest import (
 from preza_agents.stock_analyst.numbers import Unit, fact_unit, numeric_claims, unit_after, variants
 
 ShortText = Annotated[str, StringConstraints(max_length=300)]
+
+
+def _listed(advertised: int, hard: int) -> Any:
+    """Advertise the short limit to the model but accept a few extra items.
+
+    Nothing is trimmed: the rumour gate must see every citation and reason the model gave.
+    """
+    return Field(default_factory=list, max_length=hard, json_schema_extra={"maxItems": advertised})
+
+
 EvidenceId = Annotated[str, StringConstraints(max_length=16)]
 
 
 class EvidencePoint(BaseModel):
     text: ShortText
-    evidence_ids: list[EvidenceId] = Field(default_factory=list, max_length=4)
+    evidence_ids: list[EvidenceId] = _listed(4, 16)
     _rumor_backed: bool = PrivateAttr(default=False)
 
     def render(self) -> str:
@@ -55,27 +65,27 @@ def references(ids: list[str]) -> str:
 
 class AnalystNote(BaseModel):
     stance: int = Field(ge=-2, le=2)
-    key_points: list[EvidencePoint] = Field(default_factory=list, max_length=3)
-    risks: list[EvidencePoint] = Field(default_factory=list, max_length=3)
-    what_to_watch: list[EvidencePoint] = Field(default_factory=list, max_length=3)
+    key_points: list[EvidencePoint] = _listed(3, 6)
+    risks: list[EvidencePoint] = _listed(3, 6)
+    what_to_watch: list[EvidencePoint] = _listed(3, 6)
 
 
 class StockHypothesis(BaseModel):
     verdict: Literal["confirmed", "partly", "refuted", "insufficient"]
     reasoning: str = Field(max_length=1200)
-    evidence_ids: list[EvidenceId] = Field(default_factory=list, max_length=4)
-    evidence_for: list[EvidencePoint] = Field(default_factory=list, max_length=3)
-    evidence_against: list[EvidencePoint] = Field(default_factory=list, max_length=3)
+    evidence_ids: list[EvidenceId] = _listed(4, 16)
+    evidence_for: list[EvidencePoint] = _listed(3, 6)
+    evidence_against: list[EvidencePoint] = _listed(3, 6)
 
 
 class StockDecision(BaseModel):
     rating: Rating
     rationale: str = Field(max_length=1500)
-    evidence_ids: list[EvidenceId] = Field(default_factory=list, max_length=4)
-    reasons: list[EvidencePoint] = Field(default_factory=list, max_length=3)
-    risks: list[EvidencePoint] = Field(default_factory=list, max_length=3)
-    upgrade_if: list[EvidencePoint] = Field(default_factory=list, max_length=3)
-    downgrade_if: list[EvidencePoint] = Field(default_factory=list, max_length=3)
+    evidence_ids: list[EvidenceId] = _listed(4, 16)
+    reasons: list[EvidencePoint] = _listed(3, 6)
+    risks: list[EvidencePoint] = _listed(3, 6)
+    upgrade_if: list[EvidencePoint] = _listed(3, 6)
+    downgrade_if: list[EvidencePoint] = _listed(3, 6)
     conviction: int = Field(ge=1, le=10)
     delta_note: str | None = Field(default=None, max_length=600)
     hypothesis: StockHypothesis | None = None
@@ -415,9 +425,10 @@ async def run_stock(
     )
     found: list[str] = []
     _gate(value, register, found)
+    # The gate has seen every item; only now trim to the public card limits.
     draft = CardDraft(
-        upgrade_if=[p.render() for p in value.upgrade_if],
-        downgrade_if=[p.render() for p in value.downgrade_if],
+        upgrade_if=[p.render() for p in value.upgrade_if[:3]],
+        downgrade_if=[p.render() for p in value.downgrade_if[:3]],
         conviction=value.conviction,
         delta_note=value.delta_note if previous else None,
     )
@@ -425,8 +436,8 @@ async def run_stock(
         HypothesisCheck(
             verdict=value.hypothesis.verdict,
             reasoning=value.hypothesis.reasoning + references(value.hypothesis.evidence_ids),
-            evidence_for=[p.render() for p in value.hypothesis.evidence_for],
-            evidence_against=[p.render() for p in value.hypothesis.evidence_against],
+            evidence_for=[p.render() for p in value.hypothesis.evidence_for[:4]],
+            evidence_against=[p.render() for p in value.hypothesis.evidence_against[:4]],
         )
         if hypothesis and value.hypothesis
         else None
@@ -459,8 +470,8 @@ async def run_stock(
         EtfDecision(
             rating=value.rating,
             rationale=value.rationale + references(value.evidence_ids),
-            reasons=[p.render() for p in value.reasons],
-            risks=[p.render() for p in value.risks],
+            reasons=[p.render() for p in value.reasons[:5]],
+            risks=[p.render() for p in value.risks[:5]],
         ),
         lang,
     )

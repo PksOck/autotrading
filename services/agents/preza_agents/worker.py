@@ -13,7 +13,7 @@ import os
 import queue
 import uuid
 from collections.abc import Awaitable, Callable
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from typing import Any, ClassVar, cast
 
@@ -26,14 +26,24 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from preza.config import Settings, get_settings
 from preza.db import get_sessionmaker
 from preza.domain.analysis import DecisionCard, PreviousRun
+from preza.fundamentals.finnhub import FinnhubFundamentals
+from preza.ingest.finnhub import FinnhubSource
 from preza.llm.client import LiteLlmClient, Llm, Role
-from preza.models import AnalysisRun, AnalysisStep, ThesisReview, ThesisRevision
+from preza.models import (
+    AnalysisRun,
+    AnalysisStep,
+    Fundamentals,
+    Instrument,
+    ThesisReview,
+    ThesisRevision,
+)
 from preza.queue import AGENTS_QUEUE
+from preza.services.fundamentals import refresh_fundamentals
 from preza.services.thesis_reviews import week_start
 from preza_agents.budget import UsageLlm
 from preza_agents.decision_card import build_card, control_score, draft_card
 from preza_agents.deep_research import adapter
-from preza_agents.deep_research.snapshot import DataSnapshot, build_snapshot
+from preza_agents.deep_research.snapshot import NEWS_DAYS, DataSnapshot, NewsRow, build_snapshot
 from preza_agents.deep_research.timeline import Step
 from preza_agents.etf_analyst.analyst import run_etf
 from preza_agents.etf_analyst.context import build_etf_facts
@@ -116,6 +126,59 @@ def _fetch_stock_statements(snapshot: DataSnapshot, settings: Settings) -> dict[
         }
 
 
+FUNDAMENTALS_MAX_AGE = timedelta(days=7)
+FRESH_WINDOW = timedelta(days=3)
+
+
+async def _fresh_inputs(
+    session: AsyncSession,
+    instrument: Instrument,
+    as_of: date,
+    settings: Settings,
+    fundamentals_client: Any = None,
+    news_client: Any = None,
+) -> list[NewsRow]:
+    """Fetch what the scheduled jobs skip for symbols that are neither held nor watched.
+
+    Fundamentals are stored like the weekly job stores them. Company news only enters this
+    run's snapshot: storing it would hide the URLs from a later radar triage.
+    """
+    if not settings.finnhub_api_key or as_of < _utcnow().date() - FRESH_WINDOW:
+        return []  # a past run must not see data fetched today
+    row = await session.get(Fundamentals, instrument.id)
+    if row is None or row.fetched_at < _utcnow() - FUNDAMENTALS_MAX_AGE:
+        # A savepoint keeps a failed write from rolling back the run row with it.
+        try:
+            async with session.begin_nested():
+                await refresh_fundamentals(
+                    session,
+                    instrument,
+                    fundamentals_client or FinnhubFundamentals(settings.finnhub_api_key),
+                )
+        except Exception as exc:  # the analysis runs without them, flagged no_fundamentals
+            log.warning("fundamentals %s: %s", instrument.symbol, exc)
+    client = news_client or FinnhubSource(settings.finnhub_api_key, [instrument.symbol])
+    start = (as_of - timedelta(days=NEWS_DAYS)).isoformat()
+    try:
+        items = await client.company_news(instrument.symbol, start, as_of.isoformat())
+    except Exception as exc:  # outages and unparseable rows alike
+        log.warning("company news %s: %s", instrument.symbol, exc)
+        return []
+    return [
+        NewsRow(
+            published_at=item.published_at,
+            title=item.title,
+            summary=item.summary,
+            source=item.source,
+            url=item.url,
+            kind=item.kind,
+            symbols=item.symbols,
+        )
+        for item in items
+        if item.published_at.date() <= as_of
+    ]
+
+
 async def _stock_work(
     ctx: dict[str, Any],
     settings: Settings,
@@ -169,7 +232,18 @@ async def deep_analysis(
             return run.status
         run.status = "running"
         run.started_at = run.started_at or _utcnow()
+        fresh: list[NewsRow] = []
+        if run.engine != "etf":
+            fetch_fresh = ctx.get("fresh_inputs", _fresh_inputs)
+            fresh = await fetch_fresh(session, run.instrument, run.trade_date, settings)
         snapshot = await build_snapshot(session, run.instrument, run.trade_date)
+        seen = {n.url for n in snapshot.news}  # stored rows win over fresh ones
+        added: list[NewsRow] = []
+        for n in fresh:
+            if n.url not in seen:
+                seen.add(n.url)
+                added.append(n)
+        snapshot.news = sorted([*snapshot.news, *added], key=lambda n: n.published_at, reverse=True)
         run.snapshot = snapshot.model_dump(mode="json")
         seq = await _next_seq(session, run.id)
         await session.commit()

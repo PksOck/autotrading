@@ -9,7 +9,14 @@ from typing import Literal
 Unit = Literal["plain", "percent"]
 NUMBER = re.compile(r"[-+]?(?:\d+(?:[.,\u00a0\u202f ]\d{3})*(?:[.,]\d+)?|[.,]\d+)(?:[eE][-+]?\d+)?")
 PERCENT = re.compile(r"\s*(?:%|pct\b|odstotk\w*)", re.I)
-INDICATOR = re.compile(r"\b(?:SMA\d+|EMA\d+|RSI\d*|ATR\d*|Q[1-4])\b", re.I)
+# "RSI 14" names the indicator; only its usual windows, so "RSI 70" is still a level,
+# and a following %, decimal or digit group ("ATR 14 %", "SMA 200 000") makes it a value.
+INDICATOR = re.compile(
+    r"\b(?:(?:SMA|EMA)\s(?:20|50|100|200)|(?:RSI|ATR)\s14"
+    r"|SMA\d+|EMA\d+|RSI\d*|ATR\d*|Q[1-4])\b"
+    r"(?![.,]\d|[.,\u00a0\u202f ]\d{3}\b|\s*(?:%|pct\b|odstot))",
+    re.I,
+)
 # Explicit, bounded horizons. These are labels, not claimed market levels.
 PERIOD_UNITS = {
     400: r"days?|dni|dan|d|dnevn\w*",
@@ -18,8 +25,9 @@ PERIOD_UNITS = {
     12: r"quarters?|četrtletje|četrtletji|četrtletij|četrtletn\w*",
     10: r"years?|leto|leti|let|letn\w*",
 }
-# "20- in 50-dnevno", "20- or 50-day": the first number borrows the second one's unit.
-JOINED = r"(?:-\s*(?:in|ali|oziroma|oz\.|and|or|to)\s+(\d+))?"
+# "20- in 50-dnevno", "3-, 6-mesečni", "20- or 50-day": the first number borrows the
+# second one's unit.
+JOINED = r"(?:-\s*(?:,|in|ali|oziroma|oz\.|and|or|to)\s*(\d+))?"
 PERIODS = [
     (maximum, re.compile(rf"(?<![\w.,+-])(\d+){JOINED}[- ]?(?:{units})\b", re.I))
     for maximum, units in PERIOD_UNITS.items()
