@@ -77,7 +77,11 @@ async def thesis_review(ctx: dict[str, Any], revision_id: str, week_start: str) 
             return status
     except LlmUnavailableError as exc:
         accounting = usage(exc)
-        code = "role_unavailable"
+        code = (
+            exc.error_code
+            if exc.error_code in {"output_truncated", "schema_validation_failed"}
+            else "role_unavailable"
+        )
     except TimeoutError:
         code = "timeout"
     except ValidationError:

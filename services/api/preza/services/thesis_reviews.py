@@ -303,6 +303,8 @@ async def fail_review(
     """Store safe codes only; never provider text, prompts or credentials."""
     allowed = {
         "role_unavailable",
+        "output_truncated",
+        "schema_validation_failed",
         "timeout",
         "invalid_output",
         "invalid_references",

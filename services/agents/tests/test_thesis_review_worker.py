@@ -12,7 +12,7 @@ import pytest
 from fastapi import HTTPException
 
 from preza.domain.thesis_review import ReviewBatch
-from preza.llm.client import LlmResult, LlmUnavailableError
+from preza.llm.client import LlmResult, LlmSchemaError, LlmTruncatedError, LlmUnavailableError
 from preza.services.thesis_reviews import week_start
 from preza_agents import worker
 from preza_agents.thesis_tracker import runner
@@ -152,14 +152,22 @@ async def test_timeout_is_bounded_and_failed(harness, monkeypatch):
     assert h.llm.complete_json.await_count == 1
 
 
-async def test_role_error_preserves_usage_without_provider_text(harness):
+@pytest.mark.parametrize(
+    ("error_type", "expected_code"),
+    [
+        (LlmUnavailableError, "role_unavailable"),
+        (LlmTruncatedError, "output_truncated"),
+        (LlmSchemaError, "schema_validation_failed"),
+    ],
+)
+async def test_role_error_preserves_usage_without_provider_text(harness, error_type, expected_code):
     h = harness
-    exc = LlmUnavailableError("secret provider content")
+    exc = error_type("secret provider content")
     exc.attempts, exc.prompt_tokens, exc.completion_tokens = 2, 123, 45
     exc.cost = Decimal("0.01")
     h.llm.complete_json.side_effect = exc
     assert await run(h) == "failed"
-    assert h.fail.call_args.args[2] == "role_unavailable"
+    assert h.fail.call_args.args[2] == expected_code
     assert h.fail.call_args.kwargs == runner.usage(exc)
     assert "secret" not in str(h.fail.call_args)
     h.llm.complete_json.assert_awaited_once()

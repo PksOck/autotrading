@@ -96,6 +96,30 @@ async def published(revision, *, cited=None, status="broken"):
         return review.id, batch
 
 
+@pytest.mark.parametrize(
+    ("error_code", "expected_code"),
+    [
+        ("output_truncated", "output_truncated"),
+        ("schema_validation_failed", "schema_validation_failed"),
+        ("unknown provider details", "internal_error"),
+    ],
+)
+async def test_fail_review_stores_safe_error_codes(api, error_code, expected_code):
+    client, _ = api
+    revision = await active(client)
+    await add_news()
+    async with db.get_sessionmaker()() as session:
+        review, _ = await reserve_review(session, uuid.UUID(revision["id"]), cutoff=CUTOFF)
+        review_id = review.id
+        await mark_dispatched(session, review_id)
+        await fail_review(session, review_id, error_code)
+        await session.commit()
+    async with db.get_sessionmaker()() as session:
+        stored = await session.get(ThesisReview, review_id)
+        assert stored.status == "failed"
+        assert stored.error_code == expected_code
+
+
 async def proposals(client, revision, state="pending"):
     response = await client.get(
         f"/theses/{revision['thesis_id']}/review-proposals", params={"state": state}
