@@ -132,7 +132,7 @@
 | BL-165 | Analiza za odločitev (ADR-0014): obeti kratko/~1 leto/3+ let iz posnetka, dokazi za in proti, cena in pozicija v glavi, koraki analitikov v spustnem seznamu, več stolpcev v `/analysis` | S-009 | done |
 | BL-166 | Cene ob dodajanju na watchlisto: posel `refresh_instrument_bars` takoj prenese dnevne sveče in izpolni ceno ob dodajanju (zaključni tečaj na dan dodajanja); prej samo nočni `refresh_bars` ob 21:30 UTC | S-012 | done |
 | BL-167 | Analiza porabi manj žetonov: deterministična koda pripravi zgoščene vhode, LLM samo presodi in združi (poročilo 25. 10.: ~3 M žetonov na MiniMax) | S-012 | done |
-| BL-168 | Nastavitve žetonov v LiteLLM in `client.py`: `max_completion_tokens` namesto `max_tokens` za MiniMax, izklop razmišljanja za analitike, preveri podporo `json_schema`, loči `finish_reason=length` od napake sheme, uskladi timeout odjemalca (300 s) in proxyja (600 s). Pri prvi vitki analizi AMD je bilo razmišljanje okoli 48 % vseh žetonov | BL-167 | next |
+| BL-168 | Nastavitve žetonov v LiteLLM in `client.py`: `max_completion_tokens` namesto `max_tokens` za MiniMax, izklop razmišljanja za analitike, preveri podporo `json_schema`, loči `finish_reason=length` od napake sheme, uskladi timeout odjemalca (300 s) in proxyja (600 s). Pri prvi vitki analizi AMD je bilo razmišljanje okoli 48 % vseh žetonov. Razmišljanja ni mogoče izklopiti: nameščeni MiniMax-M3.1-Flash zavrne `thinking=disabled` | BL-167 | done |
 | BL-169 | Radar: predpomnilnik triaže po hashu vsebine (danes ob novem članu grozda znova pošlje vse stare, ~450 k žetonov na dan na `local-fast`), prevodi dogodkov se razveljavijo, ko se povzetek spremeni | BL-167 | next |
 | BL-170 | Vstopne točke: `analyze_dip` skrajša naslov in povzetek dogodka, da vhod ostane pod 16 k | BL-167 | next |
 | BL-171 | Odstrani TradingAgents iz poti delnic: knjižnica, `deep_research/` graf in njegovi testi (ostane posnetek in vir EDGAR) | BL-167 | later |
@@ -142,7 +142,10 @@
 | BL-175 | Novice Finnhub (shranjene in sveže) imajo vedno `is_rumor=False`, zato nepotrjen prevzem šteje kot potrjen dokaz. Dodaj determinističen klasifikator govoric (npr. "reportedly", "according to sources", "v pogovorih") pred registrom dokazov | BL-173 | done |
 | BL-176 | `models.usage` naj pri vsakem klicu zapiše število poskusov; zdaj se vhod popravnega poskusa prišteje in klic na videz preseže 16k | BL-167 | next |
 | BL-177 | `sweep_runs` naj teke, ki so predolgo v stanju `running` in nimajo živega arq opravila, označi kot `failed` z razlogom | BL-173 | done |
-| BL-178 | Radar (`radar/cluster.py`) naj za neuradne dogodke uporabi isti `looks_like_rumor`; zdaj označi govorico samo pri vrsti `social` | BL-175 | next |
+| BL-178 | Radar (`radar/cluster.py`) naj za neuradne dogodke uporabi isti `looks_like_rumor`; zdaj označi govorico samo pri vrsti `social` | BL-175 | done |
+| BL-179 | `thesis_tracker/runner.py` preslika vse napake LLM v `role_unavailable`; ohrani `error_code` (`output_truncated`, `schema_validation_failed`) za diagnostiko | BL-168 | next |
+| BL-180 | Rok 540 s velja za posamezen HTTP klic; s popravnim poskusom lahko klic `complete_json` traja do dvakrat dlje. Dodaj skupni rok za celoten klic | BL-168 | later |
+| BL-181 | Preveri, ali MiniMax prek LiteLLM res uveljavi `json_schema` (zdaj ščiti samo lokalno preverjanje in popravni poskus) | BL-168 | later |
 
 ## M6: Opcije
 

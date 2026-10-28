@@ -24,6 +24,9 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 - Tek AMD `3bd633f4` na končni različici: uspel, Overweight, 248 novic, temelji Finnhub z današnjim datumom, 6 klicev brez popravnih poskusov, okoli 38 tisoč vhodnih in 38 tisoč izhodnih žetonov, 5,6 minute. En `[?]` (odstotek rasti prihodkov, ki ga ni med dejstvi) in opozorilo `unverified_numbers`: preverjanje številk deluje, kot mora.
 - BL-177: `sweep_runs` zaključi tek v stanju `running` kot `failed`, ko je starejši od časovne omejitve opravila (3 h + 15 min) in arq zanj nima več živega opravila. Samo starost ne zadošča: tek `b063971d`, prekinjen ob ustavitvi sklada, je arq po zagonu ponovil z izvirnim `started_at` in se je končal `done`. Implementacija in pregled prek OpenCode Sol, preverjeno: agenti 198 testov z bazo, ruff, mypy; poizvedba stanja opravila in pometanje na živem Redisu.
 - BL-175: determinističen klasifikator govoric `preza.domain.rumor.looks_like_rumor` (angleški in slovenski izrazi za nepotrjene posle, pripis anonimnim virom, `- sources` na koncu naslova). Velja za shranjene in sveže neuradne novice v posnetku; sporočila za javnost in vloge (filing) se po besedilu ne razvrščajo, zastavica radarja ostane. Pregled Sol je zahteval širši nabor izrazov in ožja sprožilca `speculation` in `in talks`; oboje popravljeno. Preverjeno: API 332 testov z bazo in 94 testov klasifikatorja, agenti 214 testov z bazo (vključno z `Buy` → `Hold` pri nepotrjenem prevzemu), ruff, mypy; na 538 shranjenih novicah označi 1 ("two sources say"). Popravek po pregledu ni dobil drugega pregleda.
+- BL-178: radar uporablja isti klasifikator. Neuradna novica z obotavljivim besedilom označi nov dogodek kot govorico, priključitev k obstoječemu dogodku zastavico ohrani (grozdenje ni potrditev). Triaža LLM determinističnega znaka ne more več preglasiti; potrdi ga samo sporočilo za javnost ali vloga. Signal, ki pade pod prag zaradi kazni za govorico, ni več prikazan kot potrjen (`new` → `watching`). Seznam uradnih vrst je zdaj samo v `preza.domain.rumor`. Implementacija in dva pregleda prek OpenCode Sol.
+- BL-168: odjemalec LLM pošlje `max_completion_tokens` za oblačne vloge in `max_tokens` za lokalne, rok odjemalca je 540 s (proxy 600 s). `finish_reason=length` je zdaj ločena napaka `output_truncated` brez popravnega poskusa; neveljavna shema po popravku je `schema_validation_failed`, obe se zapišeta v porabo. Razmišljanja ni mogoče izklopiti, ker MiniMax-M3.1-Flash zavrne `thinking=disabled`, zato izhodne meje vključujejo žetone razmišljanja. Živo preverjeno prek LiteLLM: omejitev 16 žetonov upoštevajo `cloud-quick`, `local-fast` in `local-reason` z obema imenoma parametra (`finish_reason=length`, 16 izhodnih žetonov), torej zdrži tudi ob fallbacku.
+- Preverjeno: API 425 testov z bazo, agenti 216 testov z bazo, ruff, format, mypy; sklad (api, agents) ponovno zgrajen. Ni preverjeno: celoten radar na živih novicah in uveljavljanje `json_schema` pri MiniMax (BL-181).
 
 **Odločitve:** ADR-0016. TradingAgents za delnice ni več v uporabi (odstranitev BL-171).
 
@@ -32,7 +35,7 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 - Kartica je imela prepričanje 6 in oceno Hold, odločitev pa Overweight.
 - Novice Finnhub se ne klasificirajo kot govorice (BL-175). Poraba ne beleži števila poskusov (BL-176).
 
-**Naslednji korak:** BL-178, nato BL-168.
+**Naslednji korak:** BL-179, BL-176 ali BL-174.
 
 ---
 
