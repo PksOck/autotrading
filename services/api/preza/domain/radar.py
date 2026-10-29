@@ -89,6 +89,7 @@ class EventSource(BaseModel):
     url: str
     source: str
     published_at: datetime
+    kind: NewsKind | None = None
 
 
 class EventOut(BaseModel):
@@ -194,6 +195,7 @@ class ProposalDepth(StrEnum):
 
 
 class ProposalCreate(BaseModel):
+    request_id: UUID | None = None
     symbols: list[str] = Field(min_length=1, max_length=8)
     hypothesis: str = Field(default="", max_length=4000)
     source_text: str = Field(default="", max_length=20000)
@@ -203,12 +205,31 @@ class ProposalCreate(BaseModel):
     save_to: Literal["active", "reserve", "once"] = "reserve"
 
 
+class ProposalResult(BaseModel):
+    verdict: Literal["supports", "partly", "contradicts", "insufficient"]
+    summary: str = Field(min_length=1, max_length=900)
+    key_points: list[str] = Field(default_factory=list, max_length=5)
+    risks: list[str] = Field(default_factory=list, max_length=4)
+    direction: Literal["up", "down", "neutral"]
+    horizon: Literal["days", "weeks", "months", "years"]
+    strength: float = Field(ge=0, le=1)
+
+
+class ProposalAnalysisLink(BaseModel):
+    id: UUID
+    symbol: str
+    status: str
+
+
 class ProposalOut(ProposalCreate):
     model_config = ConfigDict(from_attributes=True)
 
     id: UUID
     status: Literal["queued", "running", "done", "failed"]
     verdict: str | None
+    verdict_result: ProposalResult | None = None
+    error_code: Literal["analysis_failed", "invalid_result"] | None = None
+    analysis_links: list[ProposalAnalysisLink] = Field(default_factory=list)
     signal_id: UUID | None
     analysis_id: UUID | None = None
     created_at: datetime

@@ -7,7 +7,7 @@ import { useEffect, useState, useTransition } from "react";
 import { setLocale } from "@/app/actions";
 import { Icon } from "@/components/common/Icon";
 import { NAV } from "@/lib/nav";
-import { useInstrumentSearch, usePortfolio, useWatchlist } from "@/lib/api/hooks";
+import { useInstrumentSearch } from "@/lib/api/hooks";
 import { nextThemePreference, readThemePreference, setThemePreference } from "@/lib/theme";
 import { usePeek } from "@/lib/use-peek";
 import { useBackToClose } from "@/lib/useBackToClose";
@@ -57,23 +57,14 @@ export function CommandPalette() {
   };
 
   const search = useInstrumentSearch(open ? query : "");
-  const portfolio = usePortfolio();
-  const watchlist = useWatchlist();
-  // Empty query: what the user holds and watches. Typing: server-side search.
+  // An empty query prioritizes a short navigation menu; symbols require a search.
   const instruments = query.trim()
     ? (search.data ?? []).map((i) => ({
         symbol: i.symbol,
         name: i.name ?? "",
         hint: i.exchange ?? "",
       }))
-    : [
-        ...(portfolio.data?.positions ?? []).map((p) => ({
-          symbol: p.symbol,
-          name: p.name ?? "",
-          hint: "",
-        })),
-        ...(watchlist.data ?? []).map((w) => ({ symbol: w.symbol, name: w.name ?? "", hint: "" })),
-      ].filter((item, index, all) => all.findIndex((x) => x.symbol === item.symbol) === index);
+    : [];
 
   const typedSymbols = parseSymbols(query);
   // Offer "propose" only once the search has answered, so Enter never races the results.

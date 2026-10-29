@@ -6,7 +6,22 @@ import type { NextRequest } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-const ALLOWED = new Set(["system", "instruments", "portfolio", "watchlist", "radar", "signals", "proposals", "entries", "analyses", "theses", "track-record", "calibration"]);
+const ALLOWED = new Set([
+  "system",
+  "instruments",
+  "portfolio",
+  "watchlist",
+  "radar",
+  "signals",
+  "proposals",
+  "entries",
+  "analyses",
+  "theses",
+  "track-record",
+  "calibration",
+  "automation",
+  "overview",
+]);
 
 // XML passes through for the Flex statement import; every other body is JSON.
 const XML_TYPES = new Set(["application/xml", "text/xml"]);
@@ -18,7 +33,8 @@ function forwardedType(contentType: string | null): string {
 
 async function forward(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
   const { path } = await params;
-  if (!path.length || !ALLOWED.has(path[0]!)) return Response.json({ detail: "not_found" }, { status: 404 });
+  if (!path.length || !ALLOWED.has(path[0]!))
+    return Response.json({ detail: "not_found" }, { status: 404 });
 
   const base = process.env.API_URL ?? "http://localhost:8000";
   const url = `${base}/${path.map(encodeURIComponent).join("/")}${request.nextUrl.search}`;

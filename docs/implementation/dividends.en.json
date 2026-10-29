@@ -1,0 +1,22 @@
+{
+  "dividends": {
+    "title": "Dividends", "received": "Received cash", "accruals": "Open dividend accruals",
+    "projection": "Estimated next 12 months · gross", "projectionNote": "Current holdings × verified annual distribution per share. Estimates are separate from cash and accruals; no tax or future FX is assumed. Date filters apply to cash booking dates and accrual pay dates, not this current-holdings estimate.",
+    "cashNote": "Signed cash bookings include reversals. Withholding is linked only by an explicit corporate action and instrument reference. Unknown tax or FX remains unknown.",
+    "accrualNote": "Reported entitlements are not received cash. Only the latest open snapshot per account is shown; changes and reversals never prove payment.",
+    "account": "Account", "currency": "Currency", "from": "From", "to": "To", "all": "All",
+    "loading": "Loading dividends…", "error": "Dividend records could not be loaded. Your filters are preserved.", "retry": "Try again",
+    "emptyCash": "No received cash events in this period.", "emptyAccrual": "No open accrual rows in the selected coverage.", "emptyProjection": "No current holdings for this selection.",
+    "gross": "Gross", "tax": "Linked withholding", "net": "Known net", "unknown": "Unknown",
+    "unresolved": "Unresolved withholding", "fxGap": "Base-currency conversion incomplete", "pil": "Payment in lieu",
+    "date": "Booking date", "symbol": "Instrument", "kind": "Type", "amount": "Signed amount",
+    "exDate": "Ex-date", "payDate": "Pay date", "quantity": "Eligible quantity", "annual": "Annual gross estimate",
+    "source": "Source", "asOf": "As of", "coverage": "Import coverage", "missing": "Section missing", "partial": "Partial", "complete": "Section imported",
+    "contract": "The supported XML contract is tested with synthetic fixtures. A private expanded IBKR statement has not been validated; unsupported fields remain visible as coverage gaps.",
+    "instructions": "In IBKR Activity Flex, include Cash Transactions with transaction IDs, dates, amounts, currencies and action references; Open and Change in Dividend Accruals; and Financial Instrument Information. Re-import your privately retained XML using the portfolio import control. Missing sections do not mean zero payments.",
+    "incomplete_history": "Incomplete distribution history", "accumulating_share_class": "Accumulating share class · no fund cash payout",
+    "indicated_annual": "Verified indicated annual distribution", "verified_ttm": "Verified trailing 12-month distribution", "special": "Includes special distributions",
+    "dividend": "Dividend", "payment_in_lieu": "Payment in lieu", "withholding": "Withholding tax",
+    "rangeError": "Choose an end date on or after the start date.", "noCoverage": "No dividend import coverage recorded. Import an expanded Flex statement to establish coverage."
+  }
+}

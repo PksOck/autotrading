@@ -2,8 +2,10 @@
 
 import { useFormatter, useTranslations } from "next-intl";
 import { useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { EntityLink } from "@/components/common/EntityLink";
 import { SegmentedButtons } from "@/components/common/SegmentedButtons";
-import { useTrackRecord } from "@/lib/api/hooks";
+import { useResearchTrackRecord, useResearchOutcomes, type TrackFilters } from "@/lib/api/research";
 import type { TrackRecordOut, TrackStat } from "@/lib/api/types";
 import { cn } from "@/lib/cn";
 import { formatChange, formatNumber, formatShare } from "@/lib/format";
@@ -12,6 +14,27 @@ import { WeightProposal } from "./WeightProposal";
 
 const HORIZONS = ["1", "5", "20", "60"] as const;
 type Horizon = (typeof HORIZONS)[number];
+
+function OutcomeList({filters}: {filters: TrackFilters}) {
+  const t = useTranslations("researchUx");
+  const format = useFormatter();
+  const locale = useAppLocale();
+  const [offset, setOffset] = useState(0);
+  const {data, error, isLoading, refetch} = useResearchOutcomes(filters, offset);
+  return <details className="card p-4">
+    <summary className="min-h-10 cursor-pointer font-medium">{t("outcomes")}{data ? ` (${format.number(data.total)})` : ""}</summary>
+    {isLoading && <div className="h-24 animate-pulse bg-surface-2"/>}
+    {error && <p role="alert">{t("actionFailed")} <button onClick={() => void refetch()}>{t("retry")}</button></p>}
+    <ul>{data?.items.map((item) => <li key={item.signal_id} className="flex flex-wrap items-center gap-3 border-t border-border py-3 text-[13px]">
+      <EntityLink entity={{kind:"signal",id:item.signal_id}}>{item.symbol}</EntityLink>
+      <time className="text-text-3" dateTime={item.created_at}>{format.dateTime(new Date(item.created_at), {dateStyle:"medium"})}</time>
+      <span className="num">{formatChange(locale,Number(item.return_pct))}</span>
+      {item.alpha_pct != null && <span className="num text-text-2">{item.benchmark} · {formatChange(locale,Number(item.alpha_pct))}</span>}
+    </li>)}</ul>
+    <div className="flex gap-3">{offset > 0 && <button className="min-h-10 text-accent" onClick={() => setOffset(Math.max(0,offset - 30))}>← {t("outcomes")}</button>}
+    {data && offset + data.items.length < data.total && <button className="min-h-10 text-accent" onClick={() => setOffset(offset + data.limit)}>{t("loadMore")}</button>}</div>
+  </details>;
+}
 
 const changeClass = (value: string | null | undefined) =>
   value == null ? "text-text-3" : Number(value) > 0 ? "text-pos" : Number(value) < 0 ? "text-neg" : "text-text-2";
@@ -191,9 +214,15 @@ function Calibration({ data }: { data: TrackRecordOut }) {
 /** SCR-10 Track record (BL-102): how past signals turned out, by horizon. */
 export function TrackRecord() {
   const t = useTranslations("trackRecord");
+  const ux = useTranslations("researchUx");
   const format = useFormatter();
-  const [horizon, setHorizon] = useState<Horizon>("20");
-  const { data, isLoading, error, refetch } = useTrackRecord(Number(horizon));
+  const params = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
+  const horizon = HORIZONS.includes(params.get("horizon") as Horizon) ? params.get("horizon") as Horizon : "20";
+  const filters = {horizon_days:Number(horizon),created_from:params.get("from") ?? undefined,created_to:params.get("to") ?? undefined};
+  const setParam = (key:string,value:string) => {const next = new URLSearchParams(params.toString()); if(value) next.set(key,value); else next.delete(key); router.replace(`${pathname}?${next}`,{scroll:false});};
+  const { data, isLoading, error, refetch } = useResearchTrackRecord(filters);
 
   return (
     <div className="flex flex-col gap-6">
@@ -201,7 +230,7 @@ export function TrackRecord() {
         <SegmentedButtons
           label={t("horizon")}
           value={horizon}
-          onChange={setHorizon}
+          onChange={(value) => setParam("horizon",value)}
           options={HORIZONS.map((h) => ({ value: h, label: t("horizonDays", { days: Number(h) }) }))}
           className="w-full max-w-xs"
         />
@@ -217,6 +246,11 @@ export function TrackRecord() {
           </span>
         )}
       </div>
+      <fieldset className="flex flex-wrap items-center gap-3 text-[13px]">
+        <legend className="mb-2 text-xs text-text-3">{ux("cohort")} (UTC)</legend>
+        <label>{ux("from")} <input type="date" value={filters.created_from ?? ""} onChange={(e) => setParam("from",e.target.value)} className="min-h-10 rounded-md border border-border bg-surface px-2"/></label>
+        <label>{ux("to")} <input type="date" value={filters.created_to ?? ""} onChange={(e) => setParam("to",e.target.value)} className="min-h-10 rounded-md border border-border bg-surface px-2"/></label>
+      </fieldset>
       {isLoading && <div className="card h-40 animate-pulse" />}
       {error && (
         <div className="card flex flex-col items-start gap-2 p-6">
@@ -237,10 +271,11 @@ export function TrackRecord() {
           <Summary data={data} />
           <Origins data={data} />
           <Groups data={data} />
-          <Calibration data={data} />
+          <OutcomeList key={JSON.stringify(filters)} filters={filters}/>
+          <details className="card p-4"><summary className="min-h-10 cursor-pointer">{t("calibrationTitle")}</summary><Calibration data={data}/></details>
         </>
       )}
-      {!isLoading && !error && <WeightProposal horizonDays={Number(horizon)} />}
+      {!isLoading && !error && <><p className="text-xs text-text-3">{ux("calibrationBasis")}</p><WeightProposal horizonDays={Number(horizon)} /></>}
     </div>
   );
 }

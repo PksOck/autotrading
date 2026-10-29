@@ -257,7 +257,7 @@ async def test_discovery_week_and_job_id(monkeypatch):
     monkeypatch.setattr(worker, "get_sessionmaker", lambda: session)
     monkeypatch.setattr(worker, "_utcnow", lambda: now)
     redis = SimpleNamespace(enqueue_job=AsyncMock())
-    assert await worker.discover_thesis_reviews({"redis": redis}) == 1
+    assert await worker.discover_thesis_reviews.__wrapped__({"redis": redis}) == 1
     redis.enqueue_job.assert_awaited_once_with(
         "thesis_review",
         str(revision_id),

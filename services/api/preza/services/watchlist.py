@@ -10,6 +10,7 @@ from preza.domain.market import InstrumentKind
 from preza.domain.portfolio import WatchlistCreate, WatchlistOut, WatchlistUpdate, WatchTier
 from preza.models import Bar, WatchlistItem
 from preza.services.instruments import find_by_symbol, get_or_create
+from preza.services.market_context import MarketContext, identity_status, market_context
 
 
 class AlreadyWatchedError(Exception):
@@ -25,11 +26,26 @@ async def _last_close(session: AsyncSession, instrument_id: int) -> Decimal | No
     )
 
 
-async def to_out(session: AsyncSession, item: WatchlistItem) -> WatchlistOut:
-    last = await _last_close(session, item.instrument_id)
+async def to_out(
+    session: AsyncSession, item: WatchlistItem, context: MarketContext | None = None
+) -> WatchlistOut:
+    context = (
+        context
+        if context is not None
+        else (await market_context(session, [item.instrument_id]))[item.instrument_id]
+    )
+    last = Decimal(context["latest_close"]) if context["latest_close"] is not None else None
     since = (last / item.added_price - 1) * 100 if last is not None and item.added_price else None
     return WatchlistOut(
         id=item.id,
+        instrument_id=item.instrument_id,
+        exchange=item.instrument.exchange,
+        currency=item.instrument.currency,
+        identity_status=identity_status(item.instrument),
+        revision=item.revision,
+        change_pct=context["change_pct"],
+        price_meta=context["price_meta"],
+        metrics=context["metrics"],
         symbol=item.instrument.symbol,
         name=item.instrument.name,
         kind=InstrumentKind(item.instrument.kind),
@@ -49,10 +65,15 @@ async def to_out(session: AsyncSession, item: WatchlistItem) -> WatchlistOut:
 
 
 async def list_items(session: AsyncSession) -> list[WatchlistOut]:
-    items = await session.scalars(
-        select(WatchlistItem).order_by(WatchlistItem.tier, WatchlistItem.added_at.desc())
+    items = list(
+        await session.scalars(
+            select(WatchlistItem)
+            .where(WatchlistItem.removed_at.is_(None))
+            .order_by(WatchlistItem.tier, WatchlistItem.added_at.desc(), WatchlistItem.id)
+        )
     )
-    return [await to_out(session, item) for item in items]
+    contexts = await market_context(session, [item.instrument_id for item in items])
+    return [await to_out(session, item, contexts[item.instrument_id]) for item in items]
 
 
 async def fill_added_price(session: AsyncSession, instrument_id: int) -> None:
@@ -77,8 +98,19 @@ async def add(session: AsyncSession, data: WatchlistCreate) -> WatchlistItem:
     exists = await session.scalar(
         select(WatchlistItem).where(WatchlistItem.instrument_id == instrument.id)
     )
-    if exists:
+    if exists and exists.removed_at is None:
         raise AlreadyWatchedError(instrument.symbol)
+    if exists:
+        exists.removed_at = None
+        exists.revision += 1
+        exists.added_at = datetime.now(UTC)
+        exists.added_price = await _last_close(session, instrument.id)
+        exists.reviewed_at = None
+        for key in ("tier", "source", "tags", "note", "target_price", "alert_below", "alert_above"):
+            value = getattr(data, key)
+            setattr(exists, key, value.value if isinstance(value, WatchTier) else value)
+        await session.flush()
+        return exists
     item = WatchlistItem(
         instrument_id=instrument.id,
         tier=data.tier.value,
@@ -105,6 +137,7 @@ async def update(
         setattr(item, key, value.value if isinstance(value, WatchTier) else value)
     if reviewed is not None:
         item.reviewed_at = datetime.now(UTC) if reviewed else None
+    item.revision += 1
     await session.flush()
     return item
 

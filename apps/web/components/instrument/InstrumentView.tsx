@@ -1,4 +1,5 @@
 "use client";
+import { InstrumentFacts } from "@/components/instrument/InstrumentFacts";
 
 import { motion } from "motion/react";
 import { useTranslations } from "next-intl";
@@ -100,7 +101,7 @@ export function InstrumentView({ symbol }: { symbol: string }) {
   }
 
   const detail = instrument.data;
-  const currency = detail?.currency ?? "USD";
+  const currency = detail?.currency ?? "XXX";
   const last = visible.at(-1);
   const firstVisible = visible[0];
   const rangeChange = last && firstVisible ? (last.close / firstVisible.close - 1) * 100 : null;
@@ -259,6 +260,7 @@ export function InstrumentView({ symbol }: { symbol: string }) {
         </section>
 
         <aside className="flex flex-col gap-6">
+          <InstrumentFacts symbol={symbol} />
           {entry && entryLevels && (
             <section
               className="card flex flex-col gap-3 p-4"

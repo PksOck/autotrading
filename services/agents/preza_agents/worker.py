@@ -24,6 +24,7 @@ from arq.worker import func as arq_func
 from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from preza.automation_worker import execute_process, managed
 from preza.config import Settings, get_settings
 from preza.db import get_sessionmaker
 from preza.domain.analysis import DecisionCard, PreviousRun
@@ -240,6 +241,13 @@ async def deep_analysis(
             return "missing"
         if run.status in ("done", "failed"):
             return run.status
+        from arq import Retry
+
+        from preza.services.automation import analysis_gate
+
+        if await analysis_gate(session, run.id):
+            # Release the worker slot while policy/window is closed; sweep retains queued intent.
+            raise Retry(defer=60)
         run.status = "running"
         run.started_at = run.started_at or _utcnow()
         fresh: list[NewsRow] = []
@@ -477,6 +485,7 @@ async def sweep_runs(ctx: dict[str, Any]) -> int:
     return len(stuck)
 
 
+@managed
 async def refresh_etf_profiles(ctx: dict[str, Any]) -> int:
     """Weekly fund profiles (TER, holdings, sectors) for held and watched ETFs."""
     if not get_settings().yahoo_enabled:
@@ -505,6 +514,7 @@ async def startup(ctx: dict[str, Any]) -> None:
     ctx["llm"] = LiteLlmClient(settings.litellm_base_url, settings.litellm_master_key)
 
 
+@managed
 async def discover_thesis_reviews(ctx: dict[str, Any]) -> int:
     """Find missing reviews and recover interrupted reservations without redispatch."""
     monday = week_start(_utcnow())
@@ -537,7 +547,8 @@ async def discover_thesis_reviews(ctx: dict[str, Any]) -> int:
 
 class WorkerSettings:
     functions: ClassVar[list[Any]] = [
-        deep_analysis,
+        arq_func(execute_process, keep_result=0),
+        arq_func(deep_analysis, max_tries=10080),
         sweep_runs,
         refresh_etf_profiles,
         arq_func(thesis_review, max_tries=1),

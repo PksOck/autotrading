@@ -17,7 +17,13 @@ async def test_import_statement(api, monkeypatch):  # type: ignore[no-untyped-de
         "/portfolio/import", content=XML, headers={"Content-Type": "application/xml"}
     )
     assert response.status_code == 200
-    assert response.json()["counts"] == {"positions": 2, "trades": 1, "cash": 2}
+    counts = response.json()["counts"]
+    assert {key: counts[key] for key in ("positions", "trades", "cash")} == {
+        "positions": 2,
+        "trades": 1,
+        "cash": 2,
+    }
+    assert counts["dividend_coverage"] == 4
     result = (await client.get("/portfolio")).json()
     assert {p["symbol"] for p in result["positions"]} == {"MSFT", "VWRA"}
     assert result["last_sync"]["detail"].startswith("file:")

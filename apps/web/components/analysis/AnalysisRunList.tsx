@@ -2,9 +2,13 @@
 
 import { useFormatter, useTranslations } from "next-intl";
 import Link from "next/link";
+import { DataTable, type ColumnDefinition } from "@/components/table/DataTable";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { AnalysisStatusPill } from "@/components/analysis/AnalysisStatusPill";
 import { ActionPill, HORIZONS, VerdictChip, useHorizonTitle } from "@/components/analysis/outlook";
-import { useAnalyses, usePortfolio } from "@/lib/api/hooks";
+import { usePortfolio } from "@/lib/api/hooks";
+import { useResearchAnalyses, type AnalysisFilters } from "@/lib/api/research";
+import { analysisFilters } from "@/lib/research-state";
 import type { AnalysisSummary } from "@/lib/api/types";
 
 /** Agents' action once the run is done, otherwise the run status. */
@@ -111,77 +115,17 @@ function Table({ runs, held }: { runs: AnalysisSummary[]; held: (s: string) => n
   const t = useTranslations("analysisPage");
   const format = useFormatter();
   const title = useHorizonTitle();
-  const th = "px-3 py-2 text-left text-xs font-medium text-text-3 whitespace-nowrap";
-  return (
-    <table className="w-full text-[14px]" data-testid="analysis-table">
-      <thead className="border-b border-border">
-        <tr>
-          <th className={th}>{t("columns.instrument")}</th>
-          <th className={th}>{t("columns.date")}</th>
-          <th className={th}>{t("columns.agents")}</th>
-          {HORIZONS.map((h) => (
-            <th key={h} className={th}>
-              {title(h).column}
-            </th>
-          ))}
-          <th className={th}>{t("columns.proContra")}</th>
-          <th className={th}>{t("columns.conviction")}</th>
-          <th className={th}>{t("columns.held")}</th>
-          <th className={`${th} text-right`}>{t("columns.when")}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {runs.map((run) => {
-          const qty = held(run.symbol);
-          const b = run.outlook_brief;
-          return (
-            <tr
-              key={run.id}
-              className="relative border-t border-border first:border-t-0 hover:bg-surface-2"
-              data-testid="analysis-row"
-            >
-              <td className="px-3 py-2.5">
-                <Link
-                  href={`/analysis/${run.id}`}
-                  className="flex flex-col text-text no-underline after:absolute after:inset-0"
-                >
-                  <span className="num font-medium">{run.symbol}</span>
-                  {run.name && (
-                    <span className="max-w-56 truncate text-xs text-text-2">{run.name}</span>
-                  )}
-                </Link>
-              </td>
-              <td className="num px-3 py-2.5 whitespace-nowrap text-text-2">
-                {format.dateTime(new Date(run.trade_date), { dateStyle: "medium" })}
-              </td>
-              <td className="px-3 py-2.5">
-                <Agents run={run} />
-              </td>
-              {HORIZONS.map((h) => (
-                <td key={h} className="px-3 py-2.5">
-                  {b ? <VerdictChip verdict={b[h]} /> : <span className="text-text-3">–</span>}
-                </td>
-              ))}
-              <td className="px-3 py-2.5">
-                <ProContra run={run} />
-              </td>
-              <td className="num px-3 py-2.5 text-text-2">
-                {run.conviction != null ? t("card.convictionValue", { n: run.conviction }) : "–"}
-              </td>
-              <td className="num px-3 py-2.5 whitespace-nowrap text-text-2">
-                {qty != null ? t("position.shares", { qty }) : "–"}
-              </td>
-              <td className="px-3 py-2.5 text-right text-xs whitespace-nowrap text-text-3">
-                <time dateTime={run.created_at}>
-                  {format.relativeTime(new Date(run.created_at), new Date())}
-                </time>
-              </td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
-  );
+  const columns: ColumnDefinition<AnalysisSummary>[] = [
+    {id:"symbol", label:t("columns.instrument"),required:true,sortable:true,width:200,render:run => <Link href={`/analysis/${run.id}`} className="flex flex-col text-text no-underline"><span className="num font-medium">{run.symbol}</span><span className="text-xs text-text-2">{run.name}</span></Link>},
+    {id:"trade_date",label:t("columns.date"),sortable:true,render:run => format.dateTime(new Date(run.trade_date),{dateStyle:"medium"})},
+    {id:"agents",label:t("columns.agents"),required:true,render:run => <><Agents run={run}/>{(run.caveats ?? []).map(c => <span className="block text-xs text-warn" key={c}>{t.has(`caveats.${c}`) ? t(`caveats.${c}`) : t("loadFailed")}</span>)}</>},
+    ...HORIZONS.map(h => ({id:h,label:title(h).column,render:(run:AnalysisSummary) => run.outlook_brief ? <VerdictChip verdict={run.outlook_brief[h]}/> : "—"})),
+    {id:"evidence",label:t("columns.proContra"),render:run => <ProContra run={run}/>},
+    {id:"conviction",label:t("columns.conviction"),numeric:true,render:run => run.conviction != null ? t("card.convictionValue",{n:run.conviction}) : "—"},
+    {id:"position",label:t("columns.held"),render:run => held(run.symbol) != null ? t("position.shares",{qty:held(run.symbol)!}) : "—"},
+    {id:"created_at",label:t("columns.when"),sortable:true,render:run => <time dateTime={run.created_at}>{format.dateTime(new Date(run.created_at),{dateStyle:"medium",timeStyle:"short"})}</time>},
+  ];
+  return <div data-testid="analysis-table"><DataTable module="analyses" columns={columns} rows={runs} rowKey={run => run.id} label={t("indexLabel")}/></div>;
 }
 
 /** Recent deep-analysis runs; `limit` and `symbol` narrow it for the instrument page. */
@@ -190,14 +134,16 @@ export function AnalysisRunList({
   limit,
   compact,
   emptyKey,
+  filters,
 }: {
   symbol?: string;
   limit?: number;
   compact?: boolean;
   emptyKey?: "latest.empty" | "empty";
+  filters?: AnalysisFilters;
 }) {
   const t = useTranslations("analysisPage");
-  const { data, isLoading, error } = useAnalyses(symbol);
+  const { data, isLoading, error } = useResearchAnalyses({ ...filters, symbol, limit: limit ?? 100 });
   const held = useHeld();
   const runs = (data ?? []).slice(0, limit);
 
@@ -225,4 +171,29 @@ export function AnalysisRunList({
       </ul>
     </>
   );
+}
+
+export function AnalysisIndex() {
+  const t = useTranslations("researchUx");
+  const params = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const filters = analysisFilters(params);
+  const set = (key: string, value: string) => {
+    const next = new URLSearchParams(params.toString());
+    next.set(key, value);
+    next.delete("page");
+    router.replace(`${pathname}?${next}`, {scroll: false});
+  };
+  return <>
+    <div className="flex flex-wrap items-center gap-4 border-b border-border p-4">
+      <select aria-label={t("allStatuses")} value={filters.status ?? "all"} onChange={(e) => set("status", e.target.value)} className="h-10 rounded-md border border-border bg-surface px-3">
+        {["done", "all", "queued", "running", "failed"].map((s) => <option key={s} value={s}>{t(s === "all" ? "allStatuses" : s)}</option>)}
+      </select>
+      <label className="flex min-h-10 items-center gap-2 text-[13px]">
+        <input type="checkbox" checked={filters.latest_per_instrument} onChange={(e) => set("latest", String(e.target.checked))}/>{t("latest")}
+      </label>
+    </div>
+    <AnalysisRunList filters={filters}/>
+  </>;
 }

@@ -1,213 +1,323 @@
 "use client";
-
-import { AnimatePresence, motion } from "motion/react";
+import Link from "next/link";
 import { useFormatter, useTranslations } from "next-intl";
-import { toast } from "sonner";
 import { useRef } from "react";
-import { AnimatedNumber } from "@/components/common/AnimatedNumber";
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { EntityLink } from "@/components/common/EntityLink";
-import { Treemap, type TreemapItem } from "@/components/overview/Treemap";
-import { ApiError } from "@/lib/api/client";
+import { Treemap } from "@/components/overview/Treemap";
+import { DataTable, type ColumnDefinition } from "@/components/table/DataTable";
+import { DataQualityBadges } from "@/components/table/MetricCell";
+import { useMarketColumns } from "@/components/table/market-columns";
 import { usePortfolio, usePortfolioImport, usePortfolioSync } from "@/lib/api/hooks";
-import type { PortfolioOut } from "@/lib/api/types";
-import { cn } from "@/lib/cn";
+import { ApiError } from "@/lib/api/client";
+import type { PositionOut } from "@/lib/api/types";
 import { formatChange, formatMoney, formatNumber } from "@/lib/format";
-import { listItem } from "@/lib/motion";
 import { useAppLocale } from "@/lib/use-app-locale";
-import { useFocusStore } from "@/stores/focus";
 
 export function PositionsPanel() {
   const t = useTranslations();
-  const format = useFormatter();
+  const labels = useTranslations("table");
   const locale = useAppLocale();
-  const { data, isLoading, error } = usePortfolio();
-  const sync = usePortfolioSync();
+  const format = useFormatter();
+  const params = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
+  const query = new URLSearchParams();
+  for (const key of ["account_id", "sort", "direction", "q"])
+    if (params.get(key)) query.set(key, params.get(key)!);
+  const { data, isLoading, error, refetch } = usePortfolio(query.toString());
   const upload = usePortfolioImport();
+  const sync = usePortfolioSync();
   const fileInput = useRef<HTMLInputElement>(null);
-  const runImport = async (file: File) => {
+  const market = useMarketColumns<PositionOut>();
+  const money = (value: string | number | null | undefined, currency: string) =>
+    value == null ? "—" : formatMoney(locale, Number(value), currency);
+  const columns: ColumnDefinition<PositionOut>[] = [
+    {
+      id: "symbol",
+      label: labels("instrument"),
+      required: true,
+      sortable: true,
+      width: 240,
+      render: (row) => (
+        <div className="space-y-1">
+          <EntityLink entity={{ kind: "instrument", id: row.symbol }} />
+          <div className="text-xs text-text-3">{row.name}</div>
+          <div className="text-[11px] text-text-3">
+            {row.account_id} · {row.exchange ?? "—"} · {row.currency}
+          </div>
+          <DataQualityBadges
+            identity={row.identity_status}
+            price={row.price_meta}
+            metrics={row.metrics}
+          />
+        </div>
+      ),
+    },
+    {
+      id: "quantity",
+      label: t("portfolio.col.quantity"),
+      numeric: true,
+      sortable: true,
+      render: (row) =>
+        new Intl.NumberFormat(locale, { maximumFractionDigits: 8, useGrouping: "always" }).format(
+          Number(row.quantity),
+        ),
+    },
+    {
+      id: "market_price",
+      label: labels("snapshotPrice"),
+      numeric: true,
+      sortable: true,
+      render: (row) => (
+        <div>
+          {money(row.market_price, row.currency)}
+          <div className="text-[11px] text-text-3">{row.report_date}</div>
+        </div>
+      ),
+    },
+    {
+      id: "market_value",
+      label: t("portfolio.col.value"),
+      numeric: true,
+      sortable: true,
+      render: (row) => money(row.market_value, row.currency),
+    },
+    {
+      id: "weight_pct",
+      label: t("portfolio.col.weight"),
+      numeric: true,
+      sortable: true,
+      render: (row) =>
+        row.weight_pct == null ? "—" : `${formatNumber(locale, row.weight_pct, 2)} %`,
+    },
+    {
+      id: "unrealized_pnl",
+      label: t("portfolio.col.pnl"),
+      numeric: true,
+      sortable: true,
+      render: (row) => money(row.unrealized_pnl, row.currency),
+    },
+    {
+      id: "change_pct",
+      label: labels("daily"),
+      numeric: true,
+      sortable: true,
+      render: (row) => (row.change_pct == null ? "—" : formatChange(locale, row.change_pct)),
+    },
+    {
+      id: "latest_close",
+      label: labels("close"),
+      numeric: true,
+      defaultVisible: false,
+      sortable: true,
+      render: (row) => (
+        <div
+          title={[row.price_meta?.source, row.price_meta?.market_date].filter(Boolean).join(" · ")}
+        >
+          {money(row.latest_close, row.currency)}
+          <div className="text-[11px] text-text-3">{row.price_meta?.market_date}</div>
+        </div>
+      ),
+    },
+    ...market,
+    {
+      id: "actions",
+      label: labels("actions"),
+      required: true,
+      width: 100,
+      render: (row) => (
+        <Link
+          href={`/i/${encodeURIComponent(row.symbol)}`}
+          className="inline-flex min-h-8 items-center rounded border border-border px-2 text-xs"
+        >
+          {t("peek.open")}
+        </Link>
+      ),
+    },
+  ];
+  const onUpload = async (file: File) => {
     try {
       const result = await upload.mutateAsync(file);
       toast.success(t("portfolio.importSuccess", result.counts));
-    } catch (e) {
+    } catch (error) {
       toast.error(
         t(
-          e instanceof ApiError && e.detail === "flex_invalid"
-            ? "portfolio.importInvalid"
-            : e instanceof ApiError && e.status === 413
-              ? "portfolio.importTooLarge"
+          error instanceof ApiError && error.status === 413
+            ? "portfolio.importTooLarge"
+            : error instanceof ApiError && error.status === 422
+              ? "portfolio.importInvalid"
               : "portfolio.importFailed",
         ),
       );
     }
   };
-  const hovered = useFocusStore((s) => s.hovered);
-  const setHovered = useFocusStore((s) => s.setHovered);
-
-  const runSync = async () => {
+  const onSync = async () => {
     try {
       await sync.mutateAsync();
       toast.success(t("portfolio.syncQueued"));
-    } catch (e) {
-      const detail = e instanceof ApiError ? e.detail : "";
+    } catch (error) {
       toast.error(
-        detail === "flex_unconfigured"
-          ? t("portfolio.flexUnconfigured")
-          : detail === "queue_unavailable"
-            ? t("portfolio.queueUnavailable")
-            : t("portfolio.syncFailed"),
+        t(
+          error instanceof ApiError && error.detail === "flex_unconfigured"
+            ? "portfolio.flexUnconfigured"
+            : "portfolio.syncFailed",
+        ),
       );
     }
   };
-
-  if (isLoading) return <div className="card h-96 animate-pulse" />;
-  if (error) return <p className="card p-6 text-warn">{t("system.unreachable")}</p>;
-
-  const portfolio = data as PortfolioOut;
-  const syncLine = portfolio.last_sync?.finished_at
-    ? t("portfolio.lastSync", { time: format.relativeTime(new Date(portfolio.last_sync.finished_at), new Date()) })
-    : t("portfolio.never");
-
-  const header = (
-    <div className="flex flex-wrap items-end justify-between gap-4">
-      <div>
-        <div className="label">{t("portfolio.total")}</div>
-        {portfolio.total_value != null ? (
-          <AnimatedNumber
-            value={portfolio.total_value}
-            format={(v) => formatMoney(locale, v, portfolio.base_currency, 0)}
-            className="text-[28px] leading-9 font-medium"
-          />
-        ) : (
-          <div className="num text-[28px] leading-9 text-text-3">—</div>
-        )}
-        <div className="mt-1 flex flex-wrap gap-2 text-xs text-text-3">
-          {portfolio.as_of && <span>{t("portfolio.asOf", { date: format.dateTime(new Date(portfolio.as_of), { dateStyle: "medium" }) })}</span>}
-          <span>· {syncLine}</span>
-          {portfolio.last_sync?.status === "failed" && (
-            <span role="status" className="rounded-full bg-neg-soft px-1.5 leading-5 font-medium text-neg">
-              {t("portfolio.lastSyncFailed", { detail: portfolio.last_sync.detail ?? "" })}
-            </span>
-          )}
-          {portfolio.source === "demo" && (
-            <span className="rounded-full bg-warn-soft px-1.5 leading-5 font-medium text-warn">{t("provenance.demo")}</span>
-          )}
-        </div>
-      </div>
-      <div className="flex flex-wrap gap-2">
-        <input
-          ref={fileInput}
-          type="file"
-          hidden
-          accept=".xml,application/xml,text/xml"
-          aria-label={t("portfolio.import")}
-          onChange={(event) => {
-            const file = event.target.files?.[0];
-            event.target.value = "";
-            if (file) void runImport(file);
-          }}
-        />
-        <button
-          type="button"
-          onClick={() => fileInput.current?.click()}
-          disabled={upload.isPending || sync.isPending}
-          className="h-10 rounded-md border border-border px-4 font-medium hover:bg-surface-2 disabled:opacity-60"
-        >
-          {upload.isPending ? t("portfolio.importing") : t("portfolio.import")}
-        </button>
-        <button
-          type="button"
-          onClick={runSync}
-          disabled={sync.isPending || upload.isPending}
-          className="h-10 rounded-md border border-border px-4 font-medium hover:bg-surface-2 disabled:opacity-60"
-        >
-          {sync.isPending ? t("portfolio.syncing") : t("portfolio.sync")}
-        </button>
-      </div>
-    </div>
-  );
-
-  if (!portfolio.positions.length) {
+  if (isLoading) return <div className="card h-80 animate-pulse" aria-busy="true" />;
+  if (error || !data)
     return (
-      <div className="flex flex-col gap-5">
-        {header}
-        <section className="card flex flex-col gap-2 p-8">
-          <h2 className="text-lg font-semibold">{t("portfolio.emptyTitle")}</h2>
-          <p className="max-w-2xl text-text-2">{t("portfolio.emptyBody")}</p>
-        </section>
+      <div role="alert" className="card p-5 text-warn">
+        {t("system.unreachable")}{" "}
+        <button type="button" onClick={() => void refetch()}>
+          {labels("retry")}
+        </button>
       </div>
     );
-  }
-
-  const tiles: TreemapItem[] = portfolio.positions.map((p) => ({
-    symbol: p.symbol,
-    change: Number(p.change_pct ?? 0),
-    weight: Number(p.weight_pct ?? 0),
-    thesis: "none",
-  }));
-
   return (
-    <div className="flex flex-col gap-5">
-      {header}
-      <section className="card p-4">
-        <Treemap items={tiles} height={240} />
-      </section>
-      <section className="card overflow-x-auto">
-        <table className="w-full min-w-[760px] border-collapse text-[13px]">
-          <thead>
-            <tr className="bg-surface-2 text-left">
-              {(["instrument", "quantity", "price", "value", "weight", "pnl", "today"] as const).map((col, i) => (
-                <th key={col} className={cn("label px-4 py-2.5", i > 0 && "text-right")}>
-                  {t(`portfolio.col.${col}`)}
-                </th>
+    <div className="flex min-w-0 flex-col gap-5">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <div className="label">{t("portfolio.total")}</div>
+          <div className="num text-[28px] font-medium">
+            {money(data.total_value, data.base_currency)}
+          </div>
+          <p className="text-xs text-text-3">
+            {data.as_of
+              ? t("portfolio.asOf", {
+                  date: format.dateTime(new Date(data.as_of), { dateStyle: "medium" }),
+                })
+              : t("portfolio.never")}{" "}
+            · {labels("snapshotBasis")}
+          </p>
+          {data.source === "demo" && (
+            <span className="text-xs text-warn">{t("provenance.demo")}</span>
+          )}
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <label className="text-xs">
+            {labels("account")}{" "}
+            <select
+              aria-label={labels("account")}
+              value={params.get("account_id") ?? ""}
+              className="h-10 rounded border border-border bg-surface px-2"
+              onChange={(event) => {
+                const next = new URLSearchParams(params.toString());
+                if (event.target.value) next.set("account_id", event.target.value);
+                else next.delete("account_id");
+                next.delete("page");
+                router.replace(`${pathname}?${next}`, { scroll: false });
+              }}
+            >
+              <option value="">{labels("allAccounts")}</option>
+              {data.accounts?.map((account) => (
+                <option key={account} value={account}>
+                  {account}
+                </option>
               ))}
-            </tr>
-          </thead>
-          <tbody>
-            <AnimatePresence initial={false}>
-              {portfolio.positions.map((p) => {
-                const key = `instrument:${p.symbol}`;
-                return (
-                  <motion.tr
-                    key={p.symbol}
-                    layout
-                    {...listItem}
-                    onMouseEnter={() => setHovered(key)}
-                    onMouseLeave={() => setHovered(null)}
-                    className={cn("border-t border-border", hovered === key && "bg-accent-soft")}
-                  >
-                    <td className="px-4 py-3">
-                      <EntityLink entity={{ kind: "instrument", id: p.symbol }} />
-                      <div className="max-w-[260px] truncate text-xs text-text-3">{p.name}</div>
-                    </td>
-                    <td className="num px-4 py-3 text-right">{formatNumber(locale, p.quantity, 0)}</td>
-                    <td className="num px-4 py-3 text-right">{p.market_price == null ? "—" : formatMoney(locale, p.market_price, p.currency)}</td>
-                    <td className="num px-4 py-3 text-right">{p.market_value == null ? "—" : formatMoney(locale, p.market_value, p.currency, 0)}</td>
-                    <td className="px-4 py-3 text-right">
-                      <span className="inline-flex items-center gap-2">
-                        <span className="h-1.5 w-14 overflow-hidden rounded-full bg-surface-2">
-                          <span className="block h-1.5 rounded-full bg-accent" style={{ width: `${Math.min(100, Number(p.weight_pct ?? 0) * 3)}%` }} />
-                        </span>
-                        <span className="num w-12">{p.weight_pct == null ? "—" : `${formatNumber(locale, p.weight_pct, 1)} %`}</span>
-                      </span>
-                    </td>
-                    <td className={cn("num px-4 py-3 text-right", Number(p.unrealized_pnl ?? 0) >= 0 ? "text-pos" : "text-neg")}>
-                      {p.unrealized_pnl == null ? "—" : formatMoney(locale, p.unrealized_pnl, p.currency, 0)}
-                    </td>
-                    <td className={cn("num px-4 py-3 text-right", Number(p.change_pct ?? 0) >= 0 ? "text-pos" : "text-neg")}>
-                      {p.change_pct == null ? "—" : formatChange(locale, p.change_pct)}
-                    </td>
-                  </motion.tr>
-                );
-              })}
-            </AnimatePresence>
-          </tbody>
-        </table>
-      </section>
-      {portfolio.cash.length > 0 && (
-        <section className="card flex flex-wrap items-center gap-4 px-4 py-3 text-[13px]">
+            </select>
+          </label>
+          <input
+            ref={fileInput}
+            type="file"
+            hidden
+            accept=".xml,application/xml,text/xml"
+            aria-label={t("portfolio.import")}
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              event.target.value = "";
+              if (file) void onUpload(file);
+            }}
+          />
+          <button
+            type="button"
+            disabled={upload.isPending || sync.isPending}
+            onClick={() => fileInput.current?.click()}
+            className="h-10 rounded border border-border px-3"
+          >
+            {upload.isPending ? t("portfolio.importing") : t("portfolio.import")}
+          </button>
+          <button
+            type="button"
+            disabled={upload.isPending || sync.isPending}
+            onClick={() => void onSync()}
+            className="h-10 rounded border border-border px-3"
+          >
+            {sync.isPending ? t("portfolio.syncing") : t("portfolio.sync")}
+          </button>
+          <Link
+            href="/settings"
+            className="inline-flex min-h-10 items-center px-2 text-xs text-accent"
+          >
+            {labels("refreshSettings")}
+          </Link>
+        </div>
+      </div>
+      {data.valuation_meta?.reason_code === "missing_fx" && (
+        <p role="status" className="rounded border border-warn p-3 text-sm text-warn">
+          {labels("fxPartial")}
+        </p>
+      )}
+      {data.positions.length > 1 && (
+        <details className="card p-4">
+          <summary className="cursor-pointer text-sm font-medium">
+            {t("portfolio.exposure")}
+          </summary>
+          <Treemap
+            items={data.positions
+              .filter((row) => row.weight_pct != null && row.change_pct != null)
+              .map((row) => ({
+                symbol: row.symbol,
+                change: Number(row.change_pct),
+                weight: Number(row.weight_pct),
+                thesis: "none",
+              }))}
+            height={200}
+          />
+        </details>
+      )}
+      <DataTable
+        module="positions"
+        label={t("portfolio.tabPositions")}
+        columns={columns}
+        rows={data.positions}
+        rowKey={(row) => `${row.account_id}:${row.instrument_id ?? row.symbol}`}
+        profiles={[
+          {
+            label: labels("valuation"),
+            columns: [
+              "symbol",
+              "latest_close",
+              "pe",
+              "forward_pe",
+              "ev_ebit",
+              "fcf_yield",
+              "actions",
+            ],
+          },
+          {
+            label: labels("dividends"),
+            columns: [
+              "symbol",
+              "quantity",
+              "dividend_yield_pct",
+              "payout_ratio_pct",
+              "dividend_per_share",
+              "actions",
+            ],
+          },
+        ]}
+      />
+      {data.cash.length > 0 && (
+        <section className="card flex flex-wrap gap-4 p-4 text-sm">
           <span className="label">{t("portfolio.cash")}</span>
-          {portfolio.cash.map((c) => (
-            <span key={c.currency} className="num">{formatMoney(locale, Number(c.amount), c.currency, 0)}</span>
+          {data.cash.map((cash) => (
+            <span key={`${cash.account_id}:${cash.currency}`} className="num">
+              {cash.account_id} · {money(cash.amount, cash.currency)}
+            </span>
           ))}
         </section>
       )}

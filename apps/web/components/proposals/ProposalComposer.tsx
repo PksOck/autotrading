@@ -3,7 +3,7 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useTranslations } from "next-intl";
 import { Dialog } from "radix-ui";
-import { useEffect, useId, useState, type FormEvent } from "react";
+import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import { toast } from "sonner";
 import { SegmentedButtons } from "@/components/common/SegmentedButtons";
 import { useBackToClose } from "@/lib/useBackToClose";
@@ -42,13 +42,43 @@ export function ProposalComposer() {
   const [depth, setDepth] = useState<ProposalDepth>("standard");
   const [saveTo, setSaveTo] = useState<ProposalSaveTo>("reserve");
   const [error, setError] = useState(false);
+  const hydrated = useRef(false);
+  const operation = useRef<{ fingerprint: string; id: string } | null>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    try {
+      localStorage.setItem(
+        "preza.proposal.draft.v1",
+        JSON.stringify({ symbols, hypothesis, source, direction, horizon, depth, saveTo }),
+      );
+    } catch {
+      /* Storage can be disabled. The in-memory draft is still preserved. */
+    }
+  }, [open, symbols, hypothesis, source, direction, horizon, depth, saveTo]);
 
   useEffect(() => {
     const onPropose = (event: Event) => {
+      if (!hydrated.current) {
+        hydrated.current = true;
+        try {
+          const draft = JSON.parse(localStorage.getItem("preza.proposal.draft.v1") ?? "null");
+          if (draft && typeof draft.symbols === "string" && typeof draft.hypothesis === "string") {
+            setSymbols(draft.symbols);
+            setHypothesis(draft.hypothesis);
+            if (typeof draft.source === "string") setSource(draft.source);
+            if (DIRECTIONS.includes(draft.direction)) setDirection(draft.direction);
+            if (HORIZONS.includes(draft.horizon)) setHorizon(draft.horizon);
+            if (DEPTHS.includes(draft.depth)) setDepth(draft.depth);
+            if (SAVE_TO.includes(draft.saveTo)) setSaveTo(draft.saveTo);
+          }
+        } catch {
+          /* Storage failure does not block opening the form. */
+        }
+      }
       const detail = (event as CustomEvent<ProposeDetail>).detail ?? {};
-      setSymbols(detail.symbols?.join(", ") ?? "");
-      setHypothesis(detail.hypothesis ?? "");
-      setSource("");
+      if (detail.symbols) setSymbols(detail.symbols.join(", "));
+      if (detail.hypothesis !== undefined) setHypothesis(detail.hypothesis);
       setError(false);
       setOpen(true);
     };
@@ -58,6 +88,7 @@ export function ProposalComposer() {
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
+    if (create.isPending) return;
     const parsed = parseSymbols(
       `${symbols} ${source.match(/\$[A-Za-z.]{1,10}/g)?.join(" ") ?? ""}`,
     );
@@ -66,7 +97,7 @@ export function ProposalComposer() {
       return;
     }
     try {
-      await create.mutateAsync({
+      const body = {
         symbols: parsed,
         hypothesis: hypothesis.trim(),
         source_text: source.trim(),
@@ -74,11 +105,19 @@ export function ProposalComposer() {
         horizon,
         depth,
         save_to: saveTo,
-      });
+      };
+      const fingerprint = JSON.stringify(body);
+      if (operation.current?.fingerprint !== fingerprint)
+        operation.current = { fingerprint, id: crypto.randomUUID() };
+      await create.mutateAsync({ ...body, request_id: operation.current.id });
     } catch {
       toast.error(t("proposalsPage.submitError"));
       return;
     }
+    operation.current = null;
+    setSymbols("");
+    setHypothesis("");
+    setSource("");
     close();
     toast.success(t("proposal.submitted", { symbols: parsed.join(", ") }), {
       description: t("proposal.previewNote"),

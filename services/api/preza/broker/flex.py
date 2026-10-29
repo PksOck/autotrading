@@ -14,7 +14,7 @@ import httpx
 from defusedxml import ElementTree
 
 from preza.domain.market import InstrumentKind
-from preza.domain.portfolio import CashIn, FlexStatement, PositionIn, TradeIn
+from preza.domain.portfolio import AccountSnapshotIn, CashIn, FlexStatement, PositionIn, TradeIn
 
 BASE_URL = "https://ndcdyn.interactivebrokers.com/AccountManagement/FlexWebService"
 IN_PROGRESS_CODES = {"1019"}  # "Statement generation in progress. Please try again shortly."
@@ -30,7 +30,8 @@ def _dec(value: str | None) -> Decimal | None:
     if value in (None, ""):
         return None
     try:
-        return Decimal(value)
+        parsed = Decimal(value)
+        return parsed if parsed.is_finite() else None
     except InvalidOperation:
         return None
 
@@ -83,16 +84,31 @@ def parse_statement(xml: str) -> FlexStatement:
     positions: list[PositionIn] = []
     trades: list[TradeIn] = []
     cash: list[CashIn] = []
+    snapshots: list[AccountSnapshotIn] = []
     for statement in root.iter("FlexStatement"):
         account = statement.get("accountId", "")
         statement_date = _date(statement.get("toDate") or statement.get("whenGenerated"))
+        position_rows = list(statement.iter("OpenPosition"))
+        if position_rows and not any(
+            (row.get("levelOfDetail") or "SUMMARY").upper() in ("SUMMARY", "")
+            for row in position_rows
+        ):
+            raise FlexError("unsupported_positions_detail", "summary positions required")
+        snapshots.append(
+            AccountSnapshotIn(
+                account_id=account,
+                report_date=statement_date,
+                positions_complete=statement.find("OpenPositions") is not None,
+                cash_complete=statement.find("CashReport") is not None,
+            )
+        )
 
         for p in statement.iter("OpenPosition"):
             if (p.get("levelOfDetail") or "SUMMARY").upper() not in ("SUMMARY", ""):
                 continue  # skip LOT rows when the query includes lot detail
             quantity = _dec(p.get("position"))
             if quantity is None:
-                continue
+                raise FlexError("invalid_position_quantity", "incomplete position row")
             positions.append(
                 PositionIn(
                     account_id=p.get("accountId") or account,
@@ -140,8 +156,10 @@ def parse_statement(xml: str) -> FlexStatement:
         for c in statement.iter("CashReportCurrency"):
             currency = c.get("currency")
             amount = _dec(c.get("endingCash"))
-            if not currency or currency == "BASE_SUMMARY" or amount is None:
+            if currency == "BASE_SUMMARY":
                 continue
+            if not currency or amount is None:
+                raise FlexError("invalid_cash_balance", "incomplete cash row")
             cash.append(
                 CashIn(
                     account_id=c.get("accountId") or account,
@@ -151,7 +169,15 @@ def parse_statement(xml: str) -> FlexStatement:
                 )
             )
 
-    return FlexStatement(positions=positions, trades=trades, cash=cash)
+    from preza.broker.dividends import parse_dividend_statement
+
+    return FlexStatement(
+        positions=positions,
+        trades=trades,
+        cash=cash,
+        snapshots=snapshots,
+        dividends=parse_dividend_statement(xml),
+    )
 
 
 class FlexClient:

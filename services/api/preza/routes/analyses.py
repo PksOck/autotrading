@@ -9,11 +9,11 @@ import asyncio
 import json
 import uuid
 from collections.abc import AsyncIterator
-from typing import Annotated
+from typing import Annotated, Literal
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Request
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, Request
 from fastapi.responses import StreamingResponse
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from preza.config import Settings, get_settings
@@ -128,11 +128,43 @@ async def quota(
 
 @router.get("", response_model=list[AnalysisSummary])
 async def list_analyses(
-    session: Session, symbol: str | None = None, limit: int = 30
+    session: Session,
+    symbol: str | None = None,
+    limit: Annotated[int, Query(ge=1, le=100)] = 30,
+    status: AnalysisStatus | None = None,
+    latest_per_instrument: bool = False,
+    sort: Literal["created_at", "symbol", "trade_date"] = "created_at",
+    direction: Literal["asc", "desc"] = "desc",
 ) -> list[AnalysisSummary]:
-    query = select(AnalysisRun).order_by(AnalysisRun.created_at.desc()).limit(min(limit, 100))
+    # Filter before ranking: a newer failed run must not hide the last successful one.
+    candidates = select(
+        AnalysisRun.id,
+        func.row_number()
+        .over(
+            partition_by=AnalysisRun.instrument_id,
+            order_by=(AnalysisRun.created_at.desc(), AnalysisRun.id.desc()),
+        )
+        .label("rank"),
+    )
     if symbol:
-        query = query.join(Instrument).where(Instrument.symbol == symbol.upper())
+        candidates = candidates.join(Instrument).where(Instrument.symbol == symbol.upper())
+    if status is not None:
+        candidates = candidates.where(AnalysisRun.status == status.value)
+    ranked = candidates.subquery()
+    query = select(AnalysisRun).join(ranked, AnalysisRun.id == ranked.c.id)
+    if latest_per_instrument:
+        query = query.where(ranked.c.rank == 1)
+    order_column = {
+        "created_at": AnalysisRun.created_at,
+        "trade_date": AnalysisRun.trade_date,
+        "symbol": Instrument.symbol,
+    }[sort]
+    if sort == "symbol":
+        query = query.join(Instrument)
+    order = (
+        order_column.desc().nulls_last() if direction == "desc" else order_column.asc().nulls_last()
+    )
+    query = query.order_by(order, AnalysisRun.id.desc()).limit(limit)
     return [summary(r, _outlook(r)) for r in await session.scalars(query)]
 
 

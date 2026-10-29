@@ -5,6 +5,7 @@ import { useFormatter, useTranslations } from "next-intl";
 import Link from "next/link";
 import { EntityLink } from "@/components/common/EntityLink";
 import { useProposalList } from "@/lib/api/hooks";
+import { useRetryProposal } from "@/lib/api/research";
 import { cn } from "@/lib/cn";
 import { listItem } from "@/lib/motion";
 import { openProposalComposer } from "@/stores/proposals";
@@ -19,6 +20,8 @@ const STATUS_STYLE: Record<string, string> = {
 /** SCR-12 (BL-054): the user's proposals with live status and the model's verdict. */
 export function ProposalList() {
   const t = useTranslations();
+  const ux = useTranslations("researchUx");
+  const retry = useRetryProposal();
   const format = useFormatter();
   const { data, isLoading, error } = useProposalList();
 
@@ -48,14 +51,28 @@ export function ProposalList() {
                 <span className="ml-auto text-xs text-text-3">{format.relativeTime(new Date(p.created_at), new Date())}</span>
               </div>
               {p.hypothesis && <p className="text-text-2">“{p.hypothesis}”</p>}
-              {p.verdict && <p className="rounded-md bg-surface-2 p-3 text-[13px] text-text">{p.verdict}</p>}
-              {p.analysis_id && (
-                <Link href={`/analysis/${p.analysis_id}`} className="text-[13px] text-accent">
-                  {t("analysisPage.openAnalysis")} →
-                </Link>
+              {p.status === "done" && !p.error_code && p.verdict_result && (
+                <section className="rounded-md bg-surface-2 p-3 text-[13px]">
+                  <h3 className="font-medium">{ux("quickVerdict")} · {ux(p.verdict_result.verdict)}</h3>
+                  <p className="mt-1 text-text-2">{p.verdict_result.summary}</p>
+                  {(["key_points", "risks"] as const).map((key) => p.verdict_result?.[key]?.length ? <div key={key} className="mt-2">
+                    <h4 className="text-xs text-text-3">{ux(key === "risks" ? "risks" : "keyPoints")}</h4>
+                    <ul className="list-disc pl-4">{p.verdict_result?.[key]?.map((point, i) => <li key={i}>{point}</li>)}</ul>
+                  </div> : null)}
+                </section>
               )}
+              {(p.error_code || p.status === "failed") && <div role="alert" className="flex flex-col items-start gap-2 rounded-md bg-warn-soft p-3 text-[13px] text-warn">
+                <p>{ux(p.error_code ?? "analysis_failed")}</p>
+                {p.status === "failed" && <button type="button" disabled={retry.isPending && retry.variables === p.id} onClick={() => retry.mutate(p.id)} className="h-9 rounded-md border border-border px-3 disabled:opacity-50">{ux(retry.isPending && retry.variables === p.id ? "retrying" : "retry")}</button>}
+                <button type="button" onClick={() => openProposalComposer({symbols:p.symbols, hypothesis:p.hypothesis})} className="min-h-9 text-accent">{ux("editProposal")}</button>
+                {retry.error && retry.variables === p.id && <p>{ux("actionFailed")}</p>}
+              </div>}
+              {!!p.analysis_links?.length && <section className="flex flex-wrap gap-3 text-[13px]">
+                <h3 className="basis-full text-xs text-text-3">{ux("deepAnalyses")}</h3>
+                {p.analysis_links.map((run) => <Link key={run.id} href={`/analysis/${run.id}`} className="text-accent">{run.symbol} · {ux(["done","failed","queued","running"].includes(run.status) ? run.status : "queued")}</Link>)}
+              </section>}
               {p.signal_id && (
-                <Link href="/signals" className="text-[13px] text-accent">
+                <Link href={`/signals?peek=signal:${p.signal_id}`} className="text-[13px] text-accent">
                   {t("proposalsPage.openSignal")} →
                 </Link>
               )}

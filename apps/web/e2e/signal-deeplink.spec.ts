@@ -1,47 +1,45 @@
 import { expect, test } from "@playwright/test";
 import { signal, signalId } from "../test/signal-fixtures";
 
+const entry = {
+  symbol: "MSFT",
+  name: "Microsoft",
+  kind: "stock",
+  currency: "USD",
+  held: true,
+  watched: false,
+  as_of: "2026-10-29",
+  price: 400,
+  state: "in_zone",
+  anchor: "sma200",
+  rules: [{ rule: "drawdown", values: { drawdown_pct: -10 } }],
+  zone_low: 390,
+  zone_high: 410,
+  stop: 370,
+  atr: 5,
+  distance_atr: 0,
+  drawdown_pct: -10,
+  valuation: {},
+  ladder: [],
+  cause: null,
+  thesis_intact: null,
+  dip_rationale: null,
+  dip_evidence: [],
+  dip_model: null,
+  analyzed_at: null,
+  signal_id: signalId,
+  source: "fixture",
+  updated_at: signal.created_at,
+};
+
 test.beforeEach(async ({ page }, info) => {
   if (info.project.name === "phone") await page.setViewportSize({ width: 390, height: 844 });
   await page.route("**/api/**", async (route) => {
     const path = new URL(route.request().url()).pathname;
     if (path === `/api/signals/${signalId}`) return route.fulfill({ json: signal });
     if (path === "/api/signals") return route.fulfill({ json: [] });
-    if (path === "/api/entries")
-      return route.fulfill({
-        json: [
-          {
-            symbol: "MSFT",
-            name: "Microsoft",
-            kind: "stock",
-            currency: "USD",
-            held: true,
-            watched: false,
-            as_of: "2026-10-29",
-            price: 400,
-            state: "in_zone",
-            anchor: "sma200",
-            rules: [{ rule: "drawdown", values: { drawdown_pct: -10 } }],
-            zone_low: 390,
-            zone_high: 410,
-            stop: 370,
-            atr: 5,
-            distance_atr: 0,
-            drawdown_pct: -10,
-            valuation: {},
-            ladder: [],
-            cause: null,
-            thesis_intact: null,
-            dip_rationale: null,
-            dip_evidence: [],
-            dip_model: null,
-            analyzed_at: null,
-            signal_id: signalId,
-            source: "fixture",
-            updated_at: signal.created_at,
-          },
-        ],
-      });
+    if (path === "/api/entries") return route.fulfill({ json: [entry] });
+    if (path === "/api/entries/MSFT") return route.fulfill({ json: entry });
     if (path === "/api/instruments/MSFT")
       return route.fulfill({
         json: {
@@ -113,7 +111,7 @@ test("entry signal link opens detail and browser Back restores the entry URL", a
   await expect(page.getByRole("dialog").getByRole("heading", { name: "MSFT" })).toBeVisible();
   await page.goBack();
   await expect(page).toHaveURL(new RegExp(entryUrl.replaceAll("?", "\\?")));
-  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(page.getByRole("dialog", { name: "Predogled", exact: true })).toHaveCount(0);
   await expect(page.getByRole("link", { name: "Odpri signal", exact: true })).toBeVisible();
 });
 
@@ -122,19 +120,20 @@ test("instrument preview remains available", async ({ page }) => {
   await expect(page.getByRole("dialog")).toContainText("Microsoft");
 });
 
-test("closing a same-page preview restores keyboard focus to its opener", async ({ page }) => {
+test("closing a same-page preview restores keyboard focus to its opener", async ({ page }, info) => {
   await page.goto("/entries?symbol=MSFT");
   const opener = page.getByRole("link", { name: "MSFT", exact: true });
   await expect(opener).toBeVisible();
   for (const action of ["close", "escape", "back"]) {
     await opener.focus();
     await opener.press("Enter");
-    const dialog = page.getByRole("dialog");
+    const dialog = page.getByRole("dialog", { name: "Predogled", exact: true });
     await expect(dialog).toBeVisible();
     if (action === "close") await dialog.getByRole("button", { name: "Zapri predogled" }).click();
     else if (action === "escape") await page.keyboard.press("Escape");
     else await page.goBack();
     await expect(dialog).toHaveCount(0);
-    await expect(opener).toBeFocused();
+    if (info.project.name === "phone") await expect(page.getByRole("button", { name: "Zapri podrobnosti" })).toBeFocused();
+    else await expect(opener).toBeFocused();
   }
 });

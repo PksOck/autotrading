@@ -48,6 +48,406 @@
         }
       }
     },
+    "/automation/policies": {
+      "get": {
+        "tags": [
+          "automation"
+        ],
+        "summary": "Policies",
+        "operationId": "policies_automation_policies_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PolicyOut"
+                  },
+                  "type": "array",
+                  "title": "Response Policies Automation Policies Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/automation/policies/{key}": {
+      "patch": {
+        "tags": [
+          "automation"
+        ],
+        "summary": "Patch Policy",
+        "operationId": "patch_policy_automation_policies__key__patch",
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PolicyInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PolicyOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/automation/control": {
+      "get": {
+        "tags": [
+          "automation"
+        ],
+        "summary": "Control",
+        "operationId": "control_automation_control_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlInput"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "automation"
+        ],
+        "summary": "Patch Control",
+        "operationId": "patch_control_automation_control_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ControlInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ControlInput"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/automation/executions": {
+      "get": {
+        "tags": [
+          "automation"
+        ],
+        "summary": "Executions",
+        "operationId": "executions_automation_executions_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ExecutionOut"
+                  },
+                  "type": "array",
+                  "title": "Response Executions Automation Executions Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/automation/policies/{key}/run": {
+      "post": {
+        "tags": [
+          "automation"
+        ],
+        "summary": "Run Process",
+        "operationId": "run_process_automation_policies__key__run_post",
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Run Process Automation Policies  Key  Run Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/automation/batch/preview": {
+      "post": {
+        "tags": [
+          "automation"
+        ],
+        "summary": "Preview Batch",
+        "operationId": "preview_batch_automation_batch_preview_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BatchInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchPreview"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/automation/batch/run": {
+      "post": {
+        "tags": [
+          "automation"
+        ],
+        "summary": "Batch",
+        "operationId": "batch_automation_batch_run_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BatchInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchPreview"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/portfolio/dividends": {
+      "get": {
+        "tags": [
+          "dividends"
+        ],
+        "summary": "Dividends",
+        "operationId": "dividends_portfolio_dividends_get",
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Account Id"
+            }
+          },
+          {
+            "name": "currency",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Currency"
+            }
+          },
+          {
+            "name": "from_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "From Date"
+            }
+          },
+          {
+            "name": "to_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "To Date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DividendsOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/instruments": {
       "get": {
         "tags": [
@@ -138,6 +538,58 @@
         }
       }
     },
+    "/instruments/{symbol}/identity/enrich": {
+      "post": {
+        "tags": [
+          "instruments"
+        ],
+        "summary": "Enrich",
+        "operationId": "enrich_instruments__symbol__identity_enrich_post",
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Symbol"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IdentityEnrichInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentityEnrichOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/instruments/{symbol}/bars": {
       "get": {
         "tags": [
@@ -201,6 +653,27 @@
         }
       }
     },
+    "/overview": {
+      "get": {
+        "tags": [
+          "overview"
+        ],
+        "summary": "Overview",
+        "operationId": "overview_overview_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OverviewOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/portfolio/import": {
       "post": {
         "tags": [
@@ -229,6 +702,66 @@
         ],
         "summary": "Portfolio",
         "operationId": "portfolio_portfolio_get",
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Account Id"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Sort"
+            }
+          },
+          {
+            "name": "direction",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "asc",
+              "title": "Direction"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Q"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -236,6 +769,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PortfolioOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
@@ -271,17 +814,71 @@
         ],
         "summary": "List Items",
         "operationId": "list_items_watchlist_get",
+        "parameters": [
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Sort"
+            }
+          },
+          {
+            "name": "direction",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "asc",
+              "title": "Direction"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Q"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
+                  "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/WatchlistOut"
                   },
-                  "type": "array",
                   "title": "Response List Items Watchlist Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
@@ -295,14 +892,14 @@
         "summary": "Add",
         "operationId": "add_watchlist_post",
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/WatchlistCreate"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "201": {
@@ -394,11 +991,79 @@
               "type": "integer",
               "title": "Item Id"
             }
+          },
+          {
+            "name": "revision",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Revision"
+            }
           }
         ],
         "responses": {
           "204": {
             "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/watchlist/{item_id}/restore": {
+      "post": {
+        "tags": [
+          "watchlist"
+        ],
+        "summary": "Restore",
+        "operationId": "restore_watchlist__item_id__restore_post",
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Item Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RestoreWatchlist"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WatchlistOut"
+                }
+              }
+            }
           },
           "422": {
             "description": "Validation Error",
@@ -762,6 +1427,49 @@
         }
       }
     },
+    "/proposals/{proposal_id}/retry": {
+      "post": {
+        "tags": [
+          "proposals"
+        ],
+        "summary": "Retry",
+        "operationId": "retry_proposals__proposal_id__retry_post",
+        "parameters": [
+          {
+            "name": "proposal_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Proposal Id"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProposalOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/proposals/{proposal_id}": {
       "get": {
         "tags": [
@@ -1008,8 +1716,65 @@
             "required": false,
             "schema": {
               "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
               "default": 30,
               "title": "Limit"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/AnalysisStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "latest_per_instrument",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Latest Per Instrument"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "created_at",
+                "symbol",
+                "trade_date"
+              ],
+              "type": "string",
+              "default": "created_at",
+              "title": "Sort"
+            }
+          },
+          {
+            "name": "direction",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "type": "string",
+              "default": "desc",
+              "title": "Direction"
             }
           }
         ],
@@ -1828,6 +2593,40 @@
               "default": 20,
               "title": "Horizon Days"
             }
+          },
+          {
+            "name": "created_from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created From"
+            }
+          },
+          {
+            "name": "created_to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created To"
+            }
           }
         ],
         "responses": {
@@ -1837,6 +2636,106 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/TrackRecordOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/track-record/outcomes": {
+      "get": {
+        "tags": [
+          "track-record"
+        ],
+        "summary": "Outcomes",
+        "operationId": "outcomes_track_record_outcomes_get",
+        "parameters": [
+          {
+            "name": "horizon_days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "title": "Horizon Days"
+            }
+          },
+          {
+            "name": "created_from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created From"
+            }
+          },
+          {
+            "name": "created_to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created To"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 30,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrackOutcomePage"
                 }
               }
             }
@@ -2050,6 +2949,177 @@
           "expected_last_event_id"
         ],
         "title": "AcceptProposal"
+      },
+      "Accrual": {
+        "properties": {
+          "broker": {
+            "type": "string",
+            "title": "Broker",
+            "default": "ibkr"
+          },
+          "account_id": {
+            "type": "string",
+            "title": "Account Id"
+          },
+          "natural_key": {
+            "type": "string",
+            "title": "Natural Key"
+          },
+          "symbol": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Symbol"
+          },
+          "con_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Con Id"
+          },
+          "action_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Action Id"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "ex_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Ex Date"
+          },
+          "pay_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pay Date"
+          },
+          "quantity": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quantity"
+          },
+          "gross_rate": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gross Rate"
+          },
+          "gross_amount": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gross Amount"
+          },
+          "tax": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tax"
+          },
+          "net_amount": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Net Amount"
+          },
+          "fx_rate_to_base": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fx Rate To Base"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "default": "ibkr_flex"
+          },
+          "as_of": {
+            "type": "string",
+            "format": "date-time",
+            "title": "As Of"
+          },
+          "as_of_basis": {
+            "type": "string",
+            "title": "As Of Basis",
+            "default": "statement_report_date_utc_boundary"
+          },
+          "snapshot_version": {
+            "type": "string",
+            "title": "Snapshot Version",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "account_id",
+          "natural_key",
+          "currency",
+          "ex_date",
+          "status",
+          "as_of"
+        ],
+        "title": "Accrual"
       },
       "AnalysisCreate": {
         "properties": {
@@ -2568,6 +3638,145 @@
         ],
         "title": "BarsOut"
       },
+      "BatchInput": {
+        "properties": {
+          "scope": {
+            "type": "string",
+            "enum": [
+              "portfolio",
+              "watchlist",
+              "both"
+            ],
+            "title": "Scope",
+            "default": "portfolio"
+          },
+          "cap": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Cap",
+            "default": 5
+          },
+          "account_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 32
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Account Id"
+          },
+          "revision": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revision"
+          },
+          "outside_window": {
+            "type": "boolean",
+            "title": "Outside Window",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "BatchInput"
+      },
+      "BatchItem": {
+        "properties": {
+          "instrument_id": {
+            "type": "integer",
+            "title": "Instrument Id"
+          },
+          "symbol": {
+            "type": "string",
+            "title": "Symbol"
+          },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "ready",
+              "active",
+              "cap",
+              "quota",
+              "disabled",
+              "outside_window"
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "instrument_id",
+          "symbol",
+          "reason"
+        ],
+        "title": "BatchItem"
+      },
+      "BatchPreview": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/BatchItem"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "quota_used": {
+            "type": "integer",
+            "title": "Quota Used"
+          },
+          "quota_limit": {
+            "type": "integer",
+            "title": "Quota Limit"
+          },
+          "resets_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Resets At"
+          },
+          "run_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Run Ids"
+          },
+          "policy_revision": {
+            "type": "integer",
+            "title": "Policy Revision",
+            "default": 0
+          },
+          "blocked_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Blocked Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "quota_used",
+          "quota_limit",
+          "resets_at"
+        ],
+        "title": "BatchPreview"
+      },
       "CalibrationBucket": {
         "properties": {
           "count": {
@@ -2733,6 +3942,149 @@
         ],
         "title": "CalibrationProposal"
       },
+      "CashEvent": {
+        "properties": {
+          "broker": {
+            "type": "string",
+            "title": "Broker",
+            "default": "ibkr"
+          },
+          "account_id": {
+            "type": "string",
+            "title": "Account Id"
+          },
+          "transaction_id": {
+            "type": "string",
+            "title": "Transaction Id"
+          },
+          "symbol": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Symbol"
+          },
+          "con_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Con Id"
+          },
+          "action_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Action Id"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "dividend",
+              "payment_in_lieu",
+              "withholding"
+            ],
+            "title": "Kind"
+          },
+          "amount": {
+            "type": "string",
+            "title": "Amount"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "booking_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Booking Date"
+          },
+          "settlement_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Settlement Date"
+          },
+          "fx_rate_to_base": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fx Rate To Base"
+          },
+          "fx_basis": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fx Basis"
+          },
+          "base_currency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Base Currency"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "default": "ibkr_flex"
+          },
+          "as_of": {
+            "type": "string",
+            "format": "date-time",
+            "title": "As Of"
+          },
+          "as_of_basis": {
+            "type": "string",
+            "title": "As Of Basis",
+            "default": "statement_report_date_utc_boundary"
+          }
+        },
+        "type": "object",
+        "required": [
+          "account_id",
+          "transaction_id",
+          "kind",
+          "amount",
+          "currency",
+          "booking_date",
+          "as_of"
+        ],
+        "title": "CashEvent"
+      },
       "CashIn": {
         "properties": {
           "account_id": {
@@ -2761,6 +4113,93 @@
           "report_date"
         ],
         "title": "CashIn"
+      },
+      "CashSummary": {
+        "properties": {
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "gross": {
+            "type": "string",
+            "title": "Gross"
+          },
+          "payment_in_lieu": {
+            "type": "string",
+            "title": "Payment In Lieu"
+          },
+          "withholding": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Withholding"
+          },
+          "unresolved_withholding": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unresolved Withholding"
+          },
+          "net": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Net"
+          },
+          "base_amount": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Base Amount"
+          },
+          "base_currency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Base Currency"
+          },
+          "fx_complete": {
+            "type": "boolean",
+            "title": "Fx Complete"
+          }
+        },
+        "type": "object",
+        "required": [
+          "currency",
+          "gross",
+          "payment_in_lieu",
+          "withholding",
+          "unresolved_withholding",
+          "net",
+          "base_amount",
+          "fx_complete"
+        ],
+        "title": "CashSummary"
       },
       "ClaimReviewProposalOut": {
         "properties": {
@@ -2945,6 +4384,26 @@
         ],
         "title": "ConfirmWeights"
       },
+      "ControlInput": {
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Revision"
+          },
+          "paused": {
+            "type": "boolean",
+            "title": "Paused"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "revision",
+          "paused"
+        ],
+        "title": "ControlInput"
+      },
       "ControlScore": {
         "properties": {
           "score": {
@@ -3008,6 +4467,109 @@
         ],
         "title": "ControlScore",
         "description": "Deterministic composite next to the agents' rating (BL-089). Components in -1..1."
+      },
+      "DataMeta": {
+        "properties": {
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          },
+          "as_of": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "As Of"
+          },
+          "market_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Market Date"
+          },
+          "fetched_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fetched At"
+          },
+          "availability": {
+            "type": "string",
+            "enum": [
+              "available",
+              "missing",
+              "not_applicable",
+              "partial"
+            ],
+            "title": "Availability",
+            "default": "missing"
+          },
+          "reason_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason Code",
+            "default": "no_observation"
+          },
+          "stale": {
+            "type": "boolean",
+            "title": "Stale",
+            "default": false
+          },
+          "basis": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Basis"
+          },
+          "source_field": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Field"
+          }
+        },
+        "type": "object",
+        "title": "DataMeta"
       },
       "DecisionCard": {
         "properties": {
@@ -3126,6 +4688,205 @@
           "reason"
         ],
         "title": "DismissProposal"
+      },
+      "DividendProjection": {
+        "properties": {
+          "account_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Account Id"
+          },
+          "symbol": {
+            "type": "string",
+            "title": "Symbol"
+          },
+          "quantity": {
+            "type": "string",
+            "title": "Quantity"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "annual_gross": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Annual Gross"
+          },
+          "annual_per_share": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Annual Per Share"
+          },
+          "basis": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Basis"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          },
+          "as_of": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "As Of"
+          },
+          "includes_special": {
+            "type": "boolean",
+            "title": "Includes Special",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "symbol",
+          "quantity",
+          "currency",
+          "annual_gross",
+          "annual_per_share",
+          "basis",
+          "reason",
+          "source",
+          "as_of"
+        ],
+        "title": "DividendProjection"
+      },
+      "DividendsOut": {
+        "properties": {
+          "cash_events": {
+            "items": {
+              "$ref": "#/components/schemas/CashEvent"
+            },
+            "type": "array",
+            "title": "Cash Events"
+          },
+          "received": {
+            "items": {
+              "$ref": "#/components/schemas/CashSummary"
+            },
+            "type": "array",
+            "title": "Received"
+          },
+          "accruals": {
+            "items": {
+              "$ref": "#/components/schemas/Accrual"
+            },
+            "type": "array",
+            "title": "Accruals"
+          },
+          "projections": {
+            "items": {
+              "$ref": "#/components/schemas/DividendProjection"
+            },
+            "type": "array",
+            "title": "Projections"
+          },
+          "coverage": {
+            "items": {
+              "$ref": "#/components/schemas/ImportCoverage"
+            },
+            "type": "array",
+            "title": "Coverage"
+          },
+          "accounts": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Accounts"
+          },
+          "currencies": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Currencies"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "default": "ibkr_flex"
+          },
+          "as_of": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "As Of"
+          },
+          "contract_status": {
+            "type": "string",
+            "title": "Contract Status",
+            "default": "synthetic_contract_not_live_validated"
+          }
+        },
+        "type": "object",
+        "required": [
+          "cash_events",
+          "received",
+          "accruals",
+          "projections",
+          "coverage",
+          "accounts",
+          "currencies",
+          "as_of"
+        ],
+        "title": "DividendsOut"
       },
       "EntryOut": {
         "properties": {
@@ -3582,6 +5343,23 @@
             "type": "string",
             "format": "date-time",
             "title": "Published At"
+          },
+          "kind": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "news",
+                  "press_release",
+                  "filing",
+                  "social"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kind"
           }
         },
         "type": "object",
@@ -3759,6 +5537,116 @@
           "label"
         ],
         "title": "EvidenceRef"
+      },
+      "ExecutionOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "process_key": {
+            "type": "string",
+            "title": "Process Key"
+          },
+          "policy_revision": {
+            "type": "integer",
+            "title": "Policy Revision"
+          },
+          "scheduled_for": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Scheduled For"
+          },
+          "origin": {
+            "type": "string",
+            "title": "Origin"
+          },
+          "outside_window": {
+            "type": "boolean",
+            "title": "Outside Window"
+          },
+          "state": {
+            "type": "string",
+            "title": "State"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished At"
+          },
+          "heartbeat_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Heartbeat At"
+          },
+          "counts": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            },
+            "type": "object",
+            "title": "Counts"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "process_key",
+          "policy_revision",
+          "scheduled_for",
+          "origin",
+          "outside_window",
+          "state",
+          "reason",
+          "started_at",
+          "finished_at",
+          "heartbeat_at",
+          "counts"
+        ],
+        "title": "ExecutionOut"
       },
       "GroupProposal": {
         "properties": {
@@ -3947,6 +5835,141 @@
         ],
         "title": "HorizonOutlook"
       },
+      "IdentityEnrichInput": {
+        "properties": {
+          "instrument_id": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Instrument Id"
+          },
+          "expected_updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expected Updated At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "instrument_id",
+          "expected_updated_at"
+        ],
+        "title": "IdentityEnrichInput"
+      },
+      "IdentityEnrichOut": {
+        "properties": {
+          "instrument_id": {
+            "type": "integer",
+            "title": "Instrument Id"
+          },
+          "changed_fields": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Changed Fields"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "checked_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Checked At"
+          },
+          "gaps": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Gaps"
+          }
+        },
+        "type": "object",
+        "required": [
+          "instrument_id",
+          "changed_fields",
+          "source",
+          "checked_at"
+        ],
+        "title": "IdentityEnrichOut"
+      },
+      "ImportCoverage": {
+        "properties": {
+          "account_id": {
+            "type": "string",
+            "title": "Account Id"
+          },
+          "section": {
+            "type": "string",
+            "title": "Section"
+          },
+          "from_date": {
+            "type": "string",
+            "format": "date",
+            "title": "From Date"
+          },
+          "to_date": {
+            "type": "string",
+            "format": "date",
+            "title": "To Date"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "missing",
+              "partial",
+              "complete"
+            ],
+            "title": "Status"
+          },
+          "gaps": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Gaps"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "default": "ibkr_flex"
+          },
+          "as_of": {
+            "type": "string",
+            "format": "date-time",
+            "title": "As Of"
+          },
+          "as_of_basis": {
+            "type": "string",
+            "title": "As Of Basis",
+            "default": "statement_report_date_utc_boundary"
+          },
+          "snapshot_version": {
+            "type": "string",
+            "title": "Snapshot Version",
+            "default": ""
+          },
+          "row_keys": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Row Keys"
+          }
+        },
+        "type": "object",
+        "required": [
+          "account_id",
+          "section",
+          "from_date",
+          "to_date",
+          "status",
+          "as_of"
+        ],
+        "title": "ImportCoverage"
+      },
       "InstrumentDetail": {
         "properties": {
           "symbol": {
@@ -4008,6 +6031,33 @@
             "type": "boolean",
             "title": "Tradable For User"
           },
+          "instrument_id": {
+            "type": "integer",
+            "title": "Instrument Id"
+          },
+          "identity_source": {
+            "type": "string",
+            "title": "Identity Source"
+          },
+          "identity_updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Identity Updated At"
+          },
+          "identity_status": {
+            "type": "string",
+            "title": "Identity Status"
+          },
+          "metrics": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/MetricValue"
+            },
+            "type": "object",
+            "title": "Metrics"
+          },
+          "price_meta": {
+            "$ref": "#/components/schemas/DataMeta"
+          },
           "last_close": {
             "anyOf": [
               {
@@ -4050,7 +6100,11 @@
           "currency",
           "isin",
           "ucits",
-          "tradable_for_user"
+          "tradable_for_user",
+          "instrument_id",
+          "identity_source",
+          "identity_updated_at",
+          "identity_status"
         ],
         "title": "InstrumentDetail"
       },
@@ -4173,6 +6227,37 @@
           "weight"
         ],
         "title": "LadderLevelOut"
+      },
+      "MetricValue": {
+        "properties": {
+          "value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/DataMeta"
+          }
+        },
+        "type": "object",
+        "title": "MetricValue"
       },
       "OutcomeStat": {
         "properties": {
@@ -4297,6 +6382,250 @@
         ],
         "title": "OutlookBrief"
       },
+      "OverviewOut": {
+        "properties": {
+          "as_of": {
+            "type": "string",
+            "format": "date-time",
+            "title": "As Of"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "default": "database"
+          },
+          "signal_counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Signal Counts"
+          },
+          "news_count": {
+            "type": "integer",
+            "title": "News Count"
+          },
+          "event_count": {
+            "type": "integer",
+            "title": "Event Count"
+          },
+          "signals": {
+            "items": {
+              "$ref": "#/components/schemas/SignalOut"
+            },
+            "type": "array",
+            "title": "Signals"
+          }
+        },
+        "type": "object",
+        "required": [
+          "as_of",
+          "signal_counts",
+          "news_count",
+          "event_count",
+          "signals"
+        ],
+        "title": "OverviewOut"
+      },
+      "PolicyInput": {
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Revision",
+            "default": 0
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "default": false
+          },
+          "timezone": {
+            "type": "string",
+            "title": "Timezone",
+            "default": "UTC"
+          },
+          "schedule_kind": {
+            "type": "string",
+            "enum": [
+              "legacy",
+              "daily",
+              "interval",
+              "manual"
+            ],
+            "title": "Schedule Kind",
+            "default": "manual"
+          },
+          "local_time": {
+            "type": "string",
+            "title": "Local Time",
+            "default": "06:00"
+          },
+          "interval_minutes": {
+            "type": "integer",
+            "maximum": 10080.0,
+            "minimum": 5.0,
+            "title": "Interval Minutes",
+            "default": 60
+          },
+          "weekdays": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Weekdays"
+          },
+          "window_start": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Window Start"
+          },
+          "window_end": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Window End"
+          },
+          "cap": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Cap",
+            "default": 5
+          },
+          "scope": {
+            "type": "string",
+            "enum": [
+              "portfolio",
+              "watchlist",
+              "both"
+            ],
+            "title": "Scope",
+            "default": "portfolio"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "PolicyInput"
+      },
+      "PolicyOut": {
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Revision",
+            "default": 0
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "default": false
+          },
+          "timezone": {
+            "type": "string",
+            "title": "Timezone",
+            "default": "UTC"
+          },
+          "schedule_kind": {
+            "type": "string",
+            "enum": [
+              "legacy",
+              "daily",
+              "interval",
+              "manual"
+            ],
+            "title": "Schedule Kind",
+            "default": "manual"
+          },
+          "local_time": {
+            "type": "string",
+            "title": "Local Time",
+            "default": "06:00"
+          },
+          "interval_minutes": {
+            "type": "integer",
+            "maximum": 10080.0,
+            "minimum": 5.0,
+            "title": "Interval Minutes",
+            "default": 60
+          },
+          "weekdays": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Weekdays"
+          },
+          "window_start": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Window Start"
+          },
+          "window_end": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Window End"
+          },
+          "cap": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Cap",
+            "default": 5
+          },
+          "scope": {
+            "type": "string",
+            "enum": [
+              "portfolio",
+              "watchlist",
+              "both"
+            ],
+            "title": "Scope",
+            "default": "portfolio"
+          },
+          "process_key": {
+            "type": "string",
+            "title": "Process Key"
+          },
+          "next_runs": {
+            "items": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "type": "array",
+            "title": "Next Runs"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "process_key"
+        ],
+        "title": "PolicyOut"
+      },
       "PortfolioImportOut": {
         "properties": {
           "counts": {
@@ -4328,6 +6657,27 @@
       },
       "PortfolioOut": {
         "properties": {
+          "accounts": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Accounts"
+          },
+          "selected_account": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Selected Account"
+          },
+          "valuation_meta": {
+            "$ref": "#/components/schemas/DataMeta"
+          },
           "as_of": {
             "anyOf": [
               {
@@ -4405,6 +6755,77 @@
       },
       "PositionOut": {
         "properties": {
+          "instrument_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Instrument Id"
+          },
+          "account_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Account Id"
+          },
+          "report_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Report Date"
+          },
+          "exchange": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exchange"
+          },
+          "identity_status": {
+            "type": "string",
+            "title": "Identity Status",
+            "default": "unresolved"
+          },
+          "latest_close": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Close"
+          },
+          "price_meta": {
+            "$ref": "#/components/schemas/DataMeta"
+          },
+          "metrics": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/MetricValue"
+            },
+            "type": "object",
+            "title": "Metrics"
+          },
           "symbol": {
             "type": "string",
             "title": "Symbol"
@@ -4545,8 +6966,44 @@
         ],
         "title": "PreviousRun"
       },
+      "ProposalAnalysisLink": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "symbol": {
+            "type": "string",
+            "title": "Symbol"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "symbol",
+          "status"
+        ],
+        "title": "ProposalAnalysisLink"
+      },
       "ProposalCreate": {
         "properties": {
+          "request_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Request Id"
+          },
           "symbols": {
             "items": {
               "type": "string"
@@ -4614,6 +7071,18 @@
       },
       "ProposalOut": {
         "properties": {
+          "request_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Request Id"
+          },
           "symbols": {
             "items": {
               "type": "string"
@@ -4689,6 +7158,38 @@
             ],
             "title": "Verdict"
           },
+          "verdict_result": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ProposalResult"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error_code": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "analysis_failed",
+                  "invalid_result"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Code"
+          },
+          "analysis_links": {
+            "items": {
+              "$ref": "#/components/schemas/ProposalAnalysisLink"
+            },
+            "type": "array",
+            "title": "Analysis Links"
+          },
           "signal_id": {
             "anyOf": [
               {
@@ -4743,6 +7244,76 @@
         ],
         "title": "ProposalOut"
       },
+      "ProposalResult": {
+        "properties": {
+          "verdict": {
+            "type": "string",
+            "enum": [
+              "supports",
+              "partly",
+              "contradicts",
+              "insufficient"
+            ],
+            "title": "Verdict"
+          },
+          "summary": {
+            "type": "string",
+            "maxLength": 900,
+            "minLength": 1,
+            "title": "Summary"
+          },
+          "key_points": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 5,
+            "title": "Key Points"
+          },
+          "risks": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 4,
+            "title": "Risks"
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "up",
+              "down",
+              "neutral"
+            ],
+            "title": "Direction"
+          },
+          "horizon": {
+            "type": "string",
+            "enum": [
+              "days",
+              "weeks",
+              "months",
+              "years"
+            ],
+            "title": "Horizon"
+          },
+          "strength": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Strength"
+          }
+        },
+        "type": "object",
+        "required": [
+          "verdict",
+          "summary",
+          "direction",
+          "horizon",
+          "strength"
+        ],
+        "title": "ProposalResult"
+      },
       "Provenance": {
         "properties": {
           "source": {
@@ -4788,6 +7359,19 @@
           "portfolio"
         ],
         "title": "RadarView"
+      },
+      "RestoreWatchlist": {
+        "properties": {
+          "expected_revision": {
+            "type": "integer",
+            "title": "Expected Revision"
+          }
+        },
+        "type": "object",
+        "required": [
+          "expected_revision"
+        ],
+        "title": "RestoreWatchlist"
       },
       "ReviewOut": {
         "properties": {
@@ -4991,6 +7575,26 @@
           "values"
         ],
         "title": "RuleHitOut"
+      },
+      "RunInput": {
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Revision"
+          },
+          "outside_window": {
+            "type": "boolean",
+            "title": "Outside Window",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "revision"
+        ],
+        "title": "RunInput"
       },
       "ServiceId": {
         "type": "string",
@@ -6139,6 +8743,101 @@
         ],
         "title": "TrackOrigin"
       },
+      "TrackOutcome": {
+        "properties": {
+          "signal_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Signal Id"
+          },
+          "symbol": {
+            "type": "string",
+            "title": "Symbol"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "return_pct": {
+            "type": "string",
+            "title": "Return Pct"
+          },
+          "alpha_pct": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alpha Pct"
+          },
+          "benchmark": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Benchmark"
+          }
+        },
+        "type": "object",
+        "required": [
+          "signal_id",
+          "symbol",
+          "created_at",
+          "kind",
+          "source",
+          "return_pct",
+          "alpha_pct",
+          "benchmark"
+        ],
+        "title": "TrackOutcome"
+      },
+      "TrackOutcomePage": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/TrackOutcome"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "offset",
+          "limit"
+        ],
+        "title": "TrackOutcomePage"
+      },
       "TrackRecordOut": {
         "properties": {
           "horizon_days": {
@@ -6222,6 +8921,30 @@
             },
             "type": "array",
             "title": "Calibration"
+          },
+          "created_from": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created From"
+          },
+          "created_to": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created To"
           }
         },
         "type": "object",
@@ -6436,6 +9159,70 @@
           "id": {
             "type": "integer",
             "title": "Id"
+          },
+          "instrument_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Instrument Id"
+          },
+          "exchange": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exchange"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency"
+          },
+          "identity_status": {
+            "type": "string",
+            "title": "Identity Status",
+            "default": "unresolved"
+          },
+          "change_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Change Pct"
+          },
+          "price_meta": {
+            "$ref": "#/components/schemas/DataMeta"
+          },
+          "metrics": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/MetricValue"
+            },
+            "type": "object",
+            "title": "Metrics"
+          },
+          "revision": {
+            "type": "integer",
+            "title": "Revision",
+            "default": 1
           },
           "symbol": {
             "type": "string",

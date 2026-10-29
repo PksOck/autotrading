@@ -16,6 +16,15 @@ Format: `ADR-xxxx-kratek-naslov.md`, statusi: `predlagano` · `sprejeto` · `zam
 | [ADR-0009](./ADR-0009-napredni-ux-motion.md) | Napreden UX: gibanje, povezani pogledi, pregledi | sprejeto |
 | [ADR-0010](./ADR-0010-vstopi-pravila-ta-lib.md) | Vstopi: pravila s TA-Lib, signal samo z nedotaknjeno tezo | sprejeto |
 | [ADR-0011](./ADR-0011-storitev-agentov.md) | Globoka analiza v ločeni storitvi `agents`, TradingAgents bere posnetek naše baze | sprejeto |
+| [ADR-0012](./ADR-0012-tedenski-pregled-tez.md) | Tedenski pregled tez | sprejeto |
+| [ADR-0013](./ADR-0013-oblikovanje-android-windows.md) | Oblikovanje Android/Windows | sprejeto |
+| [ADR-0014](./ADR-0014-obeti-po-obdobjih.md) | Obeti po obdobjih | sprejeto |
+| [ADR-0015](./ADR-0015-kalibracija-utezi.md) | Kalibracija uteži s potrditvijo | sprejeto |
+| [ADR-0016](./ADR-0016-vitka-zaporedna-analiza.md) | Vitka zaporedna analiza | sprejeto |
+| [ADR-0017](./ADR-0017-metapodatki-in-read-modeli.md) | Metapodatki metrik in skupni bralni modeli | sprejeto v pregledni veji |
+| [ADR-0018](./ADR-0018-preference-tabel.md) | Preference tabel in stanje v URL | sprejeto v pregledni veji |
+| [ADR-0019](./ADR-0019-politike-procesov.md) | Politike procesov in paketnih analiz | sprejeto v pregledni veji |
+| [ADR-0020](./ADR-0020-dividende-evidence-in-pokritost.md) | Dividendne evidence in pokritost | sprejeto; živi XML še nepreverjen |
 
 ## Predloga
 

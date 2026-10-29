@@ -82,9 +82,11 @@ function ProposalTable({ set }: { set: WeightSetOut }) {
 /** BL-103: proposed strength weights per group; nothing changes until you confirm (ADR-0015). */
 export function WeightProposal({ horizonDays }: { horizonDays: number }) {
   const t = useTranslations("trackRecord.weights");
+  const ux = useTranslations("researchUx");
   const format = useFormatter();
   const locale = useAppLocale();
-  const { data } = useCalibration();
+  const calibration = useCalibration();
+  const { data } = calibration;
   const propose = useProposeWeights();
   const confirm = useConfirmWeights();
   const reject = useRejectWeights();
@@ -101,6 +103,9 @@ export function WeightProposal({ horizonDays }: { horizonDays: number }) {
     confirm.reset();
     reject.reset();
   };
+
+  if (calibration.isLoading) return <div className="card h-24 animate-pulse" aria-busy="true"/>;
+  if (calibration.error) return <div className="card p-4" role="alert"><p>{ux("calibrationUnavailable")}</p><button className="min-h-10 text-accent" onClick={() => void calibration.refetch()}>{ux("retry")}</button></div>;
 
   return (
     <section className="flex flex-col gap-3" aria-labelledby="weights-title">

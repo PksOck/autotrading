@@ -6,9 +6,10 @@ comes from here; the UI only formats it (AGENTS.md rule 3).
 
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import date, datetime
 from decimal import Decimal
 from typing import Literal
+from uuid import UUID
 
 from pydantic import AwareDatetime, BaseModel, Field
 
@@ -72,6 +73,26 @@ class TrackRecordOut(BaseModel):
     by_origin: list[TrackOrigin]
     by_group: list[TrackGroup]
     calibration: list[CalibrationBucket]
+    created_from: date | None = None
+    created_to: date | None = None
+
+
+class TrackOutcome(BaseModel):
+    signal_id: UUID
+    symbol: str
+    created_at: AwareDatetime
+    kind: str
+    source: str
+    return_pct: Decimal
+    alpha_pct: Decimal | None
+    benchmark: str | None
+
+
+class TrackOutcomePage(BaseModel):
+    items: list[TrackOutcome]
+    total: int
+    offset: int
+    limit: int
 
 
 def origin_of(source: str, proposal_id: object | None) -> Origin:

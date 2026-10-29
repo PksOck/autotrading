@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/common/PageHeader";
 import { TrackRecord } from "@/components/track-record/TrackRecord";
+import { Suspense } from "react";
 
 /** SCR-10 Uspešnost (BL-102). */
 export default async function TrackRecordPage() {
@@ -8,7 +9,7 @@ export default async function TrackRecordPage() {
   return (
     <>
       <PageHeader title={t("title")} kicker="SCR-10" description={t("subtitle")} />
-      <TrackRecord />
+      <Suspense><TrackRecord /></Suspense>
     </>
   );
 }

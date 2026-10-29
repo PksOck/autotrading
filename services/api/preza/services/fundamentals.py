@@ -6,7 +6,7 @@ from typing import Any
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from preza.domain.valuation import ValuationBand, summary_score, valuation_bands
-from preza.fundamentals.finnhub import FinnhubFundamentals
+from preza.fundamentals.finnhub import FinnhubFundamentals, FundamentalsUnavailableError
 from preza.models import Fundamentals, Instrument
 
 
@@ -18,8 +18,19 @@ async def refresh_fundamentals(
     Raises FundamentalsUnavailableError from the client; the caller decides how to record it.
     """
     if instrument.kind == "etf":
+        from preza.services.portfolio import record_sync
+
+        await record_sync(
+            session, f"fundamentals:{instrument.id}", "skipped", "unsupported_instrument"
+        )
         return None
-    snap = await client.fetch(instrument.symbol)
+    from preza.services.portfolio import record_sync
+
+    try:
+        snap = await client.fetch(instrument.symbol)
+    except FundamentalsUnavailableError as exc:
+        await record_sync(session, f"fundamentals:{instrument.id}", "failed", str(exc))
+        raise
     history = {
         metric: [[d.isoformat(), v] for d, v in points] for metric, points in snap.history.items()
     }
@@ -29,10 +40,12 @@ async def refresh_fundamentals(
         session.add(row)
     row.as_of = snap.as_of
     row.metrics = dict(snap.metrics)
+    row.metrics_meta = dict(snap.metadata)
     row.history = history
     row.source = snap.source
     row.fetched_at = datetime.now(UTC)
     await session.flush()
+    await record_sync(session, f"fundamentals:{instrument.id}", "ok", "stored")
     return row
 
 

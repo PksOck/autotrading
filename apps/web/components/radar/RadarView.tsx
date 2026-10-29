@@ -5,8 +5,12 @@ import { useFormatter, useTranslations } from "next-intl";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { EntityLink } from "@/components/common/EntityLink";
+import { ResearchDetail } from "@/components/common/ResearchDetail";
 import { TranslatedText } from "@/components/common/TranslatedText";
 import { useRadarEvents } from "@/lib/api/hooks";
+import { useRadarEvent } from "@/lib/api/research";
+import { ApiError } from "@/lib/api/client";
+import { eventConfirmation } from "@/lib/research-state";
 import type { EventOut, EventType, RadarView as View } from "@/lib/api/types";
 import { cn } from "@/lib/cn";
 import { formatNumber } from "@/lib/format";
@@ -38,6 +42,7 @@ function ScoreBar({ score }: { score: number | null }) {
 /** SCR-02 Radar (BL-049): three views, filters, live list (MO-03) and detail panel. */
 export function RadarView() {
   const t = useTranslations();
+  const ux = useTranslations("researchUx");
   const format = useFormatter();
   const locale = useAppLocale();
   const router = useRouter();
@@ -45,9 +50,13 @@ export function RadarView() {
   const params = useSearchParams();
   const reduceMotion = useReducedMotion();
   const view = (VIEWS.includes(params.get("view") as View) ? params.get("view") : "discover") as View;
-  const selectedId = Number(params.get("event")) || null;
-  const [filter, setFilter] = useState<EventType | "all">("all");
-  const [minScore, setMinScore] = useState(0);
+  const rawId = params.get("event");
+  const selectedId = rawId !== null && /^\d+$/.test(rawId) && Number(rawId) > 0 ? Number(rawId) : null;
+  const invalidId = rawId !== null && selectedId === null;
+  const filter = FILTERS.includes(params.get("type") as EventType) ? params.get("type") as EventType : "all";
+  const rawScore = Number(params.get("min_score") ?? 0);
+  const minScore = Number.isFinite(rawScore) ? Math.min(.9, Math.max(0, rawScore)) : 0;
+  const detail = useRadarEvent(selectedId);
   const { data, isLoading, error } = useRadarEvents(view, minScore);
   const hovered = useFocusStore((s) => s.hovered);
   const setHovered = useFocusStore((s) => s.setHovered);
@@ -72,20 +81,23 @@ export function RadarView() {
       ),
     [data, filter],
   );
-  const selected = events.find((e) => e.id === selectedId) ?? events[0] ?? null;
+  const selected = rawId !== null ? detail.data?.id === selectedId ? detail.data : null : events[0] ?? null;
 
   const setParam = (key: string, value: string | null) => {
     const next = new URLSearchParams(params.toString());
     if (value === null) next.delete(key);
     else next.set(key, value);
     if (key === "view") next.delete("event");
-    router.replace(next.size ? `${pathname}?${next}` : pathname, { scroll: false });
+    const href = next.size ? `${pathname}?${next}` : pathname;
+    if (key === "event" && value !== null) router.push(href, {scroll:false});
+    else router.replace(href, {scroll:false});
   };
 
   const badge = (e: EventOut) =>
     e.is_rumor
       ? "border border-dashed border-rumor bg-rumor-soft text-rumor"
-      : "border border-pos bg-pos-soft text-pos";
+      : eventConfirmation(e) === "verified" ? "border border-pos bg-pos-soft text-pos" : "border border-border bg-surface-2 text-text-2";
+  const confirmation = (e: EventOut) => e.is_rumor ? t("radar.rumor") : ux(eventConfirmation(e));
 
   return (
     <div className="flex flex-col gap-5">
@@ -113,7 +125,7 @@ export function RadarView() {
             key={f}
             type="button"
             aria-pressed={filter === f}
-            onClick={() => setFilter(f)}
+            onClick={() => setParam("type", f === "all" ? null : f)}
             className={cn(
               "h-9 rounded-full border border-border px-3 text-[13px] text-text-2 hover:bg-surface-2",
               filter === f && "border-accent bg-accent-soft font-medium text-accent",
@@ -130,7 +142,7 @@ export function RadarView() {
             max={0.9}
             step={0.1}
             value={minScore}
-            onChange={(e) => setMinScore(Number(e.target.value))}
+            onChange={(e) => setParam("min_score", e.target.value)}
             className="accent-[var(--accent)]"
           />
           <span className="num w-8 text-text">{formatNumber(locale, minScore, 1)}</span>
@@ -182,7 +194,7 @@ export function RadarView() {
                             <span className="rounded-full bg-surface-2 px-2 text-xs leading-5 text-text-2">{t(`radar.types.${event.event_type}`)}</span>
                           )}
                           <span className={cn("rounded-full px-2 text-xs leading-5 font-medium", badge(event))}>
-                            {event.is_rumor ? t("radar.rumor") : t("radar.confirmed")}
+                            {confirmation(event)}
                           </span>
                         </span>
                         <TranslatedText className="text-text" original={event.summary ?? event.title} translations={event.summary ? event.summary_translations : undefined} />
@@ -200,7 +212,13 @@ export function RadarView() {
           </ul>
         </section>
 
-        <aside className="card flex flex-col gap-4 p-5 lg:sticky lg:top-24 lg:self-start" aria-label={t("radar.detailLabel")}>
+        <ResearchDetail open={rawId !== null} close={() => setParam("event", null)} title={t("radar.detailLabel")}>
+          {rawId !== null && <button className="min-h-10 text-left text-[13px] text-accent" onClick={() => setParam("event", null)}>{ux("clearSelection")}</button>}
+          {selectedId !== null && detail.isLoading && <div className="h-40 animate-pulse bg-surface-2" aria-busy="true"/>}
+          {(invalidId || detail.error) && <div role="alert" className="text-warn">
+            <p>{invalidId ? ux("invalidLink") : detail.error instanceof ApiError && [404,422].includes(detail.error.status) ? ux("notFound") : t("system.unreachable")}</p>
+            {!invalidId && !(detail.error instanceof ApiError && [404,422].includes(detail.error.status)) && <button onClick={() => void detail.refetch()} className="min-h-10 text-accent">{ux("retry")}</button>}
+          </div>}
           <AnimatePresence mode="wait">
             {selected ? (
               <motion.div
@@ -216,7 +234,7 @@ export function RadarView() {
                     <EntityLink key={s} entity={{ kind: "instrument", id: s }} className="text-lg" />
                   ))}
                   <span className={cn("rounded-full px-2 text-xs leading-5 font-medium", badge(selected))}>
-                    {selected.is_rumor ? t("radar.rumor") : t("radar.confirmed")}
+                    {confirmation(selected)}
                   </span>
                 </div>
                 <h2 className="text-base leading-6 font-semibold">{selected.title}</h2>
@@ -264,10 +282,10 @@ export function RadarView() {
                 </div>
               </motion.div>
             ) : (
-              <p className="text-text-3">{t("radar.selectHint")}</p>
+              !rawId && <p className="text-text-3">{t("radar.selectHint")}</p>
             )}
           </AnimatePresence>
-        </aside>
+        </ResearchDetail>
       </div>
     </div>
   );

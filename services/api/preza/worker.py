@@ -7,10 +7,12 @@ from datetime import UTC, datetime, timedelta
 from typing import Any, ClassVar
 
 import httpx
-from arq import cron
+from arq import cron, func
 from arq.connections import RedisSettings
+from fastapi import HTTPException
 from sqlalchemy import select
 
+from preza.automation_worker import automation_tick, execute_process, managed
 from preza.broker.flex import FlexClient, FlexError
 from preza.config import get_settings
 from preza.db import get_sessionmaker
@@ -39,6 +41,7 @@ SEC_TICKERS_URL = "https://www.sec.gov/files/company_tickers.json"
 log = logging.getLogger(__name__)
 
 
+@managed
 async def sync_flex(ctx: dict[str, Any]) -> str:
     settings = get_settings()
     if not (settings.ibkr_flex_token and settings.ibkr_flex_query_id):
@@ -59,6 +62,7 @@ async def sync_flex(ctx: dict[str, Any]) -> str:
     return "ok"
 
 
+@managed
 async def refresh_bars(ctx: dict[str, Any]) -> str:
     """Tops up daily bars for everything the user holds or watches."""
     service = get_bars_service()
@@ -112,6 +116,7 @@ async def _cik_map(ctx: dict[str, Any]) -> dict[str, str] | None:
     return ctx.get("cik_map")
 
 
+@managed
 async def radar(ctx: dict[str, Any]) -> str:
     settings = get_settings()
     async with get_sessionmaker()() as session:
@@ -186,13 +191,19 @@ async def _deep_run(session: Any, proposal: Proposal) -> uuid.UUID | None:
     if await limit_reached(session, get_settings()):
         log.info("deep proposal %s: daily analysis limit reached, quick verdict only", proposal.id)
         return None
-    run = await new_run(
-        session,
-        instrument,
-        get_settings(),
-        hypothesis=proposal.hypothesis or None,
-        proposal_id=proposal.id,
-    )
+    try:
+        run = await new_run(
+            session,
+            instrument,
+            get_settings(),
+            hypothesis=proposal.hypothesis or None,
+            proposal_id=proposal.id,
+        )
+    except HTTPException as exc:
+        if exc.status_code not in {409, 429}:
+            raise
+        log.info("deep proposal %s: acceptance blocked (%s)", proposal.id, exc.detail)
+        return None
     return run.id
 
 
@@ -208,6 +219,7 @@ async def _benchmark_bars(session: Any) -> None:
     await get_bars_service().refresh(session, benchmark)
 
 
+@managed
 async def entries(ctx: dict[str, Any]) -> str:
     """Entry candidates after the US close and the bars refresh (M3)."""
     settings = get_settings()
@@ -227,6 +239,7 @@ async def entries(ctx: dict[str, Any]) -> str:
     return f"evaluated={run.evaluated} active={run.active} signals={run.signals}"
 
 
+@managed
 async def fundamentals(ctx: dict[str, Any]) -> str:
     """Weekly valuation metrics for held and watched stocks (BL-061)."""
     settings = get_settings()
@@ -249,6 +262,7 @@ async def fundamentals(ctx: dict[str, Any]) -> str:
     return f"ok={ok} failed={failed}"
 
 
+@managed
 async def outcomes(ctx: dict[str, Any]) -> str:
     async with get_sessionmaker()() as session:
         inserted = await compute_outcomes(session, get_settings().benchmark_symbol)
@@ -270,16 +284,20 @@ async def _telegram_job(job: Any) -> str:
     return f"sent={count}"
 
 
+@managed
 async def notify(ctx: dict[str, Any]) -> str:
     return await _telegram_job(notify_new_signals)
 
 
+@managed
 async def digest(ctx: dict[str, Any]) -> str:
     return await _telegram_job(morning_digest)
 
 
 class WorkerSettings:
     functions: ClassVar[list[Any]] = [
+        func(execute_process, keep_result=0),
+        automation_tick,
         sync_flex,
         refresh_bars,
         refresh_instrument_bars,
@@ -293,6 +311,7 @@ class WorkerSettings:
         outcomes,
     ]
     cron_jobs: ClassVar[list[Any]] = [
+        cron(automation_tick, minute=set(range(60))),
         cron(sync_flex, hour={5}, minute={15}),  # after IBKR prepares the previous day (~07:15 CET)
         cron(refresh_bars, weekday={0, 1, 2, 3, 4}, hour={21}, minute={30}),  # after US close
         cron(radar, minute={2, 17, 32, 47}),  # every 15 minutes

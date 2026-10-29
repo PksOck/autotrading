@@ -2,6 +2,10 @@
 
 Povzetek sprejetega načrta. Podrobna utemeljitev je v [`docs/research/2026-10-22-zasnova-resitve.md`](./docs/research/2026-10-22-zasnova-resitve.md), primerjava kandidatov v [`docs/research/2026-10-22-analiza-kandidatov.md`](./docs/research/2026-10-22-analiza-kandidatov.md), izkušnje iz starega projekta v [`docs/research/2026-10-22-trading-list-prevzem.md`](./docs/research/2026-10-22-trading-list-prevzem.md).
 
+## Trenutno: pregled UX/UI (S-017)
+
+Pregledna nadgradnja je na ločenem demu :3100. **:3000 ostane nespremenjen do nove izrecne potrditve uporabnika.** Obseg, testi in odprte dopolnitve so v [pregledu sprememb](./docs/implementation/2026-10-29-pregled-sprememb.md); naslednje naloge BL-193/194 in BL-202–205. Pripravljene Docker slike niso dovoljenje za zagon na :3000.
+
 ## 1. Cilj
 
 Zaznati **(a) priložnost iz novic, filingov in špekulacij** ter **(b) dobro (ponovno) vstopno točko** za kakovostne delnice in ETF-je. Uporabnik je dolgoročni vlagatelj pri IBKR, ki občasno kupi kratkoročno ali uporabi opcije. Podatki v realnem času niso potrebni.

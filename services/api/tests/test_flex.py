@@ -16,6 +16,26 @@ IN_PROGRESS = (
     "<FlexStatementResponse><Status>Warn</Status><ErrorCode>1019</ErrorCode>"
     "<ErrorMessage>Statement generation in progress.</ErrorMessage></FlexStatementResponse>"
 )
+
+
+@pytest.mark.parametrize(
+    "rows",
+    [
+        '<OpenPosition symbol="MSFT" currency="USD" position="invalid" levelOfDetail="SUMMARY"/>',
+        '<OpenPosition symbol="MSFT" currency="USD" position="1" levelOfDetail="LOT"/>',
+    ],
+)
+def test_incomplete_position_sections_cannot_claim_empty_snapshot(rows: str) -> None:
+    xml = (
+        "<FlexQueryResponse><FlexStatements>"
+        '<FlexStatement accountId="TEST" toDate="20261029">'
+        f"<OpenPositions>{rows}</OpenPositions>"
+        "</FlexStatement></FlexStatements></FlexQueryResponse>"
+    )
+    with pytest.raises(FlexError):
+        parse_statement(xml)
+
+
 BAD_TOKEN = (
     "<FlexStatementResponse><Status>Fail</Status><ErrorCode>1015</ErrorCode>"
     "<ErrorMessage>Token is invalid.</ErrorMessage></FlexStatementResponse>"

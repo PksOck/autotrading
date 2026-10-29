@@ -13,7 +13,7 @@ import { formatNumber } from "@/lib/format";
 import { listItem, spring } from "@/lib/motion";
 import { useAppLocale } from "@/lib/use-app-locale";
 
-const TABS: SignalStatus[] = ["new", "watching", "accepted", "dismissed"];
+const TABS: SignalStatus[] = ["new", "watching", "accepted", "dismissed", "expired"];
 const KIND_STYLE: Record<string, string> = {
   catalyst: "bg-pos-soft text-pos",
   entry: "bg-accent-soft text-accent",
@@ -30,7 +30,8 @@ function SignalCard({ signal }: { signal: SignalOut }) {
 
   const setStatus = async (status: SignalStatus, message: string) => {
     const previous = signal.status;
-    await update.mutateAsync({ id: signal.id, status });
+    try { await update.mutateAsync({ id: signal.id, status }); }
+    catch { toast.error(t("researchUx.actionFailed")); return; }
     toast(message, {
       action: { label: t("proposal.undo"), onClick: () => update.mutate({ id: signal.id, status: previous }) },
     });
@@ -84,11 +85,14 @@ function SignalCard({ signal }: { signal: SignalOut }) {
           {format.relativeTime(new Date(signal.created_at), new Date())}
           {signal.expires_at && ` · ${t("signalsPage.expires", { time: format.relativeTime(new Date(signal.expires_at), new Date()) })}`}
         </span>
-        <span className="ml-auto flex flex-wrap gap-2">
+        <span className="ml-auto flex flex-wrap gap-2" aria-busy={update.isPending}>
+          {update.isPending && <span role="status">{t("researchUx.pending")}</span>}
+          <EntityLink entity={{kind:"signal", id:signal.id}}>{t("signalsPage.evidence")}</EntityLink>
+          {signal.status !== "expired" && <>
           {signal.status !== "accepted" && (
             <button
               type="button"
-              disabled={signal.is_rumor}
+              disabled={signal.is_rumor || update.isPending}
               title={signal.is_rumor ? t("signalsPage.rumorCannotAccept") : undefined}
               onClick={() => setStatus("accepted", t("signalsPage.accepted"))}
               className="h-9 rounded-md bg-accent px-3 font-medium text-on-accent hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
@@ -97,15 +101,16 @@ function SignalCard({ signal }: { signal: SignalOut }) {
             </button>
           )}
           {signal.status !== "watching" && (
-            <button type="button" onClick={() => setStatus("watching", t("signalsPage.watched"))} className="h-9 rounded-md border border-border px-3 font-medium hover:bg-surface-2">
+            <button type="button" disabled={update.isPending} onClick={() => setStatus("watching", t("signalsPage.watched"))} className="h-9 rounded-md border border-border px-3 font-medium hover:bg-surface-2 disabled:opacity-40">
               {t("action.watch")}
             </button>
           )}
           {signal.status !== "dismissed" && (
-            <button type="button" onClick={() => setStatus("dismissed", t("signalsPage.dismissed"))} className="h-9 rounded-md border border-border px-3 font-medium hover:bg-surface-2">
+            <button type="button" disabled={update.isPending} onClick={() => setStatus("dismissed", t("signalsPage.dismissed"))} className="h-9 rounded-md border border-border px-3 font-medium hover:bg-surface-2 disabled:opacity-40">
               {t("action.dismiss")}
             </button>
           )}
+          </>}
         </span>
       </div>
     </motion.li>
@@ -129,10 +134,10 @@ export function SignalsInbox() {
             key={key}
             role="tab"
             aria-selected={tab === key}
-            onClick={() => router.replace(key === "new" ? pathname : `${pathname}?status=${key}`, { scroll: false })}
+            onClick={() => {const next = new URLSearchParams(params.toString()); next.set("status",key); router.replace(`${pathname}?${next}`, {scroll:false});}}
             className={cn("relative h-11 px-4 font-medium text-text-2", tab === key && "text-accent")}
           >
-            {t(`signalsPage.tabs.${key}`)}
+            {key === "expired" ? t("researchUx.expired") : t(`signalsPage.tabs.${key}`)}
             {tab === key && <motion.span layoutId="signals-tab" transition={spring.snappy} className="absolute inset-x-0 -bottom-px h-0.5 bg-accent" />}
           </button>
         ))}

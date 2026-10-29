@@ -58,6 +58,7 @@ services:
       dockerfile: apps/web/Dockerfile
     environment:
       API_URL: http://api:8000
+      PREZA_DEMO: "1"
     ports:
       - "127.0.0.1:3100:3000"
     depends_on:

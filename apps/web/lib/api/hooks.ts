@@ -78,8 +78,11 @@ export const useSystemStatus = () =>
     refetchInterval: 30_000,
   });
 
-export const usePortfolio = () =>
-  useQuery({ queryKey: keys.portfolio, queryFn: () => api.get<PortfolioOut>("/portfolio") });
+export const usePortfolio = (query = "") =>
+  useQuery({
+    queryKey: [...keys.portfolio, query],
+    queryFn: () => api.get<PortfolioOut>(`/portfolio${query ? `?${query}` : ""}`),
+  });
 
 export function usePortfolioImport() {
   const client = useQueryClient();
@@ -88,12 +91,20 @@ export function usePortfolioImport() {
       if (file.size > 10 * 1024 * 1024) throw new ApiError(413, "flex_too_large");
       return api.raw<PortfolioImportOut>("/portfolio/import", await file.text(), "application/xml");
     },
-    onSuccess: () => client.invalidateQueries({ queryKey: keys.portfolio }),
+    onSuccess: async () => {
+      await Promise.all([
+        client.invalidateQueries({ queryKey: keys.portfolio }),
+        client.invalidateQueries({ queryKey: ["dividends"] }),
+      ]);
+    },
   });
 }
 
-export const useWatchlist = () =>
-  useQuery({ queryKey: keys.watchlist, queryFn: () => api.get<WatchlistOut[]>("/watchlist") });
+export const useWatchlist = (query = "") =>
+  useQuery({
+    queryKey: [...keys.watchlist, query],
+    queryFn: () => api.get<WatchlistOut[]>(`/watchlist${query ? `?${query}` : ""}`),
+  });
 
 export const useInstrument = (symbol: string) =>
   useQuery({
@@ -136,7 +147,18 @@ export function useWatchlistMutations() {
       onSuccess: invalidate,
     }),
     remove: useMutation({
-      mutationFn: (id: number) => api.send<void>(`/watchlist/${id}`, "DELETE"),
+      mutationFn: (input: number | { id: number; revision: number }) =>
+        api.send<void>(
+          typeof input === "number"
+            ? `/watchlist/${input}`
+            : `/watchlist/${input.id}?revision=${input.revision}`,
+          "DELETE",
+        ),
+      onSuccess: invalidate,
+    }),
+    restore: useMutation({
+      mutationFn: ({ id, revision }: { id: number; revision: number }) =>
+        api.send<WatchlistOut>(`/watchlist/${id}/restore`, "POST", { expected_revision: revision }),
       onSuccess: invalidate,
     }),
   };
@@ -501,7 +523,10 @@ export const useCalibration = () =>
 /** Weight proposals change nothing until confirmed (ADR-0015). */
 function useCalibrationMutation<A>(mutationFn: (arg: A) => Promise<WeightSetOut>) {
   const client = useQueryClient();
-  return useMutation({ mutationFn, onSettled: () => client.invalidateQueries({ queryKey: keys.calibration }) });
+  return useMutation({
+    mutationFn,
+    onSettled: () => client.invalidateQueries({ queryKey: keys.calibration }),
+  });
 }
 
 export const useProposeWeights = () =>
@@ -511,8 +536,12 @@ export const useProposeWeights = () =>
 
 export const useConfirmWeights = () =>
   useCalibrationMutation((id: string) =>
-    api.send<WeightSetOut>(`/calibration/${encodeURIComponent(id)}/confirm`, "POST", { confirm: true }),
+    api.send<WeightSetOut>(`/calibration/${encodeURIComponent(id)}/confirm`, "POST", {
+      confirm: true,
+    }),
   );
 
 export const useRejectWeights = () =>
-  useCalibrationMutation((id: string) => api.send<WeightSetOut>(`/calibration/${encodeURIComponent(id)}/reject`, "POST"));
+  useCalibrationMutation((id: string) =>
+    api.send<WeightSetOut>(`/calibration/${encodeURIComponent(id)}/reject`, "POST"),
+  );

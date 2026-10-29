@@ -4,6 +4,22 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 
 ---
 
+## S-017 · 2026-10-29 · Pregledna nadgradnja in ločen demo
+
+**Cilj:** Izvesti potrjene nadgradnje in pripraviti pregled, ob zadnji izrecni omejitvi uporabnika brez prepisa okolja :3000.
+
+**Narejeno:** BL-195–201 v veji `feat/uxui-demo-upgrade`: skupni DataMeta/read modeli in nastavljive tabele; zadnji popolni posnetek po računu; filtri zadnjih uspešnih analiz; razumljivi predlogi/retry; podrobnosti Radar/Vstopi/Signali; dividendne evidence in pokritost; politike procesov, urniki, globalna pavza, paketni predogled/kvota/sledi; Pregled iz baze ter varna dopolnitev identitete. Migracije 0016–0018 in generirani OpenAPI/TS. Astra je pregledala integracijo; popravljeni ročni zagoni ob globalni pavzi, izrecna izjema okna, časovna vez odprtih dividend ter nevarnost nepopolnih pozicijskih vrstic. Docker demo :3100 ima ločene sintetične scenarije.
+
+**Preverjanje:** API 521, agents 218, web 143 uspešnih testov; Playwright 54 uspešnih/10 predvideno preskočenih/0 neuspešnih. TypeScript, ESLint, Ruff/mypy in SL/EN (1162 ključev). Produkcijska gradnja spletnega dela v Linux Dockerju; Windows SWC omejitev ostaja. Ročno preverjene nastavitve in watchlista pri širini 768 brez prelivanja celotne strani. Natančen obseg in omejitve: [pregled sprememb](./docs/implementation/2026-10-29-pregled-sprememb.md).
+
+**Odločitve:** ADR-0017–0020 zapisani za pregledno izvedbo. Novi paket analiz privzeto izklopljen, obstoječi procesi ohranijo svoj urnik. Uporabnik je pred objavo izrecno zahteval pregled in novo potrditev: **:3000 ne posodabljaj**, niti z že zgrajenimi slikami. Preverjeno samo za branje: web/API :3000 imata prvotni sliki in čas zagona 2026-10-28. Claudov izvorni checkout ostaja nedotaknjen. Brez živih analiz ali množičnega refresha zaradi demo pregleda.
+
+**Odprto:** BL-193 živa pokritost fundamentov, BL-194 neznana vrsta/valuta; BL-202 resnični razširjeni Flex in metadata; BL-203 preostali UX ter 200-% povečava; BL-204 trajen ključ oddaje osnutka; BL-205 dodatni robovi Flex gotovine/valute. Dividendna XML pogodba je sintetično preizkušena, ne potrjena z zasebnim razširjenim izpisom. Celoten prvotni načrt zato ni označen kot v celoti zaključen.
+
+**Naslednji korak:** Uporabniški pregled :3100 in dopolnitve. Pred vsakim prenosom :3000 pridobi novo izrecno potrditev uporabnika ter preveri sočasno Claudovo vejo, aktivne analize in aktualno kopijo. Vejo in worktree ohrani.
+
+---
+
 ## S-016 · 2026-10-29 · Izvedba Vala −1: signali in podatkovna inventura
 
 **Cilj:** Po potrditvi »Ja gremo v delo« izvesti FIX-A, FIX-B in read-only UX-00 iz potrjene specifikacije.

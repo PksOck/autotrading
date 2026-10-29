@@ -71,6 +71,13 @@ function setup(data: Partial<CalibrationOut> = {}, errors: { confirm?: unknown }
 beforeEach(() => vi.clearAllMocks());
 
 describe("WeightProposal", () => {
+  it("does not present default weights when loading current weights fails", () => {
+    setup();
+    vi.mocked(useCalibration).mockReturnValue({data:undefined,error:new Error("offline"),isLoading:false,refetch:vi.fn()} as unknown as ReturnType<typeof useCalibration>);
+    const view = render(<NextIntlClientProvider locale="en" messages={en}><WeightProposal horizonDays={20}/></NextIntlClientProvider>);
+    expect(within(view.container).queryByText("No weights confirmed yet: every source counts at 1.00.")).toBeNull();
+    expect(within(view.container).getByRole("alert")).toBeVisible();
+  });
   it("starts from default weights and calculates a proposal for the chosen horizon", () => {
     setup();
     expect(screen.getByText("No weights confirmed yet: every source counts at 1.00.")).toBeVisible();

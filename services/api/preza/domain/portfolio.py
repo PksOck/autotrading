@@ -5,7 +5,9 @@ from enum import StrEnum
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from preza.domain.dividends import DividendStatement
 from preza.domain.market import InstrumentKind
+from preza.domain.metadata import DataMeta, MetricValue
 from preza.domain.types import Num
 
 
@@ -49,13 +51,30 @@ class CashIn(BaseModel):
     report_date: date
 
 
+class AccountSnapshotIn(BaseModel):
+    account_id: str
+    report_date: date
+    positions_complete: bool = False
+    cash_complete: bool = False
+
+
 class FlexStatement(BaseModel):
     positions: list[PositionIn]
     trades: list[TradeIn]
     cash: list[CashIn]
+    snapshots: list[AccountSnapshotIn] = Field(default_factory=list)
+    dividends: DividendStatement | None = None
 
 
 class PositionOut(BaseModel):
+    instrument_id: int | None = None
+    account_id: str | None = None
+    report_date: date | None = None
+    exchange: str | None = None
+    identity_status: str = "unresolved"
+    latest_close: str | None = None
+    price_meta: DataMeta = Field(default_factory=DataMeta)
+    metrics: dict[str, MetricValue] = Field(default_factory=dict)
     symbol: str
     name: str | None
     kind: InstrumentKind
@@ -77,6 +96,9 @@ class SyncInfo(BaseModel):
 
 
 class PortfolioOut(BaseModel):
+    accounts: list[str] = Field(default_factory=list)
+    selected_account: str | None = None
+    valuation_meta: DataMeta = Field(default_factory=DataMeta)
     as_of: date | None
     base_currency: str
     total_value: Num | None
@@ -116,6 +138,14 @@ class WatchlistOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+    instrument_id: int | None = None
+    exchange: str | None = None
+    currency: str | None = None
+    identity_status: str = "unresolved"
+    change_pct: Num | None = None
+    price_meta: DataMeta = Field(default_factory=DataMeta)
+    metrics: dict[str, MetricValue] = Field(default_factory=dict)
+    revision: int = 1
     symbol: str
     name: str | None
     kind: InstrumentKind

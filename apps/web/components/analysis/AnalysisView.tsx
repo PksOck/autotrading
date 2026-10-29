@@ -16,12 +16,14 @@ import type { AnalysisOut } from "@/lib/api/types";
 
 function Provenance({ run }: { run: AnalysisOut }) {
   const t = useTranslations("analysisPage.provenance");
+  const ux = useTranslations("researchUx");
   const format = useFormatter();
   const d = run.data_sources;
   const day = (v: string | null | undefined) =>
     v ? format.dateTime(new Date(v), { dateStyle: "medium" }) : t("unknown");
   return (
     <p className="text-xs leading-5 text-text-3" data-testid="analysis-provenance">
+      <span className="block font-medium">{ux("snapshot")}</span>
       {t("line", { bars: d.bars ?? t("unknown"), asOf: day(d.as_of) })}
       {" · "}
       {d.fundamentals

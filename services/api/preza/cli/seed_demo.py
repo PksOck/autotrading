@@ -462,6 +462,9 @@ async def seed_all() -> None:
     from preza.cli.seed_demo_analysis import seed_analyses
 
     await seed_analyses()
+    from preza.cli.seed_demo_ux import seed_ux_scenarios
+
+    await seed_ux_scenarios()
 
 
 def require_demo_db() -> None:

@@ -14,6 +14,7 @@ from preza.db import get_session
 from preza.domain.portfolio import PortfolioOut
 from preza.queue import enqueue
 from preza.services.portfolio import get_portfolio, record_sync, store_statement
+from preza.services.table_sort import sort_rows
 
 router = APIRouter(prefix="/portfolio", tags=["portfolio"])
 
@@ -61,7 +62,11 @@ async def import_statement(
         await record_sync(session, "flex", "failed", "flex_invalid")
         await session.commit()
         raise HTTPException(422, detail="flex_invalid") from None
-    counts = await store_statement(session, statement)
+    try:
+        counts = await store_statement(session, statement)
+    except ValueError:
+        await session.rollback()
+        raise HTTPException(422, detail="dividend_transaction_conflict") from None
     detail = "file: " + ", ".join(f"{key}={value}" for key, value in counts.items())
     await record_sync(session, "flex", "ok", detail)
     await session.commit()
@@ -74,8 +79,14 @@ async def import_statement(
 async def portfolio(
     session: Annotated[AsyncSession, Depends(get_session)],
     settings: Annotated[Settings, Depends(get_settings)],
+    account_id: str | None = None,
+    sort: str | None = None,
+    direction: str = "asc",
+    q: str | None = None,
 ) -> PortfolioOut:
-    return await get_portfolio(session, settings.base_currency)
+    result = await get_portfolio(session, settings.base_currency, account_id)
+    result.positions = sort_rows(result.positions, sort, direction, q)
+    return result
 
 
 @router.post("/sync", response_model=Queued, status_code=202)

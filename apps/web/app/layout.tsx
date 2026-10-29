@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { NextIntlClientProvider } from "next-intl";
-import { getLocale, getMessages } from "next-intl/server";
+import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import { cookies } from "next/headers";
 import type { ReactNode } from "react";
 import { Providers } from "@/components/providers";
@@ -24,6 +24,7 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const locale = await getLocale();
   const messages = await getMessages();
+  const t = await getTranslations("table");
   const stored = (await cookies()).get(THEME_COOKIE)?.value;
   const theme = isThemePreference(stored) ? stored : "system";
 
@@ -36,6 +37,14 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       <body>
         <NextIntlClientProvider locale={locale} messages={messages}>
           <Providers>
+            {process.env.PREZA_DEMO === "1" && (
+              <div
+                role="status"
+                className="border-b border-warn bg-warn-soft px-4 py-2 text-center text-xs font-medium text-warn"
+              >
+                {t("demo")}
+              </div>
+            )}
             <AppShell themePreference={theme}>{children}</AppShell>
           </Providers>
         </NextIntlClientProvider>

@@ -35,7 +35,7 @@ export function InstrumentPreview({ symbol, size = "sm" }: { symbol: string; siz
   const closes = (bars.data?.bars ?? []).map((b) => Number(b.close));
   const position = portfolio.data?.positions.find((p) => p.symbol === detail.symbol);
   const watched = watchlist.data?.find((w) => w.symbol === detail.symbol);
-  const currency = detail.currency ?? "USD";
+  const currency = detail.currency;
 
   return (
     <div className="flex flex-col gap-3">
@@ -45,7 +45,7 @@ export function InstrumentPreview({ symbol, size = "sm" }: { symbol: string; siz
           <div className="truncate text-[13px] text-text-3">{detail.name}</div>
         </div>
         <span className="rounded-full bg-surface-2 px-2 text-xs leading-5 font-medium text-text-2">
-          {detail.kind === "etf" ? (detail.ucits ? "UCITS ETF" : "ETF") : t("instrument.stock")}
+          {detail.kind === "etf" ? (detail.ucits ? "UCITS ETF" : "ETF") : detail.kind === "stock" ? t("instrument.stock") : t("table.identityUnresolved")}
         </span>
       </div>
       <div className="flex items-end justify-between gap-3">
@@ -53,7 +53,7 @@ export function InstrumentPreview({ symbol, size = "sm" }: { symbol: string; siz
           {detail.last_close != null ? (
             <AnimatedNumber
               value={Number(detail.last_close)}
-              format={(v) => formatMoney(locale, v, currency)}
+              format={(v) => currency ? formatMoney(locale, v, currency) : `${formatNumber(locale, v, 2)} (${t("table.unknownCurrency")})`}
               className={size === "lg" ? "text-2xl leading-8 font-medium" : "text-lg font-medium"}
             />
           ) : (

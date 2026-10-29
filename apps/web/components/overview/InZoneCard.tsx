@@ -20,7 +20,8 @@ export function InZoneCard() {
   const locale = useAppLocale();
   const router = useRouter();
   const reduceMotion = useReducedMotion();
-  const { data, isPending } = useEntries("all");
+  const { data, isPending, error, refetch } = useEntries("all");
+  const labels = useTranslations("table");
   const hits = (data ?? [])
     .filter((e) => e.state === "in_zone" || e.state === "below")
     .sort((a, b) => b.rules.length - a.rules.length);
@@ -40,6 +41,13 @@ export function InZoneCard() {
       </div>
       {isPending ? (
         <div className="h-40 animate-pulse rounded-lg bg-surface-2" aria-hidden />
+      ) : error ? (
+        <div role="alert" className="text-warn">
+          {labels("loadFailed")}{" "}
+          <button type="button" onClick={() => void refetch()}>
+            {labels("retry")}
+          </button>
+        </div>
       ) : hits.length === 0 ? (
         <div className="flex flex-col items-start gap-2 py-4">
           <p className="text-sm text-text-2">{t("empty")}</p>
@@ -74,7 +82,9 @@ export function InZoneCard() {
                     />
                   </span>
                   <span className="num w-16 text-right text-xs whitespace-nowrap text-text-3">
-                    {e.distance_atr == null ? "—" : `${formatNumber(locale, Number(e.distance_atr), 1)} ATR`}
+                    {e.distance_atr == null
+                      ? "—"
+                      : `${formatNumber(locale, Number(e.distance_atr), 1)} ATR`}
                   </span>
                 </Link>
               </motion.li>

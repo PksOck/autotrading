@@ -54,6 +54,7 @@ function Price({ symbol }: { symbol: string }) {
 
 function Position({ symbol }: { symbol: string }) {
   const t = useTranslations("analysisPage.position");
+  const ux = useTranslations("researchUx");
   const format = useFormatter();
   const { data } = usePortfolio();
   const pos = data?.positions.find(
@@ -67,7 +68,7 @@ function Position({ symbol }: { symbol: string }) {
     });
   return (
     <div className="flex flex-col" data-testid="header-position">
-      <span className="label">{t("label")}</span>
+      <span className="label">{ux("currentPosition")}</span>
       {pos ? (
         <>
           <span className="num text-xl font-medium">{t("shares", { qty: pos.quantity })}</span>

@@ -14,6 +14,7 @@ export function LadderTable({
   currency?: string | null;
 }) {
   const t = useTranslations("entriesPage.ladder");
+  const ux = useTranslations("researchUx");
   const locale = useAppLocale();
   const [budget, setBudget] = useState("");
   const amount = Number(budget.replace(",", "."));
@@ -58,7 +59,7 @@ export function LadderTable({
           placeholder="5000"
           className="num h-8 w-28 rounded-md border border-border bg-surface px-2 text-[13px] text-text"
         />
-        {currency}
+        {currency ?? ux("currencyUnknown")}
       </label>
       <p className="text-xs text-text-3">{t("note")}</p>
     </div>

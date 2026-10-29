@@ -2,7 +2,8 @@ import { fireEvent, render, screen, within } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import { vi } from "vitest";
 import en from "@/messages/en.json";
-import { useAnalyses, usePortfolio } from "@/lib/api/hooks";
+import { usePortfolio } from "@/lib/api/hooks";
+import { useResearchAnalyses } from "@/lib/api/research";
 import type { AnalysisSummary, HorizonOutlook } from "@/lib/api/types";
 import { AnalysisRunList } from "./AnalysisRunList";
 import { EvidenceSplit } from "./EvidenceSplit";
@@ -10,6 +11,12 @@ import { HorizonCard } from "./HorizonCard";
 import { ActionPill } from "./outlook";
 
 vi.mock("@/lib/api/hooks", () => ({ useAnalyses: vi.fn(), usePortfolio: vi.fn() }));
+vi.mock("@/lib/api/research", () => ({ useResearchAnalyses: vi.fn() }));
+vi.mock("next/navigation", () => ({
+  usePathname: () => "/analysis",
+  useSearchParams: () => new URLSearchParams(),
+  useRouter: () => ({ replace: vi.fn() }),
+}));
 
 const wrap = (ui: React.ReactNode) =>
   render(
@@ -148,16 +155,16 @@ describe("AnalysisRunList", () => {
   };
 
   it("shows action, horizon verdicts, for/against, conviction and held shares", () => {
-    vi.mocked(useAnalyses).mockReturnValue({
+    vi.mocked(useResearchAnalyses).mockReturnValue({
       data: [run],
       isLoading: false,
       error: null,
-    } as unknown as ReturnType<typeof useAnalyses>);
+    } as unknown as ReturnType<typeof useResearchAnalyses>);
     vi.mocked(usePortfolio).mockReturnValue({
       data: { positions: [{ symbol: "ASML", quantity: 12 }] },
     } as unknown as ReturnType<typeof usePortfolio>);
     wrap(<AnalysisRunList />);
-    const row = screen.getByTestId("analysis-row");
+    const row = within(screen.getByTestId("analysis-table")).getAllByRole("row")[1]!;
     expect(within(row).getByRole("link")).toHaveAttribute("href", `/analysis/${run.id}`);
     expect(within(row).getByTestId("action-pill")).toHaveTextContent("Add to position");
     expect(

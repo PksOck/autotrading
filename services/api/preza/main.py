@@ -3,9 +3,12 @@ from fastapi import FastAPI
 from preza import __version__
 from preza.routes import (
     analyses,
+    automation,
     calibration,
+    dividends,
     entries,
     instruments,
+    overview,
     portfolio,
     proposals,
     radar,
@@ -20,7 +23,10 @@ from preza.routes import (
 def create_app() -> FastAPI:
     app = FastAPI(title="Preža API", version=__version__)
     app.include_router(system.router)
+    app.include_router(automation.router)
+    app.include_router(dividends.router)
     app.include_router(instruments.router)
+    app.include_router(overview.router)
     app.include_router(portfolio.router)
     app.include_router(watchlist.router)
     app.include_router(radar.router)

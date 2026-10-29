@@ -4,8 +4,12 @@ import { AnimatePresence, motion } from "motion/react";
 import { useFormatter, useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { EntityLink } from "@/components/common/EntityLink";
+import { ResearchDetail } from "@/components/common/ResearchDetail";
+import { selectedEntry } from "@/lib/research-state";
+import { useResearchEntry } from "@/lib/api/research";
+import { ApiError } from "@/lib/api/client";
 import { useEntries } from "@/lib/api/hooks";
 import type { EntryOut, EntryView } from "@/lib/api/types";
 import { cn } from "@/lib/cn";
@@ -188,7 +192,7 @@ function Detail({ entry }: { entry: EntryOut }) {
           <>
             <p className="text-text-2">{entry.dip_rationale}</p>
             <p className="text-xs text-text-3">
-              {entry.thesis_intact === false
+              {entry.thesis_intact == null ? t("researchUx.thesisUnknown") : entry.thesis_intact === false
                 ? t("entriesPage.thesisBroken")
                 : t("entry.thesisIntact")}
               {entry.dip_model && ` · ${entry.dip_model}`}
@@ -282,14 +286,15 @@ export function EntriesView() {
   const view = (
     VIEWS.includes(params.get("view") as EntryView) ? params.get("view") : "all"
   ) as EntryView;
-  const [filter, setFilter] = useState<Filter>("active");
+  const filter = FILTERS.includes(params.get("filter") as Filter) ? params.get("filter") as Filter : "active";
   const { data, isLoading, error } = useEntries(view);
   const hovered = useFocusStore((s) => s.hovered);
   const setHovered = useFocusStore((s) => s.setHovered);
 
   const entries = useMemo(() => (data ?? []).filter((e) => matches(e, filter)), [data, filter]);
   const selectedSymbol = params.get("symbol");
-  const selected = entries.find((e) => e.symbol === selectedSymbol) ?? entries[0] ?? null;
+  const detail = useResearchEntry(selectedSymbol);
+  const selected = selectedSymbol === null ? selectedEntry(entries, null) : detail.data?.symbol.toUpperCase() === selectedSymbol.toUpperCase() ? detail.data : null;
   const counts = useMemo(
     () =>
       Object.fromEntries(FILTERS.map((f) => [f, (data ?? []).filter((e) => matches(e, f)).length])),
@@ -301,7 +306,9 @@ export function EntriesView() {
     if (value === null) next.delete(key);
     else next.set(key, value);
     if (key === "view") next.delete("symbol");
-    router.replace(next.size ? `${pathname}?${next}` : pathname, { scroll: false });
+    const href = next.size ? `${pathname}?${next}` : pathname;
+    if (key === "symbol" && value !== null) router.push(href, {scroll:false});
+    else router.replace(href, {scroll:false});
   };
 
   return (
@@ -344,7 +351,7 @@ export function EntriesView() {
             key={f}
             type="button"
             aria-pressed={filter === f}
-            onClick={() => setFilter(f)}
+            onClick={() => setParam("filter", f === "active" ? null : f)}
             className={cn(
               "h-9 rounded-full border border-border px-3 text-[13px] text-text-2 hover:bg-surface-2",
               filter === f && "border-accent bg-accent-soft font-medium text-accent",
@@ -359,6 +366,7 @@ export function EntriesView() {
       {data && data.length > 0 && (
         <section className="card p-4" aria-label={t("entriesPage.map.label")}>
           <EntryMap
+            compact={entries.length < 6}
             entries={data.filter((e) => matches(e, filter))}
             selected={selected?.symbol}
             onSelect={(s) => setParam("symbol", s)}
@@ -408,7 +416,7 @@ export function EntriesView() {
                         </span>
                       </span>
                       <span className="num w-20 text-right text-[13px]">
-                        {formatNumber(locale, Number(e.price), 2)}
+                        {e.currency ? formatMoney(locale, Number(e.price), e.currency) : <>{formatNumber(locale, Number(e.price), 2)} <span className="text-xs text-text-3">{t("researchUx.currencyUnknown")}</span></>}
                       </span>
                       <span
                         className={cn(
@@ -451,18 +459,18 @@ export function EntriesView() {
             </AnimatePresence>
           </ul>
         </section>
-        <aside
-          className="card flex flex-col gap-4 p-5 lg:sticky lg:top-24 lg:self-start"
-          aria-label={t("entriesPage.detailLabel")}
-        >
+        <ResearchDetail open={selectedSymbol !== null} close={() => setParam("symbol", null)} title={t("entriesPage.detailLabel")}>
+          {selectedSymbol !== null && <button className="min-h-10 text-left text-[13px] text-accent" onClick={() => setParam("symbol", null)}>{t("researchUx.clearSelection")}</button>}
+          {selectedSymbol !== null && detail.isLoading && <div className="h-40 animate-pulse bg-surface-2" aria-busy="true"/>}
+          {selectedSymbol !== null && detail.error && !(detail.error instanceof ApiError && [404,422].includes(detail.error.status)) && <div role="alert"><p>{t("system.unreachable")}</p><button onClick={() => void detail.refetch()} className="min-h-10 text-accent">{t("researchUx.retry")}</button></div>}
           <AnimatePresence mode="wait">
             {selected ? (
               <Detail entry={selected} />
             ) : (
-              <p className="text-text-3">{t("entriesPage.pick")}</p>
+              selectedSymbol === null ? <p className="text-text-3">{t("entriesPage.pick")}</p> : !detail.isLoading && (selectedSymbol === "" || detail.error instanceof ApiError && [404,422].includes(detail.error.status)) ? <p role="alert" className="text-text-3">{t("researchUx.notFound")}</p> : null
             )}
           </AnimatePresence>
-        </aside>
+        </ResearchDetail>
       </div>
     </div>
   );

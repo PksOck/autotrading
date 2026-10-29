@@ -2,13 +2,22 @@ import { fireEvent, render, screen, within } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import { vi } from "vitest";
 import en from "@/messages/en.json";
-import { useTrackRecord } from "@/lib/api/hooks";
+import { useResearchTrackRecord, useResearchOutcomes } from "@/lib/api/research";
 import type { TrackRecordOut } from "@/lib/api/types";
 import { TrackRecord } from "./TrackRecord";
 
-vi.mock("@/lib/api/hooks", () => ({ useTrackRecord: vi.fn() }));
+vi.mock("@/lib/api/research", () => ({
+  useResearchTrackRecord: vi.fn(),
+  useResearchOutcomes: vi.fn(),
+}));
+const replace = vi.fn();
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ replace }),
+  usePathname: () => "/track-record",
+  useSearchParams: () => new URLSearchParams(),
+}));
 vi.mock("./WeightProposal", () => ({ WeightProposal: () => null }));
-const useRecord = vi.mocked(useTrackRecord);
+const useRecord = vi.mocked(useResearchTrackRecord);
 const refetch = vi.fn();
 
 const stat = (count: number, hit: string | null, ret: string | null, alpha: string | null) => ({
@@ -50,7 +59,12 @@ function result(value: object) {
     error: null,
     refetch,
     ...value,
-  } as unknown as ReturnType<typeof useTrackRecord>);
+  } as unknown as ReturnType<typeof useResearchTrackRecord>);
+  vi.mocked(useResearchOutcomes).mockReturnValue({
+    data: { items: [], total: 0, offset: 0, limit: 30 },
+    error: null,
+    isLoading: false,
+  } as unknown as ReturnType<typeof useResearchOutcomes>);
 }
 
 function renderRecord() {
@@ -70,7 +84,11 @@ describe("TrackRecord", () => {
     expect(screen.getByText("▼ −0.4%")).toBeInTheDocument();
     expect(screen.getByText("12 of 15")).toBeInTheDocument();
     expect(screen.getByText("Awaiting outcome: 3")).toBeInTheDocument();
-    expect(useRecord).toHaveBeenLastCalledWith(20);
+    expect(useRecord).toHaveBeenLastCalledWith({
+      horizon_days: 20,
+      created_from: undefined,
+      created_to: undefined,
+    });
   });
 
   it("measures your proposals apart from system signals and flags small samples", () => {
@@ -82,6 +100,7 @@ describe("TrackRecord", () => {
     expect(within(user).getByText("Little data")).toBeInTheDocument();
     expect(within(screen.getByTestId("origin-system")).queryByText("Little data")).toBeNull();
     expect(screen.getByRole("cell", { name: "Entry" })).toBeInTheDocument();
+    fireEvent.click(screen.getAllByText("Strength calibration")[0]!);
     expect(screen.getAllByRole("meter")).toHaveLength(5);
   });
 
@@ -89,7 +108,7 @@ describe("TrackRecord", () => {
     result({ data: record });
     renderRecord();
     fireEvent.click(screen.getByRole("radio", { name: "60 d" }));
-    expect(useRecord).toHaveBeenLastCalledWith(60);
+    expect(replace).toHaveBeenLastCalledWith("/track-record?horizon=60", { scroll: false });
   });
 
   it("explains an empty record and retries after an error", () => {

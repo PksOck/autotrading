@@ -26,6 +26,8 @@ export type RadarView = S["RadarView"];
 export type SignalOut = S["SignalOut"];
 export type SignalStatus = S["SignalStatus"];
 export type ProposalOut = S["ProposalOut"];
+export type ProposalResult = S["ProposalResult"];
+export type ProposalAnalysisLink = S["ProposalAnalysisLink"];
 export type ProposalCreate = Pick<S["ProposalCreate"], "symbols"> &
   Partial<Omit<S["ProposalCreate"], "symbols">>;
 export type EntryOut = S["EntryOut"];
@@ -58,6 +60,8 @@ export type ClaimReviewProposalOut = S["ClaimReviewProposalOut"];
 export type AcceptProposal = S["AcceptProposal"];
 export type DismissProposal = S["DismissProposal"];
 export type TrackRecordOut = S["TrackRecordOut"];
+export type TrackOutcomePage = S["TrackOutcomePage"];
+export type TrackOutcome = S["TrackOutcome"];
 export type TrackStat = S["TrackStat"];
 export type CalibrationOut = S["CalibrationOut"];
 export type WeightSetOut = S["WeightSetOut"];

@@ -103,6 +103,18 @@ class Position(Base):
     instrument: Mapped[Instrument] = relationship(lazy="joined")
 
 
+class AccountSnapshot(Base):
+    """Declared section coverage, including a genuinely empty holdings snapshot."""
+
+    __tablename__ = "account_snapshot"
+    account_id: Mapped[str] = mapped_column(String(32), primary_key=True)
+    report_date: Mapped[date] = mapped_column(Date, primary_key=True)
+    positions_complete: Mapped[bool] = mapped_column(Boolean, default=False)
+    cash_complete: Mapped[bool] = mapped_column(Boolean, default=False)
+    source: Mapped[str] = mapped_column(String(32))
+    fetched_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
 class Trade(Base):
     __tablename__ = "trade"
 
@@ -144,6 +156,8 @@ class WatchlistItem(Base):
     added_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     added_price: Mapped[Decimal | None] = mapped_column(PRICE)
     reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    removed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    revision: Mapped[int] = mapped_column(Integer, default=1, server_default="1")
 
     instrument: Mapped[Instrument] = relationship(lazy="joined")
 
@@ -328,6 +342,7 @@ class Fundamentals(Base):
     )
     as_of: Mapped[date] = mapped_column(Date)
     metrics: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
+    metrics_meta: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict, server_default="{}")
     history: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
     source: Mapped[str] = mapped_column(String(32))
     fetched_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)

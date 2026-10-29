@@ -181,9 +181,18 @@ Opusov dokument je prevzet iz Claudove veje pri `28f2990`. Izvedbena veja `fix/s
 | BL-190 | FIX-A: normalizacija poteka new/watching pred filtri in limitom, stabilen vrstni red, ohranitev uporabnikovih odločitev | [Val −1](./docs/superpowers/specs/2026-10-28-val-minus-1-spec.md), `0720806`, S-016 | done |
 | BL-191 | FIX-B: GET signal po UUID, read-only detail, varen Close/Escape/Back in obnova fokusa, ločen cache in generirana API pogodba | [Val −1](./docs/superpowers/specs/2026-10-28-val-minus-1-spec.md), `aa5d62a`, S-016 | done |
 | BL-192 | UX-00: read-only inventura virov in dejanske pokritosti po računu; matrika 19 metrik, agregati in ponovljivi SQL; podatkovne vrzeli ostajajo izrecne | [raziskava](./docs/research/2026-10-29-izvedljivost-metrik.md), S-016 | done |
-| BL-193 | Auditen omejen refresh fundamentov: zadnji uspeh, izid na instrument in razlogi preskoka; potrditi vzrok prazne ciljne populacije pred množičnim prenosom | UX-00, UX-11 | next |
+| BL-193 | Audit refresh fundamentov dodan (izid po instrumentu); uspešen živi refresh in vzrok prazne ciljne populacije ostajata za potrditev | UX-00, UX-11, S-017 | doing |
 | BL-194 | Potrditi kotacijo/valuto/vrsto devetih unknown instrumentov na watchlisti; ne privzeti USD ali napačnega simbola | UX-00, UX-01 | next |
-| BL-195 | Skupna read pogodba za izbirne stolpce portfelja/watchliste, source/as_of in stanja manjkajočih metrik; ohraniti osnovo dividend/payout in ločiti forward P/E | UX-00, UX-01/05 | next |
-| BL-196 | Uporabiti zadnji snapshot po računu v get_portfolio/user_symbols ter dodati regresijski test različnih datumov računov | UX-00 | next |
+| BL-195 | Skupna read pogodba, DataMeta in izbirni stolpci; vir/čas/osnova, vrzeli, ločen forward P/E | ADR-0017/0018, S-017 | done |
+| BL-196 | Zadnji snapshot po računu v get_portfolio/user_symbols, tudi prazen; regresije različnih datumov računov | S-017 | done |
+| BL-197 | Raziskovalni pogledi: zadnja uspešna analiza, varni predlogi/retry, točen detail Radar/Vstopi/Signali, kohorta izidov in postopno razkritje | S-017 | done |
+| BL-198 | Dividendna evidenca, odprti obračuni, pokritost, osnova projekcije in UI; sintetična pogodba, živi format v BL-202 | ADR-0020, S-017 | done |
+| BL-199 | Skupne tabele, računski portfelj/watchlista, identiteta, Pregled in povezovanje; integracija demo | ADR-0017/0018, S-017 | done |
+| BL-200 | Politike procesov, urniki, pavza, transakcijska kvota, predogled/sprejem paketa in sledi | ADR-0019, S-017 | done |
+| BL-201 | Regresijski pregled in ločen demo :3100; prenos :3000 izrecno zadržan do uporabnikove potrditve | S-017, pregled sprememb | done |
+| BL-202 | Potrditi razširjeni zasebni Flex XML, FinancialInstrumentInformation, dividendne identitete/davke/popravke in dejansko pokritost | ADR-0020 | next |
+| BL-203 | Nadaljnji UX po pregledu: poimenovani profili, primerjava vrstic, enoten iskalnik, preostali paneli instrumenta/analize, 200-% povečava | pregled sprememb S-017 | next |
+| BL-204 | Trajno vezati ključ idempotence oddaje predloga na shranjeni osnutek čez reload in izgubljen odgovor | S-017 | next |
+| BL-205 | Pred prenosom zapreti dodatne Flex robove: BASE_SUMMARY-only cash in nepopolne vrstice brez potrjene valute | S-017 | next |
 
-Val −1 je preverjen v ločenem okolju, še ni prevzet v Claudovo vejo ali tekoči demo. Pred prevzemom preveri njuno aktualno stanje in morebitno sočasno dodelitev BL-ID-jev. ADR-0017–0020 ostajajo predlogi. Naslednji val uporablja ugotovitve UX-00; fundamentalni/dividendni privzeti stolpci še nimajo ustrezne pokritosti.
+S-017: pregledna veja vključuje Val −1 in nadaljnje nadgradnje, objavljene samo v ločenem demu :3100. Claudova veja in okolje :3000 nista posodobljena; uporabnik zahteva pregled pred prenosom. ADR-0017–0020 so zapisani za izvedeno pregledno vejo. Podatkovne vrzeli in nedokončani deli celotnega načrta so v docs/implementation/2026-10-29-pregled-sprememb.md. Status done pomeni izvedeno v pregledni veji, ne odobrene objave na :3000.

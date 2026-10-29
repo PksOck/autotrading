@@ -24,15 +24,17 @@ test("watchlist: add and remove a symbol", async ({ page, request }, info) => {
   await page.goto("/portfolio?tab=watchlist", { waitUntil: "networkidle" });
   await expect(page.getByRole("heading", { name: "Aktivna" })).toBeVisible();
   await page.getByLabel("Simbol", { exact: true }).fill("NVDA");
-  await page.getByLabel("Opomba ali teza").fill("E2E test teza");
+  await page.getByRole("textbox", { name: "Opomba ali teza", exact: true }).fill("E2E test teza");
   await page.getByRole("button", { name: "Dodaj na watchlisto" }).click();
 
-  const active = page.locator("section", { has: page.getByRole("heading", { name: "Aktivna" }) }).last();
+  const active = page
+    .locator("section", { has: page.getByRole("heading", { name: "Aktivna" }) })
+    .last();
   await expect(active.getByText("NVDA").first()).toBeVisible();
 
-  await active.locator("li, tr, article, div").filter({ hasText: "NVDA" }).filter({
-    has: page.getByRole("button", { name: "Odstrani" }),
-  }).last().getByRole("button", { name: "Odstrani" }).click();
+  const row = active.getByRole("row").filter({ hasText: "NVDA" });
+  await row.locator("summary").click();
+  await row.getByRole("button", { name: "Odstrani" }).click();
   await expect(page.getByText("Odstranjeno z watchliste")).toBeVisible();
 
   const after: { symbol: string }[] = await (await request.get("/api/watchlist")).json();

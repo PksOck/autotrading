@@ -6,6 +6,8 @@ from alembic import context
 from sqlalchemy.ext.asyncio import create_async_engine
 
 import preza.models  # (registers tables on Base.metadata)
+import preza.models_automation
+import preza.models_dividends
 import preza.notify.models  # noqa: F401
 from preza.config import get_settings
 from preza.db import Base

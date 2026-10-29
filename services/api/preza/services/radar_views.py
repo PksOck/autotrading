@@ -2,25 +2,22 @@
 
 from datetime import UTC, datetime, timedelta
 
-from sqlalchemy import func, select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from preza.domain.radar import EventOut, EventSource, EventStatus, EventType, RadarView
-from preza.models import Event, Instrument, Position, WatchlistItem
+from preza.models import Event, Instrument, WatchlistItem
 
 
 async def user_symbols(session: AsyncSession) -> tuple[set[str], set[str]]:
-    latest = await session.scalar(select(func.max(Position.report_date)))
-    held = (
-        set(
-            await session.scalars(
-                select(Instrument.symbol).join(Position).where(Position.report_date == latest)
-            )
+    from preza.services.portfolio import latest_positions
+
+    held = {p.instrument.symbol for p in await latest_positions(session)}
+    watched = set(
+        await session.scalars(
+            select(Instrument.symbol).join(WatchlistItem).where(WatchlistItem.removed_at.is_(None))
         )
-        if latest
-        else set()
     )
-    watched = set(await session.scalars(select(Instrument.symbol).join(WatchlistItem)))
     return held, watched
 
 
@@ -43,7 +40,9 @@ def event_out(event: Event) -> EventOut:
         first_seen_at=event.first_seen_at,
         last_seen_at=event.last_seen_at,
         sources=[
-            EventSource(title=i.title, url=i.url, source=i.source, published_at=i.published_at)
+            EventSource(
+                title=i.title, url=i.url, source=i.source, published_at=i.published_at, kind=i.kind
+            )
             for i in sorted(event.items, key=lambda i: i.published_at, reverse=True)
         ],
     )

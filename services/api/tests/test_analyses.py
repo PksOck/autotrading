@@ -152,7 +152,8 @@ async def test_daily_limit(api: Any, monkeypatch: pytest.MonkeyPatch) -> None:
         await _instrument("ASML")
         assert (await client.post("/analyses", json={"symbol": "ASML"})).status_code == 202
         first_id = (await client.get("/analyses")).json()[0]["id"]
-        assert (await client.post("/analyses", json={"symbol": "ASML"})).status_code == 202
+        await _instrument("BBB")
+        assert (await client.post("/analyses", json={"symbol": "BBB"})).status_code == 202
         over = await client.post("/analyses", json={"symbol": "ASML"})
         assert over.status_code == 429 and over.json()["detail"] == "daily_limit_reached"
         assert (await client.get("/analyses/quota")).json() == {"limit": 2, "used": 2}

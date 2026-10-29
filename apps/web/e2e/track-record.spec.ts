@@ -7,6 +7,7 @@ test("track record: horizons, your proposals apart, calibration", async ({ page 
   await expect(page.getByText("Alfa proti CSPX")).toBeVisible();
   await expect(page.getByTestId("origin-user").getByText("Tvoji predlogi")).toBeVisible();
   await expect(page.getByTestId("origin-system").getByText("Sistemski signali")).toBeVisible();
+  await page.locator("summary").filter({ hasText: "Kalibracija moči" }).click();
   await expect(page.getByRole("meter")).toHaveCount(5);
 
   // A 1-day horizon has an outcome for every seeded past signal.
@@ -21,7 +22,9 @@ test("track record: weight proposal needs an explicit confirmation", async ({ pa
   const section = page.getByRole("region", { name: "Predlog uteži" });
   await expect(section).toBeVisible();
 
-  const created = page.waitForResponse((r) => r.url().includes("/api/calibration/proposals?horizon_days=20"));
+  const created = page.waitForResponse((r) =>
+    r.url().includes("/api/calibration/proposals?horizon_days=20"),
+  );
   await section.getByRole("button", { name: "Izračunaj predlog (20 d)" }).click();
   expect((await created).status()).toBe(201);
   await expect(section.getByTestId("weight-entry-rule")).toBeVisible();

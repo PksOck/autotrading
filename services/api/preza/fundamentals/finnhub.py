@@ -39,6 +39,7 @@ class FundamentalsSnapshot(BaseModel):
     source: str = SOURCE
     as_of: date
     metrics: dict[str, float | None] = Field(default_factory=dict)
+    metadata: dict[str, dict[str, str | None]] = Field(default_factory=dict)
     history: dict[str, list[Point]] = Field(default_factory=dict)
 
 
@@ -144,6 +145,64 @@ def parse_metric(symbol: str, payload: dict[str, Any], as_of: date) -> Fundament
     return FundamentalsSnapshot(
         symbol=symbol.upper(),
         as_of=as_of,
+        metadata={
+            key: {
+                "source_field": next(
+                    (field for field in fields if _num(metric.get(field)) is not None), None
+                ),
+                "basis": next(
+                    (
+                        basis
+                        for field, basis in zip(fields, bases, strict=True)
+                        if _num(metric.get(field)) is not None
+                    ),
+                    None,
+                ),
+                "period_end": None,
+            }
+            for key, fields, bases in [
+                ("pe", ("peTTM", "peBasicExclExtraTTM"), ("TTM", "TTM_excluding_extraordinary")),
+                ("roe_pct", ("roeTTM", "roeRfy"), ("TTM", "latest_fiscal_year")),
+                ("gross_margin_pct", ("grossMarginTTM", "grossMarginAnnual"), ("TTM", "annual")),
+                (
+                    "net_margin_pct",
+                    ("netProfitMarginTTM", "netProfitMarginAnnual"),
+                    ("TTM", "annual"),
+                ),
+                (
+                    "revenue_growth_pct",
+                    ("revenueGrowthTTMYoy", "revenueGrowthQuarterlyYoy"),
+                    ("TTM_YoY", "quarterly_YoY"),
+                ),
+                (
+                    "debt_to_equity",
+                    ("totalDebt/totalEquityQuarterly", "totalDebt/totalEquityAnnual"),
+                    ("quarterly_ratio_scale_unverified", "annual_ratio_scale_unverified"),
+                ),
+                (
+                    "dividend_yield_pct",
+                    ("dividendYieldIndicatedAnnual", "currentDividendYieldTTM"),
+                    ("indicated_annual", "TTM"),
+                ),
+                ("payout_ratio_pct", ("payoutRatioTTM", "payoutRatioAnnual"), ("TTM", "annual")),
+            ]
+        }
+        | {
+            "fcf_yield": {
+                "source_field": "pfcfShareTTM"
+                if pfcf is not None and pfcf > 0
+                else "freeCashFlowTTM/marketCapitalization",
+                "basis": "TTM_calculated_percent",
+                "period_end": None,
+            },
+            "ev_ebit": {
+                "source_field": "enterpriseValue/ebitTTM"
+                if ev is not None and ebit is not None and ebit > 0
+                else "evRevenueTTM/operatingMarginTTM",
+                "basis": "TTM_calculated",
+                "period_end": None,
+            },
+        },
         metrics={
             "pe": pe,
             "ev_ebit": ev_ebit,

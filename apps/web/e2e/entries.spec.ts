@@ -10,7 +10,9 @@ test("entries: map, list, detail with cause and ladder", async ({ page }, info) 
   await list.getByRole("button", { name: /MSFT/ }).click();
   await expect(page).toHaveURL(/symbol=MSFT/);
 
-  const detail = page.getByRole("complementary", { name: "Podrobnosti vstopa" });
+  const detail = page.getByRole(info.project.name === "phone" ? "dialog" : "complementary", {
+    name: "Podrobnosti vstopa",
+  });
   await expect(detail.getByText("Vzrok padca")).toBeVisible();
   await expect(detail.getByText("Sprožena pravila")).toBeVisible();
   if (info.project.name === "phone") return;

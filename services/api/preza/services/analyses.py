@@ -3,7 +3,8 @@
 import uuid
 from datetime import UTC, date, datetime, time
 
-from sqlalchemy import func, select
+from fastapi import HTTPException
+from sqlalchemy import func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from preza.config import Settings
@@ -26,7 +27,13 @@ async def used_today(session: AsyncSession) -> int:
     return count or 0
 
 
+async def lock_quota(session: AsyncSession) -> None:
+    """Serialize acceptance across API/proposals/batches until the caller commits."""
+    await session.execute(text("SELECT pg_advisory_xact_lock(73160329)"))
+
+
 async def limit_reached(session: AsyncSession, settings: Settings) -> bool:
+    await lock_quota(session)
     limit = settings.deep_daily_limit
     return limit > 0 and await used_today(session) >= limit
 
@@ -41,6 +48,17 @@ async def new_run(
     proposal_id: uuid.UUID | None = None,
 ) -> AnalysisRun:
     """Store a queued run; call `queue_run` after the commit."""
+    await lock_quota(session)
+    if await limit_reached(session, settings):
+        raise HTTPException(429, "daily_limit_reached")
+    active = await session.scalar(
+        select(AnalysisRun.id).where(
+            AnalysisRun.instrument_id == instrument.id,
+            AnalysisRun.status.in_(("queued", "running")),
+        )
+    )
+    if active is not None:
+        raise HTTPException(409, "analysis_already_active")
     run = AnalysisRun(
         instrument_id=instrument.id,
         engine="etf" if instrument.kind == "etf" else "tradingagents",

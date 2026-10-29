@@ -74,7 +74,10 @@ async def api(
         await conn.execute(
             text(
                 "TRUNCATE notification, signal, proposal, news_item, event, watchlist_item, "
-                "position, trade, cash_balance, bar, sync_run, instrument, signal_weight_set "
+                "position, trade, cash_balance, bar, sync_run, instrument, signal_weight_set, "
+                "account_snapshot, automation_control, process_policy, process_execution, "
+                "process_analysis, dividend_cash_event, dividend_accrual_snapshot, "
+                "dividend_import_coverage, dividend_projection_basis "
                 "RESTART IDENTITY CASCADE"
             )
         )

@@ -493,28 +493,10 @@ export function ThesisDetail({ thesisId }: { thesisId: string }) {
         </h2>
         <Provenance source={thesis.source} asOf={thesis.as_of} />
       </header>
-      <section aria-label={reviewT("title")} className="card flex flex-col gap-3 p-4">
-        <h2 className="text-base font-semibold">{reviewT("title")}</h2>
-        {(reviewsQuery.isLoading || proposalsQuery.isLoading) && (
-          <p aria-busy="true">{reviewT("loading")}</p>
-        )}
-        {reviewsQuery.error || proposalsQuery.error ? (
-          <p role="alert">{reviewT("loadError")}</p>
-        ) : (
-          !reviewsQuery.isLoading &&
-          !reviews.length && <p className="text-[13px] text-text-2">{reviewT("empty")}</p>
-        )}
-        {reviews.map((review) => (
-          <ThesisReviewRun key={review.id} review={review} />
-        ))}
-        <button className={`${thesisButton} w-fit`} onClick={refreshReviews}>
-          {reviewT("refresh")}
-        </button>
-      </section>
       {!thesis.revisions.some((revision) => revision.status === "active") && (
         <p className="text-[13px] text-text-2">{t("noActiveHint")}</p>
       )}
-      {thesis.revisions.map((revision) => (
+      {[...thesis.revisions].sort((a,b) => (a.status === "active" ? 0 : a.status === "draft" ? 1 : 2) - (b.status === "active" ? 0 : b.status === "draft" ? 1 : 2)).map((revision) => (
         <section
           key={revision.id}
           className="card flex flex-col gap-4 p-4 sm:p-5"
@@ -577,6 +559,25 @@ export function ThesisDetail({ thesisId }: { thesisId: string }) {
           )}
         </section>
       ))}
+      <section aria-label={reviewT("title")} className="card flex flex-col gap-3 p-4">
+        <h2 className="text-base font-semibold">{reviewT("title")}</h2>
+        {(reviewsQuery.isLoading || proposalsQuery.isLoading) && (
+          <p aria-busy="true">{reviewT("loading")}</p>
+        )}
+        {reviewsQuery.error || proposalsQuery.error ? (
+          <p role="alert">{reviewT("loadError")}</p>
+        ) : (
+          !reviewsQuery.isLoading &&
+          !reviews.length && <p className="text-[13px] text-text-2">{reviewT("empty")}</p>
+        )}
+        {reviews.slice(0, 1).map((review) => (
+          <ThesisReviewRun key={review.id} review={review} />
+        ))}
+        {reviews.length > 1 && <details><summary className="min-h-10 cursor-pointer text-[13px] text-text-2">{t("history", {count: reviews.length - 1})}</summary>{reviews.slice(1).map((review) => <ThesisReviewRun key={review.id} review={review}/>)}</details>}
+        <button className={`${thesisButton} w-fit`} onClick={refreshReviews}>
+          {reviewT("refresh")}
+        </button>
+      </section>
     </div>
   );
 }

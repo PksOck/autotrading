@@ -1,0 +1,22 @@
+{
+  "dividends": {
+    "title": "Dividende", "received": "Prejeta gotovina", "accruals": "Odprte obračunane dividende",
+    "projection": "Ocena naslednjih 12 mesecev · bruto", "projectionNote": "Trenutna količina × preverjena letna distribucija na enoto. Ocene so ločene od gotovine in obračunov; davkov ali prihodnjih tečajev ne predpostavljamo. Datumski filtri veljajo za knjižne datume gotovine in datume plačila obračunov, ne za oceno trenutnih pozicij.",
+    "cashNote": "Podpisane knjižbe vključujejo storne. Davek povežemo samo z izrecno referenco dogodka in instrumenta. Neznani davek ali tečaj ostane neznan.",
+    "accrualNote": "Poročana upravičenja niso prejeta gotovina. Prikazan je samo zadnji odprti posnetek računa; spremembe in storni ne dokazujejo plačila.",
+    "account": "Račun", "currency": "Valuta", "from": "Od", "to": "Do", "all": "Vsi",
+    "loading": "Nalaganje dividend …", "error": "Dividendnih evidenc ni bilo mogoče naložiti. Filtri so ohranjeni.", "retry": "Poskusi znova",
+    "emptyCash": "V tem obdobju ni denarnih knjižb dividend.", "emptyAccrual": "V izbrani pokritosti ni odprtih obračunov.", "emptyProjection": "Za ta izbor ni trenutnih pozicij.",
+    "gross": "Bruto", "tax": "Povezani odtegljaji", "net": "Znani neto", "unknown": "Neznano",
+    "unresolved": "Nepovezani odtegljaji", "fxGap": "Pretvorba v osnovno valuto ni popolna", "pil": "Nadomestilo dividende",
+    "date": "Knjižni datum", "symbol": "Instrument", "kind": "Vrsta", "amount": "Podpisani znesek",
+    "exDate": "Datum brez upravičenja", "payDate": "Datum izplačila", "quantity": "Upravičena količina", "annual": "Letna bruto ocena",
+    "source": "Vir", "asOf": "Stanje na", "coverage": "Pokritost uvoza", "missing": "Sekcija manjka", "partial": "Delno", "complete": "Sekcija uvožena",
+    "contract": "Podprta pogodba XML je testirana s sintetičnimi vzorci. Zasebni razširjeni izpis IBKR še ni preverjen; nepodprta polja ostanejo vidna kot vrzeli pokritosti.",
+    "instructions": "V IBKR Activity Flex vključite Cash Transactions z ID-ji transakcij, datumi, zneski, valutami in referencami dogodkov; Open in Change in Dividend Accruals ter Financial Instrument Information. Zasebno ohranjen XML znova uvozite z uvozom na portfelju. Odsotna sekcija ne pomeni nič izplačil.",
+    "incomplete_history": "Nepopolna zgodovina distribucij", "accumulating_share_class": "Akumulacijski razred · brez gotovinskega izplačila sklada",
+    "indicated_annual": "Preverjena indicirana letna distribucija", "verified_ttm": "Preverjena distribucija zadnjih 12 mesecev", "special": "Vključuje posebne distribucije",
+    "dividend": "Dividenda", "payment_in_lieu": "Nadomestilo dividende", "withholding": "Davčni odtegljaj",
+    "rangeError": "Končni datum naj bo enak ali poznejši od začetnega.", "noCoverage": "Pokritost dividendnega uvoza še ni zabeležena. Uvozite razširjeni izpis Flex."
+  }
+}

@@ -1,5 +1,21 @@
 # DESIGN.md: oblikovni sistem in zasloni
 
+## Pregledna nadgradnja 2026-10-29 (S-017)
+
+Izvedena samo v pregledni veji in ločenem demu :3100; objava :3000 čaka novo uporabnikovo potrditev. [Obseg in odprte točke](./docs/implementation/2026-10-29-pregled-sprememb.md).
+
+- Skupni `DataTable` na Pozicijah, Watchlisti in namiznem seznamu Analiz: izbirni stolpci, vrstni red z gumbi, širine, pripenjanje, gostota, ponastavitev in strani po 25; lokalne verzionirane preference (ADR-0018). Filtri/izbor/sort ostanejo v URL. Opozoril identitete, zastarelosti in delnih podatkov ni mogoče skriti.
+- `MetricCell` pokaže vrednost/enoto in vir/osnovo/čas ali razloženo vrzel. P/E TTM in forward P/E sta ločena, neznana valuta ne dobi USD. Praznina, ničla, API napaka in manjkajoč podatek imajo različne pomene (ADR-0017).
+- SCR-08 ima zavihke Pozicije, Watchlista, Analize, Dividende. Računski izbor ohrani različne datume posnetkov in frakcije. Watchlista ima eno pogosto dejanje in dodatni meni; izvirni zapis se po odstranitvi obnovi z varovano revizijo.
+- `ResearchDetail` pod širino 1280 uporablja dialog s fokusom/Escape. Ob instrumentnem Peek se začasno umakne in po zaprtju vrne, brez izgube izbranega dogodka/simbola v URL.
+- SCR-06 privzeto ponudi zadnjo uspešno analizo posameznega instrumenta. SCR-12 izriše preverjen sklep ali razumljivo napako s ponovitvijo, brez surovega JSON. SCR-10 loči datumsko kohorto od horizonta in podrobnih izidov; kalibracija je sekundarna.
+- `InstrumentFacts` poveže shranjene metrike z identiteto in izrecno dopolnitvijo preverljivih polj; vrste/valute ne ugiba.
+- SCR-11 ima dejansko stanje povezav, globalno pavzo, politike procesov, lokalne urnike/okna/dneve, stanje urejanja/konflikta in sledi. Paketni predogled je skupen nastavitvam in portfelju; nov paket je onemogočen (ADR-0019).
+- `PortfolioDividends` loči prejeto gotovino, odprte obračune in 12-mesečno bruto oceno, z računom/valuto/obdobjem/pokritostjo in vidno omejitvijo sintetične XML pogodbe (ADR-0020).
+- SCR-01 bere dejansko bazo, izpad ne pokaže sample fallbacka. Demo oznaka ostane stalno vidna; stanje sistema je dosegljivo tudi na telefonu. Obstoječi tokeni, SL/EN in pravila dotikalnih ciljev ostanejo osnova.
+
+Ta dodatek dokumentira izvedbo, ne potrditve vseh oblikovnih podrobnosti. Poimenovani profili, primerjanje vrstic, širši paneli in 200-% povečava so še odprti v BL-203.
+
 **Prototipi:** Artifact platno *Signalna platforma – UI* (povezava v [`design/README.md`](./design/README.md)). Platno je vizualni vir resnice za postavitev. Ta datoteka je vir resnice za tokene in pravila.
 
 ## 1. Načela
