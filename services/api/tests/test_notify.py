@@ -246,6 +246,7 @@ async def test_notify_sends_once(api: tuple[httpx.AsyncClient, FakeRouter]) -> N
         assert await session.scalar(select(func.count()).select_from(Notification)) == 1
     assert len(outbox.texts) == 1 and outbox.texts[0].startswith("AAA · Katalizator")
     markup = outbox.requests[0]["reply_markup"]["inline_keyboard"][0]
+    assert markup[0]["url"] == f"http://app/signals?peek=signal:{markup[1]['callback_data'][2:]}"
     assert markup[1]["callback_data"].startswith("w:")
 
 

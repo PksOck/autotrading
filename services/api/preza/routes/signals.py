@@ -68,6 +68,15 @@ async def list_signals(
     return [signal_out(signal) for signal in await session.scalars(query)]
 
 
+@router.get("/{signal_id}", response_model=SignalOut)
+async def get_signal(session: Session, signal_id: UUID) -> SignalOut:
+    await expire_open_signals(session, datetime.now(UTC))
+    signal = await session.get(Signal, signal_id)
+    if signal is None:
+        raise HTTPException(404, detail="signal_not_found")
+    return signal_out(signal)
+
+
 @router.patch("/{signal_id}", response_model=SignalOut)
 async def update_signal(session: Session, signal_id: UUID, data: SignalUpdate) -> SignalOut:
     signal = await session.get(Signal, signal_id)

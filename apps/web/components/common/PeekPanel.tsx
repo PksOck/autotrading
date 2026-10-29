@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { useRef } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useTranslations } from "next-intl";
 import { Dialog } from "radix-ui";
 import { InstrumentPreview } from "@/components/common/InstrumentPreview";
 import { WatchButton } from "@/components/watchlist/WatchButton";
+import { SignalDetail } from "@/components/signals/SignalDetail";
 import { spring } from "@/lib/motion";
 import { usePeek } from "@/lib/use-peek";
 import { openProposalComposer } from "@/stores/proposals";
@@ -15,6 +17,7 @@ export function PeekPanel() {
   const t = useTranslations();
   const { current, close } = usePeek();
   const open = current !== null;
+  const returnFocus = useRef<HTMLElement | null>(null);
 
   return (
     <Dialog.Root open={open} onOpenChange={(next) => !next && close()} modal={false}>
@@ -25,6 +28,18 @@ export function PeekPanel() {
               forceMount
               asChild
               onInteractOutside={(event) => event.preventDefault()}
+              onOpenAutoFocus={() => {
+                const active = document.activeElement;
+                if (active instanceof HTMLElement && !active.closest('[role="dialog"]')) {
+                  returnFocus.current = active;
+                }
+              }}
+              onCloseAutoFocus={(event) => {
+                if (returnFocus.current?.isConnected) {
+                  event.preventDefault();
+                  returnFocus.current.focus({ preventScroll: true });
+                }
+              }}
               aria-describedby={undefined}
             >
               <motion.aside
@@ -33,14 +48,14 @@ export function PeekPanel() {
                 animate={{ x: 0, opacity: 1 }}
                 exit={{ x: "100%", opacity: 0.6 }}
                 transition={spring.soft}
-                className="fixed top-0 right-0 z-40 flex h-dvh w-full flex-col gap-5 border-l border-border bg-surface p-6 shadow-float sm:w-[420px]"
+                className="fixed top-0 right-0 z-40 flex h-dvh w-full flex-col gap-5 overflow-y-auto overscroll-contain border-l border-border bg-surface p-6 shadow-float sm:w-[420px]"
               >
                 <div className="flex items-center justify-between gap-2">
                   <Dialog.Title className="label">{t("peek.label")}</Dialog.Title>
                   <div className="flex gap-1">
                     <button
                       type="button"
-                      onClick={() => history.back()}
+                      onClick={close}
                       className="h-9 rounded-md px-3 text-[13px] text-text-2 hover:bg-surface-2"
                     >
                       ← {t("peek.back")}
@@ -56,6 +71,8 @@ export function PeekPanel() {
 
                 {current.kind === "instrument" ? (
                   <InstrumentPreview symbol={current.id} size="lg" />
+                ) : current.kind === "signal" ? (
+                  <SignalDetail signalId={current.id} />
                 ) : (
                   <p className="text-text-3">{t("peek.notFound")}</p>
                 )}

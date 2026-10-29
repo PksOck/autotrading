@@ -112,7 +112,7 @@ Ciljni napravi sta Android (dotik) in Windows (miška, tipkovnica). Vmesnik je e
 | CMP-18 | ConfirmDialog | dvojna potrditev za nepovratna dejanja | SCR-07, (M7) |
 | CMP-19 | EntityLink | klikljiva entiteta s predogledom in kukalom (LX-01, LX-02) | povsod |
 | CMP-20 | HoverPreview | predogled entitete ob hoverju | povsod |
-| CMP-21 | PeekPanel | desni panel z zgodovino, deljeni prehod na celoten zaslon | povsod |
+| CMP-21 | PeekPanel | desni panel za instrument ali read-only signal; varno zapiranje ohrani URL filtre, fokus se vrne sprožilcu | povsod |
 | CMP-22 | Trail | veriga izvora: novica → dogodek → signal → analiza → odločitev | SCR-04, 05, 06 |
 | CMP-23 | CommandPalette | ⌘K iskanje entitet in dejanj | glava |
 | CMP-24 | AnimatedNumber | animirana številka z bliskom smeri (MO-04) | povsod |
@@ -221,7 +221,7 @@ Cilj: uporabnik nikoli ne izgubi konteksta in vedno vidi, **od kod je kaj prišl
 | ID | Vzorec | Opis |
 |---|---|---|
 | LX-01 | **Entiteta povsod klikljiva** | vsak simbol, dogodek, signal, analiza, teza in pozicija je `EntityLink` (CMP-19). Hover po 300 ms odpre predogled (CMP-20 HoverPreview): mini graf, cena, zadnji signal, stanje teze |
-| LX-02 | **Kukalo (peek panel)** | klik na entiteto odpre desni panel (CMP-21 PeekPanel) brez zapustitve trenutnega zaslona. `Shift`+klik ali gumb "Odpri" vodi na celoten zaslon (z MO-01). Panel ima lastno zgodovino (nazaj/naprej) |
+| LX-02 | **Kukalo (peek panel)** | klik na entiteto odpre desni panel (CMP-21 PeekPanel) brez zapustitve trenutnega zaslona. `Shift`+klik ali gumb "Odpri" vodi na celoten zaslon (z MO-01). Odpiranje doda URL v zgodovino; brskalniški Nazaj vrne prejšnje stanje. Zapri/Escape/UI Nazaj odstranijo samo `peek` z `replace`, ohranijo filtre in scroll; brez slepega izhoda na prejšnje zunanje spletišče. Notranja zgodovina predogledov še ni implementirana. Signal prikaže status, govorico, vir, čas in dokazila brez poslovnih mutacij (BL-191). |
 | LX-03 | **Navzkrižno poudarjanje** | hover na dogodek v seznamu poudari njegovo oznako na grafu in obratno. Hover na pozicijo v portfelju poudari vse njene signale in dogodke na vseh vidnih panelih (skupno stanje `focusEntity`) |
 | LX-04 | **Sled (lineage)** | CMP-22 Trail: veriga *Novica → Dogodek → Signal → Analiza → Odločitev → (Naročilo)*. Na vsakem objektu vidiš celotno verigo in skočiš na kateri koli člen |
 | LX-05 | **Globalni kontekst simbola** | izbira simbola (⌘K ali klik "Fokus") filtrira vse zaslone na ta simbol, dokler fokusa ne odstraniš (značka v glavi) |

@@ -522,6 +522,21 @@
     "entryOpen": "Odpri v Vstopih",
     "entryCauseLabel": "Vzrok padca"
   },
+  "signalDetail": {
+    "loading": "Nalaganje signala",
+    "invalid": "Neveljavna povezava do signala",
+    "missing": "Signala ni mogoče najti",
+    "failed": "Signala ni bilo mogoče naložiti.",
+    "retry": "Poskusi znova",
+    "source": "Vir",
+    "direction": "Smer",
+    "created": "Ustvarjeno",
+    "expires": "Velja do",
+    "noExpiry": "Rok ni določen",
+    "evidence": "Dokazila",
+    "noEvidence": "Ni priloženih dokazil",
+    "openInstrument": "Odpri instrument"
+  },
   "signalsPage": {
     "title": "Signali",
     "subtitle": "Vsi signali na enem mestu. Odločitev je tvoja.",

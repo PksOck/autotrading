@@ -522,6 +522,21 @@
     "entryOpen": "Open in Entries",
     "entryCauseLabel": "Cause of the drop"
   },
+  "signalDetail": {
+    "loading": "Loading signal",
+    "invalid": "Invalid signal link",
+    "missing": "Signal not found",
+    "failed": "The signal could not be loaded.",
+    "retry": "Try again",
+    "source": "Source",
+    "direction": "Direction",
+    "created": "Created",
+    "expires": "Expires",
+    "noExpiry": "No expiry set",
+    "evidence": "Evidence",
+    "noEvidence": "No evidence attached",
+    "openInstrument": "Open instrument"
+  },
   "signalsPage": {
     "title": "Signals",
     "subtitle": "All signals in one place. The decision is yours.",

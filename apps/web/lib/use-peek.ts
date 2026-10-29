@@ -25,7 +25,7 @@ export function usePeek() {
     (ref: EntityRef) => router.push(hrefFor(ref), { scroll: false }),
     [hrefFor, router],
   );
-  const close = useCallback(() => router.push(hrefFor(null), { scroll: false }), [hrefFor, router]);
+  const close = useCallback(() => router.replace(hrefFor(null), { scroll: false }), [hrefFor, router]);
 
   return { current: decodeEntity(params.get("peek")), hrefFor, open, close };
 }

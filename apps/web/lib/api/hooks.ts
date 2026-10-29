@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { lastSeq, mergeSteps } from "@/lib/analysis";
+import { isSignalId } from "@/lib/entities";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ApiError, api } from "./client";
 import type {
@@ -54,6 +55,7 @@ export const keys = {
   search: (q: string) => ["search", q] as const,
   radar: (view: RadarView, minScore: number) => ["radar", view, minScore] as const,
   signals: (status: SignalStatus | "all") => ["signals", status] as const,
+  signal: (id: string | null) => ["signal", id] as const,
   entries: (view: EntryView) => ["entries", view] as const,
   proposals: ["proposals"] as const,
   analyses: (symbol?: string) => ["analyses", symbol ?? "all"] as const,
@@ -188,12 +190,26 @@ export const useSignals = (status: SignalStatus | "all") =>
     refetchInterval: 60_000,
   });
 
+export const useSignal = (id: string | null) =>
+  useQuery({
+    queryKey: keys.signal(id),
+    queryFn: () => api.get<SignalOut>(`/signals/${encodeURIComponent(id!)}`),
+    enabled: isSignalId(id),
+    retry: (count, error) =>
+      !(error instanceof ApiError && [404, 422].includes(error.status)) && count < 2,
+  });
+
 export function useSignalUpdate() {
   const client = useQueryClient();
   return useMutation({
     mutationFn: ({ id, status, reason }: { id: string; status: SignalStatus; reason?: string }) =>
       api.send<SignalOut>(`/signals/${id}`, "PATCH", { status, reason }),
-    onSuccess: () => client.invalidateQueries({ queryKey: ["signals"] }),
+    onSuccess: async (_, { id }) => {
+      await Promise.all([
+        client.invalidateQueries({ queryKey: ["signals"] }),
+        client.invalidateQueries({ queryKey: keys.signal(id) }),
+      ]);
+    },
   });
 }
 
