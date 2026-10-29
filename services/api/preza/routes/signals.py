@@ -18,6 +18,7 @@ from preza.domain.radar import (
     SignalUpdate,
 )
 from preza.models import Signal
+from preza.services.signals import expire_open_signals
 
 router = APIRouter(prefix="/signals", tags=["signals"])
 Session = Annotated[AsyncSession, Depends(get_session)]
@@ -56,18 +57,15 @@ async def list_signals(
     kind: SignalKind | None = None,
     limit: int = 100,
 ) -> list[SignalOut]:
-    query = select(Signal).order_by(Signal.created_at.desc()).limit(min(limit, 500))
+    await expire_open_signals(session, datetime.now(UTC))
+    query = (
+        select(Signal).order_by(Signal.created_at.desc(), Signal.id.desc()).limit(min(limit, 500))
+    )
     if status:
         query = query.where(Signal.status == status.value)
     if kind:
         query = query.where(Signal.kind == kind.value)
-    now = datetime.now(UTC)
-    out = []
-    for signal in await session.scalars(query):
-        if signal.expires_at and signal.expires_at < now and signal.status in ("new", "watching"):
-            signal.status = SignalStatus.EXPIRED.value
-        out.append(signal_out(signal))
-    return out
+    return [signal_out(signal) for signal in await session.scalars(query)]
 
 
 @router.patch("/{signal_id}", response_model=SignalOut)
