@@ -169,3 +169,21 @@
 | BL-140 | `order_draft`, varovala (`guards.py`, prepis legacy `risk.ts`), revizijska sled | ADR-0006 | later |
 | BL-141 | Paper račun: oddaja z dvojno potrditvijo (CMP-18) | ADR-0006 | later |
 | BL-142 | Odločitev o prehodu na živi račun (nov ADR) | ADR-0006 | later |
+
+## UX/UI: načrt in specifikacija
+
+Opusov dokument je prevzet iz Claudove veje pri `28f2990`. Izvedbena veja `fix/signal-read-contracts` izhaja iz kode `1855eb8`; Val −1 je izveden spodaj. To ne pomeni združitve vseh sočasnih sprememb ali implementacije vseh valov.
+
+| ID | Naloga | Ref | Status |
+|---|---|---|---|
+| BL-188 | Celovit UX/UI načrt in pregled Astra; prevzeta Opusova dopolnitev s FIX-A/B, UX-00 in viri dividend | [načrt](./docs/superpowers/plans/2026-10-28-celovita-uxui-nadgradnja.md), izvor `28f2990` | done |
+| BL-189 | SPEC v0.1: pregled Opusovih komentarjev, skupne pogodbe in sledljivost modulov, podrobni Val −1 (FIX-A/B, UX-00), meje dividendnih ocen in dokazna vrata; dokumentarni osnutek zaključen v S-015, izvedba ločeno BL-190–192 | [SPEC](./docs/superpowers/specs/2026-10-28-celovita-uxui-spec.md), S-015 | done |
+| BL-190 | FIX-A: normalizacija poteka new/watching pred filtri in limitom, stabilen vrstni red, ohranitev uporabnikovih odločitev | [Val −1](./docs/superpowers/specs/2026-10-28-val-minus-1-spec.md), `0720806`, S-016 | done |
+| BL-191 | FIX-B: GET signal po UUID, read-only detail, varen Close/Escape/Back in obnova fokusa, ločen cache in generirana API pogodba | [Val −1](./docs/superpowers/specs/2026-10-28-val-minus-1-spec.md), `aa5d62a`, S-016 | done |
+| BL-192 | UX-00: read-only inventura virov in dejanske pokritosti po računu; matrika 19 metrik, agregati in ponovljivi SQL; podatkovne vrzeli ostajajo izrecne | [raziskava](./docs/research/2026-10-29-izvedljivost-metrik.md), S-016 | done |
+| BL-193 | Auditen omejen refresh fundamentov: zadnji uspeh, izid na instrument in razlogi preskoka; potrditi vzrok prazne ciljne populacije pred množičnim prenosom | UX-00, UX-11 | next |
+| BL-194 | Potrditi kotacijo/valuto/vrsto devetih unknown instrumentov na watchlisti; ne privzeti USD ali napačnega simbola | UX-00, UX-01 | next |
+| BL-195 | Skupna read pogodba za izbirne stolpce portfelja/watchliste, source/as_of in stanja manjkajočih metrik; ohraniti osnovo dividend/payout in ločiti forward P/E | UX-00, UX-01/05 | next |
+| BL-196 | Uporabiti zadnji snapshot po računu v get_portfolio/user_symbols ter dodati regresijski test različnih datumov računov | UX-00 | next |
+
+Val −1 je preverjen v ločenem okolju, še ni prevzet v Claudovo vejo ali tekoči demo. Pred prevzemom preveri njuno aktualno stanje in morebitno sočasno dodelitev BL-ID-jev. ADR-0017–0020 ostajajo predlogi. Naslednji val uporablja ugotovitve UX-00; fundamentalni/dividendni privzeti stolpci še nimajo ustrezne pokritosti.

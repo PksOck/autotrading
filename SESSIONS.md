@@ -4,6 +4,44 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 
 ---
 
+## S-016 · 2026-10-29 · Izvedba Vala −1: signali in podatkovna inventura
+
+**Cilj:** Po potrditvi »Ja gremo v delo« izvesti FIX-A, FIX-B in read-only UX-00 iz potrjene specifikacije.
+
+**Narejeno:**
+- BL-190 / `0720806`: skupna normalizacija poteka new/watching pred filtri/limitom; accepted/dismissed ostaneta odločitev uporabnika. Pred popravkom 4 ciljni testi padejo, po njem regresije in celotna zbirka uspejo.
+- BL-191: GET `/signals/{uuid}`, neodvisen od filtrov in prvih 100 zapisov; read-only detail v PeekPanel, status/govorica/vir/čas/dokazila, 404/422/napaka/ponovitev. Ločen query cache, invalidacija list/detail in generirana OpenAPI/TS pogodba. Close odstrani samo peek z replace; browser Back ohrani obstoječo navigacijo.
+- Svež neodvisni pregled veje je odkril odsotnost vrnitve fokusa. Popravek je preverjen z najprej rdečim in nato zelenim brskalniškim testom Close/Escape/Back za isti sprožilec. Obstoječi 48px touch CSS je ohranjen.
+- BL-192: [poročilo](./docs/research/2026-10-29-izvedljivost-metrik.md), JSON matrika in read-only SQL. Cilji: 26 portfelj + 10 watchlista, brez preseka; fundamenti 0/36, cene 35/36, valuta 27/36, ETF profil 0/2. Edini fundament v bazi je zunaj ciljnih seznamov. Ni bilo množičnega refresha ali klicev ponudnika.
+- Preverjeno: API **467 testov**, web **126 testov**, Playwright **10/10** (desktop in 390×844 touch; SL/EN; direktni URL, Entries→signal→Back, fokus, Escape, instrument predogled, brez mutacij); Ruff, mypy strict domain, ESLint, TypeScript, 847 i18n ključev, produkcijski Docker build. Podrobnosti ukazov in okolja so v [prevzemu](./docs/research/2026-10-29-val-minus-1-prevzem.md).
+
+**Odločitve:** Delo v namenski veji `fix/signal-read-contracts` na obstoječem izoliranem checkoutu `1855eb8`; Opusov načrt ostaja kopija iz `28f2990`. Celoten načrt ni samodejno implementiran: podatkovna vrata za naslednji val so v raziskavi. DESIGN posodobljen za signalni PeekPanel. Brez novih ADR ali migracije sheme.
+
+**Odprto:** Prevzem commitov v aktualno Claudovo vejo in objava v demo še nista izvedena. Windows SWC ima težavo z varnostjo predpomnilnika; enakovreden produkcijski build je preverjen v ločenem Dockerju. Opozorila API o zastarelih knjižničnih API-jih ostajajo. BL-193–196 so nove ločene naloge, ne prikrito opravljene spremembe.
+
+**Naslednji korak:** Najprej uskladiti prevzem z aktualno Claudovo vejo; nato BL-193/194 in read pogodba BL-195 pred širjenjem stolpcev. Rešitev /proposals, filtri analiz, nastavitve urnikov in dividendni zavihek sledijo svojim valovom potrjenega načrta.
+
+---
+
+## S-015 · 2026-10-29 · SPEC po Opusovem pregledu načrta
+
+**Cilj:** Prevzeti posodobljeni načrt iz Claudove veje, preveriti komentarje in začeti konkretno specifikacijo brez implementacije.
+
+**Narejeno:**
+- Prevzeta bajtno enaka kopija načrta iz `28f2990`, SHA256 `030CD7F3293E558FD21ADCBEB9750B00A58384CB9E117F5DDC638CDF259B32BF`, ter spremljevalna Astra revizija/ožji osnutek. Izvorna Claudova veja in njena nepovezana `.env.example` sprememba ostaneta nedotaknjeni.
+- Dodani [glavni SPEC](./docs/superpowers/specs/2026-10-28-celovita-uxui-spec.md), [podrobni Val −1](./docs/superpowers/specs/2026-10-28-val-minus-1-spec.md) in [presoja Opusovih komentarjev](./docs/superpowers/specs/2026-10-28-opus-komentarji.md). Dokumenti definirajo prioritetna FIX-A/B, read-only UX-00, pogodbe UI/API, podatkovno kakovost in odvisnosti vseh valov.
+- Upoštevane Astrove pripombe: lokalno ponavljanje urnika z IANA cono, podatkovna razpoložljivost ločeno od React/transport stanj, dividendna osnova/izvor polja, ločen cash ledger in accrual snapshot, neveljavnost deljenja osebnih prejemkov s trenutno količino, varna neposredna signalna povezava in ohranitev obstoječega zapisovanja poteka.
+- Uradne reference IBKR pregledane 2026-10-29: Open/Change Dividend Accruals in Financial Instrument Information; XML konkretnega izpisa še ni potrjen. Preverjanje žive pokritosti ali ponudniških pravic ni bilo izvedeno; Opusov 1/46 ostane datiran izvorni podatek.
+- BACKLOG usklajen z BL-188 (prevzet načrt) in BL-189 (dokumentarni osnutek SPEC). Izvedbenih statusov nismo označili kot končanih.
+
+**Odločitve:** Samo predlagane izvedbene pogodbe in njihove utemeljitve. Formalni ADR-0017–0020 ostanejo predlog za ločeno sejo Astre, brez podvajanja številk. Ta SPEC ne spreminja DESIGN ali aplikacijskega obnašanja.
+
+**Odprto:** Astra je posredovala tehnične pripombe, celotnega ponovnega pregleda končnih datotek pa zaradi omejitve uporabe ni zaključila; ne trdimo neodvisne odobritve. Obstoječi nesleden `services/api/tests/test_signal_expiry.py` je iz prejšnjega koraka in ni popravljen ali odstranjen. Izolirana koda ostaja `1855eb8`; ni commita/združitve, namestitve, podatkovnega uvoza ali novega testnega/LLM zagona v tem dokumentarnem koraku.
+
+**Naslednji korak:** Pregled SPEC, nato samostojna izvedba FIX-A/B in read-only UX-00. Pred posegi ponovno preveriti aktivno osnovo in proste BL-ID-je; pri UI sklopih najprej prototip in pogodbe, pri dividendah razširjen anonimiziran Flex vzorec.
+
+---
+
 ## S-013 · 2026-10-28 · Vitka zaporedna analiza delnice
 
 **Cilj:** BL-167: manj žetonov na analizo delnice, vsak klic pod 16 tisoč vhodnih žetonov. Čim več dela opravi koda, AI samo presodi in združi.
