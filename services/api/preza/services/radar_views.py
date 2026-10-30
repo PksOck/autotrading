@@ -53,24 +53,21 @@ async def list_events(
 ) -> list[EventOut]:
     held, watched = await user_symbols(session)
     since = datetime.now(UTC) - timedelta(days=days)
+    membership = {
+        RadarView.PORTFOLIO: Event.symbols.overlap(sorted(held)),
+        RadarView.WATCHLIST: Event.symbols.overlap(sorted(watched)),
+        RadarView.DISCOVER: ~Event.symbols.overlap(sorted(held | watched)),
+    }[view]
     query = (
         select(Event)
-        .where(Event.last_seen_at >= since, Event.status != EventStatus.DISMISSED.value)
-        .order_by(Event.score.desc().nulls_last(), Event.last_seen_at.desc())
-        .limit(limit * 3)
+        .where(
+            membership,
+            Event.last_seen_at >= since,
+            Event.status != EventStatus.DISMISSED.value,
+        )
+        .order_by(Event.score.desc().nulls_last(), Event.last_seen_at.desc(), Event.id.desc())
+        .limit(limit)
     )
     if min_score > 0:
         query = query.where(Event.score >= min_score)
-    out: list[EventOut] = []
-    for event in await session.scalars(query):
-        symbols = set(event.symbols)
-        in_view = {
-            RadarView.PORTFOLIO: bool(symbols & held),
-            RadarView.WATCHLIST: bool(symbols & watched),
-            RadarView.DISCOVER: not symbols & (held | watched),
-        }[view]
-        if in_view:
-            out.append(event_out(event))
-        if len(out) >= limit:
-            break
-    return out
+    return [event_out(event) for event in await session.scalars(query)]
