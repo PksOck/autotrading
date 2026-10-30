@@ -4,6 +4,34 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 
 ---
 
+## S-020 · 2026-10-30 · Osvežitev zadnjega commita za Claudov pregled
+
+**Cilj:** Po uporabnikovem navodilu osvežiti zadnji dokumentarni commit, da lahko Claude pregleda vse spremembe in plan.
+
+**Narejeno:** BL-217: [prevzem za Claude](./docs/implementation/2026-10-30-prevzem-za-claude-pregled.md), natančna veja/izhodišče, celoten razpon commitov, pomembni dokumenti, področja pregleda, prejšnji testi/omejitve in pripravljen angleški poziv za pregled. Zadnji commit je dopolnjen z amend; prejšnji produktni commiti niso združeni ali prepisani.
+
+**Preverjanje:** Pred posegom čist checkout. Izhodišče novih sprememb in skupni prednik z izvorno Claudovo vejo `1855eb8`; aktivna pregledna veja `feat/uxui-demo-upgrade`. Celoten paket vključuje predhodno kodo, ne samo zadnjega dokumentarnega commita. Dokumentarne povezave in diff preverjeni; produktni testi niso ponovljeni zaradi dodatka dokumenta.
+
+**Odprto/naslednji korak:** Uporabnik preda Claudu vejo in prevzem za neodvisen pregled, nato obravnava pripomb in priprava BL-214 SPEC. Brez sporočila drugi seji, push/merge, sprememb izvornega Claudovega checkouta ali posodobitve :3000/:3100.
+
+---
+
+## S-019 · 2026-10-30 · Enotni plan odprtega dela in priprava SPEC
+
+**Cilj:** Po zahtevi uporabnika zapisati plan vseh manjkajočih/nedokončanih stvari, da sledi pravilna priprava SPEC. Brez nove produktne izvedbe ali objave.
+
+**Narejeno:** BL-213: [enotni načrt](./docs/superpowers/plans/2026-10-30-zakljucevanje-odprtih-sklopov.md), paketi A–K, valovi V0–V6, odvisnosti, predpogoji, lastništvo področij, merila zaključka in popolna matrika odprtih BL. [Priprava SPEC](./docs/superpowers/specs/2026-10-30-odprti-sklopi-priprava-spec.md) vsebuje predlagane dokumente S-B…S-K, obvezne pogodbe/semantiko in minimalne prevzemne scenarije. Dodani BL-214 (SPEC), BL-215 (dokazni paket prevzema) in BL-216 (poznejši polni backtester). PLAN povezuje novi dokument.
+
+**Odločitve:** Obstoječe delujoče funkcije se ne izvajajo znova; delne naloge ohranijo manjkajoči živi dokaz. Starejši BL-011/013/027/052/058/172/174 imajo možna prekrivanja ali zastarele opise, zato zahtevajo preverbo, ne avtomatske oznake done. Dokument pokrije tudi odložene vire/OCR/analitiko/M6/M7, vendar jih ne določi za predpogoj osnovne izdaje. Končni SPEC se pripravi po paketih, ne z eno nepregledno univerzalno pogodbo.
+
+**Preverjanje:** Dokumentarna kontrola je potrdila vseh 49 odprtih/nedone BL ID v matriki, odsotnost podvojenih ID, veljavne lokalne povezave in čist diff glede belin. Produktni testi niso potrebni za ta korak; predhodni rezultati S-018 niso ponovno izvedeni ali razglašeni za nov testni zagon.
+
+**Odprto:** BL-214: dejanski končni SPEC, najprej Flex/identiteta/trajna oddaja predloga. Manjkajoči zasebni vzorci, pravice ponudnikov ali povezave ostanejo eksplicitni pogoji dokazov. Ta priprava SPEC ni odobren izvedbeni SPEC.
+
+**Naslednji korak:** Inventura A in priprava prvih SPEC. :3000, :3100 in Claudov checkout niso spremenjeni; brez klicev ponudnikov, sporočil, migracij, merge ali deploy.
+
+---
+
 ## S-018 · 2026-10-29–30 · Dopolnitve po uporabniškem pregledu
 
 **Cilj:** Vrniti uporabne informacije Pregleda, standardni portfelj, barve/trende in poenostaviti nastavitve; dodati testljive teze, kontrole dividend, SMTP več prejemnikov ter prvo testiranje shranjenih signalov/mnenj. Uporabnik je potrdil SMTP in testiranje brez novih LLM analiz; prenos :3000 ostaja prepovedan do nove potrditve.

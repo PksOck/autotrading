@@ -2,7 +2,9 @@
 
 Povzetek sprejetega načrta. Podrobna utemeljitev je v [`docs/research/2026-10-22-zasnova-resitve.md`](./docs/research/2026-10-22-zasnova-resitve.md), primerjava kandidatov v [`docs/research/2026-10-22-analiza-kandidatov.md`](./docs/research/2026-10-22-analiza-kandidatov.md), izkušnje iz starega projekta v [`docs/research/2026-10-22-trading-list-prevzem.md`](./docs/research/2026-10-22-trading-list-prevzem.md).
 
-## Trenutno: dopolnitve po pregledu UX/UI (S-018)
+## Trenutno: načrt zaključevanja in priprava SPEC (S-019)
+
+[Enotni načrt odprtih sklopov](./docs/superpowers/plans/2026-10-30-zakljucevanje-odprtih-sklopov.md) povezuje vse odprte/delne/odložene BL naloge v pakete A–K. [Priprava naslednjih SPEC](./docs/superpowers/specs/2026-10-30-odprti-sklopi-priprava-spec.md) določa pogodbe in prevzemna merila. To je dokumentarni korak; končni izvedbeni SPEC posameznih sklopov še niso pripravljeni. Najprej inventura starih statusov in SPEC za Flex/identiteto/trajno oddajo predloga, nato podatkovni viri, procesi, povezave in UX. M6/M7 ter polni backtester so ločeni od osnovne izdaje.
 
 Pregledna nadgradnja in uporabniške dopolnitve so na ločenem demu :3100. **:3000 ostane nespremenjen do nove izrecne potrditve uporabnika.** Aktualni obseg/testi so v [dopolnitvah po pregledu](./docs/implementation/2026-10-29-dopolnitve-po-pregledu.md); naslednje naloge BL-193/194, BL-202–205 in BL-211/212. Pripravljene Docker slike niso dovoljenje za zagon na :3000.
 

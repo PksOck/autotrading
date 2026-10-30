@@ -201,5 +201,10 @@ Opusov dokument je prevzet iz Claudove veje pri `28f2990`. Izvedbena veja `fix/s
 | BL-210 | Read-only testiranje shranjenih signalov/končnih mnenj, deterministični stroški/datum/smer, vidni preskoki in bounded SQL | ADR-0022, S-018 | done |
 | BL-211 | Potrjeni makro podatkovni viri VIX/US10Y/DXY in zadostna zgodovina nedvoumne kotacije SPY; ohraniti čas/vir | S-018 | next |
 | BL-212 | Po uporabniški konfiguraciji SMTP izrecno preveriti dejansko dostavo in negotove dostave; med razvojem samo fake transport | ADR-0021 | next |
+| BL-213 | Enotni načrt vseh odprtih/delnih nalog, popolna matrika BL → paket in priprava naslednjih SPEC | S-019, načrt 2026-10-30 | done |
+| BL-214 | Pripraviti in pregledati končne SPEC S-B…S-H za osnovno izdajo ter ločene SPEC odloženih sklopov; zahteve/vmesniki/prevzem brez domnevnih podatkov | priprava SPEC 2026-10-30 | next |
+| BL-215 | Pripraviti usklajen dokazni paket izdaje, razliko Claudove/pregledne veje, backup/restore in rollback; prenos :3000 samo po novi izrecni potrditvi | paket H načrta 2026-10-30 | next |
+| BL-216 | Ločen SPEC in poznejša izvedba polnega portfeljskega backtesterja s point-in-time podatki, korporativnimi dejanji, stroški in gotovino; ohraniti osnovno študijo dogodkov | paket I, ADR-0022 | later |
+| BL-217 | Osvežiti zadnji dokumentarni commit in pripraviti Claudov read-only pregled celotne veje/kode/plana od 1855eb8, z dokaznimi mejami in prepovedjo deploy | S-020, prevzem za Claude | done |
 
 S-017: pregledna veja vključuje Val −1 in nadaljnje nadgradnje, objavljene samo v ločenem demu :3100. Claudova veja in okolje :3000 nista posodobljena; uporabnik zahteva pregled pred prenosom. ADR-0017–0020 so zapisani za izvedeno pregledno vejo. Podatkovne vrzeli in nedokončani deli celotnega načrta so v docs/implementation/2026-10-29-pregled-sprememb.md. Status done pomeni izvedeno v pregledni veji, ne odobrene objave na :3000.
