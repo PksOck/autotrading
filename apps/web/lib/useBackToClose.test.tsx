@@ -7,6 +7,24 @@ describe("useBackToClose", () => {
     window.history.replaceState({ __NA: true, tree: "router" }, "", "/?filter=kept");
   });
 
+  it("closes on Back after reload retained tokens from the previous module lifetime", () => {
+    const retained = { __NA: true, tree: "router", prezaOverlays: ["overlay-1", "overlay-2"] };
+    window.history.replaceState(retained, "", "/?filter=kept");
+    const onClose = vi.fn();
+    const { unmount } = renderHook(() => useBackToClose(true, onClose));
+    const reopened = window.history.state;
+    act(() => {
+      window.history.replaceState(retained, "", "/?filter=kept");
+      window.dispatchEvent(new PopStateEvent("popstate", { state: retained }));
+    });
+    expect(onClose).toHaveBeenCalledOnce();
+    expect(reopened.prezaOverlays.slice(0, -1)).toEqual(retained.prezaOverlays);
+    expect(retained.prezaOverlays).not.toContain(reopened.prezaOverlays.at(-1));
+    expect(window.history.state).toEqual(retained);
+    expect(window.location.search).toBe("?filter=kept");
+    unmount();
+  });
+
   it("pushes the same URL, preserves router state, and closes on popstate", () => {
     const onClose = vi.fn();
     const previous = window.history.state;

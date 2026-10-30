@@ -10,8 +10,25 @@ import { useBackToClose } from "@/lib/useBackToClose";
 import { cn } from "@/lib/cn";
 import { spring } from "@/lib/motion";
 import { useRouter } from "next/navigation";
-import { useCreateProposal } from "@/lib/api/hooks";
-import { PROPOSE_EVENT, parseSymbols, type ProposeDetail } from "@/stores/proposals";
+import { useQueryClient } from "@tanstack/react-query";
+import { keys, useCreateProposal } from "@/lib/api/hooks";
+import { PROPOSE_EVENT, type ProposeDetail } from "@/stores/proposals";
+import { api, ApiError } from "@/lib/api/client";
+import type { ProposalOut } from "@/lib/api/types";
+import {
+  canonicalBody,
+  clearAcknowledgedFields,
+  DRAFT_KEY,
+  DraftStorageError,
+  loadDraft,
+  matchesOperation,
+  prepareOperation,
+  saveDraftFields,
+  setOperationState,
+  startNewIntention,
+  type DraftFields,
+  type DraftOperation,
+} from "@/lib/proposal-draft";
 
 type ProposalDepth = "quick" | "standard" | "deep";
 type ProposalDirection = "up" | "down" | "unsure";
@@ -32,7 +49,13 @@ export function ProposalComposer() {
   const id = useId();
   const router = useRouter();
   const create = useCreateProposal();
+  const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
+  const opener = useRef<HTMLElement | null>(null);
+  const isOpen = useRef(false);
+  useEffect(() => {
+    isOpen.current = open;
+  }, [open]);
   const close = useBackToClose(open, () => setOpen(false));
   const [symbols, setSymbols] = useState("");
   const [hypothesis, setHypothesis] = useState("");
@@ -43,86 +66,200 @@ export function ProposalComposer() {
   const [saveTo, setSaveTo] = useState<ProposalSaveTo>("reserve");
   const [error, setError] = useState(false);
   const hydrated = useRef(false);
-  const operation = useRef<{ fingerprint: string; id: string } | null>(null);
+  const draftId = useRef("");
+  const busy = useRef(false);
+  const dirtyFields = useRef(false);
+  const [checking, setChecking] = useState(false);
+  const [storageError, setStorageError] = useState(false);
+  const [operation, setOperation] = useState<DraftOperation | null>(null);
+  const fieldsRef = useRef<DraftFields>({
+    symbols,
+    hypothesis,
+    source,
+    direction,
+    horizon,
+    depth,
+    saveTo,
+  });
+  useEffect(() => {
+    fieldsRef.current = { symbols, hypothesis, source, direction, horizon, depth, saveTo };
+  }, [symbols, hypothesis, source, direction, horizon, depth, saveTo]);
+
+  function restoreFields(value: DraftFields) {
+    setSymbols(value.symbols);
+    setHypothesis(value.hypothesis);
+    setSource(value.source);
+    setDirection(value.direction);
+    setHorizon(value.horizon);
+    setDepth(value.depth);
+    setSaveTo(value.saveTo);
+  }
+
+  function editField<T>(setter: (value: T) => void, value: T) {
+    dirtyFields.current = true;
+    setter(value);
+  }
 
   useEffect(() => {
-    if (!open) return;
-    try {
-      localStorage.setItem(
-        "preza.proposal.draft.v1",
-        JSON.stringify({ symbols, hypothesis, source, direction, horizon, depth, saveTo }),
-      );
-    } catch {
-      /* Storage can be disabled. The in-memory draft is still preserved. */
-    }
+    if (!open || !draftId.current || !dirtyFields.current) return;
+    dirtyFields.current = false;
+    let current = true;
+    void saveDraftFields(draftId.current, fieldsRef.current)
+      .then((saved) => {
+        if (!current) return;
+        setOperation(saved.operation);
+        if (saved.draft_id !== draftId.current) {
+          draftId.current = saved.draft_id;
+          restoreFields(saved.fields);
+        }
+        setStorageError(false);
+      })
+      .catch(() => {
+        if (current) setStorageError(true);
+      });
+    return () => {
+      current = false;
+    };
   }, [open, symbols, hypothesis, source, direction, horizon, depth, saveTo]);
 
   useEffect(() => {
     const onPropose = (event: Event) => {
+      if (!isOpen.current && document.activeElement instanceof HTMLElement) {
+        opener.current = document.activeElement;
+      }
       if (!hydrated.current) {
         hydrated.current = true;
         try {
-          const draft = JSON.parse(localStorage.getItem("preza.proposal.draft.v1") ?? "null");
-          if (draft && typeof draft.symbols === "string" && typeof draft.hypothesis === "string") {
-            setSymbols(draft.symbols);
-            setHypothesis(draft.hypothesis);
-            if (typeof draft.source === "string") setSource(draft.source);
-            if (DIRECTIONS.includes(draft.direction)) setDirection(draft.direction);
-            if (HORIZONS.includes(draft.horizon)) setHorizon(draft.horizon);
-            if (DEPTHS.includes(draft.depth)) setDepth(draft.depth);
-            if (SAVE_TO.includes(draft.saveTo)) setSaveTo(draft.saveTo);
-          }
+          const draft = loadDraft();
+          draftId.current = draft.draft_id;
+          restoreFields(draft.fields);
+          setOperation(draft.operation);
         } catch {
-          /* Storage failure does not block opening the form. */
+          setStorageError(true);
         }
       }
       const detail = (event as CustomEvent<ProposeDetail>).detail ?? {};
-      if (detail.symbols) setSymbols(detail.symbols.join(", "));
-      if (detail.hypothesis !== undefined) setHypothesis(detail.hypothesis);
+      if (detail.symbols) editField(setSymbols, detail.symbols.join(", "));
+      if (detail.hypothesis !== undefined) editField(setHypothesis, detail.hypothesis);
       setError(false);
       setOpen(true);
     };
+    const onStorage = (event: StorageEvent) => {
+      if (event.key !== DRAFT_KEY) return;
+      try {
+        // Another tab can refresh safety state, but cannot replace active edits.
+        setOperation(loadDraft().operation);
+      } catch {
+        setStorageError(true);
+      }
+    };
     window.addEventListener(PROPOSE_EVENT, onPropose);
-    return () => window.removeEventListener(PROPOSE_EVENT, onPropose);
+    window.addEventListener("storage", onStorage);
+    return () => {
+      window.removeEventListener(PROPOSE_EVENT, onPropose);
+      window.removeEventListener("storage", onStorage);
+    };
   }, []);
+
+  const newIntention = async () => {
+    if (busy.current) return;
+    busy.current = true;
+    try {
+      const draft = await startNewIntention(draftId.current, fieldsRef.current);
+      draftId.current = draft.draft_id;
+      setOperation(draft.operation);
+      setStorageError(false);
+    } catch {
+      setStorageError(true);
+    } finally {
+      busy.current = false;
+    }
+  };
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
-    if (create.isPending) return;
-    const parsed = parseSymbols(
-      `${symbols} ${source.match(/\$[A-Za-z.]{1,10}/g)?.join(" ") ?? ""}`,
-    );
-    if (!parsed.length) {
+    if (busy.current || create.isPending) return;
+    if (!operation && !canonicalBody(fieldsRef.current).symbols.length) {
       setError(true);
       return;
     }
+    // This explicit action persists the current fields itself, including after storage recovery.
+    dirtyFields.current = false;
+    busy.current = true;
+    setChecking(true);
+    let frozen: DraftOperation | null = null;
     try {
-      const body = {
-        symbols: parsed,
-        hypothesis: hypothesis.trim(),
-        source_text: source.trim(),
-        direction,
-        horizon,
-        depth,
-        save_to: saveTo,
-      };
-      const fingerprint = JSON.stringify(body);
-      if (operation.current?.fingerprint !== fingerprint)
-        operation.current = { fingerprint, id: crypto.randomUUID() };
-      await create.mutateAsync({ ...body, request_id: operation.current.id });
-    } catch {
-      toast.error(t("proposalsPage.submitError"));
-      return;
+      // A temporary read failure while opening must not require discarding visible edits.
+      if (!draftId.current) draftId.current = loadDraft().draft_id;
+      const draft = await prepareOperation(draftId.current, fieldsRef.current);
+      draftId.current = draft.draft_id;
+      frozen = draft.operation;
+      setOperation(frozen);
+      if (!frozen || frozen.state === "acknowledged" || frozen.state === "conflict") return;
+      const submitting = await setOperationState(frozen.request_id, "submitting");
+      setOperation(submitting.operation);
+      if (
+        submitting.operation?.state === "acknowledged" ||
+        submitting.operation?.state === "conflict"
+      )
+        return;
+      let accepted: ProposalOut;
+      try {
+        accepted = await api.get<ProposalOut>(`/proposals/${frozen.request_id}`);
+      } catch (failure) {
+        if (!(failure instanceof ApiError) || failure.status !== 404) throw failure;
+        // A stale 404 must not regress an acceptance saved by another tab.
+        const ready = await setOperationState(frozen.request_id, "submitting");
+        setOperation(ready.operation);
+        if (ready.operation?.state === "acknowledged" || ready.operation?.state === "conflict")
+          return;
+        accepted = await create.mutateAsync({
+          ...frozen.canonical_body,
+          request_id: frozen.request_id,
+        });
+      }
+      if (!matchesOperation(frozen, accepted)) {
+        const conflict = await setOperationState(frozen.request_id, "conflict");
+        setOperation(conflict.operation);
+        return;
+      }
+      const acknowledged = await setOperationState(frozen.request_id, "acknowledged");
+      setOperation(acknowledged.operation);
+      void queryClient.invalidateQueries({ queryKey: keys.proposals });
+      setStorageError(false);
+      if (
+        JSON.stringify(canonicalBody(fieldsRef.current)) === JSON.stringify(frozen.canonical_body)
+      ) {
+        const expectedFields = fieldsRef.current;
+        const current = await clearAcknowledgedFields(frozen.request_id, expectedFields);
+        if (JSON.stringify(fieldsRef.current) === JSON.stringify(expectedFields))
+          restoreFields(current.fields);
+      }
+      close();
+      toast.success(
+        t("proposal.submitted", { symbols: frozen.canonical_body.symbols.join(", ") }),
+        {
+          description: t("proposal.previewNote"),
+          action: { label: t("nav.proposals"), onClick: () => router.push("/proposals") },
+        },
+      );
+    } catch (failure) {
+      if (failure instanceof DraftStorageError || !frozen) setStorageError(true);
+      else {
+        try {
+          const saved = await setOperationState(
+            frozen.request_id,
+            failure instanceof ApiError && failure.status === 409 ? "conflict" : "outcome_unknown",
+          );
+          setOperation(saved.operation);
+        } catch {
+          setStorageError(true);
+        }
+      }
+    } finally {
+      busy.current = false;
+      setChecking(false);
     }
-    operation.current = null;
-    setSymbols("");
-    setHypothesis("");
-    setSource("");
-    close();
-    toast.success(t("proposal.submitted", { symbols: parsed.join(", ") }), {
-      description: t("proposal.previewNote"),
-      action: { label: t("nav.proposals"), onClick: () => router.push("/proposals") },
-    });
   };
 
   return (
@@ -138,7 +275,16 @@ export function ProposalComposer() {
                 exit={{ opacity: 0 }}
               />
             </Dialog.Overlay>
-            <Dialog.Content asChild forceMount>
+            <Dialog.Content
+              asChild
+              forceMount
+              onCloseAutoFocus={(event) => {
+                if (opener.current?.isConnected) {
+                  event.preventDefault();
+                  opener.current.focus({ preventScroll: true });
+                }
+              }}
+            >
               <motion.div
                 initial={{ opacity: 0, y: 16, scale: 0.98 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -154,6 +300,37 @@ export function ProposalComposer() {
                 </Dialog.Description>
 
                 <form onSubmit={submit} className="mt-5 flex flex-col gap-4" noValidate>
+                  {storageError && (
+                    <p role="alert" className="rounded-md border border-neg p-3 text-sm">
+                      {t("proposal.durable.storageError")}
+                    </p>
+                  )}
+                  {operation && (
+                    <section
+                      aria-live="polite"
+                      className="rounded-md border border-border bg-surface-2 p-3 text-sm"
+                    >
+                      <p role={operation.state === "conflict" ? "alert" : "status"}>
+                        {t(
+                          `proposal.durable.${operation.state === "acknowledged" ? "acknowledged" : operation.state === "conflict" ? "conflict" : operation.state === "outcome_unknown" ? "unknown" : "prepared"}`,
+                        )}
+                      </p>
+                      <p className="mt-2 font-medium">
+                        {t("proposal.durable.savedSymbols", {
+                          symbols: operation.canonical_body.symbols.join(", "),
+                        })}
+                      </p>
+                      {operation.canonical_body.hypothesis && (
+                        <p
+                          className="mt-1 whitespace-pre-wrap"
+                          aria-label={t("proposal.durable.savedHypothesis")}
+                        >
+                          {operation.canonical_body.hypothesis}
+                        </p>
+                      )}
+                      <p className="mt-2 text-text-3">{t("proposal.durable.workingCopy")}</p>
+                    </section>
+                  )}
                   <div>
                     <label htmlFor={`${id}-symbols`} className="label">
                       {t("proposal.symbols")}
@@ -162,7 +339,7 @@ export function ProposalComposer() {
                       id={`${id}-symbols`}
                       value={symbols}
                       onChange={(e) => {
-                        setSymbols(e.target.value);
+                        editField(setSymbols, e.target.value);
                         setError(false);
                       }}
                       autoFocus
@@ -186,7 +363,7 @@ export function ProposalComposer() {
                     <textarea
                       id={`${id}-hypothesis`}
                       value={hypothesis}
-                      onChange={(e) => setHypothesis(e.target.value)}
+                      onChange={(e) => editField(setHypothesis, e.target.value)}
                       placeholder={t("proposal.hypothesisHint")}
                       rows={3}
                       className={cn(fieldClass, "mt-1 resize-y")}
@@ -200,7 +377,7 @@ export function ProposalComposer() {
                     <textarea
                       id={`${id}-source`}
                       value={source}
-                      onChange={(e) => setSource(e.target.value)}
+                      onChange={(e) => editField(setSource, e.target.value)}
                       rows={2}
                       className={cn(fieldClass, "mt-1 resize-y")}
                     />
@@ -212,14 +389,14 @@ export function ProposalComposer() {
                       name={`${id}-direction`}
                       options={DIRECTIONS.map((d) => ({ value: d, label: t(`proposal.${d}`) }))}
                       value={direction}
-                      onChange={setDirection}
+                      onChange={(value) => editField(setDirection, value)}
                     />
                     <Segmented
                       legend={t("proposal.horizon")}
                       name={`${id}-horizon`}
                       options={HORIZONS.map((h) => ({ value: h, label: t(`signal.horizon.${h}`) }))}
                       value={horizon}
-                      onChange={setHorizon}
+                      onChange={(value) => editField(setHorizon, value)}
                     />
                   </div>
 
@@ -239,7 +416,7 @@ export function ProposalComposer() {
                             name={`${id}-depth`}
                             value={d}
                             checked={depth === d}
-                            onChange={() => setDepth(d)}
+                            onChange={() => editField(setDepth, d)}
                             className="sr-only"
                           />
                           <span className="font-medium">{t(`proposal.depth.${d}`)}</span>
@@ -256,20 +433,40 @@ export function ProposalComposer() {
                     name={`${id}-save`}
                     options={SAVE_TO.map((s) => ({ value: s, label: t(`proposal.saveTo.${s}`) }))}
                     value={saveTo}
-                    onChange={setSaveTo}
+                    onChange={(value) => editField(setSaveTo, value)}
                   />
 
                   <div className="mt-2 flex flex-wrap items-center justify-end gap-2">
-                    <Dialog.Close className="h-10 rounded-md border border-border px-4 font-medium hover:bg-surface-2">
+                    <Dialog.Close
+                      type="button"
+                      className="min-h-12 rounded-md border border-border px-4 font-medium hover:bg-surface-2"
+                    >
                       {t("action.cancel")}
                     </Dialog.Close>
-                    <button
-                      type="submit"
-                      disabled={create.isPending}
-                      className="h-10 rounded-md bg-accent px-4 font-medium text-on-accent hover:opacity-90 disabled:opacity-60"
-                    >
-                      {t("proposal.submit")}
-                    </button>
+                    {operation && ["acknowledged", "conflict"].includes(operation.state) ? (
+                      <button
+                        type="button"
+                        onClick={newIntention}
+                        disabled={checking}
+                        className="min-h-12 rounded-md bg-accent px-4 font-medium text-on-accent disabled:opacity-60"
+                      >
+                        {t("proposal.durable.newIntention")}
+                      </button>
+                    ) : (
+                      <button
+                        type="submit"
+                        disabled={checking || create.isPending}
+                        className="min-h-12 rounded-md bg-accent px-4 font-medium text-on-accent hover:opacity-90 disabled:opacity-60"
+                      >
+                        {t(
+                          checking
+                            ? "proposal.durable.checking"
+                            : operation
+                              ? "proposal.durable.check"
+                              : "proposal.submit",
+                        )}
+                      </button>
+                    )}
                   </div>
                 </form>
               </motion.div>

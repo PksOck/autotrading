@@ -406,6 +406,19 @@
       "queued": "queued",
       "running": "analyzing",
       "done": "done"
+    },
+    "durable": {
+      "unknown": "The submission outcome is unknown. Check the saved submission before sending another proposal. Your edits stay separate.",
+      "prepared": "A saved submission is waiting for confirmation. Check it before sending another proposal.",
+      "check": "Check submission",
+      "checking": "Checking submission…",
+      "storageError": "The submission could not be saved safely in this browser. Sending is paused. Keep or copy your text and try again.",
+      "conflict": "The saved submission does not match the server record. It has not been accepted here. You can explicitly start a new proposal.",
+      "acknowledged": "This submission is already accepted. To send your current edits separately, start a new proposal.",
+      "newIntention": "Start new proposal",
+      "savedSymbols": "Saved submission: {symbols}",
+      "savedHypothesis": "Submitted hypothesis",
+      "workingCopy": "Editable draft. Checking uses the saved submission shown above."
     }
   },
   "overview": {

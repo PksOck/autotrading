@@ -33,9 +33,12 @@ export function useBackToClose(open: boolean, onClose: () => void) {
 
   useEffect(() => {
     if (open && !active.current) {
-      const token = `overlay-${++nextOverlay}`;
+      const previousStack = stack(window.history.state);
+      // Reload resets this module's counter while the current history entry survives.
+      let token = `overlay-${++nextOverlay}`;
+      while (previousStack.includes(token)) token = `overlay-${++nextOverlay}`;
       window.history.pushState(
-        { ...window.history.state, [MARKER]: [...stack(window.history.state), token] },
+        { ...window.history.state, [MARKER]: [...previousStack, token] },
         "",
         window.location.href,
       );

@@ -406,6 +406,19 @@
       "queued": "v vrsti",
       "running": "v analizi",
       "done": "končano"
+    },
+    "durable": {
+      "unknown": "Izid oddaje ni znan. Pred drugim predlogom preveri shranjeno oddajo. Tvoje spremembe ostanejo ločene.",
+      "prepared": "Shranjena oddaja čaka na potrditev. Pred drugim predlogom jo preveri.",
+      "check": "Preveri oddajo",
+      "checking": "Preverjanje oddaje…",
+      "storageError": "Oddaje v tem brskalniku ni bilo mogoče varno shraniti. Oddajanje je ustavljeno. Ohrani ali kopiraj besedilo in poskusi znova.",
+      "conflict": "Shranjena oddaja se ne ujema z zapisom na strežniku. Tukaj ni potrjena kot sprejeta. Izrecno lahko začneš nov predlog.",
+      "acknowledged": "Ta oddaja je že sprejeta. Za ločeno oddajo trenutnih sprememb začni nov predlog.",
+      "newIntention": "Začni nov predlog",
+      "savedSymbols": "Shranjena oddaja: {symbols}",
+      "savedHypothesis": "Poslana hipoteza",
+      "workingCopy": "Osnutek za urejanje. Preverjanje uporabi zgoraj prikazano shranjeno oddajo."
     }
   },
   "overview": {

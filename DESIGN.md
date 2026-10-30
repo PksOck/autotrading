@@ -299,3 +299,5 @@ Ideja ne pride samo iz Radarja. Uporabnik lahko **sam predlaga instrument ali te
 - uspešnost ročnih predlogov se meri ločeno (SCR-10: "tvoji predlogi" proti "sistemski signali").
 
 **Zaslon:** SCR-12 *Predlogi* (`/proposals`): seznam tvojih predlogov s stanjem (v vrsti, v analizi, končano) in izidom.
+
+**Trajna oddaja (BL-204, ADR-0024):** pred oddajo se poleg osnutka shrani zamrznjena namera. Po izgubljenem odgovoru/reload modal ponudi *Preveri oddajo* za isti ID in isto poslano vsebino. Urejena nova hipoteza ostane ločena in se ne pošlje namesto stare. Opozorilo pokaže, katero oddajo preverjamo; predlog po potrditvi/konfliktu zahteva izrecen *Začni nov predlog* za novo namero. Shramba brez varnega zapisa ustavi oddajo in ohrani vidno besedilo; opozorilo ne ugiba, ali je prejšnji POST že dosegel strežnik. Potrditev v enem zavihku ne izbriše novejših polj drugega. Nova dejanja imajo cilj dotika najmanj 48 px, SL/EN ter obstoječi Back/fokus.
