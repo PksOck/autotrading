@@ -4,6 +4,18 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 
 ---
 
+## S-021 · 2026-10-30 · Claudov pregled veje 9ec9e88 in ureditev vej
+
+**Cilj:** Read-only pregled `feat/uxui-demo-upgrade` od 1855eb8 in plana ter ureditev git vej, da ostanejo samo `master` in aktivne veje.
+
+**Narejeno:** [Claudov pregled](./docs/implementation/2026-10-30-claude-pregled-9ec9e88.md) z ugotovitvami po resnosti, pregledom plana in seznamom nalog. Dodan BL-218. Veje urejene: `master` in `feat/uxui-demo-upgrade` poslana na remote; zastarele veje izbrisane, nezdružena `claude/eloquent-bhabha-620624` arhivirana kot preverjen git bundle.
+
+**Preverjanje:** Ločen worktree na 9ec9e88 in izolirana test DB. API 554 passed, agents 221 passed, web 155 passed, lint/typecheck/mypy/i18n/OpenAPI čisti. Ugotovitve treh Sol pregledovalcev ročno preverjene v kodi; nove in starejše napake ločene z `git show 1855eb8`. Za brisanje vej `SAFETY_VERDICT: APPROVE`.
+
+**Odprto/naslednji korak:** Codex izvede BL-218, nato merge v `master`. Deploy :3000 ostaja ločen korak po backupu. A2/A5/D2 niso preverjeni z zagonom, e2e in pravi SMTP niso zagnani. Vnos S-014 (Claude, 28. 10.) prenesi iz osnovnega checkouta ob mergu.
+
+---
+
 ## S-020 · 2026-10-30 · Osvežitev zadnjega commita za Claudov pregled
 
 **Cilj:** Po uporabnikovem navodilu osvežiti zadnji dokumentarni commit, da lahko Claude pregleda vse spremembe in plan.
