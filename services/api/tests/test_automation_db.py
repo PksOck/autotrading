@@ -117,7 +117,7 @@ async def test_policy_disable_and_pause_rechecked_before_start(clean_automation:
         policy.enabled = False
         await session.commit()
         assert await automation.claim(session, execution_id) is None
-        assert execution.state == "skipped"
+        assert execution.state == "pending"
         assert not list(await session.scalars(select(AnalysisRun)))
 
 
@@ -224,7 +224,7 @@ async def test_recovery_keeps_only_latest_due_occurrence(clean_automation: Any) 
 async def test_worker_claim_executes_handler_once(
     clean_automation: Any, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    from preza import automation_worker
+    from preza import automation_worker, worker  # noqa: F401
 
     calls = []
 

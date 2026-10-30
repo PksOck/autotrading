@@ -4,7 +4,17 @@ import uuid
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, UniqueConstraint, Uuid
+from sqlalchemy import (
+    Boolean,
+    CheckConstraint,
+    DateTime,
+    ForeignKey,
+    Index,
+    Integer,
+    String,
+    UniqueConstraint,
+    Uuid,
+)
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -31,7 +41,10 @@ class ProcessPolicy(Base):
 
 class ProcessExecution(Base):
     __tablename__ = "process_execution"
-    __table_args__ = (UniqueConstraint("process_key", "scheduled_for", name="uq_process_slot"),)
+    __table_args__ = (
+        UniqueConstraint("process_key", "scheduled_for", name="uq_process_slot"),
+        Index("ix_process_execution_outbox", "state", "scheduled_for", "id"),
+    )
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     process_key: Mapped[str] = mapped_column(ForeignKey("process_policy.process_key"))
     policy_revision: Mapped[int] = mapped_column(Integer)
@@ -45,6 +58,22 @@ class ProcessExecution(Base):
     heartbeat_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     reason: Mapped[str | None] = mapped_column(String(160))
     counts: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict)
+
+
+class AutomationOutboxCursor(Base):
+    """Last examined key, independent of execution cleanup and worker lifetime."""
+
+    __tablename__ = "automation_outbox_cursor"
+    __table_args__ = (
+        CheckConstraint("id = 1", name="ck_automation_outbox_cursor_singleton"),
+        CheckConstraint(
+            "(scheduled_for IS NULL) = (execution_id IS NULL)",
+            name="ck_automation_outbox_cursor_pair",
+        ),
+    )
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    scheduled_for: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    execution_id: Mapped[uuid.UUID | None] = mapped_column(Uuid)
 
 
 class ProcessAnalysis(Base):

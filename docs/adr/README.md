@@ -27,6 +27,7 @@ Format: `ADR-xxxx-kratek-naslov.md`, statusi: `predlagano` · `sprejeto` · `zam
 | [ADR-0020](./ADR-0020-dividende-evidence-in-pokritost.md) | Dividendne evidence in pokritost | sprejeto; živi XML še nepreverjen |
 | [ADR-0021](./ADR-0021-nadzor-modelov-in-email.md) | Nadzor samodejnih modelov in SMTP | sprejeto v pregledni veji |
 | [ADR-0022](./ADR-0022-testiranje-shranjenih-mnenj.md) | Testiranje shranjenih signalov in mnenj | sprejeto v pregledni veji |
+| [ADR-0023](./ADR-0023-trajni-kurzor-dostave-opravil.md) | Trajni kurzor omejene dostave opravil | sprejeto v pregledni veji |
 
 ## Predloga
 

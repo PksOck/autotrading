@@ -156,4 +156,6 @@ async def automation_tick(ctx: dict[str, Any]) -> int:
         )
         await automation.schedule_due(session, now)
         await session.commit()
-        return await automation.deliver_pending(session, get_settings())
+        delivered = await automation.deliver_pending(session, get_settings())
+        await session.commit()
+        return delivered

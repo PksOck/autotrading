@@ -5,7 +5,7 @@ from datetime import UTC, datetime, time, timedelta
 from typing import Literal
 
 from fastapi import HTTPException
-from sqlalchemy import func, select, update
+from sqlalchemy import and_, func, or_, select, text, tuple_, update
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -22,6 +22,7 @@ from preza.domain.automation import (
 from preza.models import AnalysisRun, Instrument, WatchlistItem
 from preza.models_automation import (
     AutomationControl,
+    AutomationOutboxCursor,
     ProcessAnalysis,
     ProcessExecution,
     ProcessPolicy,
@@ -194,8 +195,6 @@ async def claim(session: AsyncSession, execution_id: uuid.UUID) -> ProcessExecut
     )
     if reason:
         execution.reason = reason
-        if reason == "disabled":
-            execution.state, execution.finished_at = "skipped", datetime.now(UTC)
         return None
     execution.state = "running"
     execution.reason = None
@@ -204,32 +203,114 @@ async def claim(session: AsyncSession, execution_id: uuid.UUID) -> ProcessExecut
 
 
 async def deliver_pending(session: AsyncSession, settings: Settings) -> int:
-    """Pending rows are the outbox. Delivery does not delete their durable intent."""
-    rows = list(
-        await session.scalars(
-            select(ProcessExecution)
-            .where(ProcessExecution.state == "pending")
-            .order_by(ProcessExecution.scheduled_for)
-            .limit(100)
-        )
+    """Scan a bounded, durable round-robin outbox; the caller commits progress."""
+    # Avoid blocking another tick even when the singleton needs its first INSERT.
+    if not await session.scalar(text("SELECT pg_try_advisory_xact_lock(73160330)")):
+        return 0
+    await session.execute(insert(AutomationOutboxCursor).values(id=1).on_conflict_do_nothing())
+    cursor = await session.scalar(
+        select(AutomationOutboxCursor)
+        .where(AutomationOutboxCursor.id == 1)
+        .with_for_update(skip_locked=True)
+    )
+    if cursor is None:
+        return 0
+    now = datetime.now(UTC)
+    control = await session.get(AutomationControl, 1, populate_existing=True)
+    policies = list(
+        await session.scalars(select(ProcessPolicy).execution_options(populate_existing=True))
+    )
+    allowed = []
+    for automatic in (False, True):
+        for outside_window in (False, True):
+            keys = [
+                row.process_key
+                for row in policies
+                if row.enabled
+                and not (automatic and control is not None and control.paused)
+                and not (
+                    automatic
+                    and row.process_key in ANALYSIS_PROCESSES
+                    and control is not None
+                    and not control.automatic_analyses_enabled
+                )
+                and (outside_window or in_window(policy_input(row), now))
+            ]
+            if keys:
+                allowed.append(
+                    and_(
+                        ProcessExecution.process_key.in_(keys),
+                        ProcessExecution.origin == "automatic"
+                        if automatic
+                        else ProcessExecution.origin != "automatic",
+                        ProcessExecution.outside_window.is_(outside_window),
+                    )
+                )
+    eligible_or_stale = or_(
+        ProcessExecution.policy_revision != ProcessPolicy.revision,
+        and_(ProcessExecution.policy_revision == ProcessPolicy.revision, or_(False, *allowed)),
     )
     delivered = 0
-    for row in rows:
-        if await gate(
-            session,
-            row.process_key,
-            automatic=row.origin == "automatic",
-            outside_window=row.outside_window,
-        ):
-            continue
-        job = await enqueue(
-            settings,
-            "execute_process",
-            str(row.id),
-            job_id=row.job_id,
-            queue_name="arq:agents" if row.process_key in AGENT_PROCESSES else None,
+    examined = 0
+    while delivered < 100 and examined < 1000:
+        batch_size = min(100 - delivered, 1000 - examined)
+        query = (
+            select(ProcessExecution)
+            .join(ProcessPolicy)
+            .where(
+                ProcessExecution.state == "pending",
+                ProcessExecution.scheduled_for <= now,
+                eligible_or_stale,
+            )
         )
-        delivered += job is not None
+        if cursor.scheduled_for is not None and cursor.execution_id is not None:
+            query = query.where(
+                tuple_(ProcessExecution.scheduled_for, ProcessExecution.id)
+                > tuple_(cursor.scheduled_for, cursor.execution_id)
+            )
+        rows = list(
+            await session.scalars(
+                query.order_by(ProcessExecution.scheduled_for, ProcessExecution.id).limit(
+                    batch_size
+                )
+            )
+        )
+        for row in rows:
+            examined += 1
+            cursor.scheduled_for, cursor.execution_id = row.scheduled_for, row.id
+            policy = await session.get(ProcessPolicy, row.process_key, populate_existing=True)
+            if policy is None or policy.revision != row.policy_revision:
+                skipped_id = await session.scalar(
+                    update(ProcessExecution)
+                    .where(ProcessExecution.id == row.id, ProcessExecution.state == "pending")
+                    .values(state="skipped", reason="policy_changed", finished_at=now)
+                    .returning(ProcessExecution.id)
+                    .execution_options(synchronize_session=False)
+                )
+                if skipped_id is None:
+                    # A claimant or another terminal transition already owns this intent.
+                    continue
+                session.expire(row, ["state", "reason", "finished_at"])
+                continue
+            if await gate(
+                session,
+                row.process_key,
+                automatic=row.origin == "automatic",
+                outside_window=row.outside_window,
+            ):
+                continue
+            job = await enqueue(
+                settings,
+                "execute_process",
+                str(row.id),
+                job_id=row.job_id,
+                queue_name="arq:agents" if row.process_key in AGENT_PROCESSES else None,
+            )
+            delivered += job is not None
+        if len(rows) < batch_size:
+            # A later tick starts a new sweep, including newly resumed/older intents.
+            cursor.scheduled_for = cursor.execution_id = None
+            break
     return delivered
 
 
