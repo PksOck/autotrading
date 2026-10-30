@@ -310,6 +310,12 @@ async def fail_review(
         "invalid_references",
         "interrupted",
         "internal_error",
+        "automatic_analyses_disabled",
+        "review_disabled",
+        "review_paused",
+        "review_outside_window",
+        "review_execution_missing",
+        "review_policy_changed",
     }
     review, _, _ = await _locked_review(session, review_id)
     if review.status in TERMINAL:

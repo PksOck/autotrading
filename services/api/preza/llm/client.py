@@ -8,6 +8,7 @@ error.
 import json
 import logging
 import re
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from decimal import Decimal
 from typing import Literal, Protocol, TypeVar
@@ -17,6 +18,7 @@ from pydantic import BaseModel, ValidationError
 
 Role = Literal["local-fast", "local-reason", "cloud-quick", "cloud-deep"]
 T = TypeVar("T", bound=BaseModel)
+AttemptGuard = Callable[[], Awaitable[None]]
 
 FENCE = re.compile(r"^```(?:json)?\s*|\s*```$", re.MULTILINE)
 logger = logging.getLogger(__name__)
@@ -48,6 +50,12 @@ class LlmSchemaError(LlmUnavailableError):
     error_code = "schema_validation_failed"
 
 
+class LlmAutomaticDisabledError(LlmUnavailableError):
+    """A fresh permission check stopped an automatic transport attempt."""
+
+    error_code = "automatic_analyses_disabled"
+
+
 @dataclass
 class LlmResult[T: BaseModel]:
     value: T
@@ -77,6 +85,21 @@ class OutputLimitedLlm(Llm, Protocol):
         schema: type[T],
         *,
         max_output_tokens: int | None = None,
+    ) -> LlmResult[T]: ...
+
+
+class AttemptGuardedLlm(OutputLimitedLlm, Protocol):
+    """Transport checks the supplied permission immediately before every HTTP attempt."""
+
+    async def complete_json(
+        self,
+        role: Role,
+        system: str,
+        user: str,
+        schema: type[T],
+        *,
+        max_output_tokens: int | None = None,
+        before_attempt: AttemptGuard | None = None,
     ) -> LlmResult[T]: ...
 
 
@@ -114,6 +137,7 @@ class LiteLlmClient:
         schema: type[T],
         *,
         max_output_tokens: int | None = None,
+        before_attempt: AttemptGuard | None = None,
     ) -> LlmResult[T]:
         if max_output_tokens is not None and max_output_tokens < 1:
             raise ValueError("max_output_tokens must be positive")
@@ -146,6 +170,20 @@ class LiteLlmClient:
                 # OpenAI-compatible routes accept max_completion_tokens directly.
                 token_param = "max_tokens" if role.startswith("local-") else "max_completion_tokens"
                 body[token_param] = max_output_tokens
+            if before_attempt is not None:
+                try:
+                    await before_attempt()
+                except LlmUnavailableError as exc:
+                    # The rejected attempt performed no HTTP and incurred no new cost.
+                    exc.attempts = _attempt
+                    exc.prompt_tokens = prompt_tokens
+                    exc.completion_tokens = completion_tokens
+                    exc.cost = (
+                        sum((c for c in costs if c is not None), Decimal("0"))
+                        if all(c is not None for c in costs)
+                        else None
+                    )
+                    raise
             try:
                 data = await self._post("/v1/chat/completions", body)
             except LlmUnavailableError as exc:

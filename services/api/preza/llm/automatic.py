@@ -5,7 +5,7 @@ from typing import cast
 from pydantic import BaseModel
 
 from preza.db import get_sessionmaker
-from preza.llm.client import Llm, LlmResult, LlmUnavailableError, OutputLimitedLlm, Role
+from preza.llm.client import AttemptGuardedLlm, Llm, LlmAutomaticDisabledError, LlmResult, Role
 from preza.services.automation import automatic_analyses_allowed
 
 
@@ -16,7 +16,7 @@ class AutomaticLlm:
     async def allowed(self) -> None:
         async with get_sessionmaker()() as session:
             if not await automatic_analyses_allowed(session):
-                raise LlmUnavailableError("automatic_analyses_disabled")
+                raise LlmAutomaticDisabledError("automatic_analyses_disabled")
 
     async def complete_json[T: BaseModel](
         self,
@@ -27,12 +27,15 @@ class AutomaticLlm:
         *,
         max_output_tokens: int | None = None,
     ) -> LlmResult[T]:
-        await self.allowed()
-        if max_output_tokens is not None:
-            return await cast(OutputLimitedLlm, self.inner).complete_json(
-                role, system, user, schema, max_output_tokens=max_output_tokens
-            )
-        return await self.inner.complete_json(role, system, user, schema)
+        # No unguarded fallback: an incompatible transport must fail closed.
+        return await cast(AttemptGuardedLlm, self.inner).complete_json(
+            role,
+            system,
+            user,
+            schema,
+            max_output_tokens=max_output_tokens,
+            before_attempt=self.allowed,
+        )
 
     async def embed(self, texts: list[str]) -> list[list[float]]:
         await self.allowed()

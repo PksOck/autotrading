@@ -139,14 +139,22 @@ async def test_automatic_model_rechecks_switch_on_every_call(
 
     monkeypatch.setattr(automatic, "get_sessionmaker", lambda: sessions)
     inner = AsyncMock()
+
+    async def guarded_complete(*args, before_attempt, **kwargs):
+        await before_attempt()
+
+    inner.complete_json.side_effect = guarded_complete
     llm = automatic.AutomaticLlm(inner)
     await llm.complete_json("cloud-deep", "system", "user", BaseModel, max_output_tokens=100)
     assert inner.complete_json.await_count == 1
-    assert inner.complete_json.call_args.kwargs == {"max_output_tokens": 100}
+    assert inner.complete_json.call_args.kwargs == {
+        "max_output_tokens": 100,
+        "before_attempt": llm.allowed,
+    }
     control.automatic_analyses_enabled = False
     with pytest.raises(LlmUnavailableError):
         await llm.complete_json("cloud-deep", "system", "user", BaseModel, max_output_tokens=100)
-    assert inner.complete_json.await_count == 1
+    assert inner.complete_json.await_count == 2
 
 
 @pytest.mark.parametrize("origin,expected", [("manual", None), ("automatic", "paused")])

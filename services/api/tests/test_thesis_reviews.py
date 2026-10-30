@@ -101,6 +101,12 @@ async def published(revision, *, cited=None, status="broken"):
     [
         ("output_truncated", "output_truncated"),
         ("schema_validation_failed", "schema_validation_failed"),
+        ("automatic_analyses_disabled", "automatic_analyses_disabled"),
+        ("review_disabled", "review_disabled"),
+        ("review_paused", "review_paused"),
+        ("review_outside_window", "review_outside_window"),
+        ("review_execution_missing", "review_execution_missing"),
+        ("review_policy_changed", "review_policy_changed"),
         ("unknown provider details", "internal_error"),
     ],
 )

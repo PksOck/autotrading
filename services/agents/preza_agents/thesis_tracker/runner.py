@@ -3,14 +3,14 @@
 import asyncio
 import uuid
 from datetime import UTC, datetime
-from typing import Any
+from typing import Any, cast
 
 from fastapi import HTTPException
 from pydantic import ValidationError
 
 from preza.db import get_sessionmaker
 from preza.domain.thesis_review import ReviewBatch
-from preza.llm.client import LlmUnavailableError
+from preza.llm.client import AttemptGuardedLlm, LlmAutomaticDisabledError, LlmUnavailableError
 from preza.services import thesis_reviews as reviews
 from preza.services.automation import owns_review_dispatch, record_review_dispatch, review_gate
 from preza_agents.thesis_tracker.context import InputLimitError, prompt_data
@@ -18,6 +18,14 @@ from preza_agents.thesis_tracker.prompts import PROMPT_VERSION, SYSTEM, user_pro
 
 MAX_OUTPUT_TOKENS = 4000
 JOB_TIMEOUT_S = 660
+
+
+class ReviewPermissionDenied(LlmUnavailableError):
+    """Safe durable permission reason; never a model assessment."""
+
+    def __init__(self, reason: str):
+        super().__init__(reason)
+        self.error_code = f"review_{reason}"
 
 
 def usage(result: Any) -> dict[str, Any]:
@@ -83,13 +91,27 @@ async def thesis_review(
             if status in reviews.TERMINAL:
                 return status
             # No session or transaction remains open during the external call.
+
+            async def before_attempt() -> None:
+                # mark_dispatched may have waited on a DB lock after the previous
+                # check. Also revalidate durable manual origin/window on repairs.
+                async with get_sessionmaker()() as session:
+                    reason = await review_gate(
+                        session, uuid.UUID(revision_id), execution_id, week_start
+                    )
+                if reason == "analyses_disabled":
+                    raise LlmAutomaticDisabledError(reason)
+                if reason:
+                    raise ReviewPermissionDenied(reason)
+
             accounting = {"attempts": 1}
-            result = await ctx["llm"].complete_json(
+            result = await cast(AttemptGuardedLlm, ctx["llm"]).complete_json(
                 "cloud-deep",
                 SYSTEM,
                 user_prompt(data),
                 ReviewBatch,
                 max_output_tokens=MAX_OUTPUT_TOKENS,
+                before_attempt=before_attempt,
             )
             accounting = usage(result)
             batch = ReviewBatch.model_validate(result.value)
@@ -103,7 +125,17 @@ async def thesis_review(
         accounting = usage(exc)
         code = (
             exc.error_code
-            if exc.error_code in {"output_truncated", "schema_validation_failed"}
+            if exc.error_code
+            in {
+                "output_truncated",
+                "schema_validation_failed",
+                "automatic_analyses_disabled",
+                "review_disabled",
+                "review_paused",
+                "review_outside_window",
+                "review_execution_missing",
+                "review_policy_changed",
+            }
             else "role_unavailable"
         )
     except TimeoutError:

@@ -76,6 +76,8 @@ def harness(monkeypatch):
     async def complete(*args, **kwargs):
         assert active == 0
         assert events[-3:] == ["dispatch", "commit", "close"]
+        await kwargs["before_attempt"]()
+        assert active == 0
         events.append("llm")
         return result
 
@@ -104,7 +106,8 @@ async def test_one_call_committed_phases_and_usage(harness):
     h.llm.complete_json.assert_awaited_once()
     args, kwargs = h.llm.complete_json.call_args
     assert args[0] == "cloud-deep" and args[3] is ReviewBatch
-    assert kwargs == {"max_output_tokens": 4000}
+    assert kwargs["max_output_tokens"] == 4000
+    assert callable(kwargs["before_attempt"])
     assert h.finalize.call_args.kwargs == runner.usage(h.result)
     assert h.events.count("commit") == 3
     h.fail.assert_not_awaited()
