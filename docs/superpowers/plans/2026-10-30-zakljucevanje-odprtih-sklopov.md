@@ -12,6 +12,14 @@
 
 **Osnova:** veja `feat/uxui-demo-upgrade`, produktni commit `bd33131`, S-018. Inventura spodaj je dokumentarni posnetek BACKLOG, ne nova potrditev živih povezav ali ponudniških pravic.
 
+## Dopolnitev S-022 po Claudovem pregledu
+
+Obvezno preberi [SPEC dodatnega kroga](../specs/2026-10-30-dodatni-krog-claude-spec.md) in [izvedbeni plan](./2026-10-30-dodatni-krog-claude-izvedba.md). BL-218 dopolni prvotno inventuro: skupaj 50 odprtih nalog. Šest neposrednih popravkov ima svoj izvedbeni krog, starejše finančne napake pa ostanejo pogoji pravilnega živega prevzema.
+
+SPEC pišemo samo za naslednji val. S-B, ožji S-F5 (restore), S-G1 (idempotentnost), minimalni S-C in S-H imajo prednost; I/J/K ostanejo skice. Zasebni razširjeni očiščen Flex je kritični vhod za dokaz živega paketa B, ne pogoj za neodvisni sintetični popravek D1. Higiena vej je po pregledu c55e37d že izvedena; ne ponavljaj brisanja/arhiviranja.
+
+Združitev veje in namestitev aplikacije sta ločeni stopnji. Za obe preverimo veljavno uporabniško avtorizacijo; za :3000 še vedno velja izrecna nova potrditev. Backup/restore je pred prvo živo migracijo 0016–0019 ali katerokoli novejšo, ne opravilo po namestitvi. Ob združitvi preveriti tudi manjkajoči vnos S-014, brez prepisovanja sočasnih sprememb. Stari BL-011/013/174 niso samodejno done; najprej preverba dokazov in prekrivanja.
+
 ## 1. Kaj je zaključeno in česa ne ponavljamo
 
 Izvedeni so standardni pogledi, osnovni izbirni stolpci/barve/trendi, osnovne politike procesov, glavno stikalo avtomatskih modelov, SMTP nastavitve in transport s ponarejenimi testi, sintetične teze, osnovna študija shranjenih signalov/mnenj ter dividendna evidenca na strogo podprti sintetični pogodbi. BL-195–201 in BL-206–210 se ne odpirajo znova kot povsem nova izvedba.
@@ -32,8 +40,8 @@ To še ne potrjuje živih vhodnih podatkov, popolnosti vseh kazalnikov, dejanske
 
 | Val | Namen | Paketi | Izhodni pogoj |
 |---|---|---|---|
-| V0 | Uskladitev dejanskega stanja in SPEC | A | Za vsako odprto nalogo dokaz, lastnik, paket in merilo zaključka; brez slepih statusov done |
-| V1 | Zanesljiv uvoz in identiteta | B, C | Neveljaven/nepopoln uvoz ne izbriše ali napačno ovrednoti portfelja; kotacije nedvoumne |
+| V0 | Uskladitev stanja in SPEC samo naslednjega vala | A, BL-218 | Za vsako odprto nalogo dokaz, lastnik, paket in merilo zaključka; brez slepih statusov done |
+| V1 | Zanesljiv uvoz, identiteta in obnovljivost | B, C, F5 | Neveljaven/nepopoln uvoz ne izbriše ali napačno ovrednoti portfelja; kotacije nedvoumne |
 | V2 | Dejanski podatki in predvidljivi procesi | D, E | Metrike/makro/ETF imajo potrjene pogodbe; omejitve in poraba vidne, ali je vrzel izrecno sprejeta |
 | V3 | Povezave, uporabnost in zaščita stanja | F, G | Povezave preizkušene v dogovorjenem obsegu, brez dvojnih oddaj; ciljna UX matrika preverjena |
 | V4 | Priprava prevzema | H | Zelen dokazni paket, preizkušen restore, usklajene veje, uporabniški pregled; prenos še zadržan |
@@ -51,7 +59,7 @@ B in C se uskladita glede instrumentne identitete; D temelji na njuni potrjeni p
 - [ ] A1: Primerjaj aktualni HEAD, delovno drevo, izvorno Claudovo vejo in uporabljene migracije samo za branje. Razliko vnesi kot datiran dokaz; ne združuj vej.
 - [ ] A2: Vsak status doing/next/later razvrsti kot manjkajoče, delno, izvedeno-brez-živega-dokaza, zastarel opis ali namerno odloženo. Število devetih unknown instrumentov in zgodovinske ocene žetonov ponovno izmeri, ne prepiši kot današnje stanje.
 - [ ] A3: Posebej preveri BL-011/013 (prejšnji živi MiniMax dokazi), BL-027 (ETF profili), BL-052 (nov Pregled), BL-058 (lokalni urniki), BL-172 (vidnost usage) in BL-174 (prekrivanje z BL-193/194). Poveži nadomestne dokaze, brez podvajanja implementacije.
-- [ ] A4: Pripravi SPEC dokumente iz spremljevalne priprave; odprta dejstva vira naj dobijo preizkus, predpostavka pa jasno oznako predloga. Nato razbij paket na majhne naloge z natančnimi vmesniki in testi.
+- [ ] A4: Pripravi samo SPEC naslednjega vala iz spremljevalne priprave, ostale ohrani kot skice; odprta dejstva vira naj dobijo preizkus, predpostavka pa jasno oznako predloga. Nato razbij paket na majhne naloge z natančnimi vmesniki in testi.
 
 **Končano:** vsak odprt ID ima paket in preizkusljiv izhod; vsak izvedbeni korak ima veljaven SPEC. Nova arhitekturna odločitev dobi naslednji prost ADR šele ob dejanski odločitvi.
 
@@ -110,7 +118,7 @@ B in C se uskladita glede instrumentne identitete; D temelji na njuni potrjeni p
 - [ ] F2: Odločitev SPEC o dnevnem povzetku: kohorta, lokalna ura, jezik, največja količina, izbor prejemnikov/kanalov, filter starih/poteklih zapisov in vedenje ob prvem vklopu. Ne pošiljati nenaročenega zgodovinskega zaostanka.
 - [ ] F3: Telegram besedila skozi prevode, pravilni deep linki in obstoječe omejitve uporabnika. Integracijski testi s fake transportom; živi preizkus posebej dovoljen.
 - [ ] F4: Potrdi Tailscale/HTTPS/telefon in read-only IB Gateway tam, kjer se uporabljata. UI ne sme izpostaviti poverilnic. Omrežni dostop ali broker profil se ne vključi z dokumentarnim korakom.
-- [ ] F5: Načrt rednih kopij, hramba, ločen cilj, dovoljenja in obveščanje o napaki. Dejanski restore na ločeni bazi je obvezni dokaz; enkratni dump ni redno varnostno kopiranje.
+- [ ] F5: Načrt rednih kopij, hramba, ločen cilj, dovoljenja in obveščanje o napaki. Dejanski restore na ločeni bazi je obvezni dokaz pred prvo živo migracijo (tudi 0016–0019); enkratni dump ni redno varnostno kopiranje.
 
 **Končano:** vsak izbrani kanal ima dokaz in kontroliran izklop; dostop in restore preverjena. Nepovezan kanal ostane izklopljen, lahko je izrecno izvzet iz prve objave.
 
@@ -135,7 +143,8 @@ B in C se uskladita glede instrumentne identitete; D temelji na njuni potrjeni p
 - [ ] H3: Na :3100 pokaži success/failure/partial/stale/unknown primere; zasebni podatki niso demo. Omejen preizkus z dejanskimi podatki poteka samo v dogovorjenem ločenem okolju; ne ustvari signalov/sporočil zgolj za UI dokaz.
 - [ ] H4: Za vsako release zahtevo označi izpolnjeno, sprejeto vrzel ali blokado. Finančno napačen uvoz, dvojna plačljiva oddaja ali nedelujoče varovalo niso sprejemljiva kozmetična vrzel.
 - [ ] H5: Pripravi konkreten načrt prenosa: aktivne analize/vrste, fresh backup, zaporedje API/migracije/delavci/web, nespremenjeni volumni/poverilnice, smoke testi in rollback slik/sheme/podatkov. Destruktivna migracija nima samoumevnega downgrade povratka.
-- [ ] H6: Uporabniški pregled in nova izrecna potrditev prenosa :3000 sta zadnji korak. Do takrat ni merge/deploy/push zgolj zaradi zaključenega dokumenta.
+- [ ] H6-M: Ločena priprava združitve: aktualna osnova, sočasno delo, manjkajoči S-014, zeleni popravki/testi in preverjena uporabniška avtorizacija merge. To samo ne namešča aplikacije.
+- [ ] H7-D: Ločena namestitev :3000 šele po novi izrecni potrditvi uporabnika, fresh backup/restore dokazu, preverjenih aktivnih vrstah, migracijskem/rollback planu in smoke. Zelena združitev ni dovoljenje za deploy ali push.
 
 **Končano:** pripravljena in pregledana izdaja, ločeno od dejansko odobrenega/prenesenega stanja. Če se prenos pozneje izvede, potrebuje svoj zapis dokazov, ne ponovne oznake tega načrta kot dovoljenja.
 
@@ -253,8 +262,9 @@ Spodnja matrika se generira iz vseh vrstic s statusom next/doing/later/blocked o
 | BL-205 | next | B | Pred prenosom zapreti dodatne Flex robove: BASE_SUMMARY-only cash in nepopolne vrstice brez potrjene valute |
 | BL-211 | next | D | Potrjeni makro podatkovni viri VIX/US10Y/DXY in zadostna zgodovina nedvoumne kotacije SPY; ohraniti čas/vir |
 | BL-212 | next | F | Po uporabniški konfiguraciji SMTP izrecno preveriti dejansko dostavo in negotove dostave; med razvojem samo fake transport |
-| BL-214 | next | A | Pripraviti in pregledati končne SPEC S-B…S-H za osnovno izdajo ter ločene SPEC odloženih sklopov; zahteve/vmesniki/prevzem brez domnevnih podatkov |
+| BL-214 | doing | A | Pripraviti in pregledati končne SPEC S-B…S-H za osnovno izdajo ter ločene SPEC odloženih sklopov; zahteve/vmesniki/prevzem brez domnevnih podatkov |
 | BL-215 | next | H | Pripraviti usklajen dokazni paket izdaje, razliko Claudove/pregledne veje, backup/restore in rollback; prenos :3000 samo po novi izrecni potrditvi |
 | BL-216 | later | I | Ločen SPEC in poznejša izvedba polnega portfeljskega backtesterja s point-in-time podatki, korporativnimi dejanji, stroški in gotovino; ohraniti… |
+| BL-218 | next | B/E/G, dodatni krog | D1/A1/A2/A4/U1/U2 po izvedbenem SPEC; ostale ugotovitve v paketnih SPEC in pogojih izdaje |
 
-Kontrola: **49 odprtih vrstic**, vse imajo paket; noben ID ni izpuščen ali samodejno zaključen. BL-213 je dokumentarna naloga in je zaključena ločeno od teh izvedbenih nalog.
+Kontrola po S-022: **50 odprtih vrstic**, vse imajo paket; noben ID ni izpuščen ali samodejno zaključen. BL-213 je dokumentarna naloga in je zaključena ločeno od teh izvedbenih nalog.

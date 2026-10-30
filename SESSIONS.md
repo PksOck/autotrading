@@ -4,6 +4,20 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 
 ---
 
+## S-022 · 2026-10-30 · Pripombe v plan in izvedbeni SPEC dodatnega kroga
+
+**Cilj:** Po uporabnikovem »pripombe vključi v plan in spec za izvedbo v tem dodatnem krogu / Go« pripraviti dokumentarno pogodbo popravkov brez posega v aplikacijo.
+
+**Narejeno:** BL-219: [izvedbeni SPEC](./docs/superpowers/specs/2026-10-30-dodatni-krog-claude-spec.md) in [plan dodatnega kroga](./docs/superpowers/plans/2026-10-30-dodatni-krog-claude-izvedba.md) na osnovi c55e37d. D1/A1/A2/A4/U1/U2 imajo konkretno semantiko, datoteke, regresije in ukazna vrata. D2/D3/F1/B5/A3/A5/R1/E1 so sledljivo razporejeni v naslednje SPEC/pogoje izdaje. Glavni načrt posodobljen za sprotno pisanje SPEC, backup/restore pred živo migracijo ter ločeni stopnji merge/deploy. BL-214 je delno v delu; BL-218 ostaja next do dejanskih popravkov/testov.
+
+**Odločitve:** Callback varuje vsak transportni poskus brez vpliva na manual; outbox mora ohraniti omejeno delo in napredovanje; signalna povezava ohrani študijo z obstoječim Peek, analizna vodi na obstoječo stran v novem zavihku. To so zapisane izvedbene usmeritve, ne trditve o implementaciji. Verjetne ugotovitve A2/A5/D2 potrebujejo reprodukcijo. Celotne žive Flex pogodbe ne zapre sintetična regresija D1. Priporočilo pregledovalca za merge ni dovoljenje za deploy ali samodejna uporabnikova avtorizacija združitve.
+
+**Preverjanje:** Dokumentarna kontrola je potrdila vseh 14 ID pripomb v SPEC, vseh 50 odprtih BL v glavni matriki, enoličnost ID in veljavne lokalne povezave ter diff. Statično pregledani sedanji protokoli/transportna zanka, coverage upsert, outbox, povezave UI in review runner. Noben produktni test ali živi klic ni zagnan; prejšnji testi so samo citirana zgodovina.
+
+**Odprto/naslednji korak:** Izvedba BL-218 po novem SPEC/plan, ločeno nadaljnji SPEC za podatkovne/obnovitvene/lastniške pogoje. Brez sprememb produktne kode, migracij, :3000/:3100, merge/push ali pošiljanja sporočil v tem dokumentarnem koraku.
+
+---
+
 ## S-021 · 2026-10-30 · Claudov pregled veje 9ec9e88 in ureditev vej
 
 **Cilj:** Read-only pregled `feat/uxui-demo-upgrade` od 1855eb8 in plana ter ureditev git vej, da ostanejo samo `master` in aktivne veje.

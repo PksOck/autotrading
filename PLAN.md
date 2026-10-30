@@ -2,7 +2,9 @@
 
 Povzetek sprejetega načrta. Podrobna utemeljitev je v [`docs/research/2026-10-22-zasnova-resitve.md`](./docs/research/2026-10-22-zasnova-resitve.md), primerjava kandidatov v [`docs/research/2026-10-22-analiza-kandidatov.md`](./docs/research/2026-10-22-analiza-kandidatov.md), izkušnje iz starega projekta v [`docs/research/2026-10-22-trading-list-prevzem.md`](./docs/research/2026-10-22-trading-list-prevzem.md).
 
-## Trenutno: načrt zaključevanja in priprava SPEC (S-019)
+## Trenutno: dodatni krog po Claudovem pregledu (S-022)
+
+[Izvedbeni SPEC dodatnega kroga](./docs/superpowers/specs/2026-10-30-dodatni-krog-claude-spec.md) in [izvedbeni plan](./docs/superpowers/plans/2026-10-30-dodatni-krog-claude-izvedba.md) opredeljujeta BL-218: D1/A1/A2/A4/U1/U2, regresije in prevzem. Vse ostale pripombe so izrecno vezane na S-B/S-F5/S-G1/S-C/S-H. Dokumenta sta pripravljena, produktni popravki še niso izvedeni. SPEC nastaja samo za naslednji val; ne čakamo na odložene module. Združitev in namestitev sta ločena koraka; :3000 še vedno zahteva novo izrecno potrditev in backup/restore pred živo migracijo.
 
 [Enotni načrt odprtih sklopov](./docs/superpowers/plans/2026-10-30-zakljucevanje-odprtih-sklopov.md) povezuje vse odprte/delne/odložene BL naloge v pakete A–K. [Priprava naslednjih SPEC](./docs/superpowers/specs/2026-10-30-odprti-sklopi-priprava-spec.md) določa pogodbe in prevzemna merila. To je dokumentarni korak; končni izvedbeni SPEC posameznih sklopov še niso pripravljeni. Najprej inventura starih statusov in SPEC za Flex/identiteto/trajno oddajo predloga, nato podatkovni viri, procesi, povezave in UX. M6/M7 ter polni backtester so ločeni od osnovne izdaje.
 

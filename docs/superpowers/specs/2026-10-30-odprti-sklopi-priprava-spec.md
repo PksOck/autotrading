@@ -4,6 +4,10 @@
 
 ## 1. Zaporedje dokumentov
 
+**Dopolnitev po Claudovem pregledu (S-022):** [SPEC neposrednega dodatnega kroga](./2026-10-30-dodatni-krog-claude-spec.md) je zdaj pripravljen za D1/A1/A2/A4/U1/U2; [izvedbeni plan](../plans/2026-10-30-dodatni-krog-claude-izvedba.md) določa regresije in vrata. Spodnja tabela ostaja načrt naslednjih polnih paketnih SPEC, ne dokaz njihovega zaključka. Pišemo samo specifikacije naslednjega vala; vse odložene skice ne zadržujejo neposrednih popravkov.
+
+Naslednji prioritetni paketni dokumenti: S-B (D1/D2/D3/F1/B5 in dejanski XML), S-F5 (backup/restore pred živo migracijo), S-G1 (A1–A5/R1 in posebej trajna oddaja BL-204), minimalni S-C in S-H (ločeni merge/deploy). S-F5 in S-G1 sta ožja podsklopa spodnjih S-F/S-E/S-G, ne nova nepovezana projekta. Dokazovanje B je odvisno od zasebnega očiščenega Flex vzorca; neodvisna regresija D1 ga ne nadomesti.
+
 Začnemo s specifikacijami B/C/G1, ker urejajo izgubo podatkov, identiteto in dvojno oddajo. Sledijo D/E/F/G, potem H. I/J/K dobijo svoje dokumente in niso predpogoj za osnovno izdajo. Ena ogromna specifikacija vseh bodočih funkcij ne nadomesti preverjenih pogodb posameznih virov.
 
 | SPEC ID / predlagana datoteka | Kaj mora razrešiti | Naloge / paket |
