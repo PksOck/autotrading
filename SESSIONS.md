@@ -4,6 +4,20 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 
 ---
 
+## S-023 · 2026-10-30 · Izvedba dodatnega kroga in pet naslednjih SPEC
+
+**Cilj:** Po uporabnikovem dovoljenju nadaljevati izvedbo BL-218 s subagenti, preveriti celoto in posodobiti samo ločeni demo :3100.
+
+**Narejeno:** D1 ohrani poročano dividendno pokritost pri uvozu brez sekcije; A1 varuje vsak HTTP poskus vključno s popravo; A2 ponovno preveri trajna dovoljenja po dejanskem dispatch zaklepu; A4 uvede pošteno omejeno dostavo s trajnim kurzorjem/migracijo 0020. U1/U2 ohranita študijo ob signalnem Peek in odpreta pravo analizo v novem zavihku. Neodvisni task pregled je odkril dodatno dirko A4-1, reproducirano na treh DB povezavah in popravljeno s pogojnim UPDATE pending. BL-220 popravi neveljavno dokazilo starih sintetičnih signalov; regresija odpre vseh 14 ID. Pet pogojnih NEXT-SPEC S-B/S-C/S-F5/S-G1/S-H povezanih v register, vseh 14 pripomb ostane sledljivih. [Dokazni zapis](./docs/implementation/2026-10-30-izvedba-dodatnega-kroga.md).
+
+**Odločitve:** ADR-0023 določa trajni omejeni cursor, ker filter sam ne reši neskončnega deduplikacijskega prefiksa in pomnilniški kazalec ne preživi restarta. Začasno blokirani nameni ostanejo pending; stale revision je terminalna samo za še pending zapis. OpenCode/DeepSeek z `--auto` je avtomatski varnostni pregled zavrnil pred izvedbo zaradi premalo izrecno dovoljenega zunanjega dostopa do kode; D1 izveden lokalno brez obvoda. Astra ni mogla zaključiti zaradi omejitve uporabe, zaključni pregled prevzame neodvisni SOL.
+
+**Preverjanje:** Končni povezani API **585 passed / 18 obstoječih deprecation opozoril**, brez skipov, z izolirano bazo in dejanskim testnim Redisom; agents **229 passed**, web **156 passed**. Ruff/format/mypy, ESLint/TypeScript/Prettier/i18n (1291 ključev), generirani OpenAPI/TS brez razlik, Linux demo build čisti. Playwright **64 passed / 10 namernih skipov glede na napravo**, vsi štirje novi SL/EN × desktop/phone uspejo. Pravi DB zaklepi/bariera dokazujejo prvotni napaki A2/A4-1 in odpravo; poraba ponudnikov izključno fake. :3100 je na 0020; ročni pregled 17 izmerjenih + 10 preskočenih, signal se odpre in Close ohrani 27 rezultatov. Sliki web/API :3000 se ujemata z začetnima digestoma. Končni neodvisni povezani pregled je PASS, A4-1 ADDRESSED, brez novih ugotovitev; produktni rez `0db305d`. BL-218/220 sta done za pregledno vejo. [Poročilo pregleda](./docs/implementation/2026-10-30-neodvisni-pregled-dodatnega-kroga.md).
+
+**Odprto/naslednji korak:** Dejanski očiščen Flex/`Re`, baze/FX/backfill, A3/A5/R1 in BL-204 imajo pogojni naslednji SPEC, ne nove implementacije. Prava SMTP dostava ostaja ločeno dovoljen preizkus. BL-214/215 in stari BL-011/013/174 ostajajo odprti brez novih dokazov. Brez merge/push ali :3000 namestitve; pred prvo živo migracijo 0016–0020 je obvezen backup/restore dokaz in nato nova izrecna potrditev uporabnika. Izvorni Claudov checkout je ohranjen.
+
+---
+
 ## S-022 · 2026-10-30 · Pripombe v plan in izvedbeni SPEC dodatnega kroga
 
 **Cilj:** Po uporabnikovem »pripombe vključi v plan in spec za izvedbo v tem dodatnem krogu / Go« pripraviti dokumentarno pogodbo popravkov brez posega v aplikacijo.

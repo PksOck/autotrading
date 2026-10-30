@@ -14,6 +14,8 @@
 
 ## Dopolnitev S-022 po Claudovem pregledu
 
+**S-023:** neposredni BL-218 je izveden z regresijami in končnim neodvisnim PASS; aktualni dokazi so v SESSIONS in [zapisniku](../../implementation/2026-10-30-izvedba-dodatnega-kroga.md). [Register SPEC](../specs/2026-10-30-odprti-sklopi-priprava-spec.md) zdaj povezuje pet pripravljenih pogojnih NEXT-SPEC za B/C/F5/G1/H in matriko vseh 14 pripomb. Manjkajoči dejanski vhodni podatki in dokaz živosti/obnove ostajajo pogoji odvisne izvedbe. Pripravljen dokument ni izveden paket. Spodnja inventura 50 odprtih je datiran posnetek S-022, ne tekoči števec po zapiranju posameznih nalog.
+
 Obvezno preberi [SPEC dodatnega kroga](../specs/2026-10-30-dodatni-krog-claude-spec.md) in [izvedbeni plan](./2026-10-30-dodatni-krog-claude-izvedba.md). BL-218 dopolni prvotno inventuro: skupaj 50 odprtih nalog. Šest neposrednih popravkov ima svoj izvedbeni krog, starejše finančne napake pa ostanejo pogoji pravilnega živega prevzema.
 
 SPEC pišemo samo za naslednji val. S-B, ožji S-F5 (restore), S-G1 (idempotentnost), minimalni S-C in S-H imajo prednost; I/J/K ostanejo skice. Zasebni razširjeni očiščen Flex je kritični vhod za dokaz živega paketa B, ne pogoj za neodvisni sintetični popravek D1. Higiena vej je po pregledu c55e37d že izvedena; ne ponavljaj brisanja/arhiviranja.

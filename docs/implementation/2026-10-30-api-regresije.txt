@@ -1,0 +1,42 @@
+........................................................................ [ 12%]
+........................................................................ [ 24%]
+........................................................................ [ 36%]
+........................................................................ [ 49%]
+........................................................................ [ 61%]
+........................................................................ [ 73%]
+........................................................................ [ 86%]
+........................................................................ [ 98%]
+.........                                                                [100%]
+============================== warnings summary ===============================
+..\..\..\..\..\..\Documents\Claude-autotrading\.claude\worktrees\preverjanje-podatkovnih-povezav-53ab37\services\api\.venv\Lib\site-packages\fastapi\testclient.py:1
+  C:\Users\Jan\Documents\Claude-autotrading\.claude\worktrees\preverjanje-podatkovnih-povezav-53ab37\services\api\.venv\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+tests/test_analyses.py::test_deep_proposal_queues_an_agent_run
+tests/test_api_m2.py::test_proposal_analysis_creates_manual_signal_and_watchlist_entry
+  C:\Users\Jan\.codex\worktrees\signal-expiry-fix\Claude-autotrading\services\api\preza\proposals\analyze.py:63: SADeprecationWarning: The ARRAY.Comparator.any() and ARRAY.Comparator.all() methods for arrays are deprecated for removal, along with the PG-specific Any() and All() functions. See any_() and all_() functions for modern use. (deprecated since: 2.1)
+    .where(Event.symbols.any(instrument.symbol), Event.last_seen_at >= since)  # type: ignore[arg-type]
+
+tests/test_api_m2.py::test_radar_views_split_portfolio_watchlist_discover
+tests/test_api_m2.py::test_radar_views_split_portfolio_watchlist_discover
+tests/test_api_m2.py::test_radar_views_split_portfolio_watchlist_discover
+tests/test_api_m2.py::test_signal_status_and_rumor_guard
+tests/test_radar_pipeline.py::test_similar_news_form_one_event_and_a_signal
+tests/test_radar_pipeline.py::test_rumor_is_watched_until_an_official_source_confirms
+tests/test_radar_pipeline.py::test_rumor_is_watched_until_an_official_source_confirms
+tests/test_radar_pipeline.py::test_summaries_are_translated_for_the_user_locale
+tests/test_radar_pipeline.py::test_english_locale_skips_translation
+  C:\Users\Jan\.codex\worktrees\signal-expiry-fix\Claude-autotrading\services\api\preza\radar\context.py:37: SADeprecationWarning: The ARRAY.Comparator.any() and ARRAY.Comparator.all() methods for arrays are deprecated for removal, along with the PG-specific Any() and All() functions. See any_() and all_() functions for modern use. (deprecated since: 2.1)
+    has_symbol = NewsItem.symbols.any(symbol)  # type: ignore[arg-type]
+
+tests/test_entries_db.py::test_transient_dip_becomes_entry_signal
+tests/test_entries_db.py::test_transient_dip_becomes_entry_signal
+tests/test_entries_db.py::test_dismissed_signal_is_not_recreated
+tests/test_entries_db.py::test_dismissed_signal_is_not_recreated
+tests/test_entries_db.py::test_fundamental_cause_on_holding_is_thesis_break
+tests/test_entries_db.py::test_without_llm_candidates_but_no_signals
+  C:\Users\Jan\.codex\worktrees\signal-expiry-fix\Claude-autotrading\services\api\preza\entries\dip.py:61: SADeprecationWarning: The ARRAY.Comparator.any() and ARRAY.Comparator.all() methods for arrays are deprecated for removal, along with the PG-specific Any() and All() functions. See any_() and all_() functions for modern use. (deprecated since: 2.1)
+    .where(Event.symbols.any(symbol), Event.last_seen_at >= since)  # type: ignore[arg-type]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+585 passed, 18 warnings in 396.50s (0:06:36)

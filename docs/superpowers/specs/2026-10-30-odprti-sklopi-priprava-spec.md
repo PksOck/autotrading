@@ -23,7 +23,15 @@ Začnemo s specifikacijami B/C/G1, ker urejajo izgubo podatkov, identiteto in dv
 | S-J `2026-10-30-dodatni-viri-in-ocr-spec.md` | Trenutni podprt dostop/pravice, izvorne trditve, OCR potrditev, retencija, star uvoz | BL-033/042/182–186, J |
 | S-K ločena `m6-opcije-spec.md` in `m7-paper-narocila-spec.md` | Matematične pogodbe in uporabniške potrditve, ločeni mejniki | BL-120–123/140–142, K |
 
-Datoteke v tabeli so načrtovani rezultati; še ne obstajajo in niso citati pripravljenih specifikacij. Datum/pot se ob dejanski pripravi lahko spremeni, ID S-B…S-K in povezave BL ostanejo sledljivi.
+S-023 pripravi naslednjih pet **pogojnih NEXT-SPEC**; njihove odprte vhodne pogodbe niso odobritev produktne izvedbe ali žive izdaje:
+
+- [S-B: Flex/dividende/FX](./2026-10-30-flex-dividende-pogodba-spec.md) — dejanski XML/`Re`, pokritost, baze in backfill.
+- [S-C: minimalna identiteta kotacij](./2026-10-30-identiteta-kotacij-spec.md) — dokazljiva kotacija in sled spremembe.
+- [S-F5: kopije in obnova](./2026-10-30-varnostne-kopije-restore-spec.md) — dokaz obnove pred prvo živo migracijo 0016–0020.
+- [S-G1: lastništvo in idempotentnost](./2026-10-30-lastnistvo-in-idempotentnost-spec.md) — A3/A5/R1 ter ločeno BL-204.
+- [S-H: prevzem in prenos](./2026-10-30-prevzem-in-prenos-spec.md) — matrika vseh 14 pripomb, ločeni M/D in blokade.
+
+Ostale datoteke v zgornji tabeli so še načrtovani rezultati, ne citati pripravljenih specifikacij. ID S-B…S-K in povezave BL ostanejo sledljivi. BL-214 zato ostaja delno odprt.
 
 ## 2. Obvezna pogodba za vsako zahtevo
 

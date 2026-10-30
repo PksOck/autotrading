@@ -98,6 +98,12 @@ Osnovni Llm protokol ostane združljiv; za varovan avtomatski transport se uvede
 
 **Prevzem T-A4:** 100 blokiranih in 1 dovoljena izvedba → dovoljena dostavljena v istem ticku. Nadalje: 100 enako časovno označenih zapisov, začasna pavza → resume, stara revizija → skipped, manual override, že enqueued prvi blok, Redis failure/recovery, dve dostavljalni zanki ter več kot 1000 kandidatov z dokazom končnega napredovanja. Poizvedbe/delo imajo zgornjo mejo; samo odstranitev LIMIT ni popravek.
 
+### Izvedbena dopolnitev R-A4 (2026-10-30, odobreno v okviru izvedbe)
+
+Za omejeno delo in napredovanje po restartu se uvede interna tabela `automation_outbox_cursor`: `id INTEGER PRIMARY KEY` (singleton 1), `scheduled_for TIMESTAMPTZ NULL`, `execution_id UUID NULL`. Polji kurzorja sta hkrati null ali hkrati prisotni; gre za zadnjo pregledano stabilno dvojico, ne FK na izvedbo, ki se lahko pozneje očisti. Dodan indeks `process_execution(state, scheduled_for, id)`. Nova zaporedna migracija je **0020** (po preverjenem head 0019); prejšnjih migracij ne spreminjamo.
+
+Kurzor se inicializira z INSERT ON CONFLICT in zaklene FOR UPDATE SKIP LOCKED. Pred inicializacijo transakcijski pg_try_advisory_xact_lock prepreči blokiranje dveh prvih zagonov; drugi dostavljalec takoj vrne brez podvajanja. Izbor upravičenih ali trajno zastarelih zapadlih pending vrstic je pred omejitvijo; do 1000 pregledanih in 100 novih dostav. Napredovanje se shrani transakcijsko, na koncu cikla se v naslednjem ticku vrne na začetek. Izpad/restart ne izgubi dokazljivega nadaljevanja. `deliver_pending` ne prevzame odgovornosti za commit klicatelja; `automation_tick` mora po dostavi potrditi transakcijo. Začasno zavrnjen prevzem ne sme po nepotrebnem terminalno izbrisati namena; stale revision ostane trajni razlog. Preveriti tudi arq retention pri začasno blokiranem poslu, da isti job_id po resume ni zadržan kot končan rezultat.
+
 ## 7. R-U1/U2: pravilni cilji in ohranitev študije
 
 **Lastništvo:** `apps/web/components/track-record/BacktestPanel.tsx` in njegovi testi; obstoječi EntityLink/usePeek.
@@ -112,6 +118,8 @@ Izbrana majhna izvedbena usmeritev (presoja izvajalca, ne nova uporabnikova obli
 **Prevzem T-U:** izračun iz signalne in analizne vrstice; pravo href/cilj, klik signal → close/Escape/Back ohrani oddane parametre in vse rezultate ter ne ponovi POST /backtest. Analiza se odpre na pravilnem `/analysis/{uuid}`, prvotni zavihek je nespremenjen. Preveri SL/EN, modifiers/new-tab, telefon in tipkovnico. Test zgolj obstoja href ne nadomesti preverjanja ohranitve študije.
 
 ## 8. Pogodbe za naslednje SPEC in pogoje izdaje
+
+S-023 te pogodbe razdela v pogojne dokumente [S-B](./2026-10-30-flex-dividende-pogodba-spec.md), [S-C](./2026-10-30-identiteta-kotacij-spec.md), [S-F5](./2026-10-30-varnostne-kopije-restore-spec.md), [S-G1](./2026-10-30-lastnistvo-in-idempotentnost-spec.md) in [S-H](./2026-10-30-prevzem-in-prenos-spec.md). Njihova priprava ne zapre odvisnih produktnih nalog ali dovoljuje prenosa.
 
 ### S-B: D2/D3/F1/B5 in dejanski Flex
 

@@ -254,6 +254,8 @@ Cilj: uporabnik nikoli ne izgubi konteksta in vedno vidi, **od kod je kaj prišl
 | LX-07 | **Tipkovnica** | `j`/`k` premik po seznamu, `Enter` odpri kukalo, `a` analiziraj, `w` spremljaj, `x` zavrzi, `g r` Radar, `g e` Vstopi, `?` pomoč |
 | LX-08 | **Deep link** | vsak pogled, filter, fokus in odprt panel je v URL (`?peek=signal:8f3a&focus=MSFT`). Telegram povezave odprejo točno to stanje |
 
+**Študija shranjenih signalov/mnenj (SCR-10, BL-218):** signal v rezultatu uporablja LX-02 in ohrani vse filtre, oddane parametre in rezultate pri Zapri/Escape/Nazaj. Analiza odpre obstoječo `/analysis/{id}` v novem zavihku z oznako SL/EN za bralnik zaslona; izvorni izračun ostane odprt. UUID je vedno ID pripadajočega vira, tudi kadar imata signal in analiza enak UUID. Spreminjanje osnutka obrazca ne spremeni oznak že izračunanega rezultata. Reload še ne obnavlja študije.
+
 ## 10. Pregledi (overview vizualizacije)
 
 | ID | Pregled | Zaslon | Opis |
