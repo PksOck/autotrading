@@ -442,7 +442,7 @@ async def seed_track_record() -> None:
                     horizon="weeks",
                     strength=Decimal(strength),
                     rationale=f"Demo {kind} signal for {symbol}.",
-                    evidence=[{"label": "demo", "url": None}],
+                    evidence=[{"kind": "indicator", "label": "demo", "url": None}],
                     status="accepted" if source == "manual" else "dismissed",
                     created_at=now - timedelta(days=days),
                 )
