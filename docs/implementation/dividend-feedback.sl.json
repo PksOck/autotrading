@@ -1,0 +1,24 @@
+{
+  "dividends": {
+    "showEstimates": "Prikaži ocene",
+    "showCoverage": "Prikaži podrobnosti pokritosti",
+    "confirmedTitle": "Uvoženi denarni zapisi Flex",
+    "confirmedThrough": "{account}: izpis do {date}",
+    "confirmedUnknown": "Potrjen datum pokritosti denarnih zapisov ni na voljo.",
+    "estimateBoundary": "Zneski po uvoženem izpisku so ocene, ne knjižena izplačila. Letna ocena ne potrjuje datuma izplačila.",
+    "reconciliationNote": "Vsak nov uvoz Flex preveri in uskladi uvožene zapise. Ocene nikoli samodejno ne postanejo knjižen denar.",
+    "estimateHidden": "Ocene so skrite. Uvožena izplačila in upravičenja ostanejo vidna.",
+    "snapshotBasis": "Posnetek pozicije: {date}",
+    "projectionWindow": "Obdobje ocene: {from} do {to}",
+    "reconciliationTitle": "Uskladitev uvoza",
+    "expectedGross": "Zapisano upravičenje · bruto",
+    "receivedGross": "Knjižen denar · bruto",
+    "difference": "Razlika",
+    "actionReference": "Referenca dogodka",
+    "reconciliationStatus": "Stanje uskladitve",
+    "reconciliationConfirmed": "Potrjeno",
+    "reconciliationChanged": "Spremenjen znesek",
+    "reconciliationAwaiting": "Čakanje na knjiženo izplačilo",
+    "reconciliationEmpty": "Za primerjavo ni izrecno povezanih referenc dogodkov."
+  }
+}

@@ -84,8 +84,12 @@ for (const locale of ["sl", "en"]) {
     await expect(close).toBeVisible();
     if (info.project.name === "phone") {
       const box = await close.boundingBox();
-      expect(box?.height).toBeGreaterThanOrEqual(48);
-      expect(box?.width).toBeGreaterThanOrEqual(48);
+      // Transformed bounds can report 47.99997 for a 48px touch target.
+      // Keep a sub-layout-pixel tolerance without accepting a smaller CSS target.
+      await expect(close).toHaveCSS("min-width", "48px");
+      await expect(close).toHaveCSS("min-height", "48px");
+      expect(box?.height).toBeGreaterThanOrEqual(48 - 0.001);
+      expect(box?.width).toBeGreaterThanOrEqual(48 - 0.001);
     }
     await expect(dialog.getByRole("link", { name: "Original source" })).toHaveAttribute(
       "href",

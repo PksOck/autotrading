@@ -16,6 +16,7 @@ class AutomationControl(Base):
     __tablename__ = "automation_control"
     id: Mapped[int] = mapped_column(Integer, primary_key=True, default=1)
     paused: Mapped[bool] = mapped_column(Boolean, default=False)
+    automatic_analyses_enabled: Mapped[bool] = mapped_column(Boolean, default=True)
     revision: Mapped[int] = mapped_column(Integer, default=0)
 
 

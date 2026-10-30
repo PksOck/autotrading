@@ -9,10 +9,11 @@ import { Treemap } from "@/components/overview/Treemap";
 import { DataTable, type ColumnDefinition } from "@/components/table/DataTable";
 import { DataQualityBadges } from "@/components/table/MetricCell";
 import { useMarketColumns } from "@/components/table/market-columns";
-import { usePortfolio, usePortfolioImport, usePortfolioSync } from "@/lib/api/hooks";
+import { useEntries, usePortfolio, usePortfolioImport, usePortfolioSync } from "@/lib/api/hooks";
 import { ApiError } from "@/lib/api/client";
 import type { PositionOut } from "@/lib/api/types";
-import { formatChange, formatMoney, formatNumber } from "@/lib/format";
+import { formatMoney, formatNumber } from "@/lib/format";
+import { EntryZoneBadge, PriceTrend, SignedChange, type StoredPriceTrend } from "./MarketContext";
 import { useAppLocale } from "@/lib/use-app-locale";
 
 export function PositionsPanel() {
@@ -27,6 +28,7 @@ export function PositionsPanel() {
   for (const key of ["account_id", "sort", "direction", "q"])
     if (params.get(key)) query.set(key, params.get(key)!);
   const { data, isLoading, error, refetch } = usePortfolio(query.toString());
+  const { data: entries } = useEntries("portfolio");
   const upload = usePortfolioImport();
   const sync = usePortfolioSync();
   const fileInput = useRef<HTMLInputElement>(null);
@@ -47,6 +49,10 @@ export function PositionsPanel() {
           <div className="text-[11px] text-text-3">
             {row.account_id} · {row.exchange ?? "—"} · {row.currency}
           </div>
+          <PriceTrend
+            trend={(row as PositionOut & { price_trend?: StoredPriceTrend | null }).price_trend}
+          />
+          <EntryZoneBadge entry={entries?.find((entry) => entry.symbol === row.symbol)} />
           <DataQualityBadges
             identity={row.identity_status}
             price={row.price_meta}
@@ -97,14 +103,26 @@ export function PositionsPanel() {
       label: t("portfolio.col.pnl"),
       numeric: true,
       sortable: true,
-      render: (row) => money(row.unrealized_pnl, row.currency),
+      render: (row) => (
+        <SignedChange
+          value={row.unrealized_pnl == null ? null : Number(row.unrealized_pnl)}
+          currency={row.currency}
+        />
+      ),
     },
     {
       id: "change_pct",
       label: labels("daily"),
       numeric: true,
       sortable: true,
-      render: (row) => (row.change_pct == null ? "—" : formatChange(locale, row.change_pct)),
+      render: (row) => (
+        <div>
+          <SignedChange value={row.change_pct} />
+          <div className="text-[11px] text-text-3" title={row.price_meta?.source ?? undefined}>
+            {row.price_meta?.market_date}
+          </div>
+        </div>
+      ),
     },
     {
       id: "latest_close",
@@ -130,7 +148,7 @@ export function PositionsPanel() {
       render: (row) => (
         <Link
           href={`/i/${encodeURIComponent(row.symbol)}`}
-          className="inline-flex min-h-8 items-center rounded border border-border px-2 text-xs"
+          className="inline-flex min-h-12 items-center rounded border border-border px-2 text-xs"
         >
           {t("peek.open")}
         </Link>
@@ -203,7 +221,7 @@ export function PositionsPanel() {
             <select
               aria-label={labels("account")}
               value={params.get("account_id") ?? ""}
-              className="h-10 rounded border border-border bg-surface px-2"
+              className="h-12 rounded border border-border bg-surface px-2"
               onChange={(event) => {
                 const next = new URLSearchParams(params.toString());
                 if (event.target.value) next.set("account_id", event.target.value);
@@ -236,7 +254,7 @@ export function PositionsPanel() {
             type="button"
             disabled={upload.isPending || sync.isPending}
             onClick={() => fileInput.current?.click()}
-            className="h-10 rounded border border-border px-3"
+            className="h-12 rounded border border-border px-3"
           >
             {upload.isPending ? t("portfolio.importing") : t("portfolio.import")}
           </button>
@@ -244,13 +262,13 @@ export function PositionsPanel() {
             type="button"
             disabled={upload.isPending || sync.isPending}
             onClick={() => void onSync()}
-            className="h-10 rounded border border-border px-3"
+            className="h-12 rounded border border-border px-3"
           >
             {sync.isPending ? t("portfolio.syncing") : t("portfolio.sync")}
           </button>
           <Link
             href="/settings"
-            className="inline-flex min-h-10 items-center px-2 text-xs text-accent"
+            className="inline-flex min-h-12 items-center px-2 text-xs text-accent"
           >
             {labels("refreshSettings")}
           </Link>

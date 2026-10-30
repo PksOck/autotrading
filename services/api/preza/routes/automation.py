@@ -47,7 +47,11 @@ async def control(session: Session) -> ControlInput:
     await service.ensure_policies(session)
     row = await session.get(AutomationControl, 1)
     assert row is not None
-    return ControlInput(revision=row.revision, paused=row.paused)
+    return ControlInput(
+        revision=row.revision,
+        paused=row.paused,
+        automatic_analyses_enabled=row.automatic_analyses_enabled,
+    )
 
 
 @router.patch("/control", response_model=ControlInput)
@@ -56,12 +60,20 @@ async def patch_control(body: ControlInput, session: Session) -> ControlInput:
     row = await session.scalar(
         update(AutomationControl)
         .where(AutomationControl.id == 1, AutomationControl.revision == body.revision)
-        .values(paused=body.paused, revision=body.revision + 1)
+        .values(
+            paused=body.paused,
+            automatic_analyses_enabled=body.automatic_analyses_enabled,
+            revision=body.revision + 1,
+        )
         .returning(AutomationControl)
     )
     if row is None:
         raise HTTPException(409, "revision_conflict")
-    return ControlInput(revision=row.revision, paused=row.paused)
+    return ControlInput(
+        revision=row.revision,
+        paused=row.paused,
+        automatic_analyses_enabled=row.automatic_analyses_enabled,
+    )
 
 
 @router.get("/executions", response_model=list[ExecutionOut])

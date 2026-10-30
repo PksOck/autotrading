@@ -1,0 +1,27 @@
+{
+  "overviewFeedback": {
+    "market": "Market day · latest stored observations",
+    "spy": "SPY / SMA200",
+    "vix": "VIX",
+    "us10y": "US 10Y yield",
+    "dxy": "DXY",
+    "macroMissing": "No verified observation",
+    "macroHint": "SPY is the distance from its 200-session moving average. Missing feeds stay blank; no market regime is inferred.",
+    "portfolioHint": "Area = position weight · green/red = latest daily close change · grey = missing change. Snapshot weights and price dates can differ.",
+    "pulseHint": "Last 7 days · first detected · all radar views",
+    "pulseLegend": "Each dot is an event, repeated for each linked symbol. Larger dots = higher radar score (0–1), not a return forecast. Dashed purple = rumor; amber = macro; blue = other events. Click a dot to read its sources.",
+    "pulseScope": "Showing {shown} of {total} events · latest 100 at most",
+    "noSymbol": "Unassigned",
+    "unscored": "Not scored",
+    "funnel": "Filtering · 30-day ingestion cohort",
+    "funnelHint": "News ingested in the last 30 days → distinct linked events → triaged events → events with any recorded signal. Each event counts once, regardless of its current signal status.",
+    "news": "News items",
+    "events": "Linked events",
+    "triaged": "Triaged events",
+    "signalled": "With a signal",
+    "active": "Latest active signals · all-time status counts above",
+    "strengthHint": "Recorded signal strength (0–1), not probability of profit",
+    "lifetime": "All-time database totals",
+    "notAvailable": "Daily change unavailable"
+  }
+}

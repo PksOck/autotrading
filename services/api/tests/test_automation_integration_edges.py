@@ -33,9 +33,14 @@ async def test_manual_legacy_entrypoint_runs_after_schedule_change_while_automat
 
     fake.__name__ = "refresh_bars"
     decorated = automation_worker.managed(fake)
-    assert await decorated({"job_id": "manual-refresh-test"}) == "done"
+    assert await decorated({"job_id": "refresh_bars:manual"}) == "done"
     assert called == ["run"]
     assert await decorated({"job_id": "cron:refresh_bars:123"}) == "managed_schedule"
+    assert called == ["run"]
+    assert await decorated({}) == "managed_schedule"
+    assert called == ["run"]
+    assert await decorated({"job_id": "entries:manual"}) == "managed_schedule"
+    assert await decorated({"job_id": "arbitrary"}) == "managed_schedule"
     assert called == ["run"]
 
 

@@ -18,7 +18,10 @@ export function Funnel({ stages }: { stages: readonly Stage[] }) {
   return (
     <ol className="flex flex-col gap-2.5">
       {stages.map((stage, index) => (
-        <li key={stage.key} className="grid grid-cols-[110px_1fr_64px] items-center gap-3 text-[13px]">
+        <li
+          key={stage.key}
+          className="grid grid-cols-[110px_1fr_64px] items-center gap-3 text-[13px]"
+        >
           <span className="text-text-2">{t(stage.key)}</span>
           <span className="h-2 overflow-hidden rounded-full bg-surface-2">
             <motion.span
@@ -28,7 +31,11 @@ export function Funnel({ stages }: { stages: readonly Stage[] }) {
               transition={{ duration: 0.7, delay: index * 0.08, ease: ease.standard }}
             />
           </span>
-          <AnimatedNumber value={stage.value} format={(v) => formatNumber(locale, Math.round(v))} className="text-right" />
+          <AnimatedNumber
+            value={stage.value}
+            format={(v) => formatNumber(locale, Math.round(v))}
+            className="text-right"
+          />
         </li>
       ))}
     </ol>

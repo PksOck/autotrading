@@ -3,7 +3,6 @@
 import { scaleLinear } from "d3-scale";
 import { motion, useReducedMotion } from "motion/react";
 import { useTranslations } from "next-intl";
-import type { PulseEvent } from "@/lib/sample-data";
 import { spring } from "@/lib/motion";
 import { useElementSize } from "@/lib/use-element-size";
 import { usePeek } from "@/lib/use-peek";
@@ -12,6 +11,15 @@ import { useFocusStore } from "@/stores/focus";
 const ROW = 28;
 const LABEL = 64;
 const HOURS = 168;
+
+export type PulseEvent = {
+  id: string;
+  symbol: string;
+  hoursAgo: number;
+  score: number | null;
+  type: string;
+  title?: string;
+};
 
 const fill = (type: PulseEvent["type"]) =>
   type === "rumor" ? "var(--rumor-soft)" : type === "macro" ? "var(--warn)" : "var(--accent)";
@@ -84,9 +92,9 @@ export function PulseTimeline({ events }: { events: PulseEvent[] }) {
             const row = symbols.indexOf(event.symbol);
             const cx = x(event.hoursAgo);
             const cy = row * ROW + ROW / 2;
-            const r = 4 + event.score * 7;
+            const r = event.score === null ? 4 : 4 + Math.max(0, Math.min(1, event.score)) * 7;
             return (
-              <g key={event.id}>
+              <g key={`${event.id}:${event.symbol}`}>
                 {event.id === newest.id && !reduceMotion && (
                   <motion.circle
                     cx={cx}
@@ -110,16 +118,20 @@ export function PulseTimeline({ events }: { events: PulseEvent[] }) {
                   transition={{ ...spring.snappy, delay: reduceMotion ? 0 : index * 0.03 }}
                   tabIndex={0}
                   role="button"
-                  aria-label={`${event.symbol}, ${t(`radar.score`)} ${event.score}`}
+                  aria-label={`${event.symbol}, ${event.title ?? ""}, ${event.score === null ? t("overviewFeedback.unscored") : `${t("radar.score")} ${event.score}`}`}
                   className="cursor-pointer focus:outline-none focus-visible:stroke-accent"
-                  onClick={() => open({ kind: "instrument", id: event.symbol })}
+                  onClick={() => open({ kind: "event", id: event.id })}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ")
-                      open({ kind: "instrument", id: event.symbol });
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      open({ kind: "event", id: event.id });
+                    }
                   }}
                   onMouseEnter={() => setHovered(`instrument:${event.symbol}`)}
                   onMouseLeave={() => setHovered(null)}
-                />
+                >
+                  <title>{event.title ?? event.symbol}</title>
+                </motion.circle>
               </g>
             );
           })}

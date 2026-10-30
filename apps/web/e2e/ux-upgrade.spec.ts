@@ -49,6 +49,7 @@ test("settings expose individual processes and portfolio analysis filters restor
   await page.goto("/settings");
   await expect(page.getByRole("heading", { name: "Nastavitve", exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Procesi in urniki", exact: true })).toBeVisible();
+  await page.locator("summary").filter({ hasText: "Radar" }).click();
   await expect(page.getByLabel("Časovni pas IANA").first()).toHaveValue("UTC");
   await page.goto("/analysis?status=done&latest=true");
   await expect(page.getByRole("checkbox", { name: /Zadnja za vsak instrument/ })).toBeChecked();

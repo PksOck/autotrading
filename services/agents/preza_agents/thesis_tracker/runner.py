@@ -12,6 +12,7 @@ from preza.db import get_sessionmaker
 from preza.domain.thesis_review import ReviewBatch
 from preza.llm.client import LlmUnavailableError
 from preza.services import thesis_reviews as reviews
+from preza.services.automation import owns_review_dispatch, record_review_dispatch, review_gate
 from preza_agents.thesis_tracker.context import InputLimitError, prompt_data
 from preza_agents.thesis_tracker.prompts import PROMPT_VERSION, SYSTEM, user_prompt
 
@@ -32,7 +33,9 @@ def usage(result: Any) -> dict[str, Any]:
     }
 
 
-async def thesis_review(ctx: dict[str, Any], revision_id: str, week_start: str) -> str:
+async def thesis_review(
+    ctx: dict[str, Any], revision_id: str, week_start: str, execution_id: str | None = None
+) -> str:
     review_id = None
     accounting: dict[str, Any] = {}
     try:
@@ -41,20 +44,41 @@ async def thesis_review(ctx: dict[str, Any], revision_id: str, week_start: str) 
             if reviews.week_start(now).isoformat() != week_start:
                 return "obsolete_week"
             async with get_sessionmaker()() as session:
+                reason = await review_gate(
+                    session, uuid.UUID(revision_id), execution_id, week_start
+                )
+                if reason:
+                    return reason
                 review, _created = await reviews.reserve_review(
                     session, uuid.UUID(revision_id), cutoff=now, prompt_version=PROMPT_VERSION
                 )
                 review_id = review.id
                 status, dispatched, snapshot = review.status, review.dispatch_at, review.snapshot
+                owned_dispatch = (
+                    await owns_review_dispatch(session, review_id, execution_id)
+                    if dispatched is not None
+                    else False
+                )
                 await session.commit()
             if status in reviews.TERMINAL:
                 return status
             if dispatched is not None:
-                return await _fail(review_id, "interrupted", unknown=True)
+                return (
+                    await _fail(review_id, "interrupted", unknown=True)
+                    if owned_dispatch
+                    else status
+                )
             data = prompt_data(snapshot)
             async with get_sessionmaker()() as session:
+                reason = await review_gate(
+                    session, uuid.UUID(revision_id), execution_id, week_start
+                )
+                if reason:
+                    return reason
                 review = await reviews.mark_dispatched(session, review_id)
                 status = review.status
+                if status not in reviews.TERMINAL:
+                    await record_review_dispatch(session, review_id, execution_id)
                 await session.commit()
             if status in reviews.TERMINAL:
                 return status

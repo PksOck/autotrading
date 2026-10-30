@@ -10,9 +10,15 @@ import { DataTable, type ColumnDefinition } from "@/components/table/DataTable";
 import { DataQualityBadges } from "@/components/table/MetricCell";
 import { useMarketColumns } from "@/components/table/market-columns";
 import { ApiError } from "@/lib/api/client";
-import { useWatchlist, useWatchlistMutations } from "@/lib/api/hooks";
+import { useEntries, useWatchlist, useWatchlistMutations } from "@/lib/api/hooks";
 import type { WatchlistOut, WatchTier } from "@/lib/api/types";
-import { formatChange, formatMoney, formatNumber } from "@/lib/format";
+import { formatMoney, formatNumber } from "@/lib/format";
+import {
+  EntryZoneBadge,
+  PriceTrend,
+  SignedChange,
+  type StoredPriceTrend,
+} from "@/components/portfolio/MarketContext";
 import { useAppLocale } from "@/lib/use-app-locale";
 
 function Actions({ item }: { item: WatchlistOut }) {
@@ -42,12 +48,12 @@ function Actions({ item }: { item: WatchlistOut }) {
         type="button"
         disabled={pending}
         onClick={() => update.mutate({ id: item.id, data: { tier: other } }, { onError: fail })}
-        className="min-h-7 rounded border border-border px-2 disabled:opacity-50"
+        className="min-h-12 rounded border border-border px-2 disabled:opacity-50"
       >
         {t("moveTo", { tier: t(`tiers.${other}`) })}
       </button>
       <details>
-        <summary className="cursor-pointer rounded px-2 py-1 text-text-3">
+        <summary className="flex min-h-12 cursor-pointer items-center rounded px-2 text-text-3">
           {labels("actions")}
         </summary>
         <div className="flex flex-col items-start gap-1 py-1">
@@ -58,7 +64,7 @@ function Actions({ item }: { item: WatchlistOut }) {
               onClick={() =>
                 update.mutate({ id: item.id, data: { reviewed: true } }, { onError: fail })
               }
-              className="min-h-7 px-2"
+              className="min-h-12 px-2"
             >
               {t("markReviewed")}
             </button>
@@ -67,7 +73,7 @@ function Actions({ item }: { item: WatchlistOut }) {
             type="button"
             disabled={pending}
             onClick={() => void onRemove()}
-            className="min-h-7 px-2 text-neg"
+            className="min-h-12 px-2 text-neg"
           >
             {t("remove")}
           </button>
@@ -87,6 +93,7 @@ export function WatchlistPanel() {
   for (const key of ["sort", "direction", "q"])
     if (params.get(key)) query.set(key, params.get(key)!);
   const { data, isLoading, error, refetch } = useWatchlist(query.toString());
+  const { data: entries } = useEntries("watchlist");
   const { add } = useWatchlistMutations();
   const id = useId();
   const [symbol, setSymbol] = useState("");
@@ -119,6 +126,10 @@ export function WatchlistPanel() {
           <div className="max-w-60 truncate text-xs text-text-3">
             {item.name ?? item.exchange ?? "—"}
           </div>
+          <PriceTrend
+            trend={(item as WatchlistOut & { price_trend?: StoredPriceTrend | null }).price_trend}
+          />
+          <EntryZoneBadge entry={entries?.find((entry) => entry.symbol === item.symbol)} />
           <DataQualityBadges
             identity={item.identity_status}
             price={item.price_meta}
@@ -148,15 +159,21 @@ export function WatchlistPanel() {
       label: labels("daily"),
       numeric: true,
       sortable: true,
-      render: (item) => (item.change_pct == null ? "—" : formatChange(locale, item.change_pct)),
+      render: (item) => (
+        <div>
+          <SignedChange value={item.change_pct} />
+          <div className="text-[11px] text-text-3" title={item.price_meta?.source ?? undefined}>
+            {item.price_meta?.market_date}
+          </div>
+        </div>
+      ),
     },
     {
       id: "since_added_pct",
       label: t("sinceAdded"),
       numeric: true,
       sortable: true,
-      render: (item) =>
-        item.since_added_pct == null ? "—" : formatChange(locale, item.since_added_pct),
+      render: (item) => <SignedChange value={item.since_added_pct} />,
     },
     {
       id: "currency",
@@ -230,7 +247,7 @@ export function WatchlistPanel() {
             onChange={(event) => setSymbol(event.target.value)}
             required
             autoComplete="off"
-            className="num mt-1 h-10 w-full rounded-md border border-border bg-surface px-3 uppercase"
+            className="num mt-1 h-12 w-full rounded-md border border-border bg-surface px-3 uppercase"
           />
         </label>
         <label className="min-w-48 flex-1 text-xs text-text-3" htmlFor={`${id}-note`}>
@@ -239,7 +256,7 @@ export function WatchlistPanel() {
             id={`${id}-note`}
             value={note}
             onChange={(event) => setNote(event.target.value)}
-            className="mt-1 h-10 w-full rounded-md border border-border bg-surface px-3"
+            className="mt-1 h-12 w-full rounded-md border border-border bg-surface px-3"
           />
         </label>
         <fieldset>
@@ -257,7 +274,7 @@ export function WatchlistPanel() {
         <button
           type="submit"
           disabled={add.isPending}
-          className="h-10 rounded-md bg-accent px-4 font-medium text-on-accent disabled:opacity-50"
+          className="h-12 rounded-md bg-accent px-4 font-medium text-on-accent disabled:opacity-50"
         >
           {add.isPending ? t("adding") : t("add")}
         </button>

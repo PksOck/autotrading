@@ -1,0 +1,53 @@
+{
+  "settingsFeedback": {
+    "off": "Off",
+    "analysisTitle": "Automatic analyses",
+    "analysisHelp": "Turning this off stops new automatic model analyses, triage and translations. News, prices and portfolio data keep refreshing. A running call finishes; manual analyses remain available.",
+    "analysisEnabled": "Allow automatic model analyses",
+    "controlSaved": "Setting saved.",
+    "pauseAll": "Advanced: pause every automatic process",
+    "chooseProcess": "Choose a process to edit",
+    "analysisGroup": "Analysis and research",
+    "syncGroup": "Data and notifications",
+    "batchTitle": "Analysis batch · preview and manual run",
+    "email": {
+      "title": "Email notifications",
+      "configured": "SMTP connection is configured on the server.",
+      "unconfigured": "SMTP is not configured yet. You can save recipients; delivery stays off.",
+      "enabled": "Enable email notifications",
+      "recipients": "Recipients",
+      "recipientsHelp": "One address per line or separated by commas; up to 20 recipients.",
+      "kinds": "Notification types",
+      "signals": "New signals",
+      "daily_digest": "Daily digest",
+      "analysis_complete": "Completed analysis",
+      "security": "The SMTP password is configured on the server only and never shown here. Saving does not send a test message.",
+      "save": "Save notifications",
+      "saving": "Saving …",
+      "saved": "Notification preferences saved.",
+      "error": "Could not save. Check addresses and SMTP setup; reload after a concurrent change.",
+      "loadError": "Could not load notification preferences.",
+      "loading": "Loading preferences …",
+      "deliveryStatus": "Queued: {queued} · Sent: {sent}",
+      "uncertain": "{count} deliveries have an uncertain result. They are not retried automatically; check the mail server."
+    },
+    "processHelp": {
+      "radar": "Collects news and finds events. Model analysis and translations follow the master switch; news collection continues.",
+      "entries": "Checks entry points and reasons for declines. Automatic model work follows the master switch.",
+      "discover_thesis_reviews": "Discovers and reviews theses. Model reviews follow the master switch.",
+      "batch_analyses": "Prepares a limited batch for the portfolio or watchlist. Preview and quota checks precede starting.",
+      "sync_flex": "Reads portfolio and trades from IBKR. Uses no language model.",
+      "refresh_bars": "Refreshes daily instrument prices. Uses no language model.",
+      "fundamentals": "Refreshes company fundamentals from the data provider.",
+      "outcomes": "Calculates saved signal outcomes from prices. Requires no new analysis.",
+      "notify": "Sends existing signal notifications through Telegram.",
+      "digest": "Builds a Telegram digest from saved signals.",
+      "refresh_etf_profiles": "Refreshes fund profiles from the data provider."
+    }
+  },
+  "automation": {
+    "executionReasons": {
+      "analyses_disabled": "Automatic analyses are off"
+    }
+  }
+}

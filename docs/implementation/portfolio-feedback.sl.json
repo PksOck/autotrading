@@ -1,0 +1,11 @@
+{
+  "table": {
+    "standard": "Standardno",
+    "trendPeriod": "Do 30 trgovalnih dni",
+    "trendSamples": "{count} trgovalnih dni",
+    "trendUnknown": "Trend ni na voljo",
+    "zoneUnknown": "Vstopna cona ni znana",
+    "inZone": "V coni",
+    "outsideZone": "Izven cone"
+  }
+}

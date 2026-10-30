@@ -12,10 +12,14 @@ export function computeTreemap<T extends { weight: number }>(
   const held = items.filter((i) => i.weight > 0);
   if (!held.length || width <= 0 || height <= 0) return [];
   type Node = { children?: T[] } | T;
-  const root = hierarchy<Node>({ children: held }, (d) => ("children" in d ? d.children : undefined))
+  const root = hierarchy<Node>({ children: held }, (d) =>
+    "children" in d ? d.children : undefined,
+  )
     .sum((d) => ("weight" in d ? d.weight : 0))
     .sort((a, b) => (b.value ?? 0) - (a.value ?? 0));
-  treemap<Node>().tile(treemapSquarify).size([width, height]).paddingInner(padding).round(true)(root);
+  treemap<Node>().tile(treemapSquarify).size([width, height]).paddingInner(padding).round(true)(
+    root,
+  );
   return root.leaves().map((leaf) => {
     const node = leaf as typeof leaf & { x0: number; y0: number; x1: number; y1: number };
     return {

@@ -348,6 +348,47 @@
         }
       }
     },
+    "/backtest": {
+      "post": {
+        "tags": [
+          "backtest"
+        ],
+        "summary": "Backtest",
+        "operationId": "backtest_backtest_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BacktestRequest-Input"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BacktestOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/portfolio/dividends": {
       "get": {
         "tags": [
@@ -431,6 +472,66 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/DividendsOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/notifications/email": {
+      "get": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "Get Preferences",
+        "operationId": "get_preferences_notifications_email_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailPreferencesOut"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "notifications"
+        ],
+        "summary": "Patch Preferences",
+        "operationId": "patch_preferences_notifications_email_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailPreferencesInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailPreferencesOut"
                 }
               }
             }
@@ -3560,6 +3661,456 @@
         ],
         "title": "AnalysisSummary"
       },
+      "BacktestOut": {
+        "properties": {
+          "as_of": {
+            "type": "string",
+            "format": "date-time",
+            "title": "As Of"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "default": "database"
+          },
+          "parameters": {
+            "$ref": "#/components/schemas/BacktestRequest-Output"
+          },
+          "total_matching": {
+            "type": "integer",
+            "title": "Total Matching"
+          },
+          "evaluated": {
+            "type": "integer",
+            "title": "Evaluated"
+          },
+          "truncated": {
+            "type": "boolean",
+            "title": "Truncated"
+          },
+          "completed": {
+            "type": "integer",
+            "title": "Completed"
+          },
+          "skipped": {
+            "type": "integer",
+            "title": "Skipped"
+          },
+          "mean_gross_return_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mean Gross Return Pct"
+          },
+          "mean_net_return_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mean Net Return Pct"
+          },
+          "positive_share": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Positive Share"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/BacktestRow"
+            },
+            "type": "array",
+            "title": "Rows"
+          }
+        },
+        "type": "object",
+        "required": [
+          "as_of",
+          "parameters",
+          "total_matching",
+          "evaluated",
+          "truncated",
+          "completed",
+          "skipped",
+          "mean_gross_return_pct",
+          "mean_net_return_pct",
+          "positive_share",
+          "rows"
+        ],
+        "title": "BacktestOut"
+      },
+      "BacktestRequest-Input": {
+        "properties": {
+          "source": {
+            "type": "string",
+            "enum": [
+              "all",
+              "signal",
+              "analysis"
+            ],
+            "title": "Source",
+            "default": "all"
+          },
+          "available_from": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Available From"
+          },
+          "available_to": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Available To"
+          },
+          "horizon_sessions": {
+            "type": "integer",
+            "enum": [
+              1,
+              5,
+              20,
+              60
+            ],
+            "title": "Horizon Sessions",
+            "default": 20
+          },
+          "cost_bps": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1000.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Cost Bps",
+            "default": "10"
+          },
+          "min_strength": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Min Strength",
+            "default": "0"
+          },
+          "signal_status": {
+            "type": "string",
+            "enum": [
+              "all",
+              "new",
+              "watching",
+              "accepted",
+              "dismissed",
+              "expired"
+            ],
+            "title": "Signal Status",
+            "default": "all"
+          },
+          "limit": {
+            "type": "integer",
+            "maximum": 1000.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "default": 1000
+          }
+        },
+        "type": "object",
+        "title": "BacktestRequest"
+      },
+      "BacktestRequest-Output": {
+        "properties": {
+          "source": {
+            "type": "string",
+            "enum": [
+              "all",
+              "signal",
+              "analysis"
+            ],
+            "title": "Source",
+            "default": "all"
+          },
+          "available_from": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Available From"
+          },
+          "available_to": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Available To"
+          },
+          "horizon_sessions": {
+            "type": "integer",
+            "enum": [
+              1,
+              5,
+              20,
+              60
+            ],
+            "title": "Horizon Sessions",
+            "default": 20
+          },
+          "cost_bps": {
+            "type": "string",
+            "title": "Cost Bps",
+            "default": "10"
+          },
+          "min_strength": {
+            "type": "string",
+            "title": "Min Strength",
+            "default": "0"
+          },
+          "signal_status": {
+            "type": "string",
+            "enum": [
+              "all",
+              "new",
+              "watching",
+              "accepted",
+              "dismissed",
+              "expired"
+            ],
+            "title": "Signal Status",
+            "default": "all"
+          },
+          "limit": {
+            "type": "integer",
+            "maximum": 1000.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "default": 1000
+          }
+        },
+        "type": "object",
+        "title": "BacktestRequest"
+      },
+      "BacktestRow": {
+        "properties": {
+          "entry_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entry Date"
+          },
+          "exit_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exit Date"
+          },
+          "entry_price": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entry Price"
+          },
+          "exit_price": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exit Price"
+          },
+          "entry_source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entry Source"
+          },
+          "exit_source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exit Source"
+          },
+          "gross_return_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gross Return Pct"
+          },
+          "net_return_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Net Return Pct"
+          },
+          "skip_reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "neutral_or_unknown_direction",
+                  "no_entry_bar",
+                  "insufficient_future_sessions",
+                  "invalid_price"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Skip Reason"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "signal",
+              "analysis"
+            ],
+            "title": "Source"
+          },
+          "origin": {
+            "type": "string",
+            "title": "Origin"
+          },
+          "symbol": {
+            "type": "string",
+            "title": "Symbol"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency"
+          },
+          "available_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Available At"
+          },
+          "direction": {
+            "type": "string",
+            "title": "Direction"
+          },
+          "strength": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Strength"
+          },
+          "record_status": {
+            "type": "string",
+            "title": "Record Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "source",
+          "origin",
+          "symbol",
+          "available_at",
+          "direction",
+          "strength",
+          "record_status"
+        ],
+        "title": "BacktestRow"
+      },
       "BarOut": {
         "properties": {
           "day": {
@@ -4394,6 +4945,11 @@
           "paused": {
             "type": "boolean",
             "title": "Paused"
+          },
+          "automatic_analyses_enabled": {
+            "type": "boolean",
+            "title": "Automatic Analyses Enabled",
+            "default": true
           }
         },
         "additionalProperties": false,
@@ -4702,6 +5258,18 @@
             ],
             "title": "Account Id"
           },
+          "position_as_of": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Position As Of"
+          },
           "symbol": {
             "type": "string",
             "title": "Symbol"
@@ -4801,6 +5369,86 @@
         ],
         "title": "DividendProjection"
       },
+      "DividendReconciliation": {
+        "properties": {
+          "account_id": {
+            "type": "string",
+            "title": "Account Id"
+          },
+          "symbol": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Symbol"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "action_id": {
+            "type": "string",
+            "title": "Action Id"
+          },
+          "expected_gross": {
+            "type": "string",
+            "title": "Expected Gross"
+          },
+          "received_gross": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Received Gross"
+          },
+          "difference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Difference"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "changed",
+              "awaiting_payment"
+            ],
+            "title": "Status"
+          },
+          "as_of": {
+            "type": "string",
+            "format": "date-time",
+            "title": "As Of"
+          }
+        },
+        "type": "object",
+        "required": [
+          "account_id",
+          "symbol",
+          "currency",
+          "action_id",
+          "expected_gross",
+          "received_gross",
+          "difference",
+          "status",
+          "as_of"
+        ],
+        "title": "DividendReconciliation"
+      },
       "DividendsOut": {
         "properties": {
           "cash_events": {
@@ -4873,6 +5521,13 @@
             "type": "string",
             "title": "Contract Status",
             "default": "synthetic_contract_not_live_validated"
+          },
+          "reconciliation": {
+            "items": {
+              "$ref": "#/components/schemas/DividendReconciliation"
+            },
+            "type": "array",
+            "title": "Reconciliation"
           }
         },
         "type": "object",
@@ -4887,6 +5542,110 @@
           "as_of"
         ],
         "title": "DividendsOut"
+      },
+      "EmailPreferencesInput": {
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Revision",
+            "default": 0
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "default": false
+          },
+          "recipients": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "title": "Recipients"
+          },
+          "kinds": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "signals",
+                "daily_digest",
+                "analysis_complete"
+              ]
+            },
+            "type": "array",
+            "title": "Kinds",
+            "default": [
+              "signals"
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "EmailPreferencesInput"
+      },
+      "EmailPreferencesOut": {
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Revision",
+            "default": 0
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "default": false
+          },
+          "recipients": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "title": "Recipients"
+          },
+          "kinds": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "signals",
+                "daily_digest",
+                "analysis_complete"
+              ]
+            },
+            "type": "array",
+            "title": "Kinds",
+            "default": [
+              "signals"
+            ]
+          },
+          "configured": {
+            "type": "boolean",
+            "title": "Configured"
+          },
+          "queued_deliveries": {
+            "type": "integer",
+            "title": "Queued Deliveries",
+            "default": 0
+          },
+          "sent_deliveries": {
+            "type": "integer",
+            "title": "Sent Deliveries",
+            "default": 0
+          },
+          "uncertain_deliveries": {
+            "type": "integer",
+            "title": "Uncertain Deliveries",
+            "default": 0
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "configured"
+        ],
+        "title": "EmailPreferencesOut"
       },
       "EntryOut": {
         "properties": {
@@ -5648,6 +6407,40 @@
         ],
         "title": "ExecutionOut"
       },
+      "FunnelOut": {
+        "properties": {
+          "since": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Since"
+          },
+          "news": {
+            "type": "integer",
+            "title": "News"
+          },
+          "events": {
+            "type": "integer",
+            "title": "Events"
+          },
+          "triaged": {
+            "type": "integer",
+            "title": "Triaged"
+          },
+          "signalled": {
+            "type": "integer",
+            "title": "Signalled"
+          }
+        },
+        "type": "object",
+        "required": [
+          "since",
+          "news",
+          "events",
+          "triaged",
+          "signalled"
+        ],
+        "title": "FunnelOut"
+      },
       "GroupProposal": {
         "properties": {
           "kind": {
@@ -6228,6 +7021,53 @@
         ],
         "title": "LadderLevelOut"
       },
+      "MarketIndicatorOut": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          },
+          "as_of": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "As Of"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key"
+        ],
+        "title": "MarketIndicatorOut"
+      },
       "MetricValue": {
         "properties": {
           "value": {
@@ -6415,6 +7255,19 @@
             },
             "type": "array",
             "title": "Signals"
+          },
+          "market_strip": {
+            "items": {
+              "$ref": "#/components/schemas/MarketIndicatorOut"
+            },
+            "type": "array",
+            "title": "Market Strip"
+          },
+          "timeline7d": {
+            "$ref": "#/components/schemas/TimelineOut"
+          },
+          "funnel30d": {
+            "$ref": "#/components/schemas/FunnelOut"
           }
         },
         "type": "object",
@@ -6423,7 +7276,10 @@
           "signal_counts",
           "news_count",
           "event_count",
-          "signals"
+          "signals",
+          "market_strip",
+          "timeline7d",
+          "funnel30d"
         ],
         "title": "OverviewOut"
       },
@@ -6826,6 +7682,9 @@
             "type": "object",
             "title": "Metrics"
           },
+          "price_trend": {
+            "$ref": "#/components/schemas/PriceTrend"
+          },
           "symbol": {
             "type": "string",
             "title": "Symbol"
@@ -6965,6 +7824,61 @@
           "rating"
         ],
         "title": "PreviousRun"
+      },
+      "PriceTrend": {
+        "properties": {
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/PriceTrendPoint"
+            },
+            "type": "array",
+            "title": "Points"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          },
+          "as_of": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "As Of"
+          }
+        },
+        "type": "object",
+        "title": "PriceTrend"
+      },
+      "PriceTrendPoint": {
+        "properties": {
+          "close": {
+            "type": "number",
+            "title": "Close"
+          },
+          "market_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Market Date"
+          }
+        },
+        "type": "object",
+        "required": [
+          "close",
+          "market_date"
+        ],
+        "title": "PriceTrendPoint"
       },
       "ProposalAnalysisLink": {
         "properties": {
@@ -8612,6 +9526,33 @@
         ],
         "title": "ThesisSummary"
       },
+      "TimelineOut": {
+        "properties": {
+          "since": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Since"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/EventOut"
+            },
+            "type": "array",
+            "title": "Events"
+          }
+        },
+        "type": "object",
+        "required": [
+          "since",
+          "total",
+          "events"
+        ],
+        "title": "TimelineOut"
+      },
       "TrackGroup": {
         "properties": {
           "count": {
@@ -9218,6 +10159,9 @@
             },
             "type": "object",
             "title": "Metrics"
+          },
+          "price_trend": {
+            "$ref": "#/components/schemas/PriceTrend"
           },
           "revision": {
             "type": "integer",

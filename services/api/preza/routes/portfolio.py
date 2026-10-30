@@ -1,3 +1,4 @@
+import uuid
 from datetime import date
 from typing import Annotated
 from xml.etree.ElementTree import ParseError
@@ -70,7 +71,7 @@ async def import_statement(
     detail = "file: " + ", ".join(f"{key}={value}" for key, value in counts.items())
     await record_sync(session, "flex", "ok", detail)
     await session.commit()
-    await enqueue(settings, "refresh_bars")
+    await enqueue(settings, "refresh_bars", job_id=f"refresh_bars:manual:{uuid.uuid4()}")
     dates = [p.report_date for p in statement.positions] + [c.report_date for c in statement.cash]
     return PortfolioImportOut(counts=counts, as_of=max(dates, default=None))
 
@@ -93,7 +94,7 @@ async def portfolio(
 async def sync(settings: Annotated[Settings, Depends(get_settings)]) -> Queued:
     if not (settings.ibkr_flex_token and settings.ibkr_flex_query_id):
         raise HTTPException(409, detail="flex_unconfigured")
-    job_id = await enqueue(settings, "sync_flex")
+    job_id = await enqueue(settings, "sync_flex", job_id=f"sync_flex:manual:{uuid.uuid4()}")
     if job_id is None:
         raise HTTPException(503, detail="queue_unavailable")
     return Queued(job_id=job_id)

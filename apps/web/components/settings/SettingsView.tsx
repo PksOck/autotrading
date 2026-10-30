@@ -17,6 +17,7 @@ import { policyBody } from "@/lib/automation-form";
 import { LocaleSwitch } from "@/components/shell/LocaleSwitch";
 import { ThemeToggle } from "@/components/shell/ThemeToggle";
 import type { ThemePreference } from "@/lib/theme";
+import { EmailSettings } from "./EmailSettings";
 import { AutomationBatchPanel } from "./AutomationBatchPanel";
 
 const field = "min-h-12 w-full rounded-md border border-border bg-surface px-3 text-text";
@@ -30,6 +31,7 @@ function ProcessCard({
   reload: () => Promise<AutomationPolicy[]>;
 }) {
   const t = useTranslations("automation");
+  const feedback = useTranslations("settingsFeedback");
   const locale = useLocale();
   const [draft, setDraft] = useState(policy);
   const [outside, setOutside] = useState(false);
@@ -50,7 +52,19 @@ function ProcessCard({
     }
   }
   return (
-    <article className="space-y-4 rounded-xl border border-border bg-surface p-5">
+    <details className="space-y-4 rounded-xl border border-border bg-surface p-5">
+      <summary className="min-h-12 cursor-pointer font-medium">
+        {t(`processes.${policy.process_key}`)} · {draft.enabled ? t("enabled") : feedback("off")}
+      </summary>
+      <details>
+        <summary
+          className="flex min-h-12 w-12 cursor-pointer items-center justify-center rounded-full border border-border"
+          aria-label={t(`processes.${policy.process_key}`)}
+        >
+          ?
+        </summary>
+        <p className="pt-2 text-sm text-text-2">{feedback(`processHelp.${policy.process_key}`)}</p>
+      </details>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h3 className="font-medium">{t(`processes.${policy.process_key}`)}</h3>
@@ -263,14 +277,16 @@ function ProcessCard({
             .join(" · ")}
         </p>
       )}
-    </article>
+    </details>
   );
 }
 
 export function SettingsView({ theme }: { theme: ThemePreference }) {
   const t = useTranslations("automation");
+  const feedback = useTranslations("settingsFeedback");
   const systemT = useTranslations("system");
   const locale = useLocale();
+  const [selectedProcess, setSelectedProcess] = useState("radar");
   const policies = useAutomationPolicies();
   const control = useAutomationControl();
   const pause = useSetAutomationControl();
@@ -309,21 +325,44 @@ export function SettingsView({ theme }: { theme: ThemePreference }) {
         <p className="text-xs text-text-2">{t("unsupportedConnections")}</p>
         <p className="text-xs text-text-2">{t("rolesHelp")}</p>
       </section>
+      <EmailSettings />
       <section className="space-y-3 rounded-xl border border-border bg-surface p-5">
-        <h2 className="text-lg font-medium">{t("globalControl")}</h2>
-        <p className="text-sm text-text-2">{t("pauseHelp")}</p>
+        <h2 className="text-lg font-medium">{feedback("analysisTitle")}</h2>
+        <p className="text-sm text-text-2">{feedback("analysisHelp")}</p>
         {control.data && (
-          <button
-            className={button}
-            type="button"
-            disabled={pause.isPending}
-            onClick={() =>
-              pause.mutate({ revision: control.data.revision, paused: !control.data.paused })
-            }
-          >
-            {pause.isPending ? t("pending") : control.data.paused ? t("resume") : t("pause")}
-          </button>
+          <label className="flex min-h-12 items-center gap-3">
+            <input
+              type="checkbox"
+              role="switch"
+              checked={control.data.automatic_analyses_enabled ?? true}
+              disabled={pause.isPending}
+              onChange={(event) =>
+                pause.mutate({ ...control.data!, automatic_analyses_enabled: event.target.checked })
+              }
+            />
+            {feedback("analysisEnabled")}
+          </label>
         )}
+        {pause.isSuccess && (
+          <p role="status" className="text-sm">
+            {feedback("controlSaved")}
+          </p>
+        )}
+        <details>
+          <summary className="min-h-12 cursor-pointer text-sm">{feedback("pauseAll")}</summary>
+          <h3 className="font-medium">{t("globalControl")}</h3>
+          <p className="text-sm text-text-2">{t("pauseHelp")}</p>
+          {control.data && (
+            <button
+              className={button}
+              type="button"
+              disabled={pause.isPending}
+              onClick={() => pause.mutate({ ...control.data, paused: !control.data.paused })}
+            >
+              {pause.isPending ? t("pending") : control.data.paused ? t("resume") : t("pause")}
+            </button>
+          )}
+        </details>
         {(control.isError || pause.isError) && (
           <p role="alert" className="text-sm text-neg">
             {pause.error instanceof ApiError && pause.error.status === 409
@@ -335,18 +374,59 @@ export function SettingsView({ theme }: { theme: ThemePreference }) {
       <h2 className="text-lg font-medium">{t("processTitle")}</h2>
       {policies.isPending && <p role="status">{t("loading")}</p>}
       {policies.isError && <p role="alert">{t("requestError")}</p>}
-      <div className="grid items-start gap-4 xl:grid-cols-2">
-        {policies.data?.map((policy) => (
-          <ProcessCard
-            key={policy.process_key}
-            policy={policy}
-            reload={async () => (await policies.refetch()).data ?? []}
-          />
-        ))}
+      <label className="grid max-w-xl gap-2 text-sm">
+        {feedback("chooseProcess")}
+        <select
+          className={field}
+          value={selectedProcess}
+          onChange={(event) => setSelectedProcess(event.target.value)}
+        >
+          <optgroup label={feedback("analysisGroup")}>
+            {policies.data
+              ?.filter((policy) =>
+                ["radar", "entries", "discover_thesis_reviews", "batch_analyses"].includes(
+                  policy.process_key,
+                ),
+              )
+              .map((policy) => (
+                <option key={policy.process_key} value={policy.process_key}>
+                  {t(`processes.${policy.process_key}`)}
+                </option>
+              ))}
+          </optgroup>
+          <optgroup label={feedback("syncGroup")}>
+            {policies.data
+              ?.filter(
+                (policy) =>
+                  !["radar", "entries", "discover_thesis_reviews", "batch_analyses"].includes(
+                    policy.process_key,
+                  ),
+              )
+              .map((policy) => (
+                <option key={policy.process_key} value={policy.process_key}>
+                  {t(`processes.${policy.process_key}`)}
+                </option>
+              ))}
+          </optgroup>
+        </select>
+      </label>
+      <div className="grid items-start gap-4">
+        {policies.data
+          ?.filter((policy) => policy.process_key === selectedProcess)
+          .map((policy) => (
+            <ProcessCard
+              key={policy.process_key}
+              policy={policy}
+              reload={async () => (await policies.refetch()).data ?? []}
+            />
+          ))}
       </div>
-      <AutomationBatchPanel />
-      <section className="space-y-3 rounded-xl border border-border bg-surface p-5">
-        <h2 className="text-lg font-medium">{t("history")}</h2>
+      <details className="rounded-xl border border-border bg-surface p-5">
+        <summary className="min-h-12 cursor-pointer font-medium">{feedback("batchTitle")}</summary>
+        <AutomationBatchPanel />
+      </details>
+      <details className="space-y-3 rounded-xl border border-border bg-surface p-5">
+        <summary className="min-h-12 cursor-pointer text-lg font-medium">{t("history")}</summary>
         {history.isError && <p role="alert">{t("requestError")}</p>}
         {history.data?.length === 0 && <p className="text-sm text-text-2">{t("noExecutions")}</p>}
         <ul className="space-y-2">
@@ -366,7 +446,7 @@ export function SettingsView({ theme }: { theme: ThemePreference }) {
             </li>
           ))}
         </ul>
-      </section>
+      </details>
     </div>
   );
 }

@@ -21,6 +21,8 @@ const ALLOWED = new Set([
   "calibration",
   "automation",
   "overview",
+  "notifications",
+  "backtest",
 ]);
 
 // XML passes through for the Flex statement import; every other body is JSON.

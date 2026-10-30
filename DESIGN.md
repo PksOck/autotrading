@@ -1,5 +1,14 @@
 # DESIGN.md: oblikovni sistem in zasloni
 
+## Dopolnitev po pregledu 2026-10-29–30 (S-018)
+
+- Pregled vrne Portfelj danes, barve dnevnih sprememb, moč/vrsto signalov, razloženi 7-dnevni Radar in 30-dnevni lijak iste kohorte. Makro kartice so vidne z izrecnimi vrzelmi, ne s sample fallbackom.
+- `DataTable` vedno ponudi Standardno; na Pozicijah vrne količino/ceno/vrednost/težo/nerealizirano/dnevno spremembo. `SignedChange` ima predznak in semantično barvo; `PriceTrend` prikaže do 30 sej, dejanski razpon/število/vir; `EntryZoneBadge` ne sklepa znane cone ob odsotnem stanju.
+- Dividende uporabljajo isti card/p5 in DataTable sistem kot Pozicije; ocene in pokritost se preklopijo ločeno. Datum posnetka in izrecno primerjani obračuni/knjižbe preprečijo mešanje gotovine z oceno.
+- Nastavitve imajo glavno stikalo samodejnih modelov, združene procese v izboru, zložljive podrobnosti in pomoč. SMTP obrazec podpira več naslovov in vrste obvestil; brez povezave ostane pošiljanje izklopljeno. Skrivnosti se ne prikazujejo (ADR-0021).
+- `BacktestPanel` na Uspešnosti izračuna izide šele ob izrecnem kliku. Ob oddanih parametrih prikaže dejanske cene/datume/vire in preskoke, brez namišljenega kumulativnega portfeljskega donosa (ADR-0022).
+- Sintetične teze pokrijejo aktivno, osnutek in opozorilo z revizijsko sledjo. [Aktualni obseg in meje](./docs/implementation/2026-10-29-dopolnitve-po-pregledu.md). Samo :3100, :3000 še ni posodobljen.
+
 ## Pregledna nadgradnja 2026-10-29 (S-017)
 
 Izvedena samo v pregledni veji in ločenem demu :3100; objava :3000 čaka novo uporabnikovo potrditev. [Obseg in odprte točke](./docs/implementation/2026-10-29-pregled-sprememb.md).

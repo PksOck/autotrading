@@ -66,6 +66,17 @@ class FlexStatement(BaseModel):
     dividends: DividendStatement | None = None
 
 
+class PriceTrendPoint(BaseModel):
+    close: Num
+    market_date: date
+
+
+class PriceTrend(BaseModel):
+    points: list[PriceTrendPoint] = Field(default_factory=list)
+    source: str | None = None
+    as_of: date | None = None
+
+
 class PositionOut(BaseModel):
     instrument_id: int | None = None
     account_id: str | None = None
@@ -75,6 +86,7 @@ class PositionOut(BaseModel):
     latest_close: str | None = None
     price_meta: DataMeta = Field(default_factory=DataMeta)
     metrics: dict[str, MetricValue] = Field(default_factory=dict)
+    price_trend: PriceTrend = Field(default_factory=PriceTrend)
     symbol: str
     name: str | None
     kind: InstrumentKind
@@ -145,6 +157,7 @@ class WatchlistOut(BaseModel):
     change_pct: Num | None = None
     price_meta: DataMeta = Field(default_factory=DataMeta)
     metrics: dict[str, MetricValue] = Field(default_factory=dict)
+    price_trend: PriceTrend = Field(default_factory=PriceTrend)
     revision: int = 1
     symbol: str
     name: str | None

@@ -1,5 +1,7 @@
 # Nadgradnja Preže: pregled pred potrditvijo
 
+**Novejša dopolnitev S-018:** [popravki po uporabniškem pregledu](./2026-10-29-dopolnitve-po-pregledu.md). Spodaj je prvotni posnetek S-017; novejši dokument beleži vrnjene vizualizacije, standardne profile, SMTP in testiranje shranjenih signalov/mnenj.
+
 Datum: 2026-10-29 · veja: `feat/uxui-demo-upgrade` · seja: S-017
 
 **Okolje :3000 ostane nespremenjeno.** Uporabnik je izrecno zadržal prenos do pregleda in potrditve. Pregledna različica teče na [ločenem demu :3100](http://localhost:3100) s sintetičnimi podatki in vidno oznako. Ni združena v Claudovo vejo. Gradnja slik sama ni objava; že pripravljene slike `preza-*` se ne smejo samodejno zagnati na :3000.

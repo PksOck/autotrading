@@ -8,6 +8,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from preza.domain.metadata import DataMeta, MetricValue
+from preza.domain.portfolio import PriceTrend, PriceTrendPoint
 from preza.models import Bar, EtfProfile, Fundamentals, Instrument
 
 METRICS = {
@@ -31,6 +32,7 @@ class MarketContext(TypedDict):
     price_meta: DataMeta
     change_pct: Decimal | None
     latest_close: str | None
+    price_trend: PriceTrend
 
 
 def identity_status(instrument: Instrument) -> str:
@@ -58,7 +60,7 @@ async def market_context(session: AsyncSession, ids: list[int]) -> dict[int, Mar
         (
             await session.execute(
                 select(ranked)
-                .where(ranked.c.rn <= 2)
+                .where(ranked.c.rn <= 30)
                 .order_by(ranked.c.instrument_id, ranked.c.day.desc())
             )
         )
@@ -159,12 +161,20 @@ async def market_context(session: AsyncSession, ids: list[int]) -> dict[int, Mar
                 ),
             )
         change = None
-        if len(recent) == 2 and recent[1]["close"]:
+        if len(recent) >= 2 and recent[1]["close"]:
             change = (recent[0]["close"] / recent[1]["close"] - 1) * 100
         out[instrument.id] = {
             "metrics": metrics,
             "price_meta": price_meta,
             "change_pct": change,
             "latest_close": str(latest["close"]) if latest else None,
+            "price_trend": PriceTrend(
+                points=[
+                    PriceTrendPoint(close=row["close"], market_date=row["day"])
+                    for row in reversed(recent)
+                ],
+                source=price_meta.source,
+                as_of=price_meta.market_date,
+            ),
         }
     return out

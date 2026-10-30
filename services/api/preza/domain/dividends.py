@@ -84,6 +84,7 @@ class ProjectionBasis(BaseModel):
 
 class DividendProjection(BaseModel):
     account_id: str | None = None
+    position_as_of: date | None = None
     symbol: str
     quantity: Decimal
     currency: str
@@ -186,6 +187,18 @@ def summarize_cash(events: list[CashEvent]) -> list[CashSummary]:
     return results
 
 
+class DividendReconciliation(BaseModel):
+    account_id: str
+    symbol: str | None
+    currency: str
+    action_id: str
+    expected_gross: Decimal
+    received_gross: Decimal | None
+    difference: Decimal | None
+    status: Literal["confirmed", "changed", "awaiting_payment"]
+    as_of: datetime
+
+
 class DividendsOut(BaseModel):
     cash_events: list[CashEvent]
     received: list[CashSummary]
@@ -197,3 +210,4 @@ class DividendsOut(BaseModel):
     source: str = "ibkr_flex"
     as_of: datetime | None
     contract_status: str = "synthetic_contract_not_live_validated"
+    reconciliation: list[DividendReconciliation] = Field(default_factory=list)

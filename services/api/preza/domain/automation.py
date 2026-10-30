@@ -64,6 +64,7 @@ class ControlInput(BaseModel):
     model_config = ConfigDict(extra="forbid")
     revision: int = Field(ge=0)
     paused: bool
+    automatic_analyses_enabled: bool = True
 
 
 class BatchInput(BaseModel):

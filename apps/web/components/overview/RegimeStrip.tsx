@@ -17,8 +17,7 @@ const TONE = {
 export function RegimeStrip({ indicators }: { indicators: RegimeIndicator[] }) {
   const t = useTranslations("regime");
   const locale = useAppLocale();
-  const unit = (i: RegimeIndicator) =>
-    i.unit === "pct" ? (locale === "sl" ? " %" : "%") : "";
+  const unit = (i: RegimeIndicator) => (i.unit === "pct" ? (locale === "sl" ? " %" : "%") : "");
 
   return (
     <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -31,11 +30,21 @@ export function RegimeStrip({ indicators }: { indicators: RegimeIndicator[] }) {
               {formatNumber(locale, indicator.value, indicator.unit === "idx" ? 1 : 2)}
               {unit(indicator)}
             </div>
-            <span className={cn("mt-1 inline-block rounded-full px-2 text-xs leading-5 font-medium", TONE[indicator.regime])}>
+            <span
+              className={cn(
+                "mt-1 inline-block rounded-full px-2 text-xs leading-5 font-medium",
+                TONE[indicator.regime],
+              )}
+            >
               {t(indicator.regime)}
             </span>
           </div>
-          <Sparkline values={sparkSeries(indicator.key, indicator.value)} width={72} height={28} color="var(--text-3)" />
+          <Sparkline
+            values={sparkSeries(indicator.key, indicator.value)}
+            width={72}
+            height={28}
+            color="var(--text-3)"
+          />
         </div>
       ))}
     </div>

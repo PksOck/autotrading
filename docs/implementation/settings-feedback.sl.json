@@ -1,0 +1,53 @@
+{
+  "settingsFeedback": {
+    "off": "Izklopljeno",
+    "analysisTitle": "Samodejne analize",
+    "analysisHelp": "Izklop ustavi nove samodejne analize, triažo in prevode z jezikovnimi modeli. Novice, cene in portfelj se še osvežujejo. Tekoči klic se dokonča; ročne analize ostanejo na voljo.",
+    "analysisEnabled": "Dovoli samodejne analize z modeli",
+    "controlSaved": "Nastavitev je shranjena.",
+    "pauseAll": "Napredno: začasno ustavi vse samodejne procese",
+    "chooseProcess": "Izberi proces za urejanje",
+    "analysisGroup": "Analize in raziskovanje",
+    "syncGroup": "Podatki in obvestila",
+    "batchTitle": "Paket analiz · predogled in ročni zagon",
+    "email": {
+      "title": "E-poštna obvestila",
+      "configured": "SMTP povezava je nastavljena na strežniku.",
+      "unconfigured": "SMTP še ni nastavljen. Naslove lahko shraniš; pošiljanje ostane izklopljeno.",
+      "enabled": "Omogoči e-poštna obvestila",
+      "recipients": "Prejemniki",
+      "recipientsHelp": "Vsak naslov v svojo vrstico ali ločen z vejico; največ 20 naslovov.",
+      "kinds": "Vrste obvestil",
+      "signals": "Novi signali",
+      "daily_digest": "Dnevni povzetek",
+      "analysis_complete": "Zaključena analiza",
+      "security": "Geslo SMTP se nastavi samo na strežniku in se tukaj ne prikazuje. Shranjevanje ne pošlje preskusnega sporočila.",
+      "save": "Shrani obvestila",
+      "saving": "Shranjujem …",
+      "saved": "Nastavitve obvestil so shranjene.",
+      "error": "Shranjevanje ni uspelo. Preveri naslove in povezavo SMTP; ob sočasni spremembi osveži stran.",
+      "loadError": "Nastavitev obvestil ni mogoče naložiti.",
+      "loading": "Nalagam nastavitve …",
+      "deliveryStatus": "V čakalni vrsti: {queued} · Poslano: {sent}",
+      "uncertain": "{count} dostav ima negotov izid. Ne pošljejo se samodejno znova; preveri poštni strežnik."
+    },
+    "processHelp": {
+      "radar": "Pridobi novice in išče dogodke. Analize in prevodi uporabljajo model; glavno stikalo jih ustavi, zbiranje novic pa ostane aktivno.",
+      "entries": "Preveri vstopne točke in razloge za padec. Samodejne analize upoštevajo glavno stikalo.",
+      "discover_thesis_reviews": "Poišče in pregleda teze. Pregledi uporabljajo model in upoštevajo glavno stikalo.",
+      "batch_analyses": "Pripravi omejen paket analiz portfelja ali watchliste. Pred začetkom prikaže predogled in preveri kvoto.",
+      "sync_flex": "Prebere portfelj in posle iz IBKR. Ne uporablja jezikovnega modela.",
+      "refresh_bars": "Osveži dnevne cene instrumentov. Ne uporablja jezikovnega modela.",
+      "fundamentals": "Osveži poslovne podatke podjetij iz podatkovnega vira.",
+      "outcomes": "Izračuna izide shranjenih signalov iz cen. Ne potrebuje nove analize.",
+      "notify": "Pošlje obvestila o obstoječih signalih prek Telegrama.",
+      "digest": "Pripravi Telegram povzetek iz shranjenih signalov.",
+      "refresh_etf_profiles": "Osveži profile skladov iz podatkovnega vira."
+    }
+  },
+  "automation": {
+    "executionReasons": {
+      "analyses_disabled": "Samodejne analize so izklopljene"
+    }
+  }
+}

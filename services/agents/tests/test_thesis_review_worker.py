@@ -39,6 +39,7 @@ def harness(monkeypatch):
             events.append("close")
 
     monkeypatch.setattr(runner, "get_sessionmaker", lambda: session)
+    monkeypatch.setattr(runner, "review_gate", AsyncMock(return_value=None))
     reserve = AsyncMock(return_value=(review, True))
     monkeypatch.setattr(runner.reviews, "reserve_review", reserve)
 
@@ -109,6 +110,14 @@ async def test_one_call_committed_phases_and_usage(harness):
     h.fail.assert_not_awaited()
 
 
+async def test_switch_off_between_reservation_and_dispatch_prevents_model(harness, monkeypatch):
+    monkeypatch.setattr(runner, "review_gate", AsyncMock(side_effect=[None, "analyses_disabled"]))
+    assert await run(harness) == "analyses_disabled"
+    harness.reserve.assert_awaited_once()
+    harness.dispatch.assert_not_awaited()
+    harness.llm.complete_json.assert_not_awaited()
+
+
 @pytest.mark.parametrize("status", sorted(runner.reviews.TERMINAL))
 async def test_terminal_including_no_evidence_never_calls_llm(harness, status):
     harness.review.status = status
@@ -117,14 +126,60 @@ async def test_terminal_including_no_evidence_never_calls_llm(harness, status):
     harness.dispatch.assert_not_awaited()
 
 
-async def test_restart_after_dispatch_fails_unknown_without_llm(harness):
+async def test_another_job_preserves_existing_dispatch_without_llm(harness):
     h = harness
     h.review.status, h.review.dispatch_at = "running", datetime.now(UTC)
     h.reserve.return_value = (h.review, False)
+    assert await run(h) == "running"
+    h.fail.assert_not_awaited()
+    h.dispatch.assert_not_awaited()
+    h.llm.complete_json.assert_not_awaited()
+
+
+async def test_same_durable_execution_restart_after_dispatch_fails_unknown(harness, monkeypatch):
+    h = harness
+    h.review.status, h.review.dispatch_at = "running", datetime.now(UTC)
+    h.reserve.return_value = (h.review, False)
+    monkeypatch.setattr(runner, "owns_review_dispatch", AsyncMock(return_value=True))
     assert await run(h) == "failed_unknown"
     assert h.fail.call_args.args[2] == "interrupted"
     assert h.fail.call_args.kwargs == {"unknown": True}
     h.llm.complete_json.assert_not_awaited()
+
+
+async def test_manual_discovery_uses_distinct_child_id_from_retained_automatic_job(monkeypatch):
+    revision_id, auto_id, manual_id = uuid.uuid4(), uuid.uuid4(), uuid.uuid4()
+    executions = {
+        auto_id: SimpleNamespace(
+            process_key="discover_thesis_reviews", origin="automatic", counts={}
+        ),
+        manual_id: SimpleNamespace(
+            process_key="discover_thesis_reviews", origin="manual", counts={}
+        ),
+    }
+
+    @asynccontextmanager
+    async def session():
+        yield SimpleNamespace(
+            scalars=AsyncMock(return_value=[revision_id]),
+            get=AsyncMock(side_effect=lambda _model, identity: executions[identity]),
+            commit=AsyncMock(),
+        )
+
+    monkeypatch.setattr(worker, "get_sessionmaker", lambda: session)
+    redis = SimpleNamespace(enqueue_job=AsyncMock())
+    for execution_id in (auto_id, manual_id):
+        assert (
+            await worker.discover_thesis_reviews.__wrapped__(
+                {"redis": redis, "process_execution_id": str(execution_id)}
+            )
+            == 1
+        )
+    automatic, manual = redis.enqueue_job.call_args_list
+    assert automatic.kwargs["_job_id"] != manual.kwargs["_job_id"]
+    assert manual.kwargs["_job_id"].endswith(f":manual:{manual_id}")
+    assert automatic.args[-1] == str(auto_id)
+    assert manual.args[-1] == str(manual_id)
 
 
 async def test_restart_before_dispatch_can_continue(harness):

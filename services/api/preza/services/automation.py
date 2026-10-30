@@ -2,6 +2,7 @@
 
 import uuid
 from datetime import UTC, datetime, time, timedelta
+from typing import Literal
 
 from fastapi import HTTPException
 from sqlalchemy import func, select, update
@@ -41,6 +42,7 @@ LEGACY_PROCESSES = (
     "discover_thesis_reviews",
 )
 AGENT_PROCESSES = {"refresh_etf_profiles", "discover_thesis_reviews"}
+ANALYSIS_PROCESSES = {"entries", "discover_thesis_reviews", "batch_analyses"}
 PROCESS_KEYS = (*LEGACY_PROCESSES, "batch_analyses")
 
 
@@ -119,9 +121,21 @@ async def gate(
         return "disabled"
     if automatic and control is not None and control.paused:
         return "paused"
+    if (
+        automatic
+        and key in ANALYSIS_PROCESSES
+        and control is not None
+        and not control.automatic_analyses_enabled
+    ):
+        return "analyses_disabled"
     if not outside_window and not in_window(policy_input(policy), now or datetime.now(UTC)):
         return "outside_window"
     return None
+
+
+async def automatic_analyses_allowed(session: AsyncSession) -> bool:
+    control = await session.get(AutomationControl, 1, populate_existing=True)
+    return control is None or (not control.paused and control.automatic_analyses_enabled)
 
 
 async def materialize(
@@ -279,7 +293,7 @@ async def batch_preview(
     for instrument in await session.scalars(
         select(Instrument).where(Instrument.id.in_(ids)).order_by(Instrument.symbol, Instrument.id)
     ):
-        reason = (
+        reason: Literal["active", "cap", "quota", "ready"] = (
             "active"
             if instrument.id in active
             else "cap"
@@ -368,3 +382,67 @@ async def analysis_gate(session: AsyncSession, run_id: uuid.UUID) -> str | None:
         automatic=execution.origin == "automatic",
         outside_window=execution.outside_window,
     )
+
+
+async def analysis_is_automatic(session: AsyncSession, run_id: uuid.UUID) -> bool:
+    origin = await session.scalar(
+        select(ProcessExecution.origin)
+        .join(ProcessAnalysis, ProcessAnalysis.execution_id == ProcessExecution.id)
+        .where(ProcessAnalysis.run_id == run_id)
+    )
+    return origin == "automatic"
+
+
+async def review_gate(
+    session: AsyncSession,
+    revision_id: uuid.UUID,
+    execution_id: str | None,
+    week_start: str | None = None,
+) -> str | None:
+    if execution_id is None:
+        return await gate(session, "discover_thesis_reviews")
+    execution = await session.get(ProcessExecution, uuid.UUID(execution_id), populate_existing=True)
+    if (
+        execution is None
+        or execution.process_key != "discover_thesis_reviews"
+        or execution.state not in {"running", "done"}
+    ):
+        return "execution_missing"
+    if str(revision_id) not in str(execution.counts.get("revision_ids", "")).split(","):
+        return "execution_missing"
+    if week_start is not None and execution.counts.get("review_week") != week_start:
+        return "execution_missing"
+    policy = await session.get(ProcessPolicy, execution.process_key, populate_existing=True)
+    if policy is None or policy.revision != execution.policy_revision:
+        return "policy_changed"
+    return await gate(
+        session,
+        execution.process_key,
+        automatic=execution.origin == "automatic",
+        outside_window=execution.outside_window,
+    )
+
+
+async def owns_review_dispatch(
+    session: AsyncSession, review_id: uuid.UUID, execution_id: str | None
+) -> bool:
+    if execution_id is None:
+        return False
+    execution = await session.get(ProcessExecution, uuid.UUID(execution_id), populate_existing=True)
+    return execution is not None and str(review_id) in str(
+        execution.counts.get("dispatch_review_ids", "")
+    ).split(",")
+
+
+async def record_review_dispatch(
+    session: AsyncSession, review_id: uuid.UUID, execution_id: str | None
+) -> None:
+    if execution_id is None:
+        return
+    execution = await session.get(
+        ProcessExecution, uuid.UUID(execution_id), populate_existing=True, with_for_update=True
+    )
+    if execution is not None:
+        ids = set(str(execution.counts.get("dispatch_review_ids", "")).split(",")) - {""}
+        ids.add(str(review_id))
+        execution.counts = {**execution.counts, "dispatch_review_ids": ",".join(sorted(ids))}

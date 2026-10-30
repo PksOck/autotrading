@@ -7,7 +7,13 @@ import { formatChange, formatMoney } from "@/lib/format";
 import { useAppLocale } from "@/lib/use-app-locale";
 
 /** Live total from /portfolio; the sample value is shown (and labelled) until IBKR data exists. */
-export function PortfolioValue({ sampleValue, sampleChange }: { sampleValue: number; sampleChange: number }) {
+export function PortfolioValue({
+  sampleValue,
+  sampleChange,
+}: {
+  sampleValue: number;
+  sampleChange: number;
+}) {
   const t = useTranslations();
   const locale = useAppLocale();
   const { data } = usePortfolio();
@@ -20,13 +26,20 @@ export function PortfolioValue({ sampleValue, sampleChange }: { sampleValue: num
       <span className="label flex items-center gap-2">
         {t("overview.portfolioValue")}
         {(!live || live.source === "demo") && (
-          <span className="rounded-full bg-warn-soft px-1.5 leading-5 text-warn">{live ? t("provenance.demo") : t("header.sample")}</span>
+          <span className="rounded-full bg-warn-soft px-1.5 leading-5 text-warn">
+            {live ? t("provenance.demo") : t("header.sample")}
+          </span>
         )}
       </span>
-      <AnimatedNumber value={value} format={(v) => formatMoney(locale, v, currency, 0)} className="text-2xl leading-8 font-medium" />
+      <AnimatedNumber
+        value={value}
+        format={(v) => formatMoney(locale, v, currency, 0)}
+        className="text-2xl leading-8 font-medium"
+      />
       {!live && (
         <span className={`num text-[13px] ${sampleChange >= 0 ? "text-pos" : "text-neg"}`}>
-          {formatChange(locale, sampleChange)} <span className="text-text-3">{t("overview.today")}</span>
+          {formatChange(locale, sampleChange)}{" "}
+          <span className="text-text-3">{t("overview.today")}</span>
         </span>
       )}
     </div>

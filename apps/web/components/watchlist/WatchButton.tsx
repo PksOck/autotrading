@@ -18,13 +18,18 @@ export function WatchButton({ symbol, className }: { symbol: string; className?:
       if (item) {
         await remove.mutateAsync(item.id);
         toast(t("removed"), {
-          action: { label: t("addShort"), onClick: () => add.mutate({ symbol, tier: item.tier, note: item.note }) },
+          action: {
+            label: t("addShort"),
+            onClick: () => add.mutate({ symbol, tier: item.tier, note: item.note }),
+          },
         });
       } else {
         await add.mutateAsync({ symbol, tier: "active" });
       }
     } catch (error) {
-      toast.error(error instanceof ApiError && error.status === 409 ? t("duplicate") : String(error));
+      toast.error(
+        error instanceof ApiError && error.status === 409 ? t("duplicate") : String(error),
+      );
     }
   };
 

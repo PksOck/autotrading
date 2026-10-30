@@ -46,6 +46,7 @@ async def to_out(
         change_pct=context["change_pct"],
         price_meta=context["price_meta"],
         metrics=context["metrics"],
+        price_trend=context["price_trend"],
         symbol=item.instrument.symbol,
         name=item.instrument.name,
         kind=InstrumentKind(item.instrument.kind),

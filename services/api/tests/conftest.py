@@ -77,7 +77,8 @@ async def api(
                 "position, trade, cash_balance, bar, sync_run, instrument, signal_weight_set, "
                 "account_snapshot, automation_control, process_policy, process_execution, "
                 "process_analysis, dividend_cash_event, dividend_accrual_snapshot, "
-                "dividend_import_coverage, dividend_projection_basis "
+                "dividend_import_coverage, dividend_projection_basis, "
+                "email_preferences, email_delivery "
                 "RESTART IDENTITY CASCADE"
             )
         )

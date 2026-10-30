@@ -4,6 +4,24 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 
 ---
 
+## S-018 · 2026-10-29–30 · Dopolnitve po uporabniškem pregledu
+
+**Cilj:** Vrniti uporabne informacije Pregleda, standardni portfelj, barve/trende in poenostaviti nastavitve; dodati testljive teze, kontrole dividend, SMTP več prejemnikov ter prvo testiranje shranjenih signalov/mnenj. Uporabnik je potrdil SMTP in testiranje brez novih LLM analiz; prenos :3000 ostaja prepovedan do nove potrditve.
+
+**Narejeno:** BL-206–210. Vrnjen treemap Portfelj danes, moč/vrsta signalov, 7-dnevni Radar z legendo in 30-dnevni lijak dejanske kohorte. Standardno je vedno dosegljiv profil tabel; semantične barve/predznaki, do 30 dnevnih sveč z dejanskimi datumi in stanje cone. Dividende uporabljajo skupne kartice/tabele, stikalo ocen/pokritosti, datum pozicije in uskladitev po izrecni referenci dogodka. Demo ima MSFT aktivno tezo, ORCL osnutek in COST z opozorilom; seed je varovan in ponovljiv. Na Uspešnosti je deterministična read-only študija dogodkov, z razpoložljivostjo, cenami, stroški in preskoki. Nastavitve imajo ločeno glavno stikalo modelov, izbiro/zložljive procese/razlage ter SMTP do 20 prejemnikov z vrstami obvestil in sledjo negotovih dostav.
+
+**Pregled in testi:** Neodvisni pregled in popravki: per-call nadzor avtomatskih modelov (tudi globoke analize), pavza pred vsako SMTP dostavo, trajno dovoljenje za ročne otroške preglede tez, ločeni ročni job ID-ji z varovanjem aktivnih rezervacij ter bounded lateral branje največ 61 sveč na testiran zapis. API celotna zbirka 547 uspešnih; nato 32 ciljnih testov zadnjih popravkov uspešnih. Agents celotna končna zbirka 221 uspešnih. Web 155 uspešnih, TypeScript/ESLint in 1290 SL/EN ključev; Ruff/mypy API 135/agents 23 modulov. Docker build web/API uspešen. Brskalniška zbirka: 59 uspešnih, 10 predvideno preskočenih, en neuspeh zaradi 47,99997 namesto 48px v numerični meritvi; test ohranja zahtevani CSS min-width/min-height 48px in dodaja podpikselno toleranco. Ponovljenih 16 ciljnih poti (novi popravki in signalne povezave, telefon/namizje) je uspešnih.
+
+**Objava:** Samo `preza-demo` :3100; migracija 0019, izključno sintetični seed tez. Ob vmesni ustavitvi Dockerja je uporabnik sam ponovno zagnal Docker; izginuli začasni testni PostgreSQL je bil nadomeščen z ločenim testnim vsebnikom :55432. :3000 še uporablja prvotni sliki web `4eaf458ee052` in API `973f535ba884`; v tej seji ni njegovih migracij ali posodobitev. Brez dejanskih SMTP sporočil, živih modelnih klicev ali naročil. Izvorni Claudov checkout ostaja nedotaknjen.
+
+**Odločitve:** ADR-0021 (modeli/SMTP) in ADR-0022 (študija dogodkov); izvedbeni načrt in [pregled dopolnitev](./docs/implementation/2026-10-29-dopolnitve-po-pregledu.md). SMTP poverilnice samo strežniško; nejasna dostava se ne ponavlja samodejno. Testiranje ni sestavljeni portfeljski backtester ali ponovno zgodovinsko izvajanje agentov.
+
+**Odprto:** BL-211 resnični makro viri in 200 SPY sveč; BL-212 dejanska SMTP povezava/dostava po konfiguraciji in izrecnem omogočenju. Ostajajo podatkovne vrzeli BL-193/194/202 ter širši UX in Flex robovi BL-203–205. Nova stikala niso nameščena na :3000 in niso ustavila njegovih obstoječih delavcev.
+
+**Naslednji korak:** Uporabnikov pregled :3100 in želene dopolnitve. Noben prenos/merge v :3000 ali Claudovo vejo brez nove potrditve.
+
+---
+
 ## S-017 · 2026-10-29 · Pregledna nadgradnja in ločen demo
 
 **Cilj:** Izvesti potrjene nadgradnje in pripraviti pregled, ob zadnji izrecni omejitvi uporabnika brez prepisa okolja :3000.

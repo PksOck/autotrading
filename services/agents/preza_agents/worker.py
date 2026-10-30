@@ -30,6 +30,7 @@ from preza.db import get_sessionmaker
 from preza.domain.analysis import DecisionCard, PreviousRun
 from preza.fundamentals.finnhub import FinnhubFundamentals
 from preza.ingest.finnhub import FinnhubSource
+from preza.llm.automatic import AutomaticLlm
 from preza.llm.client import LiteLlmClient, Llm, Role
 from preza.models import (
     AnalysisRun,
@@ -39,7 +40,9 @@ from preza.models import (
     ThesisReview,
     ThesisRevision,
 )
+from preza.models_automation import ProcessExecution
 from preza.queue import AGENTS_QUEUE
+from preza.services.automation import analysis_is_automatic
 from preza.services.fundamentals import refresh_fundamentals
 from preza.services.thesis_reviews import week_start
 from preza_agents.budget import UsageLlm
@@ -271,8 +274,11 @@ async def deep_analysis(
         deep = deep_settings(settings)
         extra: list[str] = []
         work: Awaitable[adapter.DeepResult]
+        raw_llm = ctx.get("llm") or LiteLlmClient(
+            settings.litellm_base_url, settings.litellm_master_key
+        )
         llm = UsageLlm(
-            ctx.get("llm") or LiteLlmClient(settings.litellm_base_url, settings.litellm_master_key)
+            AutomaticLlm(raw_llm) if await analysis_is_automatic(session, run.id) else raw_llm
         )
         if run.engine == "etf":
             facts = await build_etf_facts(session, run.instrument, snapshot, settings.base_currency)
@@ -518,6 +524,8 @@ async def startup(ctx: dict[str, Any]) -> None:
 async def discover_thesis_reviews(ctx: dict[str, Any]) -> int:
     """Find missing reviews and recover interrupted reservations without redispatch."""
     monday = week_start(_utcnow())
+    execution_id = ctx.get("process_execution_id")
+    manual_execution = False
     async with get_sessionmaker()() as session:
         revisions = list(
             await session.scalars(
@@ -534,12 +542,25 @@ async def discover_thesis_reviews(ctx: dict[str, Any]) -> int:
                 .order_by(ThesisRevision.id)
             )
         )
+        if execution_id is not None:
+            execution = await session.get(ProcessExecution, uuid.UUID(execution_id))
+            if execution is None or execution.process_key != "discover_thesis_reviews":
+                return 0
+            manual_execution = execution.origin == "manual"
+            execution.counts = {
+                **execution.counts,
+                "revision_ids": ",".join(map(str, revisions)),
+                "review_week": monday.isoformat(),
+            }
+            await session.commit()
     for revision_id in revisions:
         await ctx["redis"].enqueue_job(
             "thesis_review",
             str(revision_id),
             monday.isoformat(),
-            _job_id=f"thesis-review:{revision_id}:{monday.isoformat()}",
+            *([str(execution_id)] if execution_id is not None else []),
+            _job_id=f"thesis-review:{revision_id}:{monday.isoformat()}"
+            + (f":manual:{execution_id}" if manual_execution else ""),
             _queue_name=AGENTS_QUEUE,
         )
     return len(revisions)

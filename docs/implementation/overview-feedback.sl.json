@@ -1,0 +1,27 @@
+{
+  "overviewFeedback": {
+    "market": "Tržni dan · zadnja shranjena opažanja",
+    "spy": "SPY / SMA200",
+    "vix": "VIX",
+    "us10y": "Donosnost US 10Y",
+    "dxy": "DXY",
+    "macroMissing": "Ni preverjenega podatka",
+    "macroHint": "SPY je odmik od 200-dnevnega drsečega povprečja. Manjkajoči viri ostanejo prazni; tržnega režima ne sklepamo.",
+    "portfolioHint": "Površina = teža pozicije · zeleno/rdeče = zadnja dnevna sprememba ob zaprtju · sivo = manjka sprememba. Datum uteži in datum cene se lahko razlikujeta.",
+    "pulseHint": "Zadnjih 7 dni · prva zaznava · vsi pogledi radarja",
+    "pulseLegend": "Vsaka pika je dogodek, ponovljen za vsak povezan simbol. Večje pike = višja ocena radarja (0–1), ne napoved donosa. Črtkano vijolično = govorica; rumeno = makro; modro = drugi dogodki. Klik odpre dogodek in njegove vire.",
+    "pulseScope": "Prikazanih {shown} od {total} dogodkov · največ zadnjih 100",
+    "noSymbol": "Brez simbola",
+    "unscored": "Brez ocene",
+    "funnel": "Filtriranje · 30-dnevna kohorta vnosa",
+    "funnelHint": "Novice, vnesene v zadnjih 30 dneh → različni povezani dogodki → triažirani dogodki → dogodki s katerimkoli zabeleženim signalom. Vsak dogodek šteje enkrat, ne glede na trenutno stanje signala.",
+    "news": "Novice",
+    "events": "Povezani dogodki",
+    "triaged": "Triažirani dogodki",
+    "signalled": "S signalom",
+    "active": "Zadnji aktivni signali · zgoraj števila vseh trenutnih stanj",
+    "strengthHint": "Zabeležena moč signala (0–1), ne verjetnost dobička",
+    "lifetime": "Skupna števila v bazi za ves čas",
+    "notAvailable": "Dnevna sprememba ni na voljo"
+  }
+}

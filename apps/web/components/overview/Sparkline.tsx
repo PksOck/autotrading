@@ -15,10 +15,14 @@ type Props = {
 /** CMP-29 / OV-07: 30-day trend, drawn once on mount. Decorative: data is shown as text nearby. */
 export function Sparkline({ values, width = 80, height = 24, color }: Props) {
   if (values.length < 2) return null;
-  const x = scaleLinear().domain([0, values.length - 1]).range([1, width - 1]);
+  const x = scaleLinear()
+    .domain([0, values.length - 1])
+    .range([1, width - 1]);
   const min = Math.min(...values);
   const max = Math.max(...values);
-  const y = scaleLinear().domain([min, max === min ? min + 1 : max]).range([height - 2, 2]);
+  const y = scaleLinear()
+    .domain([min, max === min ? min + 1 : max])
+    .range([height - 2, 2]);
   const path = line()(values.map((v, i) => [x(i), y(v)] as [number, number])) ?? "";
   const rising = values[values.length - 1]! >= values[0]!;
   const stroke = color ?? (rising ? "var(--pos)" : "var(--neg)");

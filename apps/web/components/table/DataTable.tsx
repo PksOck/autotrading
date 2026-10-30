@@ -86,7 +86,7 @@ export function DataTable<T>({
           <button
             key={profile.label}
             type="button"
-            className="h-8 rounded-md border border-border px-2 text-xs"
+            className="h-12 rounded-md border border-border px-2 text-xs"
             onClick={() =>
               save({
                 ...preferences,
@@ -102,6 +102,20 @@ export function DataTable<T>({
             {profile.label}
           </button>
         ))}
+        <button
+          type="button"
+          className="h-12 rounded-md border border-border px-3 text-xs"
+          onClick={() => {
+            const defaults = normalizePreferences(null, columns);
+            save({
+              ...preferences,
+              columns: defaults.columns,
+              column_order: defaults.column_order,
+            });
+          }}
+        >
+          {t("standard")}
+        </button>
         <label className="text-xs text-text-3">
           {t("density")}{" "}
           <select
@@ -113,14 +127,14 @@ export function DataTable<T>({
                 density: event.target.value as TableViewPreferences["density"],
               })
             }
-            className="h-8 rounded-md border border-border bg-surface px-2"
+            className="h-12 rounded-md border border-border bg-surface px-2"
           >
             <option value="comfortable">{t("comfortable")}</option>
             <option value="compact">{t("compact")}</option>
           </select>
         </label>
         <details className="relative">
-          <summary className="cursor-pointer rounded-md border border-border px-3 py-1.5 text-sm">
+          <summary className="flex min-h-12 cursor-pointer items-center rounded-md border border-border px-3 text-sm">
             {t("columns")}
           </summary>
           <div className="absolute right-0 z-30 mt-2 max-h-[65vh] w-80 overflow-auto rounded-md border border-border bg-surface p-3 shadow-float">
@@ -133,7 +147,7 @@ export function DataTable<T>({
                   key={id}
                   className="flex flex-wrap items-center gap-1 border-b border-border py-2 text-sm"
                 >
-                  <label className="flex min-w-0 flex-1 items-center gap-2">
+                  <label className="flex min-h-12 min-w-0 flex-1 items-center gap-2">
                     <input
                       type="checkbox"
                       checked={preferences.columns.includes(id)}
@@ -158,7 +172,7 @@ export function DataTable<T>({
                       [order[index - 1], order[index]] = [order[index]!, order[index - 1]!];
                       save({ ...preferences, column_order: order });
                     }}
-                    className="h-8 w-8 disabled:opacity-30"
+                    className="h-12 w-12 disabled:opacity-30"
                   >
                     ↑
                   </button>
@@ -171,11 +185,11 @@ export function DataTable<T>({
                       [order[index], order[index + 1]] = [order[index + 1]!, order[index]!];
                       save({ ...preferences, column_order: order });
                     }}
-                    className="h-8 w-8 disabled:opacity-30"
+                    className="h-12 w-12 disabled:opacity-30"
                   >
                     ↓
                   </button>
-                  <label className="flex items-center gap-1 text-xs">
+                  <label className="flex min-h-12 items-center gap-1 text-xs">
                     <input
                       type="checkbox"
                       checked={preferences.pinned_columns.includes(id)}
@@ -206,7 +220,7 @@ export function DataTable<T>({
                         },
                       })
                     }
-                    className="h-8 w-16 rounded border border-border bg-surface px-1 text-xs"
+                    className="h-12 w-16 rounded border border-border bg-surface px-1 text-xs"
                   />
                 </div>
               );
@@ -214,7 +228,7 @@ export function DataTable<T>({
             <button
               type="button"
               onClick={() => save(normalizePreferences(null, columns))}
-              className="mt-3 h-8 rounded-md border border-border px-3"
+              className="mt-3 h-12 rounded-md border border-border px-3"
             >
               {t("reset")}
             </button>
@@ -245,6 +259,7 @@ export function DataTable<T>({
                   {column.sortable ? (
                     <button
                       type="button"
+                      className="min-h-12"
                       onClick={() =>
                         change({
                           sort: column.id,
@@ -316,6 +331,7 @@ export function DataTable<T>({
         <div className="flex items-center justify-end gap-3 border-t border-border p-3 text-sm">
           <button
             type="button"
+            className="min-h-12 px-2"
             disabled={safePage <= 1}
             onClick={() => change({ page: String(safePage - 1) })}
           >
@@ -324,6 +340,7 @@ export function DataTable<T>({
           <span>{t("page", { page: safePage, pages })}</span>
           <button
             type="button"
+            className="min-h-12 px-2"
             disabled={safePage >= pages}
             onClick={() => change({ page: String(safePage + 1) })}
           >

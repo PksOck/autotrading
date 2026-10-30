@@ -1,0 +1,11 @@
+{
+  "table": {
+    "standard": "Standard",
+    "trendPeriod": "Up to 30 trading sessions",
+    "trendSamples": "{count} sessions",
+    "trendUnknown": "Trend unavailable",
+    "zoneUnknown": "Entry zone unknown",
+    "inZone": "In zone",
+    "outsideZone": "Outside zone"
+  }
+}

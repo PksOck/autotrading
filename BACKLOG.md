@@ -194,5 +194,12 @@ Opusov dokument je prevzet iz Claudove veje pri `28f2990`. Izvedbena veja `fix/s
 | BL-203 | Nadaljnji UX po pregledu: poimenovani profili, primerjava vrstic, enoten iskalnik, preostali paneli instrumenta/analize, 200-% povečava | pregled sprememb S-017 | next |
 | BL-204 | Trajno vezati ključ idempotence oddaje predloga na shranjeni osnutek čez reload in izgubljen odgovor | S-017 | next |
 | BL-205 | Pred prenosom zapreti dodatne Flex robove: BASE_SUMMARY-only cash in nepopolne vrstice brez potrjene valute | S-017 | next |
+| BL-206 | Vedno dosegljiv standardni profil, vrnjeni stolpci portfelja, semantične barve, trend z datumi in stanje cone | S-018 | done |
+| BL-207 | Vrnitev uporabnih vizualizacij Pregleda na dejanskih podatkih, moč/barve, legenda Radarja in pravilna kohorta lijaka | S-018 | done |
+| BL-208 | Poenostavljene nastavitve, glavno stikalo avtomatskih LLM klicev, ročni izvor/okna, SMTP več prejemnikov in deduplikacija | ADR-0021, S-018 | done |
+| BL-209 | Dividendna oblikovna uskladitev, ločene ocene in kontrola knjižb; ponovljivi sintetični primeri tez | S-018 | done |
+| BL-210 | Read-only testiranje shranjenih signalov/končnih mnenj, deterministični stroški/datum/smer, vidni preskoki in bounded SQL | ADR-0022, S-018 | done |
+| BL-211 | Potrjeni makro podatkovni viri VIX/US10Y/DXY in zadostna zgodovina nedvoumne kotacije SPY; ohraniti čas/vir | S-018 | next |
+| BL-212 | Po uporabniški konfiguraciji SMTP izrecno preveriti dejansko dostavo in negotove dostave; med razvojem samo fake transport | ADR-0021 | next |
 
 S-017: pregledna veja vključuje Val −1 in nadaljnje nadgradnje, objavljene samo v ločenem demu :3100. Claudova veja in okolje :3000 nista posodobljena; uporabnik zahteva pregled pred prenosom. ADR-0017–0020 so zapisani za izvedeno pregledno vejo. Podatkovne vrzeli in nedokončani deli celotnega načrta so v docs/implementation/2026-10-29-pregled-sprememb.md. Status done pomeni izvedeno v pregledni veji, ne odobrene objave na :3000.

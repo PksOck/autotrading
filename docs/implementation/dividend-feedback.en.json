@@ -1,0 +1,24 @@
+{
+  "dividends": {
+    "showEstimates": "Show estimates",
+    "showCoverage": "Show coverage details",
+    "confirmedTitle": "Imported Flex cash records",
+    "confirmedThrough": "{account}: statement reported through {date}",
+    "confirmedUnknown": "No confirmed cash coverage date is available.",
+    "estimateBoundary": "Amounts after the imported statement are estimates, not booked payments. Annual estimates do not confirm a payment date.",
+    "reconciliationNote": "Each new Flex import checks and reconciles imported records. Estimates never become booked cash automatically.",
+    "estimateHidden": "Estimates are hidden. Imported cash and entitlements remain visible.",
+    "snapshotBasis": "Position snapshot: {date}",
+    "projectionWindow": "Estimate period: {from} to {to}",
+    "reconciliationTitle": "Import reconciliation",
+    "expectedGross": "Recorded entitlement · gross",
+    "receivedGross": "Booked cash · gross",
+    "difference": "Difference",
+    "actionReference": "Action reference",
+    "reconciliationStatus": "Reconciliation status",
+    "reconciliationConfirmed": "Confirmed",
+    "reconciliationChanged": "Changed amount",
+    "reconciliationAwaiting": "Awaiting booked payment",
+    "reconciliationEmpty": "No explicit matching action references are available for comparison."
+  }
+}

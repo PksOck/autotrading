@@ -161,6 +161,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/backtest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Backtest */
+        post: operations["backtest_backtest_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/portfolio/dividends": {
         parameters: {
             query?: never;
@@ -176,6 +193,24 @@ export interface paths {
         options?: never;
         head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/notifications/email": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Preferences */
+        get: operations["get_preferences_notifications_email_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Patch Preferences */
+        patch: operations["patch_preferences_notifications_email_patch"];
         trace?: never;
     };
     "/instruments": {
@@ -1110,6 +1145,163 @@ export interface components {
             /** @description horizon verdicts from the snapshot (ADR-0014) */
             outlook_brief?: components["schemas"]["OutlookBrief"] | null;
         };
+        /** BacktestOut */
+        BacktestOut: {
+            /**
+             * As Of
+             * Format: date-time
+             */
+            as_of: string;
+            /**
+             * Source
+             * @default database
+             */
+            source: string;
+            parameters: components["schemas"]["BacktestRequest-Output"];
+            /** Total Matching */
+            total_matching: number;
+            /** Evaluated */
+            evaluated: number;
+            /** Truncated */
+            truncated: boolean;
+            /** Completed */
+            completed: number;
+            /** Skipped */
+            skipped: number;
+            /** Mean Gross Return Pct */
+            mean_gross_return_pct: number | null;
+            /** Mean Net Return Pct */
+            mean_net_return_pct: number | null;
+            /** Positive Share */
+            positive_share: number | null;
+            /** Rows */
+            rows: components["schemas"]["BacktestRow"][];
+        };
+        /** BacktestRequest */
+        "BacktestRequest-Input": {
+            /**
+             * Source
+             * @default all
+             * @enum {string}
+             */
+            source: "all" | "signal" | "analysis";
+            /** Available From */
+            available_from?: string | null;
+            /** Available To */
+            available_to?: string | null;
+            /**
+             * Horizon Sessions
+             * @default 20
+             * @enum {integer}
+             */
+            horizon_sessions: 1 | 5 | 20 | 60;
+            /**
+             * Cost Bps
+             * @default 10
+             */
+            cost_bps: number | string;
+            /**
+             * Min Strength
+             * @default 0
+             */
+            min_strength: number | string;
+            /**
+             * Signal Status
+             * @default all
+             * @enum {string}
+             */
+            signal_status: "all" | "new" | "watching" | "accepted" | "dismissed" | "expired";
+            /**
+             * Limit
+             * @default 1000
+             */
+            limit: number;
+        };
+        /** BacktestRequest */
+        "BacktestRequest-Output": {
+            /**
+             * Source
+             * @default all
+             * @enum {string}
+             */
+            source: "all" | "signal" | "analysis";
+            /** Available From */
+            available_from?: string | null;
+            /** Available To */
+            available_to?: string | null;
+            /**
+             * Horizon Sessions
+             * @default 20
+             * @enum {integer}
+             */
+            horizon_sessions: 1 | 5 | 20 | 60;
+            /**
+             * Cost Bps
+             * @default 10
+             */
+            cost_bps: string;
+            /**
+             * Min Strength
+             * @default 0
+             */
+            min_strength: string;
+            /**
+             * Signal Status
+             * @default all
+             * @enum {string}
+             */
+            signal_status: "all" | "new" | "watching" | "accepted" | "dismissed" | "expired";
+            /**
+             * Limit
+             * @default 1000
+             */
+            limit: number;
+        };
+        /** BacktestRow */
+        BacktestRow: {
+            /** Entry Date */
+            entry_date?: string | null;
+            /** Exit Date */
+            exit_date?: string | null;
+            /** Entry Price */
+            entry_price?: number | null;
+            /** Exit Price */
+            exit_price?: number | null;
+            /** Entry Source */
+            entry_source?: string | null;
+            /** Exit Source */
+            exit_source?: string | null;
+            /** Gross Return Pct */
+            gross_return_pct?: number | null;
+            /** Net Return Pct */
+            net_return_pct?: number | null;
+            /** Skip Reason */
+            skip_reason?: ("neutral_or_unknown_direction" | "no_entry_bar" | "insufficient_future_sessions" | "invalid_price") | null;
+            /** Id */
+            id: string;
+            /**
+             * Source
+             * @enum {string}
+             */
+            source: "signal" | "analysis";
+            /** Origin */
+            origin: string;
+            /** Symbol */
+            symbol: string;
+            /** Currency */
+            currency?: string | null;
+            /**
+             * Available At
+             * Format: date-time
+             */
+            available_at: string;
+            /** Direction */
+            direction: string;
+            /** Strength */
+            strength: number | null;
+            /** Record Status */
+            record_status: string;
+        };
         /** BarOut */
         BarOut: {
             /**
@@ -1412,6 +1604,11 @@ export interface components {
             revision: number;
             /** Paused */
             paused: boolean;
+            /**
+             * Automatic Analyses Enabled
+             * @default true
+             */
+            automatic_analyses_enabled: boolean;
         };
         /**
          * ControlScore
@@ -1507,6 +1704,8 @@ export interface components {
         DividendProjection: {
             /** Account Id */
             account_id?: string | null;
+            /** Position As Of */
+            position_as_of?: string | null;
             /** Symbol */
             symbol: string;
             /** Quantity */
@@ -1530,6 +1729,33 @@ export interface components {
              * @default false
              */
             includes_special: boolean;
+        };
+        /** DividendReconciliation */
+        DividendReconciliation: {
+            /** Account Id */
+            account_id: string;
+            /** Symbol */
+            symbol: string | null;
+            /** Currency */
+            currency: string;
+            /** Action Id */
+            action_id: string;
+            /** Expected Gross */
+            expected_gross: string;
+            /** Received Gross */
+            received_gross: string | null;
+            /** Difference */
+            difference: string | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "confirmed" | "changed" | "awaiting_payment";
+            /**
+             * As Of
+             * Format: date-time
+             */
+            as_of: string;
         };
         /** DividendsOut */
         DividendsOut: {
@@ -1559,6 +1785,69 @@ export interface components {
              * @default synthetic_contract_not_live_validated
              */
             contract_status: string;
+            /** Reconciliation */
+            reconciliation?: components["schemas"]["DividendReconciliation"][];
+        };
+        /** EmailPreferencesInput */
+        EmailPreferencesInput: {
+            /**
+             * Revision
+             * @default 0
+             */
+            revision: number;
+            /**
+             * Enabled
+             * @default false
+             */
+            enabled: boolean;
+            /** Recipients */
+            recipients?: string[];
+            /**
+             * Kinds
+             * @default [
+             *       "signals"
+             *     ]
+             */
+            kinds: ("signals" | "daily_digest" | "analysis_complete")[];
+        };
+        /** EmailPreferencesOut */
+        EmailPreferencesOut: {
+            /**
+             * Revision
+             * @default 0
+             */
+            revision: number;
+            /**
+             * Enabled
+             * @default false
+             */
+            enabled: boolean;
+            /** Recipients */
+            recipients?: string[];
+            /**
+             * Kinds
+             * @default [
+             *       "signals"
+             *     ]
+             */
+            kinds: ("signals" | "daily_digest" | "analysis_complete")[];
+            /** Configured */
+            configured: boolean;
+            /**
+             * Queued Deliveries
+             * @default 0
+             */
+            queued_deliveries: number;
+            /**
+             * Sent Deliveries
+             * @default 0
+             */
+            sent_deliveries: number;
+            /**
+             * Uncertain Deliveries
+             * @default 0
+             */
+            uncertain_deliveries: number;
         };
         /** EntryOut */
         EntryOut: {
@@ -1777,6 +2066,22 @@ export interface components {
                 [key: string]: number | string;
             };
         };
+        /** FunnelOut */
+        FunnelOut: {
+            /**
+             * Since
+             * Format: date-time
+             */
+            since: string;
+            /** News */
+            news: number;
+            /** Events */
+            events: number;
+            /** Triaged */
+            triaged: number;
+            /** Signalled */
+            signalled: number;
+        };
         /** GroupProposal */
         GroupProposal: {
             /** Kind */
@@ -1991,6 +2296,17 @@ export interface components {
             /** Weight */
             weight: number;
         };
+        /** MarketIndicatorOut */
+        MarketIndicatorOut: {
+            /** Key */
+            key: string;
+            /** Value */
+            value?: number | null;
+            /** Source */
+            source?: string | null;
+            /** As Of */
+            as_of?: string | null;
+        };
         /** MetricValue */
         MetricValue: {
             /** Value */
@@ -2070,6 +2386,10 @@ export interface components {
             event_count: number;
             /** Signals */
             signals: components["schemas"]["SignalOut"][];
+            /** Market Strip */
+            market_strip: components["schemas"]["MarketIndicatorOut"][];
+            timeline7d: components["schemas"]["TimelineOut"];
+            funnel30d: components["schemas"]["FunnelOut"];
         };
         /** PolicyInput */
         PolicyInput: {
@@ -2229,6 +2549,7 @@ export interface components {
             metrics?: {
                 [key: string]: components["schemas"]["MetricValue"];
             };
+            price_trend?: components["schemas"]["PriceTrend"];
             /** Symbol */
             symbol: string;
             /** Name */
@@ -2265,6 +2586,25 @@ export interface components {
             trade_date: string;
             /** Rating */
             rating: string | null;
+        };
+        /** PriceTrend */
+        PriceTrend: {
+            /** Points */
+            points?: components["schemas"]["PriceTrendPoint"][];
+            /** Source */
+            source?: string | null;
+            /** As Of */
+            as_of?: string | null;
+        };
+        /** PriceTrendPoint */
+        PriceTrendPoint: {
+            /** Close */
+            close: number;
+            /**
+             * Market Date
+             * Format: date
+             */
+            market_date: string;
         };
         /** ProposalAnalysisLink */
         ProposalAnalysisLink: {
@@ -2902,6 +3242,18 @@ export interface components {
              */
             updated_at: string;
         };
+        /** TimelineOut */
+        TimelineOut: {
+            /**
+             * Since
+             * Format: date-time
+             */
+            since: string;
+            /** Total */
+            total: number;
+            /** Events */
+            events: components["schemas"]["EventOut"][];
+        };
         /** TrackGroup */
         TrackGroup: {
             /** Count */
@@ -3110,6 +3462,7 @@ export interface components {
             metrics?: {
                 [key: string]: components["schemas"]["MetricValue"];
             };
+            price_trend?: components["schemas"]["PriceTrend"];
             /**
              * Revision
              * @default 1
@@ -3467,6 +3820,39 @@ export interface operations {
             };
         };
     };
+    backtest_backtest_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BacktestRequest-Input"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BacktestOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     dividends_portfolio_dividends_get: {
         parameters: {
             query?: {
@@ -3488,6 +3874,59 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DividendsOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_preferences_notifications_email_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmailPreferencesOut"];
+                };
+            };
+        };
+    };
+    patch_preferences_notifications_email_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EmailPreferencesInput"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EmailPreferencesOut"];
                 };
             };
             /** @description Validation Error */

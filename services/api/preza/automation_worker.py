@@ -31,7 +31,11 @@ def managed[F: Callable[..., Awaitable[Any]]](function: F) -> F:
             await automation.ensure_policies(session)
             row = await session.get(ProcessPolicy, function.__name__)
             assert row is not None
-            automatic = str(ctx.get("job_id", "")).startswith("cron:")
+            # Explicit API routes own these function-specific manual job markers.
+            # Unknown and missing IDs must never turn scheduled work into manual work.
+            marker = f"{function.__name__}:manual"
+            job_id = str(ctx.get("job_id", ""))
+            automatic = not (job_id == marker or job_id.startswith(marker + ":"))
             if automatic and row.config.get("schedule_kind") != "legacy":
                 await session.commit()
                 return "managed_schedule"
@@ -97,9 +101,20 @@ async def execute_process(ctx: dict[str, Any], execution_id: str) -> str:
         else:
             function = HANDLERS.get(key) or getattr(worker, key)
             raw = getattr(function, "__wrapped__", function)
-            result_text = await raw(ctx)
+            result_text = await raw(
+                {
+                    **ctx,
+                    "process_origin": execution.origin,
+                    "process_execution_id": str(execution.id),
+                }
+            )
             counts = {"result": str(result_text)[:120]}
         async with get_sessionmaker()() as session:
+            current_execution = await session.get(
+                ProcessExecution, execution.id, populate_existing=True, with_for_update=True
+            )
+            if current_execution is not None:
+                counts = {**current_execution.counts, **counts}
             await session.execute(
                 update(ProcessExecution)
                 .where(ProcessExecution.id == execution.id, ProcessExecution.state == "running")

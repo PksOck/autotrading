@@ -24,6 +24,7 @@ from preza.models_dividends import (
     DividendImportCoverage,
     DividendProjectionBasis,
 )
+from preza.services.dividend_controls import reconcile_dividends
 
 
 def _cash_content(payload: dict[str, Any]) -> dict[str, Any]:
@@ -168,6 +169,7 @@ async def get_dividends(
             latest_open.setdefault(row.account_id, row)
     accrual_rows = list(await session.scalars(select(DividendAccrualSnapshot)))
     accruals = [Accrual.model_validate(r.payload) for r in accrual_rows]
+    historical_accruals = list(accruals)
     accruals = [
         r
         for r in accruals
@@ -200,6 +202,7 @@ async def get_dividends(
             bases.get((position.instrument.symbol, position.currency)),
         )
         result.account_id = position.account_id
+        result.position_as_of = position.report_date
         projections.append(result)
     currencies = sorted(
         {r.currency for r in all_cash}
@@ -215,4 +218,10 @@ async def get_dividends(
         accounts=accounts,
         currencies=currencies,
         as_of=max((r.as_of for r in coverage), default=None),
+        reconciliation=[
+            row
+            for row in reconcile_dividends(historical_accruals, all_cash)
+            if (not account_id or row.account_id == account_id)
+            and (not currency or row.currency == currency)
+        ],
     )

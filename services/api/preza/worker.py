@@ -22,6 +22,7 @@ from preza.entries.service import rebuild_entries
 from preza.fundamentals.finnhub import FinnhubFundamentals, FundamentalsUnavailableError
 from preza.ingest.edgar import parse_company_tickers
 from preza.ingest.factory import build_sources
+from preza.llm.automatic import AutomaticLlm
 from preza.llm.client import LiteLlmClient, LlmUnavailableError
 from preza.models import AnalysisRun, Instrument, Position, Proposal, WatchlistItem
 from preza.notify.service import morning_digest, notify_new_signals
@@ -29,6 +30,7 @@ from preza.notify.telegram import TelegramClient
 from preza.proposals.analyze import analyze_proposal
 from preza.radar.pipeline import run_radar
 from preza.services.analyses import limit_reached, new_run, queue_run
+from preza.services.automation import automatic_analyses_allowed
 from preza.services.fundamentals import refresh_fundamentals
 from preza.services.instruments import find_by_symbol, get_or_create
 from preza.services.outcomes import compute_outcomes
@@ -39,6 +41,75 @@ from preza.services.watchlist import fill_added_price
 SEC_TICKERS_URL = "https://www.sec.gov/files/company_tickers.json"
 
 log = logging.getLogger(__name__)
+
+
+async def email_notifications(ctx: dict[str, Any]) -> str:
+    """Send saved facts only; SMTP settings and explicit preferences are both required."""
+    from preza.models_automation import AutomationControl
+    from preza.services.email import deliver_one, preferences, queue_email
+
+    settings = get_settings()
+    now = datetime.now(UTC)
+    async with get_sessionmaker()() as session:
+        control = await session.get(AutomationControl, 1)
+        if control is not None and control.paused:
+            return "paused"
+        prefs = await preferences(session, settings)
+        if not prefs.enabled or not prefs.configured:
+            await session.commit()
+            return "disabled"
+        from preza.models import Signal
+
+        cutoff = now - timedelta(hours=24)
+        if "signals" in prefs.kinds:
+            for signal in await session.scalars(
+                select(Signal).where(
+                    Signal.created_at >= cutoff, Signal.status.in_(("new", "watching"))
+                )
+            ):
+                await queue_email(
+                    session,
+                    settings,
+                    f"signal:{signal.id}",
+                    "signals",
+                    f"Preža · {signal.instrument.symbol}",
+                    f"{signal.rationale}\n\n{settings.app_base_url.rstrip('/')}/signals?peek=signal:{signal.id}",
+                )
+        if "analysis_complete" in prefs.kinds:
+            for run in await session.scalars(
+                select(AnalysisRun).where(
+                    AnalysisRun.status == "done", AnalysisRun.finished_at >= cutoff
+                )
+            ):
+                await queue_email(
+                    session,
+                    settings,
+                    f"analysis:{run.id}",
+                    "analysis_complete",
+                    "Preža · analysis complete",
+                    f"{settings.app_base_url.rstrip('/')}/analysis/{run.id}",
+                )
+        if "daily_digest" in prefs.kinds and now.hour >= 6:
+            from sqlalchemy import func
+
+            count = await session.scalar(
+                select(func.count()).select_from(Signal).where(Signal.created_at >= cutoff)
+            )
+            await queue_email(
+                session,
+                settings,
+                f"digest:{now.date()}",
+                "daily_digest",
+                "Preža · daily digest",
+                f"Signals / Signali (24h): {count}\n{settings.app_base_url.rstrip('/')}/signals",
+            )
+        await session.commit()
+        delivered = 0
+        for _ in range(20):
+            if not await deliver_one(session, settings):
+                break
+            delivered += 1
+    return str(delivered)
 
 
 @managed
@@ -58,7 +129,9 @@ async def sync_flex(ctx: dict[str, Any]) -> str:
         counts = await store_statement(session, statement)
         await record_sync(session, "flex", "ok", ", ".join(f"{k}={v}" for k, v in counts.items()))
         await session.commit()
-    await refresh_bars(ctx)
+    await refresh_bars(
+        {**ctx, "job_id": "refresh_bars:manual"} if ctx.get("process_origin") == "manual" else ctx
+    )
     return "ok"
 
 
@@ -125,7 +198,11 @@ async def radar(ctx: dict[str, Any]) -> str:
         result = await run_radar(
             session,
             sources,
-            llm_client(),
+            llm_client()
+            if ctx.get("process_origin") == "manual"
+            else AutomaticLlm(llm_client())
+            if await automatic_analyses_allowed(session)
+            else None,
             settings.radar_signal_threshold,
             locale=settings.default_locale,
         )
@@ -226,7 +303,10 @@ async def entries(ctx: dict[str, Any]) -> str:
     async with get_sessionmaker()() as session:
         await _benchmark_bars(session)
         run = await rebuild_entries(
-            session, llm_client(), settings.default_locale, settings.benchmark_symbol
+            session,
+            llm_client() if ctx.get("process_origin") == "manual" else AutomaticLlm(llm_client()),
+            settings.default_locale,
+            settings.benchmark_symbol,
         )
         await record_sync(
             session,
@@ -309,9 +389,11 @@ class WorkerSettings:
         entries,
         fundamentals,
         outcomes,
+        email_notifications,
     ]
     cron_jobs: ClassVar[list[Any]] = [
         cron(automation_tick, minute=set(range(60))),
+        cron(email_notifications, minute=set(range(0, 60, 5))),
         cron(sync_flex, hour={5}, minute={15}),  # after IBKR prepares the previous day (~07:15 CET)
         cron(refresh_bars, weekday={0, 1, 2, 3, 4}, hour={21}, minute={30}),  # after US close
         cron(radar, minute={2, 17, 32, 47}),  # every 15 minutes

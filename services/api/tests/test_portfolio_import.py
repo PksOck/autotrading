@@ -110,9 +110,10 @@ async def test_success_commits_before_optional_queue(monkeypatch, content_type):
     store = AsyncMock(return_value={"positions": 2, "trades": 1, "cash": 2})
     audit = AsyncMock()
 
-    async def unavailable_queue(settings, job):  # type: ignore[no-untyped-def]
+    async def unavailable_queue(settings, job, **kwargs):  # type: ignore[no-untyped-def]
         session.commit.assert_awaited_once()
         assert job == "refresh_bars"
+        assert kwargs["job_id"].startswith("refresh_bars:manual:")
         return None
 
     monkeypatch.setattr(portfolio, "store_statement", store)

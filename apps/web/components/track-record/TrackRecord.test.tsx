@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { vi } from "vitest";
 import en from "@/messages/en.json";
 import { useResearchTrackRecord, useResearchOutcomes } from "@/lib/api/research";
@@ -70,7 +71,9 @@ function result(value: object) {
 function renderRecord() {
   return render(
     <NextIntlClientProvider locale="en" messages={en} timeZone="UTC">
-      <TrackRecord />
+      <QueryClientProvider client={new QueryClient()}>
+        <TrackRecord />
+      </QueryClientProvider>
     </NextIntlClientProvider>,
   );
 }
@@ -118,7 +121,9 @@ describe("TrackRecord", () => {
     result({ error: new Error("down") });
     view.rerender(
       <NextIntlClientProvider locale="en" messages={en} timeZone="UTC">
-        <TrackRecord />
+        <QueryClientProvider client={new QueryClient()}>
+          <TrackRecord />
+        </QueryClientProvider>
       </NextIntlClientProvider>,
     );
     fireEvent.click(screen.getByRole("button", { name: "Try again" }));
