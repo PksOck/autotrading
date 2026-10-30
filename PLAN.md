@@ -2,7 +2,13 @@
 
 Povzetek sprejetega načrta. Podrobna utemeljitev je v [`docs/research/2026-10-22-zasnova-resitve.md`](./docs/research/2026-10-22-zasnova-resitve.md), primerjava kandidatov v [`docs/research/2026-10-22-analiza-kandidatov.md`](./docs/research/2026-10-22-analiza-kandidatov.md), izkušnje iz starega projekta v [`docs/research/2026-10-22-trading-list-prevzem.md`](./docs/research/2026-10-22-trading-list-prevzem.md).
 
-## Trenutno: izvedba dodatnega kroga po Claudovem pregledu (S-023)
+## Trenutno: zaključena Radar/idempotenca in naslednji SPEC (S-024)
+
+BL-221/R1 in BL-204 sta izvedena v pregledni veji in samo na :3100: članstvo Radarja pred omejitvijo rezultatov, trajna oddaja predloga čez reload/izgubljen odgovor, varovanje novega osnutka drugega zavihka ter Back/fokus. [Dokazi S-024](./docs/implementation/2026-10-30-radar-in-trajna-oddaja-dokazi.md) vsebujejo API 597 + 1 pogojni skip, web 180 in Playwright 76 + 10 namernih skipov; končni povezani pregled PASS. To ne zapre A3/A5, za katera je pripravljena [tehnična raziskava](./docs/implementation/2026-10-30-lastnistvo-raziskava.md).
+
+Naslednji neodvisni izvedbeni korak je BL-222: [SPEC varnostnih kopij v Nastavitvah](./docs/superpowers/specs/2026-10-30-nastavitve-varnostnih-kopij-spec.md) in [plan](./docs/superpowers/plans/2026-10-30-nastavitve-varnostnih-kopij.md) imata dokumentarni neodvisni PASS. Pot/pogostost/hramba bodo nastavljivi; isti disk je dovoljen z jasno omejitvijo, privzeto izklopljeno/neizbrano. Funkcija še ni implementirana. [Prejeti odgovori in odprto delo](./docs/implementation/2026-10-30-odprto-in-vprasanja.md): razširjenega Flex še ni, SMTP predal šele načrtovan, lokacija kopij še neizbrana. Pred prvo živo migracijo ostaja dejanski restore dokaz in nova izrecna potrditev :3000.
+
+## Predhodni neposredni dodatni krog po Claudovem pregledu (S-023)
 
 [Izvedbeni SPEC dodatnega kroga](./docs/superpowers/specs/2026-10-30-dodatni-krog-claude-spec.md) in [izvedbeni plan](./docs/superpowers/plans/2026-10-30-dodatni-krog-claude-izvedba.md) sta za neposredni BL-218 izvedena: D1/A1/A2/A4/U1/U2 in dodatna dirka A4-1 imajo končni neodvisni PASS ter [dokaze S-023](./docs/implementation/2026-10-30-izvedba-dodatnega-kroga.md). Vse ostale pripombe so vezane na nove pogojne NEXT-SPEC S-B/S-F5/S-G1/S-C/S-H. Združitev in namestitev sta ločena koraka; :3000 še vedno zahteva novo izrecno potrditev in backup/restore pred živo migracijo.
 

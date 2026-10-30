@@ -30,7 +30,7 @@
 | BL-016 | Tailscale na strežniku, HTTPS (Tailscale cert), dostop s telefona (Tailscale je že nameščen na vseh napravah) | ADR-0001 | next |
 | BL-019 | UX temelji: motion tokeni, MO-01–MO-10 primitivi, ⌘K (CMP-23), kukalo (CMP-21), EntityLink + HoverPreview, AnimatedNumber, Treemap, PulseTimeline, Funnel, RegimeStrip, Sparkline; stran `/ux` z vzorčnimi podatki | ADR-0009, DESIGN §8–§10 | done |
 | BL-160 | Uporabniški pregled M0 lupine na tvojem strežniku (docker compose up) in popravki UX | S-002 | next |
-| BL-017 | Varnostne kopije: nočni `pg_dump` v ločen disk | ADR-0001 | later |
+| BL-017 | Redne varnostne kopije in dejanski dokaz obnove; uporabnik v S-024 dopušča isti disk, nastavljivo lokacijo/pogostost pokriva BL-222. Ločen disk je priporočilo za zaščito pred odpovedjo diska, ne obvezna lokacija | ADR-0001, S-F5 | later |
 | BL-018 | Preveri dostopnost instrumentov za EU malega vlagatelja pri IBKR (PRIIPs/KID): ameriški ETF-ji niso na voljo, univerzum ETF = UCITS (LSE/Xetra), valute USD/EUR/GBP | ADR-0008 | done |
 
 ## M1: Podatki + portfelj
@@ -192,7 +192,7 @@ Opusov dokument je prevzet iz Claudove veje pri `28f2990`. Izvedbena veja `fix/s
 | BL-201 | Regresijski pregled in ločen demo :3100; prenos :3000 izrecno zadržan do uporabnikove potrditve | S-017, pregled sprememb | done |
 | BL-202 | Potrditi razširjeni zasebni Flex XML, FinancialInstrumentInformation, dividendne identitete/davke/popravke in dejansko pokritost | ADR-0020 | next |
 | BL-203 | Nadaljnji UX po pregledu: poimenovani profili, primerjava vrstic, enoten iskalnik, preostali paneli instrumenta/analize, 200-% povečava | pregled sprememb S-017 | next |
-| BL-204 | Trajno vezati ključ idempotence oddaje predloga na shranjeni osnutek čez reload in izgubljen odgovor | S-017 | next |
+| BL-204 | Trajna zamrznjena oddaja predloga čez reload/izgubljen odgovor, GET istega ID pred ponovitvijo, koordinacija zavihkov in zaščita novega osnutka; Back/fokus. 180 web, 12 ciljnih E2E, končni povezani pregled PASS | ADR-0024, S-024 | done |
 | BL-205 | Pred prenosom zapreti dodatne Flex robove: BASE_SUMMARY-only cash in nepopolne vrstice brez potrjene valute | S-017 | next |
 | BL-206 | Vedno dosegljiv standardni profil, vrnjeni stolpci portfelja, semantične barve, trend z datumi in stanje cone | S-018 | done |
 | BL-207 | Vrnitev uporabnih vizualizacij Pregleda na dejanskih podatkih, moč/barve, legenda Radarja in pravilna kohorta lijaka | S-018 | done |
@@ -209,5 +209,7 @@ Opusov dokument je prevzet iz Claudove veje pri `28f2990`. Izvedbena veja `fix/s
 | BL-218 | Izveden D1/A1/A2/A4/U1/U2 in dodatna dirka A4-1; končni pregled PASS, API 585/agents 229/web 156, E2E 64+10 namernih skipov. Druge pripombe imajo pogojni naslednji SPEC | [Dokazi S-023](./docs/implementation/2026-10-30-izvedba-dodatnega-kroga.md) | done |
 | BL-219 | Vključiti vse Claudove pripombe v glavni plan in pripraviti konkretni izvedbeni SPEC/plan dodatnega kroga z ločenim merge/deploy in ukaznimi vrati | S-022 | done |
 | BL-220 | Popraviti manjkajoči kind dokazil zgodovinskih sintetičnih signalov, da se odprejo tudi iz študije; regresija preveri vseh 14 ID | `test_demo_track_signals.py`, S-023 | done |
+| BL-221 | Radar članstvo portfelja/watchliste/discover v SQL pred LIMIT, stabilen vrstni red in omejeno nalaganje; 15 ciljnih DB testov in izmerjeni EXPLAIN, pregled PASS | R1, `dcec5d7`, S-024 | done |
+| BL-222 | Nastavitve varnostnih kopij: izbira dovoljene lokacije, pogostosti in hrambe, ročni zagon ter vidno stanje; privzeto izklopljeno/neizbrano, isti disk dovoljen. SPEC in plan S-024, produktna izvedba ter obnovitveni dokaz še odprta | S-F5, uporabnikov odgovor S-024 | next |
 
 S-017: pregledna veja vključuje Val −1 in nadaljnje nadgradnje, objavljene samo v ločenem demu :3100. Claudova veja in okolje :3000 nista posodobljena; uporabnik zahteva pregled pred prenosom. ADR-0017–0020 so zapisani za izvedeno pregledno vejo. Podatkovne vrzeli in nedokončani deli celotnega načrta so v docs/implementation/2026-10-29-pregled-sprememb.md. Status done pomeni izvedeno v pregledni veji, ne odobrene objave na :3000.

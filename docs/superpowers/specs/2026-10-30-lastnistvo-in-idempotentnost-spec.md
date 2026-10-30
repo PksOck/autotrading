@@ -4,6 +4,8 @@
 
 Podlage: [neposredni SPEC §4–6/8](./2026-10-30-dodatni-krog-claude-spec.md), [R6](../plans/2026-10-30-dodatni-krog-claude-izvedba.md), [priprava SPEC](./2026-10-30-odprti-sklopi-priprava-spec.md). Statični ogled na osnovi `d0ceebf4cb28cb8919d23e00f2c419fa9c41d802`: `preza_agents/worker.py:deep_analysis` sprejme tudi running; `thesis_tracker/runner.py` že preverja dispatch owner; `ProcessExecution` ima heartbeat_at, vendar to samo po sebi še ni lease posamezne analize/review.
 
+**Izvedeni podsklopi S-024:** R1/SG-03 in BL-204/SG-04/10/11 so izvedeni v pregledni veji in ločenem demu, z [dokazi](../../implementation/2026-10-30-radar-in-trajna-oddaja-dokazi.md) ter ADR-0024. Izbrano je blokiranje POST brez varnega lokalnega zapisa; ta UX odločitev ni več pending. Spodnji opis stare v1 shrambe je izhodišče, sedanja izvedba uporablja v2. Lease/živost A3/A5 ostajata pogojni prihodnji obseg; njunih vrat ne zapreta sprejem predloga ali Radar test.
+
 ## 1. Ločene odgovornosti
 
 1. **SG-01 / A3:** isti AnalysisRun, ponovno dostavljen drugemu executorju, ne sproži nove plačljive verige. `running` sam ne dokazuje niti živosti niti opustitve.
@@ -14,6 +16,8 @@ Podlage: [neposredni SPEC §4–6/8](./2026-10-30-dodatni-krog-claude-spec.md), 
 A1/A2/A4 so neposredni popravki tega kroga: zahtevaj njihove rezultate T-A1/T-A2/T-A4 in širšo regresijo, **ne izvajaj jih znova v tem paketu**. Varovalo vsakega HTTP poskusa, ponovno preverjanje po zaklepu, manual dovoljenja ter bounded outbox s cursorjem morajo ostati ohranjeni. SMTP dostava ostaja v lastni sending/unknown pogodbi; lease analiz je ne razširi ali omogoči.
 
 ## 2. Predlog trajnega lastništva
+
+**Dopolnitev S-024:** [statična raziskava](../../implementation/2026-10-30-lastnistvo-raziskava.md) potrdi, da sedaj ni trajnega tokena instance in da arq TTL ni dokaz smrti. Za naslednji engineering pregled predlaga dve tipizirani FK lease tabeli ter register instanc namesto spodnjega prvotnega polimorfnega predloga. To je še vedno predlog, ne izvedena migracija ali reprodukcija A3/A5. Izvedbeni plan mora pred kodo izbrati in potrditi natančno shemo ter vključiti cancellation/drain otrokovega opravila, composition per-attempt guard in ohranitev porabljene kvote pri negotovem izidu. Novo ime instance ali iztečen heartbeat sama ne zaključita starega dela. Celotna matrika writerjev in zahtevani DB/worker dokazi so v raziskavi; to niso dodatna vprašanja uporabniku.
 
 **SG-05:** dodaj eno interno tabelo `work_lease`, ključ `(work_kind, work_id)` s work_kind `analysis|thesis_review`, `owner_token UUID`, `generation BIGINT`, `execution_id UUID NULL`, `acquired_at`, `heartbeat_at`, `lease_until`, `first_dispatch_at NULL`, `released_at NULL`, `terminal_reason NULL`. Datumi UTC/timestamptz. `work_id` je obstoječi AnalysisRun.id/ThesisReview.id; izvedba mora transakcijsko potrditi obstoj pravega tipa in ne puščati visečih lease ob brisanju. Če pregled izbere dve FK tabeli namesto polimorfnega ključa, mora ohraniti iste invariante in dopolniti migracijski plan pred kodo.
 
@@ -74,4 +78,4 @@ SG-05 zahteva novo migracijo po aktualnem head (trenutni krog vključuje 0020), 
 
 Vrata: izolirani Postgres/API + agents concurrent testi s fake LLM in nadzorovano uro/heartbeat; ruff/mypy; web Vitest in Playwright samo :3100 za reload/lost-response/conflict. Dokaz vsebuje SHA, dva executor tokena, DB alias, barierni vrstni red in dejansko število HTTP/kvote, ne zgolj mock rezultata gate. Noben resničen model ali prejemnik.
 
-**Odprto pred odvisno izvedbo:** avtoritativni dokaz worker živosti/prenehanja po restartu, pregled lease sheme in vseh writerjev, retry/UI koda za AnalysisRun unknown, potrditev lokalne storage-failure poti. Varna omejitev do takrat: negotovega dispatcha ne ponavljaj in ne zaključuj živega lastnika na podlagi running/iztečenega časa samega.
+**Odprto pred odvisno izvedbo A3/A5:** avtoritativni dokaz worker živosti/prenehanja po restartu, pregled lease sheme in vseh writerjev ter retry/UI koda za AnalysisRun unknown. Lokalna storage-failure pot BL-204 je preverjena v S-024. Varna omejitev za lastništvo do takrat: negotovega dispatcha ne ponavljaj in ne zaključuj živega lastnika na podlagi running/iztečenega časa samega.

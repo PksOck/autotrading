@@ -4,6 +4,20 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 
 ---
 
+## S-024 · 2026-10-30 · Radar, trajna oddaja in nastavitve kopij
+
+**Cilj:** Nadaljevati preostalo neodvisno delo iz SPEC, razjasniti potrebne uporabniške vhode ter ohraniti :3000.
+
+**Narejeno:** BL-221/R1 (`dcec5d7`): članstvo Radarja v SQL pred LIMIT in stabilno razvrščanje. BL-204 (`9c4aebf`): verzionirana trajna namera predloga, GET istega ID pred ponovitvijo, zamrznjeno telo ločeno od novega osnutka, koordinacija dveh zavihkov in pogojno čiščenje vseh sedmih polj. Brskalniški preizkus je razkril in odpravil še history token kolizijo po reload ter manjkajoči povratek fokusa zunanjemu odpiralniku. [Dokazi in obseg](./docs/implementation/2026-10-30-radar-in-trajna-oddaja-dokazi.md). A3/A5 imata [read-only tehnično raziskavo](./docs/implementation/2026-10-30-lastnistvo-raziskava.md), ne implementacije. Za BL-222 sta pripravljena [SPEC](./docs/superpowers/specs/2026-10-30-nastavitve-varnostnih-kopij-spec.md) in [plan](./docs/superpowers/plans/2026-10-30-nastavitve-varnostnih-kopij.md) z neodvisnim dokumentarnim PASS po treh ozkih popravkih.
+
+**Odločitve:** ADR-0024 določa trajno zamrznjeno namero in skupno koordinacijo writerjev. Storage napaka po transportu ne zagotavlja, da nič ni bilo poslano. Uporabnik razširjenega Flex še nima. Varnostne kopije želi nastavljati v aplikaciji, običajno na istem disku; stara obveznost ločenega diska je nadomeščena, obnovitvena baza ostane ločena. Cilj še ni izbran, privzeto izklopljeno. SMTP: uporabnik je navedel sh10.neoserv.si in bo šele ustvaril preza@zavadlal.com; uradna navodila preverjena za 465/TLS. Geslo/prejemniki niso nastavljeni, ni prave povezave ali dostave. [Odgovori in odprto](./docs/implementation/2026-10-30-odprto-in-vprasanja.md).
+
+**Preverjanje:** API **597 passed / 1 pogojni Redis skip / 19 obstoječih opozoril**, ciljni Radar 15 in povezani API sprejem 9; pravi izolirani Postgres, samo fake modeli. EXPLAIN na 50.000 sintetičnih vrsticah z rollbackom. Web **180 passed / 44 datotek**, 29 povezanih ciljnih; TypeScript/ESLint/Prettier/i18n 1302, API Ruff/format/mypy in generirani OpenAPI/TS brez razlik. Sveži Linux build; ciljni Playwright **12 passed**, končni celotni **76 passed / 10 namernih skipov**, SL/EN × desktop/phone. Neodvisni povezani pregled PASS, vse štiri pomembne ugotovitve odpravljene. Samo :3100 osvežen, brez seeda ali nove migracije, demo head 0020; obe :3000 sliki se ujemata z začetnima digestoma. Agents koda ni spremenjena; prejšnji agents rezultat ni prikazan kot nov zagon.
+
+**Odprto/naslednji korak:** Izvedba BL-222 na sintetičnem okolju, ločeno natančen plan in DB/worker dokazi za A3/A5. Flex/FX/identitete, pokritost virov in BL-203 ostajajo odprti. BL-017/212/215 zahtevajo dejansko konfiguracijo in ustrezne obnovitvene/dostavne dokaze. BL-214 je delno v delu; pripravljen SPEC ni izvedena funkcija. Brez push/merge, zasebnih kopij, :3000 namestitve ali živih modelnih/sporočilnih klicev. Izvorni Claudov checkout je ohranjen.
+
+---
+
 ## S-023 · 2026-10-30 · Izvedba dodatnega kroga in pet naslednjih SPEC
 
 **Cilj:** Po uporabnikovem dovoljenju nadaljevati izvedbo BL-218 s subagenti, preveriti celoto in posodobiti samo ločeni demo :3100.

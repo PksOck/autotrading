@@ -33,6 +33,8 @@ S-023 pripravi naslednjih pet **pogojnih NEXT-SPEC**; njihove odprte vhodne pogo
 
 Ostale datoteke v zgornji tabeli so še načrtovani rezultati, ne citati pripravljenih specifikacij. ID S-B…S-K in povezave BL ostanejo sledljivi. BL-214 zato ostaja delno odprt.
 
+**S-024:** R1 in BL-204 imata ločen [izvedbeni plan](../plans/2026-10-30-radar-trajna-oddaja.md) ter [dokazni zapis](../../implementation/2026-10-30-radar-in-trajna-oddaja-dokazi.md); A3/A5 ostajata tehnično odprta in imata [read-only raziskavo](../../implementation/2026-10-30-lastnistvo-raziskava.md). Po uporabnikovem odgovoru je pripravljen še [S-F5a / BL-222](./2026-10-30-nastavitve-varnostnih-kopij-spec.md) z [izvedbenim planom](../plans/2026-10-30-nastavitve-varnostnih-kopij.md): lokacija/pogostost/hramba v Nastavitvah, dovoljeni isti disk, privzeto izklopljeno. To je pregledan dokumentarni naslednji korak, ne izvedena backup funkcija ali dokaz obnove. [Prejeti odgovori](../../implementation/2026-10-30-odprto-in-vprasanja.md) so ločeni od še manjkajočih izvedbenih pogojev.
+
 ## 2. Obvezna pogodba za vsako zahtevo
 
 | Polje | Obvezna vsebina |
