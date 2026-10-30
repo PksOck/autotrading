@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useFormatter, useTranslations } from "next-intl";
+import { EntityLink } from "@/components/common/EntityLink";
 import { useBacktest, type BacktestRequest } from "@/lib/api/backtest";
 import { formatChange, formatNumber, formatShare } from "@/lib/format";
 import { useAppLocale } from "@/lib/use-app-locale";
@@ -226,7 +228,7 @@ export function BacktestPanel() {
             <table className="w-full text-left text-xs">
               <thead>
                 <tr className="border-b border-border text-text-3">
-                  <th className="p-2">{common("table.symbol")}</th>
+                  <th className="p-2">{common("table.instrument")}</th>
                   <th className="p-2">{t("availability")}</th>
                   <th className="p-2">{t("entry")}</th>
                   <th className="p-2">{t("exit")}</th>
@@ -237,12 +239,24 @@ export function BacktestPanel() {
                 {data.rows.map((row) => (
                   <tr key={`${row.source}:${row.id}`} className="border-b border-border align-top">
                     <td className="p-2">
-                      <a
-                        className="font-medium text-accent"
-                        href={`?peek=${row.source}:${encodeURIComponent(row.id)}`}
-                      >
-                        {row.symbol}
-                      </a>
+                      {row.source === "signal" ? (
+                        <EntityLink
+                          entity={{ kind: "signal", id: row.id }}
+                          className="font-medium text-accent"
+                        >
+                          {row.symbol}
+                        </EntityLink>
+                      ) : (
+                        <Link
+                          className="font-medium text-accent"
+                          href={`/analysis/${encodeURIComponent(row.id)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {row.symbol}
+                          <span className="sr-only">{` (${t("newTab")})`}</span>
+                        </Link>
+                      )}
                       <p className="text-text-3">
                         {t(row.source)} · {row.origin} ·{" "}
                         {t(

@@ -1545,6 +1545,7 @@
     }
   },
   "backtestFeedback": {
+    "newTab": "Odpre se v novem zavihku",
     "title": "Testiranje shranjenih signalov in mnenj",
     "intro": "Študija dogodkov na shranjenih cenah, samo za branje. Brez novih AI analiz, naročil ali plačljivih podatkovnih klicev.",
     "method": "Vstop: prvo shranjeno dnevno zaprtje strogo po UTC datumu razpoložljivosti (nastanek signala ali zaključek končnega mnenja). Izstop: 1, 5, 20 ali 60 shranjenih sej po vstopu. Sveče tekočega UTC dneva so izključene. Strošek se obračuna od vrednosti ob vstopu in izstopu. Rezultati so ločena opažanja, ne sestavljeni donos portfelja.",

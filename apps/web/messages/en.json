@@ -1545,6 +1545,7 @@
     }
   },
   "backtestFeedback": {
+    "newTab": "Opens in a new tab",
     "title": "Test saved signals and opinions",
     "intro": "Read-only event study using stored prices. No new AI analysis, orders or paid data calls.",
     "method": "Entry: first stored daily close strictly after the UTC availability date (signal creation or final opinion completion). Exit: 1, 5, 20 or 60 stored sessions after entry. Current UTC-day bars are excluded. Fees apply to entry and exit traded notionals. Results are independent observations, not compounded portfolio returns.",
