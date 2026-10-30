@@ -3,7 +3,7 @@
 from datetime import date
 from typing import Any
 
-from sqlalchemy import select
+from sqlalchemy import and_, or_, select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -102,8 +102,14 @@ async def store_dividend_data(session: AsyncSession, parsed: DividendStatement) 
             stmt.on_conflict_do_update(
                 constraint="uq_dividend_coverage",
                 set_={"payload": stmt.excluded.payload},
-                where=DividendImportCoverage.payload["snapshot_version"].astext
-                <= stmt.excluded.payload["snapshot_version"].astext,
+                where=and_(
+                    DividendImportCoverage.payload["snapshot_version"].astext
+                    <= stmt.excluded.payload["snapshot_version"].astext,
+                    or_(
+                        DividendImportCoverage.payload["status"].astext == "missing",
+                        stmt.excluded.payload["status"].astext != "missing",
+                    ),
+                ),
             )
         )
     await session.flush()

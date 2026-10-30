@@ -6,6 +6,7 @@ from decimal import Decimal
 import pytest
 from sqlalchemy import delete, func, select
 
+from preza.broker.dividends import parse_dividend_statement
 from preza.domain.dividends import ProjectionBasis
 from preza.models import Instrument, Position
 from preza.models_dividends import (
@@ -14,7 +15,7 @@ from preza.models_dividends import (
     DividendImportCoverage,
     DividendProjectionBasis,
 )
-from preza.services.dividends import get_dividends, import_dividend_statement
+from preza.services.dividends import get_dividends, import_dividend_statement, store_dividend_data
 from tests.test_dividends import event, xml
 
 pytestmark = pytest.mark.db
@@ -64,6 +65,46 @@ async def test_same_transaction_id_in_different_account_is_distinct(session):
     assert result.accounts == ["SYNTH-A", "SYNTH-B"]
 
 
+@pytest.mark.parametrize("status", ["partial", "complete"])
+@pytest.mark.parametrize("generated", ["20261029;080000", "20261029;090000"])
+async def test_absent_section_cannot_erase_reported_coverage(session, status, generated):
+    parsed = parse_dividend_statement(
+        xml(
+            accrual='<OpenDividendAccruals><OpenDividendAccrual conid="90001" '
+            'symbol="SYNTH" currency="USD" exDate="20261020" payDate="20261101" '
+            'grossAmount="20" /></OpenDividendAccruals>'
+        )
+    )
+    original = next(row for row in parsed.coverage if row.section == "OpenDividendAccruals")
+    original.status = status
+    original.gaps = ["synthetic_partial"] if status == "partial" else []
+    await store_dividend_data(session, parsed)
+    await import_dividend_statement(session, xml().replace("20261029;080000", generated))
+    session.expire_all()
+    result = await get_dividends(session)
+    coverage = next(row for row in result.coverage if row.section == original.section)
+    assert coverage.model_dump() == original.model_dump()
+    assert len(result.accruals) == 1
+    assert result.accruals[0].gross_amount == Decimal("20")
+
+
+@pytest.mark.parametrize("generated", ["20261029;080000", "20261029;090000"])
+async def test_missing_coverage_insert_and_reported_upgrade_remain_supported(session, generated):
+    await import_dividend_statement(session, xml())
+    missing = await get_dividends(session)
+    assert all(row.status == "missing" for row in missing.coverage)
+    await import_dividend_statement(
+        session,
+        xml(accrual="<OpenDividendAccruals />").replace("20261029;080000", generated),
+    )
+    session.expire_all()
+    reported = await get_dividends(session)
+    assert (
+        next(row for row in reported.coverage if row.section == "OpenDividendAccruals").status
+        == "complete"
+    )
+
+
 async def test_empty_new_open_snapshot_clears_old_entitlements(session):
     payload = xml(
         accrual='<OpenDividendAccruals><OpenDividendAccrual conid="90001" '
@@ -97,6 +138,14 @@ async def test_new_intraday_empty_snapshot_clears_rows_and_older_reimport_cannot
         xml(accrual="<OpenDividendAccruals />").replace("20261029;080000", "20261029;090000"),
     )
     assert not (await get_dividends(session)).accruals
+    await import_dividend_statement(session, payload)
+    session.expire_all()
+    result = await get_dividends(session)
+    assert not result.accruals
+    latest = next(row for row in result.coverage if row.section == "OpenDividendAccruals")
+    assert latest.snapshot_version == "20261029090000"
+    assert latest.status == "complete"
+    assert latest.row_keys == []
 
 
 async def test_newer_empty_export_with_different_period_keeps_accruals_empty(session):
