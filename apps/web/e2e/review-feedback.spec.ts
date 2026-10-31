@@ -11,7 +11,7 @@ test("positions return to a customizable standard view with dated trends and sig
   for (const column of ["Količina", "Vrednost", "Teža", "Nerealiziran P/L", "Dnevna sprememba"]) {
     await expect(positions.getByRole("columnheader", { name: new RegExp(column) })).toBeVisible();
   }
-  await expect(positions.getByText("Do 30 trgovalnih dni").first()).toBeVisible();
+  await expect(positions.getByText(/^\d+ trgovalnih dni$/).first()).toBeVisible();
   await expect(positions.locator(".text-pos").first()).toBeVisible();
   await positions.getByRole("button", { name: "Dividende", exact: true }).click();
   await positions.getByRole("button", { name: "Standardno", exact: true }).click();

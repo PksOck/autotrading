@@ -85,5 +85,5 @@ it("restores position defaults and retains signed colors and separate daily and 
   const cells = screen.getAllByRole("cell");
   expect(within(cells[2]!).getByText("2026-10-27")).toBeInTheDocument();
   expect(within(cells[6]!).getByText("2026-10-28")).toHaveAttribute("title", "yahoo");
-  expect(screen.getByText("Up to 30 trading sessions")).toBeInTheDocument();
+  expect(screen.getByText("2 sessions")).toBeInTheDocument();
 });

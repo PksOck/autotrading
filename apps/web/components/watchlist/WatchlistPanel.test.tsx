@@ -68,6 +68,6 @@ it("restores watchlist trend and real entry context with signed daily and since-
   expect(screen.getByText(/▲.*\+.*10/)).toHaveClass("text-pos");
   expect(screen.getByText("In zone")).toHaveClass("text-pos");
   expect(screen.getByText("In zone")).toHaveAttribute("title", "rules · 2026-10-28");
-  expect(screen.getByText("Up to 30 trading sessions")).toBeInTheDocument();
+  expect(screen.getByText("2 sessions")).toBeInTheDocument();
   expect(screen.getAllByRole("button", { name: "Standard" })).toHaveLength(2);
 });

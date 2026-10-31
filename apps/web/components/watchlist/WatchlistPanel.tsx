@@ -43,7 +43,7 @@ function Actions({ item }: { item: WatchlistOut }) {
     }
   };
   return (
-    <div className="flex flex-col items-start gap-1 text-xs">
+    <div className="flex flex-col items-start gap-0 text-xs">
       <button
         type="button"
         disabled={pending}
@@ -112,28 +112,29 @@ export function WatchlistPanel() {
       label: labels("instrument"),
       required: true,
       sortable: true,
-      width: 230,
+      width: 400,
       render: (item) => (
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <EntityLink entity={{ kind: "instrument", id: item.symbol }} />
-            {!item.reviewed_at && (
-              <span className="rounded bg-accent-soft px-1 text-[11px] text-accent">
-                {t("new")}
-              </span>
-            )}
-          </div>
-          <div className="max-w-60 truncate text-xs text-text-3">
-            {item.name ?? item.exchange ?? "—"}
+        <div className="grid w-[376px] grid-cols-[minmax(0,1fr)_160px] items-start gap-4">
+          <div className="min-w-0 space-y-0.5 break-words">
+            <div className="flex items-center gap-2">
+              <EntityLink entity={{ kind: "instrument", id: item.symbol }} />
+              {!item.reviewed_at && (
+                <span className="rounded bg-accent-soft px-1 text-[11px] text-accent">
+                  {t("new")}
+                </span>
+              )}
+            </div>
+            <div className="text-xs text-text-3">{item.name ?? item.exchange ?? "—"}</div>
+            <EntryZoneBadge entry={entries?.find((entry) => entry.symbol === item.symbol)} />
+            <DataQualityBadges
+              identity={item.identity_status}
+              price={item.price_meta}
+              metrics={item.metrics}
+            />
           </div>
           <PriceTrend
+            compact
             trend={(item as WatchlistOut & { price_trend?: StoredPriceTrend | null }).price_trend}
-          />
-          <EntryZoneBadge entry={entries?.find((entry) => entry.symbol === item.symbol)} />
-          <DataQualityBadges
-            identity={item.identity_status}
-            price={item.price_meta}
-            metrics={item.metrics}
           />
         </div>
       ),

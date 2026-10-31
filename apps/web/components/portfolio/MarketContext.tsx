@@ -30,7 +30,13 @@ export function SignedChange({
   );
 }
 
-export function PriceTrend({ trend }: { trend?: StoredPriceTrend | null }) {
+export function PriceTrend({
+  trend,
+  compact = false,
+}: {
+  trend?: StoredPriceTrend | null;
+  compact?: boolean;
+}) {
   const t = useTranslations("table");
   const points =
     trend?.points.filter((point) => Number.isFinite(Number(point.close))).slice(-30) ?? [];
@@ -38,12 +44,24 @@ export function PriceTrend({ trend }: { trend?: StoredPriceTrend | null }) {
     return <span className="text-[11px] text-text-3">{t("trendUnknown")}</span>;
   return (
     <div
-      className="space-y-1 text-[10px] text-text-3"
+      className={`space-y-1 text-[10px] text-text-3 ${compact ? "leading-[14px]" : ""}`}
       title={[trend?.source, trend?.as_of].filter(Boolean).join(" · ")}
     >
       <Sparkline values={points.map((point) => Number(point.close))} width={104} height={26} />
-      <div>{t("trendPeriod")}</div>
-      <div>{t("trendSamples", { count: points.length })}</div>
+      {!compact && <div>{t("trendPeriod")}</div>}
+      {compact ? (
+        <details>
+          <summary className="min-h-12 cursor-pointer content-center rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
+            {t("trendSamples", { count: points.length })}
+          </summary>
+          <div className="space-y-1 break-words">
+            {trend?.source && <div>{trend.source}</div>}
+            {trend?.as_of && <div>{trend.as_of}</div>}
+          </div>
+        </details>
+      ) : (
+        <div>{t("trendSamples", { count: points.length })}</div>
+      )}
       <div>
         {points[0]!.market_date} – {points.at(-1)!.market_date}
       </div>

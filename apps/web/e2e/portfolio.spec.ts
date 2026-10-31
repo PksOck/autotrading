@@ -33,7 +33,7 @@ test("watchlist: add and remove a symbol", async ({ page, request }, info) => {
   await expect(active.getByText("NVDA").first()).toBeVisible();
 
   const row = active.getByRole("row").filter({ hasText: "NVDA" });
-  await row.locator("summary").click();
+  await row.locator("summary", { hasText: "Dejanja" }).click();
   await row.getByRole("button", { name: "Odstrani" }).click();
   await expect(page.getByText("Odstranjeno z watchliste")).toBeVisible();
 

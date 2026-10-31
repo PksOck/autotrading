@@ -41,22 +41,25 @@ export function PositionsPanel() {
       label: labels("instrument"),
       required: true,
       sortable: true,
-      width: 240,
+      width: 400,
       render: (row) => (
-        <div className="space-y-1">
-          <EntityLink entity={{ kind: "instrument", id: row.symbol }} />
-          <div className="text-xs text-text-3">{row.name}</div>
-          <div className="text-[11px] text-text-3">
-            {row.account_id} · {row.exchange ?? "—"} · {row.currency}
+        <div className="grid w-[376px] grid-cols-[minmax(0,1fr)_160px] items-start gap-4">
+          <div className="min-w-0 space-y-0.5 break-words">
+            <EntityLink entity={{ kind: "instrument", id: row.symbol }} />
+            <div className="text-xs text-text-3">{row.name}</div>
+            <div className="text-[11px] text-text-3">
+              {row.account_id} · {row.exchange ?? "—"} · {row.currency}
+            </div>
+            <EntryZoneBadge entry={entries?.find((entry) => entry.symbol === row.symbol)} />
+            <DataQualityBadges
+              identity={row.identity_status}
+              price={row.price_meta}
+              metrics={row.metrics}
+            />
           </div>
           <PriceTrend
+            compact
             trend={(row as PositionOut & { price_trend?: StoredPriceTrend | null }).price_trend}
-          />
-          <EntryZoneBadge entry={entries?.find((entry) => entry.symbol === row.symbol)} />
-          <DataQualityBadges
-            identity={row.identity_status}
-            price={row.price_meta}
-            metrics={row.metrics}
           />
         </div>
       ),

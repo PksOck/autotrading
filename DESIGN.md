@@ -1,5 +1,11 @@
 # DESIGN.md: oblikovni sistem in zasloni
 
+## Kompaktni portfelj po posnetkih uporabnika (S-025)
+
+- V Pozicijah in Watchlisti je mini graf desno ob identiteti v isti symbol celici; podatkovni stolpci in shranjene preference se ne ponastavijo. Dolga imena in opozorila ostanejo naravno vidna, brez fiksne višine/rezanja vrstic.
+- Kompaktni `PriceTrend` pokaže dejansko število trgovalnih sej in datumski razpon. Podvojen splošni napis je odstranjen; vir/čas sta dosegljiva s tipkovnico/dotikom prek native details. Površina summary ostane 48 px. Barve sprememb in cona se ne spreminjajo.
+- To je izvedena sprememba BL-223 na :3100. Pomoč ob naslovih, novi pogledi Uspešnosti/lastne ideje in obnova Tez so za zdaj [SPEC](./docs/superpowers/specs/2026-10-30-spremljanje-in-pojasnila-ux-spec.md)/[plan](./docs/superpowers/plans/2026-10-30-spremljanje-in-pojasnila-ux.md), ne že izvedene funkcije. :3000 ostane nespremenjen.
+
 ## Dopolnitev po pregledu 2026-10-29–30 (S-018)
 
 - Pregled vrne Portfelj danes, barve dnevnih sprememb, moč/vrsto signalov, razloženi 7-dnevni Radar in 30-dnevni lijak iste kohorte. Makro kartice so vidne z izrecnimi vrzelmi, ne s sample fallbackom.

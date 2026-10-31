@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import { SignedChange, PriceTrend, EntryZoneBadge } from "./MarketContext";
 
@@ -56,4 +56,27 @@ it("identifies the actual trend period, sample count and provenance", () => {
 it("does not infer an entry zone when bounds or price are unknown", () => {
   show(<EntryZoneBadge />);
   expect(screen.getByText("Entry zone unknown")).not.toHaveClass("text-pos");
+});
+
+it("keeps the actual compact trend sample, dates and provenance readable without a tooltip", () => {
+  show(
+    <PriceTrend
+      compact
+      trend={{
+        points: [
+          { close: "invalid", market_date: "2026-10-01" },
+          { close: 10, market_date: "2026-10-27" },
+          { close: 11, market_date: "2026-10-28" },
+        ],
+        source: "yahoo",
+        as_of: "2026-10-29T08:00:00Z",
+      }}
+    />,
+  );
+  expect(screen.getByText("2 sessions")).toBeVisible();
+  expect(screen.getByText("2026-10-27 – 2026-10-28")).toBeVisible();
+  expect(screen.queryByText("Up to 30 trading sessions")).not.toBeInTheDocument();
+  fireEvent.click(screen.getByText("2 sessions"));
+  expect(screen.getByText("yahoo")).toBeVisible();
+  expect(screen.getByText("2026-10-29T08:00:00Z")).toBeVisible();
 });
