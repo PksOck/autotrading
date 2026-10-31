@@ -191,7 +191,7 @@ Opusov dokument je prevzet iz Claudove veje pri `28f2990`. Izvedbena veja `fix/s
 | BL-200 | Politike procesov, urniki, pavza, transakcijska kvota, predogled/sprejem paketa in sledi | ADR-0019, S-017 | done |
 | BL-201 | Regresijski pregled in ločen demo :3100; prenos :3000 izrecno zadržan do uporabnikove potrditve | S-017, pregled sprememb | done |
 | BL-202 | Potrditi razširjeni zasebni Flex XML, FinancialInstrumentInformation, dividendne identitete/davke/popravke in dejansko pokritost | ADR-0020 | next |
-| BL-203 | Nadaljnji UX po pregledu: poimenovani profili, primerjava vrstic, enoten iskalnik, preostali paneli instrumenta/analize, 200-% povečava | pregled sprememb S-017 | next |
+| BL-203 | Nadaljnji UX po pregledu: poimenovani profili, primerjava vrstic, enoten iskalnik, preostali paneli instrumenta/analize, 200-% povečava. S-025 pomoč/spremljanje/Teze imajo ločene BL-224–227; ta preostali obseg ni zaključen | pregled sprememb S-017, S-025 | next |
 | BL-204 | Trajna zamrznjena oddaja predloga čez reload/izgubljen odgovor, GET istega ID pred ponovitvijo, koordinacija zavihkov in zaščita novega osnutka; Back/fokus. 180 web, 12 ciljnih E2E, končni povezani pregled PASS | ADR-0024, S-024 | done |
 | BL-205 | Pred prenosom zapreti dodatne Flex robove: BASE_SUMMARY-only cash in nepopolne vrstice brez potrjene valute | S-017 | next |
 | BL-206 | Vedno dosegljiv standardni profil, vrnjeni stolpci portfelja, semantične barve, trend z datumi in stanje cone | S-018 | done |
@@ -211,5 +211,11 @@ Opusov dokument je prevzet iz Claudove veje pri `28f2990`. Izvedbena veja `fix/s
 | BL-220 | Popraviti manjkajoči kind dokazil zgodovinskih sintetičnih signalov, da se odprejo tudi iz študije; regresija preveri vseh 14 ID | `test_demo_track_signals.py`, S-023 | done |
 | BL-221 | Radar članstvo portfelja/watchliste/discover v SQL pred LIMIT, stabilen vrstni red in omejeno nalaganje; 15 ciljnih DB testov in izmerjeni EXPLAIN, pregled PASS | R1, `dcec5d7`, S-024 | done |
 | BL-222 | Nastavitve varnostnih kopij: izbira dovoljene lokacije, pogostosti in hrambe, ročni zagon ter vidno stanje; privzeto izklopljeno/neizbrano, isti disk dovoljen. SPEC in plan S-024, produktna izvedba ter obnovitveni dokaz še odprta | S-F5, uporabnikov odgovor S-024 | next |
+| BL-223 | Kompaktne vrstice Pozicij/Watchliste: graf ob identiteti, dejansko obdobje in dostopni vir/čas, ohranjena cona/barve/opozorila; običajne namizne vrstice 129 px, web181 in celotni E2E80+10 namernih skipov | ozek plan 2026-10-30, S-025 | done |
+| BL-224 | Skupna pomoč ob naslovu po vseh produktnih straneh, manj stalnih opisov/metapodatkov, lokalni datum v navigacijski nogi; vidna opozorila in kontekst podatka ostanejo | UXH, SPEC/plan S-025 | next |
+| BL-225 | Osebno spremljanje iz izvornih signalov/končnih analiz ter lastne ideje brez analize; trajno članstvo, osnutek/nespremenljiva aktivacija, varni časi, izračun izbora pred SQL LIMIT | UXP, SPEC/plan S-025, uporabnikov odgovor | next |
+| BL-226 | Teze: jasen nastanek in pregled pogojev, seznam za odločanje, datum dejanske preverbe, ločeni agentovi predlogi in paginirana dokazna zgodovina | UXT, SPEC/plan S-025 | next |
+| BL-227 | Ločen podatkovni SPEC in izvedba več izbirnih meril za teze/ideje glede na investicijski horizont; nespremenljiv baseline in preverjena opažanja, brez LLM števil ali avtomatske potrditve | UXM, SPEC/plan S-025, uporabnikov odgovor | next |
+| BL-228 | Reproducirati razliko legacy SignalOutcome/ADR-0022 (vstopna sveča, stroški, neutral kot long), določiti obseg in verzionirano metodo brez tihega zgodovinskega prepisovanja | raziskava Uspešnosti S-025, T2 | next |
 
 S-017: pregledna veja vključuje Val −1 in nadaljnje nadgradnje, objavljene samo v ločenem demu :3100. Claudova veja in okolje :3000 nista posodobljena; uporabnik zahteva pregled pred prenosom. ADR-0017–0020 so zapisani za izvedeno pregledno vejo. Podatkovne vrzeli in nedokončani deli celotnega načrta so v docs/implementation/2026-10-29-pregled-sprememb.md. Status done pomeni izvedeno v pregledni veji, ne odobrene objave na :3000.

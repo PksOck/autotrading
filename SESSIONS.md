@@ -4,6 +4,20 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 
 ---
 
+## S-025 · 2026-10-30 · Kompaktni portfelj in plan spremljanja/pojasnil
+
+**Cilj:** Upoštevati nova označena posnetka: premakniti graf izpod identitete, poglobljeno pregledati Teze/Uspešnost ter pripraviti sklenjen UX plan za manj dodatnega besedila in pomoč po celotni aplikaciji.
+
+**Narejeno:** BL-223 (`4c54d0c`): mini graf desno v Pozicijah in Watchlisti, dejansko število sej/razpon ostane, vir/čas pod keyboard/touch native razkritjem. Brez rezanja imen/opozoril ali ponastavitve profilov. Meritev prvih vrstic 217,25 → 129 px. Dve statični raziskavi [Tez](./docs/research/2026-10-30-teze-uporabniski-potek-raziskava.md) in [Uspešnosti](./docs/research/2026-10-30-uspesnost-in-povezave-raziskava.md), konkreten [SPEC](./docs/superpowers/specs/2026-10-30-spremljanje-in-pojasnila-ux-spec.md) in [plan](./docs/superpowers/plans/2026-10-30-spremljanje-in-pojasnila-ux.md), BL-224–228. Pregled zahteva in potrdi dopolnitvi združljivosti starega source=all ter ločenega pending imenovalca. [Dokazi/izvedene meje](./docs/implementation/2026-10-30-kompaktni-portfelj-in-ux-plan.md).
+
+**Odločitve:** Uporabnik želi tudi lastne ideje brez analize in več meril glede na trajanje naložbe. Ideja se ne ponaredi v Signal/AnalysisRun, aktivacija ima dejanski strežniški čas, stara statistika ostane ločena; investicijski horizont/pogostost pregleda/testni horizont so različne stvari. Skrivanje dolgih navodil ne skrije govorice, vrzeli, stale/partial ali konflikta. Samodejni varnostni pregled zavrne konkretni OpenCode/DeepSeek payload zasebnih izsekov kode kljub splošnemu dovoljenju za raziskavo; ni obvoda, raziskavo opravijo notranji subagenti. Astra doseže usage limit, neodvisni zaključni pregled prevzame SOL. Ni trditve, da je DeepSeek raziskava stekla.
+
+**Preverjanje:** Celotni web **181 passed / 44 datotek**, ciljni testi 6/6; TypeScript/ESLint/Prettier/i18n 1302 čisti. Linux build in namestitev samo demo web :3100 uspešna. Ciljni browser **23 passed / 5 namernih skipov**, vključno s štirimi novimi primeri položaja/višine/provenience in telefonom brez page overflow; končni širši sklop **80 passed / 10 namernih skipov**, 90 primerov. Neodvisni T1 in končni povezani produktni pregled PASS, prihodnji SPEC/plan PASS po dveh dopolnitvah; [končno poročilo](./docs/implementation/2026-10-30-neodvisni-pregled-kompaktnega-portfelja-in-plana.md). API/agents koda se ni spremenila, stari API/agents testi niso nov zagon. Obe :3000 sliki se ujemata z izhodiščema, demo API nespremenjen, brez migracije ali reseeda.
+
+**Odprto/naslednji korak:** Produktna izvedba BL-224–228 po planu; pomoč, lastne ideje in nove Teze v tej seji še niso implementirane. Strukturirana merila dobijo lasten podatkovni SPEC. Ostali BL-203, backup/restore, dejanski Flex/FX/SMTP in A3/A5 ostanejo odprti. :3000 brez nove izrecne potrditve ni dovoljen; noben push/merge, živa baza, model ali sporočilo ni del tega koraka.
+
+---
+
 ## S-024 · 2026-10-30 · Radar, trajna oddaja in nastavitve kopij
 
 **Cilj:** Nadaljevati preostalo neodvisno delo iz SPEC, razjasniti potrebne uporabniške vhode ter ohraniti :3000.

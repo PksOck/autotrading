@@ -2,7 +2,13 @@
 
 Povzetek sprejetega načrta. Podrobna utemeljitev je v [`docs/research/2026-10-22-zasnova-resitve.md`](./docs/research/2026-10-22-zasnova-resitve.md), primerjava kandidatov v [`docs/research/2026-10-22-analiza-kandidatov.md`](./docs/research/2026-10-22-analiza-kandidatov.md), izkušnje iz starega projekta v [`docs/research/2026-10-22-trading-list-prevzem.md`](./docs/research/2026-10-22-trading-list-prevzem.md).
 
-## Trenutno: zaključena Radar/idempotenca in naslednji SPEC (S-024)
+## Trenutno: uporabniški UX krog spremljanja in pojasnil (S-025)
+
+Po novih posnetkih uporabnika je izveden ozek BL-223: graf desno ob identiteti Pozicij/Watchliste, običajne namizne vrstice z 217,25 na 129 px, ohranjen dejanski razpon in dostopen vir/čas. [Dokazi S-025](./docs/implementation/2026-10-30-kompaktni-portfelj-in-ux-plan.md) ločijo ta delujoči popravek na :3100 od novih načrtovanih funkcij.
+
+Pripravljena sta [SPEC](./docs/superpowers/specs/2026-10-30-spremljanje-in-pojasnila-ux-spec.md) in [izvedbeni plan](./docs/superpowers/plans/2026-10-30-spremljanje-in-pojasnila-ux.md) za BL-224–228: pomoč ob naslovih/manj stalnih opisov, osebno spremljanje iz drugih strani **in lastne ideje brez analize**, uporabne Teze ter več meril glede na trajanje investicije. Uporabnik je oba poudarjena obsega potrdil. Naslednji rez je pomoč T1, vzporedno dokaz metode izidov T2; nato celoten tok idej/članstva T3–T4. Te funkcije še niso izvedene. Stara globalna statistika se ne razširi ali prepiše tiho; meritve Tez potrebujejo ločen podatkovni SPEC. BL-222/backup in preostale podatkovne/lastniške vrzeli ostajajo odprti; :3000 ostane nespremenjen.
+
+## Predhodno: zaključena Radar/idempotenca in naslednji SPEC (S-024)
 
 BL-221/R1 in BL-204 sta izvedena v pregledni veji in samo na :3100: članstvo Radarja pred omejitvijo rezultatov, trajna oddaja predloga čez reload/izgubljen odgovor, varovanje novega osnutka drugega zavihka ter Back/fokus. [Dokazi S-024](./docs/implementation/2026-10-30-radar-in-trajna-oddaja-dokazi.md) vsebujejo API 597 + 1 pogojni skip, web 180 in Playwright 76 + 10 namernih skipov; končni povezani pregled PASS. To ne zapre A3/A5, za katera je pripravljena [tehnična raziskava](./docs/implementation/2026-10-30-lastnistvo-raziskava.md).
 

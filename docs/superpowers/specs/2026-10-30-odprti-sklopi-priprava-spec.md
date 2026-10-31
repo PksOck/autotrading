@@ -37,6 +37,8 @@ Ostale datoteke v zgornji tabeli so še načrtovani rezultati, ne citati priprav
 
 ## 2. Obvezna pogodba za vsako zahtevo
 
+**Nov uporabniški krog S-025:** [SPEC spremljanja/pojasnil/Tez](./2026-10-30-spremljanje-in-pojasnila-ux-spec.md) in [izvedbeni plan](../plans/2026-10-30-spremljanje-in-pojasnila-ux.md) vključujeta oba prejeta odgovora: lastne ideje brez analize in več meril glede na trajanje investicije. BL-223 je ozek takojšnji popravek postavitve, BL-224–228 ostajajo ločeni naslednji rezi. Pri merilih je predviden dodaten podatkovni SPEC, ne namišljena začetna/trenutna vrednost v novem UI. S-024 backup/restore in A3/A5 niso s tem preklicani ali zaključeni.
+
 | Polje | Obvezna vsebina |
 |---|---|
 | ID | Stabilen ID zahteve in pripadajoči BL; zgodovinski opis ni edina specifikacija |
