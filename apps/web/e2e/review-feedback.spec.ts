@@ -54,6 +54,12 @@ test("settings expose master switch and SMTP; saved-record testing requires expl
   await page.getByRole("button", { name: "Izračunaj iz shranjenih zapisov" }).click();
   const response = await calculation;
   expect(response.ok()).toBe(true);
-  expect((await response.json()).completed).toBeGreaterThan(0);
+  const result = await response.json();
+  expect(result.completed).toBeGreaterThan(0);
+  expect(result.method_id).toBe("saved-record-after-utc-close-v1");
   await expect(page.getByText(/izmerjenih ·/)).toBeVisible();
+  await page.getByLabel("Metoda testiranja shranjenih mnenj", { exact: true }).click();
+  await expect(page.getByText("saved-record-after-utc-close-v1", { exact: true })).toBeVisible();
+  await page.getByLabel("Metoda globalnih izidov", { exact: true }).click();
+  await expect(page.getByText("legacy-unversioned", { exact: true })).toBeVisible();
 });

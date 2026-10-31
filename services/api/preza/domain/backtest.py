@@ -59,6 +59,10 @@ class BacktestRow(EventStudyResult):
 
 
 class BacktestOut(BaseModel):
+    method_id: Literal["saved-record-after-utc-close-v1"] = Field(
+        default="saved-record-after-utc-close-v1",
+        description="Method of this calculation, not a versioned historical price snapshot.",
+    )
     as_of: datetime
     source: str = "database"
     parameters: BacktestRequest

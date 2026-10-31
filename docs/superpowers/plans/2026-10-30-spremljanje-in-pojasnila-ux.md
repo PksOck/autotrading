@@ -2,7 +2,7 @@
 
 > **For agentic workers:** uporabi superpowers:subagent-driven-development ali superpowers:executing-plans. Vsak spodnji rez ima lasten testni in pregledni izhod.
 
-**Status:** T1/BL-224 izveden in preverjen v S-026, glej [dokaze](../../implementation/2026-10-31-pomoc-in-hierarhija-podatkov.md). T2–T6 so naslednji rezi, njihove funkcije še niso izvedene. BL-223 ima svoj [ozki plan](./2026-10-30-kompaktni-portfelj-izvedba.md) in dejanski dokaz ločeno. Odgovora uporabnika sta vključena: tudi lastne ideje brez analize, več meril odvisno od ciljnega trajanja investicije.
+**Status:** T1/BL-224 izveden in preverjen v S-026, glej [dokaze](../../implementation/2026-10-31-pomoc-in-hierarhija-podatkov.md). T2/BL-228 je izveden z [dokazano razliko metod in ohranjeno zgodovino](../../implementation/2026-10-31-metode-uspesnosti.md). T3–T6 še niso izvedeni. BL-223 ima svoj [ozki plan](./2026-10-30-kompaktni-portfelj-izvedba.md) in dejanski dokaz ločeno. Odgovora uporabnika sta vključena: tudi lastne ideje brez analize, več meril odvisno od ciljnega trajanja investicije.
 
 **Goal:** Uporabnik iz vsake raziskovalne strani razume, kaj vidi, doda konkretno mnenje ali lastno idejo v spremljanje in pri Tezi vidi, kaj jo podpira ter kaj zahteva odločitev.
 
@@ -57,10 +57,10 @@
 
 **Datoteke:** `services/api/preza/domain/{outcome,backtest}.py`, `services/{outcomes,track_record,backtest}.py`, njuni testi; UI `TrackRecord.tsx`, `BacktestPanel.tsx`, ADR-0022 in nov ADR samo ob sprejeti spremembi metode.
 
-- [ ] Dodaj reproducibilne fixture za isti signal, same-day/next-day vstop, `up/down/neutral/unknown`, stroške, 20 shranjenih sej in nerazpoložljiv benchmark. Najprej zabeleži dejanske stare rezultate, ne popravi jih mimogrede.
-- [ ] Dokaži, katere producer poti lahko shranijo neutral izid; na izolirani DB izmeri primer, živih vrstic ne prepisuj. Če dejanski uporabniški podatki še niso dovoljeni/dosegljivi, je obseg vpliva neznan, ne 0.
-- [ ] Pred popravilom določi verzionirano metodo in politiko za stare vrstice: ohranitev legacy rezultata z oznako ali izrecna migracija/backfill z obnovitvenimi vrati. Nevtralni cenovni izid v novi metodi ostane preskok po ADR-0022.
-- [ ] UI mora že ob T1 razločiti globalno statistiko in novo študijo; T4 ne sme njunih števil združiti. Ciljni pytest in DB regresije, neodvisni pregled metode in morebitnega backfilla, šele nato sprememba kode/ADR. Ločen commit `fix(outcomes): ... [BL-228]` s točnim končnim obsegom.
+- [x] Dodaj reproducibilne fixture za isti signal, same-day/next-day vstop, `up/down/neutral/unknown`, stroške, 20 shranjenih sej in nerazpoložljiv benchmark. Najprej zabeleži dejanske stare rezultate, ne popravi jih mimogrede.
+- [x] Dokaži, katere producer poti lahko shranijo neutral izid; na izolirani DB izmeri primer, živih vrstic ne prepisuj. Če dejanski uporabniški podatki še niso dovoljeni/dosegljivi, je obseg vpliva neznan, ne 0.
+- [x] Pred popravilom določi verzionirano metodo in politiko za stare vrstice: ohranitev legacy rezultata z oznako ali izrecna migracija/backfill z obnovitvenimi vrati. Nevtralni cenovni izid v novi metodi ostane preskok po ADR-0022.
+- [x] UI mora že ob T1 razločiti globalno statistiko in novo študijo; T4 ne sme njunih števil združiti. Ciljni pytest in DB regresije, neodvisni pregled metode in morebitnega backfilla, šele nato sprememba kode/ADR. Ločen commit `fix(outcomes): ... [BL-228]` s točnim končnim obsegom.
 
 ## T3: Trajne lastne ideje in zbirka [BL-225]
 
@@ -119,4 +119,4 @@
 
 ## Naslednji konkreten korak
 
-BL-223 in T1/BL-224 sta zaključena. Naslednji korak je dokaz T2 na izoliranih podatkih; T3/T4 morata skupaj dobaviti ročne ideje in obstoječa mnenja, ker je uporabnik to izrecno zahteval. T5 uporabi današnje dokaze, T6 pa zahteva ločen natančen podatkovni SPEC. Dodatna uporabniška vprašanja niso potrebna za imena tabel/gumbov; dejansko zasebno konfiguracijo/namestitev se razreši šele ob aktivaciji.
+BL-223, T1/BL-224 in T2/BL-228 so zaključeni v pregledni veji. Naslednji je trajni podatkovni tok T3–T4; T3/T4 morata skupaj dobaviti ročne ideje in obstoječa mnenja, ker je uporabnik to izrecno zahteval. T5 uporabi današnje dokaze, T6 pa zahteva ločen natančen podatkovni SPEC. Dodatna uporabniška vprašanja niso potrebna za imena tabel/gumbov; dejansko zasebno konfiguracijo/namestitev se razreši šele ob aktivaciji.

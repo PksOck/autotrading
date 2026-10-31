@@ -1,6 +1,6 @@
 # Spremljanje, Teze in pojasnila · UX SPEC
 
-**Datum:** 2026-10-30, S-025. **Status:** pregledni predlog za naslednji izvedbeni krog; razen ozkega BL-223 spodaj ni produktne implementacije. **Osnova:** `6a9f07c` in uporabnikova nova posnetka portfelja/Pregleda.
+**Datum:** 2026-10-30, S-025. **Status:** v S-026 izvedena pomoč UXH/BL-224 in razločitev metod BL-228 ([dokazi pomoči](../../implementation/2026-10-31-pomoc-in-hierarhija-podatkov.md), [dopolnitev Escape](../../implementation/2026-10-31-pomoc-escape-popravek.md), [metode](../../implementation/2026-10-31-metode-uspesnosti.md)). Osebno spremljanje, lastne ideje, nove Teze in merila še niso implementirani. **Osnova:** `6a9f07c` in uporabnikova nova posnetka portfelja/Pregleda.
 
 [Neodvisni pregled](../../implementation/2026-10-30-neodvisni-pregled-kompaktnega-portfelja-in-plana.md): dokumentarni PASS po odpravi UX-R1/R2. To potrjuje skladnost predloga in preizkusljivost plana, ne izvedbe pomoči, idej ali novih meril.
 

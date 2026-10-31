@@ -318,3 +318,5 @@ Ideja ne pride samo iz Radarja. Uporabnik lahko **sam predlaga instrument ali te
 - Globalni izidi in testiranje mnenj ostanejo poimenovani ločeno, z vidnim opozorilom o metodi. Dolga razlaga je dosegljiva ob razdelku; ta rez ne spreminja izračunov. [Preverjanje in meje](./docs/implementation/2026-10-31-pomoc-in-hierarhija-podatkov.md).
 
 Pomoč nad predogledom ima izrecno lastništvo Escape tudi v času menjave Radix poslušalcev: označen odprti PageHelp prepreči zapiranje Peek, lasten capture pa zapre samo pomoč z obstoječim history hookom. Fokus ni uporabljen kot dokaz, da je menjava poslušalcev že končana. [Regresijski dokaz](./docs/implementation/2026-10-31-pomoc-escape-popravek.md).
+
+Metodni podatki Uspešnosti (BL-228, ADR-0025): globalni neoznačeni izidi imajo ločen naslov/opozorilo; podrobnosti razločijo sedanji stari producent od nepreverjene metode posamezne zgodovinske vrstice. Testiranje pokaže identiteto svoje metode po izračunu; starejši odgovor brez nje ostane izrecno neoznačen. Oznake niso nov cenovni posnetek ali pretvorba starih donosov.

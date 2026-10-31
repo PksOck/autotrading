@@ -30,6 +30,8 @@ Format: `ADR-xxxx-kratek-naslov.md`, statusi: `predlagano` · `sprejeto` · `zam
 | [ADR-0023](./ADR-0023-trajni-kurzor-dostave-opravil.md) | Trajni kurzor omejene dostave opravil | sprejeto v pregledni veji |
 | [ADR-0024](./ADR-0024-trajna-namera-predloga.md) | Trajna namera oddaje predloga | sprejeto v pregledni veji |
 
+| [ADR-0025](./ADR-0025-locene-metode-izidov.md) | Ločene metode izidov brez prepisovanja zgodovine | sprejeto v pregledni veji |
+
 ## Predloga
 
 ```markdown

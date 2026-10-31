@@ -20,6 +20,7 @@ beforeEach(() => vi.clearAllMocks());
 
 it("calculates only after submission and displays incomplete observations explicitly", async () => {
   send.mockResolvedValue({
+    method_id: "saved-record-after-utc-close-v1",
     as_of: "2026-10-29T12:00:00Z",
     source: "database",
     total_matching: 1,
@@ -68,6 +69,8 @@ it("calculates only after submission and displays incomplete observations explic
     await screen.findByText(feedback.backtestFeedback.insufficient_future_sessions),
   ).toBeInTheDocument();
   expect(screen.getByText("MSFT")).toBeInTheDocument();
+  fireEvent.click(screen.getByLabelText("Saved-opinion testing method"));
+  expect(screen.getByText("saved-record-after-utc-close-v1")).toBeVisible();
 });
 
 it("keeps signal and analysis targets distinct for the same UUID and preserves submitted results", async () => {
@@ -125,6 +128,9 @@ it("keeps signal and analysis targets distinct for the same UUID and preserves s
   );
   fireEvent.click(screen.getByRole("button", { name: feedback.backtestFeedback.calculate }));
   const signalLink = await screen.findByRole("link", { name: "MSFT" });
+  fireEvent.click(screen.getByLabelText("Saved-opinion testing method"));
+  expect(screen.getByText("Method identifier unavailable")).toBeVisible();
+  expect(screen.queryByText("saved-record-after-utc-close-v1")).not.toBeInTheDocument();
   expect(signalLink).toHaveAttribute(
     "href",
     `/track-record?horizon=5&filter=keep&tag=one&tag=two&peek=signal%3A${id}`,

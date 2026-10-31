@@ -7,6 +7,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import date
 from decimal import Decimal
+from typing import Literal
 
 from pydantic import BaseModel
 
@@ -40,6 +41,7 @@ class Outcome:
 
 
 class OutcomeStat(BaseModel):
+    method_id: Literal["legacy-unversioned"] = "legacy-unversioned"
     kind: str
     source: str
     horizon_days: int

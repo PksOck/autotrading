@@ -60,6 +60,10 @@ class CalibrationBucket(TrackStat):
 
 
 class TrackRecordOut(BaseModel):
+    method_id: Literal["legacy-unversioned"] = Field(
+        default="legacy-unversioned",
+        description="Stored legacy series; historical rows have no method version.",
+    )
     horizon_days: int
     horizons: list[int]
     benchmark: str | None
@@ -89,6 +93,7 @@ class TrackOutcome(BaseModel):
 
 
 class TrackOutcomePage(BaseModel):
+    method_id: Literal["legacy-unversioned"] = "legacy-unversioned"
     items: list[TrackOutcome]
     total: int
     offset: int

@@ -3663,6 +3663,13 @@
       },
       "BacktestOut": {
         "properties": {
+          "method_id": {
+            "type": "string",
+            "const": "saved-record-after-utc-close-v1",
+            "title": "Method Id",
+            "description": "Method of this calculation, not a versioned historical price snapshot.",
+            "default": "saved-record-after-utc-close-v1"
+          },
           "as_of": {
             "type": "string",
             "format": "date-time",
@@ -7101,6 +7108,12 @@
       },
       "OutcomeStat": {
         "properties": {
+          "method_id": {
+            "type": "string",
+            "const": "legacy-unversioned",
+            "title": "Method Id",
+            "default": "legacy-unversioned"
+          },
           "kind": {
             "type": "string",
             "title": "Kind"
@@ -9750,6 +9763,12 @@
       },
       "TrackOutcomePage": {
         "properties": {
+          "method_id": {
+            "type": "string",
+            "const": "legacy-unversioned",
+            "title": "Method Id",
+            "default": "legacy-unversioned"
+          },
           "items": {
             "items": {
               "$ref": "#/components/schemas/TrackOutcome"
@@ -9781,6 +9800,13 @@
       },
       "TrackRecordOut": {
         "properties": {
+          "method_id": {
+            "type": "string",
+            "const": "legacy-unversioned",
+            "title": "Method Id",
+            "description": "Stored legacy series; historical rows have no method version.",
+            "default": "legacy-unversioned"
+          },
           "horizon_days": {
             "type": "integer",
             "title": "Horizon Days"

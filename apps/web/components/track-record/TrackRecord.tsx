@@ -322,6 +322,11 @@ export function TrackRecord() {
           <h2 className="text-xl font-semibold">{help("globalOutcomes")}</h2>
           <DataDetails label={help("globalMethodLabel")}>
             <p>{help("globalMethod")}</p>
+            {data && (
+              <p>
+                {help("methodCode")}: <code>{data.method_id ?? help("methodMissing")}</code>
+              </p>
+            )}
           </DataDetails>
         </div>
         <p className="text-xs text-warn">{help("globalMethodNotice")}</p>

@@ -1682,7 +1682,7 @@
         "purpose": "Track record separates global signal outcomes from the study you run on saved signals and final analyses.",
         "actions": "Filter global outcomes by horizon and signal type. In saved-opinion testing, separately choose the period, sessions and costs, then run the calculation.",
         "data": "Testing shows the prices, dates, sources and skipped records used. The global view shows stored signal outcomes, plus alpha and calibration when available.",
-        "limits": "Global outcomes and the study may differ in entry price and costs, so do not read them as one calculation. A personal collection and own ideas are not available yet and are planned."
+        "limits": "Global outcomes and saved-opinion testing use different methods. Historical rows have no recorded calculation version; personal tracking and own ideas are a separate upcoming step."
       },
       "settings": {
         "purpose": "Settings show what has changed and which options are enabled.",
@@ -1709,6 +1709,9 @@
     "globalOutcomes": "Global signal outcomes",
     "globalMethodLabel": "Global outcome method",
     "globalMethodNotice": "Uses a different method from saved-opinion testing.",
-    "globalMethod": "Stored outcomes use the first bar on the signal day or later, without costs; neutral direction is treated as long. Saved-opinion testing uses a bar after publication, deducts selected costs and skips neutral opinions."
+    "globalMethod": "The current legacy producer uses the first bar on the signal day or later, without costs, and treats neutral direction as long. Historical rows have no recorded method version, so their individual calculation provenance cannot be verified. Saved-opinion testing uses a bar after publication, deducts selected costs and skips neutral opinions.",
+    "studyMethodLabel": "Saved-opinion testing method",
+    "methodCode": "Method identifier",
+    "methodMissing": "Method identifier unavailable"
   }
 }

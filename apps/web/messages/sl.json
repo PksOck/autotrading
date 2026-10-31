@@ -1682,7 +1682,7 @@
         "purpose": "Uspešnost loči splošne izide signalov od študije izidov shranjenih signalov in končnih analiz.",
         "actions": "Globalne izide filtriraj po horizontu in vrsti signala. V testiranju shranjenih mnenj posebej izberi obdobje, seje in stroške ter sproži izračun.",
         "data": "Testiranje pokaže uporabljene cene, datume, vire in preskoke. Globalni pregled prikazuje že shranjene izide signalov ter alfo in kalibracijo, kadar so na voljo.",
-        "limits": "Splošni izidi in študija se lahko razlikujejo v vstopni ceni in stroških, zato ju ne beri kot isti izračun. Osebno spremljanje in lastne ideje še nista na voljo, sta pa načrtovana."
+        "limits": "Globalni pregled in testiranje imata različno metodo. Stare vrstice nimajo shranjene verzije izračuna; osebno spremljanje in lastne ideje sledijo v ločenem koraku."
       },
       "settings": {
         "purpose": "Nastavitve pokažejo, kaj je spremenjeno in katere možnosti so vklopljene.",
@@ -1709,6 +1709,9 @@
     "globalOutcomes": "Globalni izidi signalov",
     "globalMethodLabel": "Metoda globalnih izidov",
     "globalMethodNotice": "Drugačna metoda kot pri testiranju shranjenih mnenj.",
-    "globalMethod": "Shranjeni izidi uporabljajo prvo svečo na datum signala ali pozneje, brez stroškov; nevtralna smer se računa kot rast. Testiranje mnenj uporabi svečo po objavi, odšteje izbrane stroške in nevtralna mnenja preskoči."
+    "globalMethod": "Trenutni stari izračun uporabi prvo svečo na datum signala ali pozneje, brez stroškov; nevtralno smer šteje kot rast. Zgodovinske vrstice nimajo shranjene verzije metode, zato njihovega posameznega izračuna ne moremo potrditi. Testiranje mnenj uporabi svečo po objavi, izbrane stroške in preskok nevtralnih mnenj.",
+    "studyMethodLabel": "Metoda testiranja shranjenih mnenj",
+    "methodCode": "Oznaka metode",
+    "methodMissing": "Oznaka metode ni na voljo"
   }
 }

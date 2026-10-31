@@ -8,6 +8,7 @@ import { useBacktest, type BacktestRequest } from "@/lib/api/backtest";
 import { formatChange, formatNumber, formatShare } from "@/lib/format";
 import { useAppLocale } from "@/lib/use-app-locale";
 import { cn } from "@/lib/cn";
+import { DataDetails } from "@/components/common/DataDetails";
 
 export function BacktestPanel() {
   const t = useTranslations("backtestFeedback");
@@ -34,9 +35,19 @@ export function BacktestPanel() {
     value == null ? "—" : formatChange(locale, Number(value));
   return (
     <section className="card space-y-4 p-5">
-      <h2 className="text-xl font-semibold">{t("title")}</h2>
+      <div className="flex flex-wrap items-center justify-between gap-x-3">
+        <h2 className="text-xl font-semibold">{t("title")}</h2>
+        <DataDetails label={common("pageHelp.studyMethodLabel")}>
+          <p>{t("method")}</p>
+          {data && (
+            <p>
+              {common("pageHelp.methodCode")}:{" "}
+              <code>{data.method_id ?? common("pageHelp.methodMissing")}</code>
+            </p>
+          )}
+        </DataDetails>
+      </div>
       <p className="text-sm text-text-2">{t("intro")}</p>
-      <p className="text-xs text-text-3">{t("method")}</p>
       <form
         className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
         onSubmit={(event) => {

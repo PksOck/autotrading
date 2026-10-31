@@ -30,6 +30,7 @@ const stat = (count: number, hit: string | null, ret: string | null, alpha: stri
 });
 
 const record: TrackRecordOut = {
+  method_id: "legacy-unversioned",
   horizon_days: 20,
   horizons: [1, 5, 20, 60],
   benchmark: "SPY",
@@ -86,6 +87,8 @@ describe("TrackRecord", () => {
     expect(screen.getByText("Uses a different method from saved-opinion testing.")).toBeVisible();
     fireEvent.click(screen.getByLabelText("Global outcome method"));
     expect(screen.getByText(/signal day or later/)).toBeVisible();
+    expect(screen.getByText(/Historical rows have no recorded method version/)).toBeVisible();
+    expect(screen.getByText("legacy-unversioned")).toBeVisible();
   });
 
   it("shows hit rate, return, alpha vs benchmark and pending outcomes", () => {

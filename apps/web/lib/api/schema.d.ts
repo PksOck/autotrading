@@ -1148,6 +1148,13 @@ export interface components {
         /** BacktestOut */
         BacktestOut: {
             /**
+             * Method Id
+             * @description Method of this calculation, not a versioned historical price snapshot.
+             * @default saved-record-after-utc-close-v1
+             * @constant
+             */
+            method_id: "saved-record-after-utc-close-v1";
+            /**
              * As Of
              * Format: date-time
              */
@@ -2317,6 +2324,12 @@ export interface components {
         };
         /** OutcomeStat */
         OutcomeStat: {
+            /**
+             * Method Id
+             * @default legacy-unversioned
+             * @constant
+             */
+            method_id: "legacy-unversioned";
             /** Kind */
             kind: string;
             /** Source */
@@ -3328,6 +3341,12 @@ export interface components {
         };
         /** TrackOutcomePage */
         TrackOutcomePage: {
+            /**
+             * Method Id
+             * @default legacy-unversioned
+             * @constant
+             */
+            method_id: "legacy-unversioned";
             /** Items */
             items: components["schemas"]["TrackOutcome"][];
             /** Total */
@@ -3339,6 +3358,13 @@ export interface components {
         };
         /** TrackRecordOut */
         TrackRecordOut: {
+            /**
+             * Method Id
+             * @description Stored legacy series; historical rows have no method version.
+             * @default legacy-unversioned
+             * @constant
+             */
+            method_id: "legacy-unversioned";
             /** Horizon Days */
             horizon_days: number;
             /** Horizons */

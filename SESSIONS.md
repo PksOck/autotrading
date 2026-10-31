@@ -4,7 +4,7 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 
 ---
 
-## S-026 · 2026-10-31 · Skupna pomoč in jasnejši Pregled
+## S-026 · 2026-10-31 · Pomoč, jasnejši Pregled in metode Uspešnosti
 
 **Cilj:** Izvesti T1/BL-224 iz potrjenega UX plana; OpenCode samo za osnutke navodil, root za kodo in preverjanje.
 
@@ -16,7 +16,9 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 
 **Dopolnitev BL-224:** Obremenitveni preizkus je ovrgel razlago, da je dvojni Escape le težava testa. Dodana produktna zaščita registracijskega okvirja Radix; RED/GREEN za preprečen native Escape, browser20/20 in ponovni neodvisni PASS. [Dokaz](./docs/implementation/2026-10-31-pomoc-escape-popravek.md).
 
-**Odprto/naslednji korak:** T2/BL-228 karakterizacija metod, nato T3–T4/BL-225 osebno spremljanje in lastne ideje. BL-226/227 Teze/merila ostajata odprta; backup/Flex/SMTP/A3/A5 imajo svoje pogoje. Pripravljen plan in pomoč nista dokaz implementacije teh funkcij.
+**BL-228:** Karakterizirane razlike istih mnenj (smeri, dan, 20 sej, stroški, benchmark), prava izolirana DB pot nevtralnega Radar signala in dokaz nespremenjenega legacy izida. ADR-0025/API method_id ločita legacy-unversioned od saved-record-after-utc-close-v1, brez spremembe matematike/SQL/producenta ali zgodovinskega backfilla. Generirana OpenAPI/TS ponovno identična. Metodni pregled P2 glede nepreverljive zgodovine odpravljen v SL/EN, ponovni PASS. [Dokazi](./docs/implementation/2026-10-31-metode-uspesnosti.md): API 606 uspešnih, 1 pogojni Redis skip in 19 obstoječih opozoril, Ruff 224/mypy 135; končni web 194/47 in celotni browser 90 + 10 namernih skipov. Nov demo API/web, shema0020, :3000 ohranjen; moja začasna sintetična DB odstranjena.
+
+**Odprto/naslednji korak:** T3–T4/BL-225 osebno spremljanje in lastne ideje. BL-226/227 Teze/merila ostajata odprta; backup/Flex/SMTP/A3/A5 imajo svoje pogoje. Pripravljen plan in pomoč nista dokaz implementacije teh funkcij.
 
 ---
 
