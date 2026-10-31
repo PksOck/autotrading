@@ -29,6 +29,12 @@ export function PeekPanel() {
               forceMount
               asChild
               onInteractOutside={(event) => event.preventDefault()}
+              onEscapeKeyDown={(event) => {
+                // Help can receive focus before Radix replaces the highest-layer listener.
+                if (document.querySelector('[data-page-help][data-state="open"]')) {
+                  event.preventDefault();
+                }
+              }}
               onOpenAutoFocus={() => {
                 const active = document.activeElement;
                 if (active instanceof HTMLElement && !active.closest('[role="dialog"]')) {

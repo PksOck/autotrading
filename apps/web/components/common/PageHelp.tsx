@@ -29,7 +29,17 @@ export function PageHelp({ pageKey, title }: { pageKey: PageHelpKey; title: stri
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-[60] bg-black/40" />
-        <Dialog.Content className="card fixed inset-x-3 top-[5vh] z-[61] mx-auto max-h-[90dvh] max-w-xl overflow-y-auto p-5 shadow-float sm:inset-x-6">
+        <Dialog.Content
+          data-page-help=""
+          onKeyDownCapture={(event) => {
+            if (event.key === "Escape") {
+              event.preventDefault();
+              event.stopPropagation();
+              close();
+            }
+          }}
+          className="card fixed inset-x-3 top-[5vh] z-[61] mx-auto max-h-[90dvh] max-w-xl overflow-y-auto p-5 shadow-float sm:inset-x-6"
+        >
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <Dialog.Title className="text-xl font-semibold">
               {t("title", { page: title })}

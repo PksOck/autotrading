@@ -14,6 +14,8 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 
 **Preverjanje:** Končni Linux build uspešen, TypeScript/ESLint/i18n 1382 čisti. Celotni brskalnik **90 passed / 10 namernih device-specific skipov**, 100 primerov; SL/EN, desktop/phone, gnezden predogled, osnutek, brez zapisov ob pomoči. Desktop 200-% ekvivalent preureditve in telefon 320 px; dejanska povečava telefonskega brskalnika ni bila izvedena. Celotni web **193 passed / 47 datotek**, z obstoječim opozorilom testnega timeZone; [dokazi](./docs/implementation/2026-10-31-pomoc-in-hierarhija-podatkov.md). Samo demo web :3100 posodobljen, demo API ostane isti, :3000 sliki potrjeno nespremenjeni. Brez migracije, reseeda, push/merge ali pošiljanja sporočil.
 
+**Dopolnitev BL-224:** Obremenitveni preizkus je ovrgel razlago, da je dvojni Escape le težava testa. Dodana produktna zaščita registracijskega okvirja Radix; RED/GREEN za preprečen native Escape, browser20/20 in ponovni neodvisni PASS. [Dokaz](./docs/implementation/2026-10-31-pomoc-escape-popravek.md).
+
 **Odprto/naslednji korak:** T2/BL-228 karakterizacija metod, nato T3–T4/BL-225 osebno spremljanje in lastne ideje. BL-226/227 Teze/merila ostajata odprta; backup/Flex/SMTP/A3/A5 imajo svoje pogoje. Pripravljen plan in pomoč nista dokaz implementacije teh funkcij.
 
 ---

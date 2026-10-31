@@ -316,3 +316,5 @@ Ideja ne pride samo iz Radarja. Uporabnik lahko **sam predlaga instrument ali te
 - Današnji lokalni datum je v nogi navigacije oziroma na telefonu v Več, brez SSR ugibanja in z osvežitvijo ob polnoči/vrnitvi. To ni datum cene ali posnetka.
 - Povsem manjkajoči makro kazalniki so en strnjen razdelek z opozorilom in podrobnostmi štirih kazalnikov. Delni nabor ohrani vrednosti in vidne vrzeli; napaka osvežitve ne izbriše predpomnjenega podatka. Legende Treemap/Pulz/Lijak imajo kratek ključ in polno pojasnilo ob grafu.
 - Globalni izidi in testiranje mnenj ostanejo poimenovani ločeno, z vidnim opozorilom o metodi. Dolga razlaga je dosegljiva ob razdelku; ta rez ne spreminja izračunov. [Preverjanje in meje](./docs/implementation/2026-10-31-pomoc-in-hierarhija-podatkov.md).
+
+Pomoč nad predogledom ima izrecno lastništvo Escape tudi v času menjave Radix poslušalcev: označen odprti PageHelp prepreči zapiranje Peek, lasten capture pa zapre samo pomoč z obstoječim history hookom. Fokus ni uporabljen kot dokaz, da je menjava poslušalcev že končana. [Regresijski dokaz](./docs/implementation/2026-10-31-pomoc-escape-popravek.md).

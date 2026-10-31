@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, createEvent, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import en from "@/messages/en.json";
 import { PageHelp } from "./PageHelp";
@@ -65,6 +65,18 @@ it("Back closes help while preserving the current page filters", async () => {
   act(() => window.history.back());
   await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
   expect(window.location.pathname + window.location.search).toBe("/signals?kind=entry");
+});
+
+it("handles its Escape even when an underlying preview prevented the native default", async () => {
+  show();
+  fireEvent.click(screen.getByRole("button", { name: "Help for Signals" }));
+  const help = screen.getByRole("dialog", { name: "About Signals" });
+  const escape = createEvent.keyDown(help, { key: "Escape" });
+  escape.preventDefault();
+  fireEvent(help, escape);
+  await waitFor(() =>
+    expect(screen.queryByRole("dialog", { name: "About Signals" })).not.toBeInTheDocument(),
+  );
 });
 
 it("Escape closes only help when opened inside a nonmodal preview", async () => {
