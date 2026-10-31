@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { setLocale } from "@/app/actions";
 import { Icon } from "@/components/common/Icon";
+import { LocalDate } from "./LocalDate";
 import { NAV } from "@/lib/nav";
 import { useInstrumentSearch } from "@/lib/api/hooks";
 import { nextThemePreference, readThemePreference, setThemePreference } from "@/lib/theme";
@@ -180,6 +181,9 @@ export function CommandPalette() {
         </Command.Group>
       </Command.List>
       <div className="border-t border-border px-4 py-2 text-xs text-text-3">
+        <div className="mb-1 md:hidden">
+          <LocalDate />
+        </div>
         {t("command.shortcuts")}
       </div>
     </Command.Dialog>

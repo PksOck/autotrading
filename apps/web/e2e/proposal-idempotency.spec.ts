@@ -151,6 +151,21 @@ test("real IndexedDB serializes tabs without secure-context APIs", async ({
       other.evaluate((key) => JSON.parse(localStorage.getItem(key)!).fields.hypothesis, key),
     )
     .toBe("Other tab edit");
+  // Both Check actions must be dispatched before either receives acknowledgement.
+  // Otherwise the second tab can already show Start new intention under the pointer.
+  let checks = 0;
+  let releaseChecks!: () => void;
+  const bothChecking = new Promise<void>((resolve) => {
+    releaseChecks = resolve;
+  });
+  await context.route("**/api/proposals/*", async (route) => {
+    if (route.request().method() === "GET") {
+      checks += 1;
+      if (checks === 2) releaseChecks();
+      await bothChecking;
+    }
+    await route.fallback();
+  });
   await Promise.all([
     page.getByRole("button", { name: en.proposal.durable.check, exact: true }).click(),
     other.getByRole("button", { name: en.proposal.durable.check, exact: true }).click(),

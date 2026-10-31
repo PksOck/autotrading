@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
+import { PageHelp } from "@/components/common/PageHelp";
 import { ApiError } from "@/lib/api/client";
 import { useSystemStatus } from "@/lib/api/hooks";
 import {
@@ -294,9 +295,9 @@ export function SettingsView({ theme }: { theme: ThemePreference }) {
   const status = useSystemStatus();
   return (
     <div className="mx-auto max-w-6xl space-y-6 p-4 sm:p-6">
-      <header>
+      <header className="flex items-center gap-2">
         <h1 className="text-2xl font-semibold">{t("title")}</h1>
-        <p className="mt-2 max-w-3xl text-sm text-text-2">{t("help")}</p>
+        <PageHelp pageKey="settings" title={t("title")} />
       </header>
       <section className="rounded-xl border border-border bg-surface p-5">
         <h2 className="text-lg font-medium">{t("appearance")}</h2>

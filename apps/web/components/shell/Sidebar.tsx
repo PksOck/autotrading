@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { motion } from "motion/react";
 import { useTranslations } from "next-intl";
 import { Icon } from "@/components/common/Icon";
+import { LocalDate } from "./LocalDate";
 import { BrandMark } from "@/components/shell/Brand";
 import { cn } from "@/lib/cn";
 import { spring } from "@/lib/motion";
@@ -57,6 +58,7 @@ export function Sidebar() {
         })}
       </ul>
       <div className="mt-auto flex flex-col gap-3 px-3">
+        <LocalDate />
         <Link
           href="/ux"
           className={cn(

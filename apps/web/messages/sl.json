@@ -1596,5 +1596,119 @@
     "neutral": "Nevtralno",
     "parameterScope": "Rezultati veljajo za oddane nastavitve. Po spremembi obrazca znova izračunaj.",
     "completedAt": "Izračunano ob"
+  },
+  "pageHelp": {
+    "open": "Pomoč za {page}",
+    "title": "O strani: {page}",
+    "close": "Zapri pomoč",
+    "actions": "Kaj lahko naredim?",
+    "data": "Od kod so podatki?",
+    "limits": "Kaj je treba upoštevati?",
+    "links": "Povezane strani",
+    "details": "Podatki in razlaga",
+    "today": "Danes",
+    "marketUnavailable": "Ni preverjenih tržnih kazalnikov",
+    "treemapKey": "Velikost: teža · barva: dnevna sprememba",
+    "pulseKey": "7 dni · večja pika: višja ocena · črtkano: govorica",
+    "extraCounts": "Več o obsegu podatkov",
+    "pages": {
+      "overview": {
+        "purpose": "Pregled na enem mestu pokaže vrednost portfelja, tržni kontekst in najpomembnejše signale.",
+        "actions": "Klikni instrument, signal ali dogodek za podrobnosti. Legende grafov in vir podatkov so dosegljivi ob prikazu.",
+        "data": "Vsak podatek ima naveden vir in čas podatka. Manjkajoč makro kazalnik je označen kot manjkajoč, ne kot nič.",
+        "limits": "Moč signala ni verjetnost dobička. Datum posnetka portfelja se lahko razlikuje od datuma cene."
+      },
+      "radar": {
+        "purpose": "Radar združuje novice in objave v dogodke z dokazi in oceno za nadaljnji pregled.",
+        "actions": "Izberi nove kandidate, watchlisto ali portfelj ter odpri dogodek in njegove vire. Analizo sprožiš z ločenim dejanjem.",
+        "data": "Ocena temelji na shranjenih dogodkih in odzivu cene. Povezani viri imajo svoj datum in oznako govorice, kadar ni uradne potrditve.",
+        "limits": "Ocena ni napoved donosa. Nepotrjena govorica ostane ločena od uradnih dokazov."
+      },
+      "entries": {
+        "purpose": "Vstopi pokažejo kandidate, povezane z morebitnim vstopom, in njihovo trenutno stanje.",
+        "actions": "Filtriraj seznam in odpri signal ali instrument. Pred odločitvijo preberi opozorila in dokaze.",
+        "data": "Prikaže smer, cono in čas podatka, kadar so na voljo. Manjkajoča cena ali negotov dokaz ostaneta označena.",
+        "limits": "Vstopna točka ni priporočilo za nakup in ne sproži naročila. Če podatek ni svež, ga stran ne predstavi kot potrjenega."
+      },
+      "signals": {
+        "purpose": "Signali so zbirka mnenj in opozoril, ki jih lahko pregledaš in razvrstiš.",
+        "actions": "Filtriraj in odpri posamezni signal. Z dejanji Sprejmi, Spremljaj ali Zavrzi urediš njegovo stanje.",
+        "data": "Vsak signal ima smer, jakost, razlago in dokaze z virom ter časom. Govorica, zastarelost ali manjkajoč dokaz so vidni.",
+        "limits": "Sprejem signala ni naročilo. Govorice brez uradne potrditve ni mogoče sprejeti kot potrjenega priporočila."
+      },
+      "proposals": {
+        "purpose": "Tu lahko zapišeš simbol, svojo hipotezo ali novico in pošlješ predlog v analizo.",
+        "actions": "Izberi globino in način shranjevanja ter predlog izrecno oddaj. Ob izgubljenem odgovoru preveri isto oddajo, preden začneš novo.",
+        "data": "Seznam pokaže stanje in preverjen izid presoje ter povezane signale ali analize, ko obstajajo.",
+        "limits": "Presoja hipoteze ni izračunan donos. Standardna ali globoka obdelava lahko porabita nastavljeno modelno kvoto."
+      },
+      "analysis": {
+        "purpose": "Analiza pokaže, kako je nastalo mnenje o instrumentu in na katerih dokazih temelji.",
+        "actions": "Odpri posamezno analizo in preberi mnenje ter dokaze. Iz končane analize lahko pripraviš osnutek teze.",
+        "data": "Seznam prikaže stanje, izvorno mnenje in datum zaključka. Podrobnosti razkrijejo vir, čas in uporabljene dokaze.",
+        "limits": "Odpiranje strani ali pomoči ne zažene nove analize. Nedokončana ali neuspešna analiza se ne prikaže kot končno mnenje."
+      },
+      "analysisDetail": {
+        "purpose": "Podrobnost analize razloži končno mnenje, njegove razloge in dokaze.",
+        "actions": "Preberi odločitev, razloge ter dokaze za in proti. Iz zaključene analize lahko izrecno pripraviš osnutek teze.",
+        "data": "Prikaže stanje, čas zaključka, vir in razlago. Manjkajoči ali zastareli dokazi ostanejo vidni.",
+        "limits": "Končano mnenje ni obljuba donosa. Nov zagon analize je ločeno dejanje in upošteva nastavljeno kvoto."
+      },
+      "portfolio": {
+        "purpose": "Portfelj združuje pozicije, watchlisto, analize in dividende izbranih računov.",
+        "actions": "Izberi račun in zavihek. Standardni profil vrne osnovne stolpce; v Stolpci prilagodiš prikaz in gostoto.",
+        "data": "Vrednost ima valuto in čas posnetka, cene pa svoj vir in čas. Manjkajoča cena ali zastarel posnetek ostaneta označena.",
+        "limits": "Posnetek računa in tržne cene imata lahko različna datuma. Pri dividendah so knjižbe, odprti obračuni in ocene ločeni."
+      },
+      "instrument": {
+        "purpose": "Stran instrumenta zbere identiteto, ceno in povezave na povezane signale, analize ter teze.",
+        "actions": "Odpri graf, preberi podatkovno kakovost in pojdi na povezane zapise. Iz strani lahko nadaljuješ na signal, analizo ali tezo.",
+        "data": "Cena ima vir in čas podatka, identiteta pa jasno ime in simbol. Če cena manjka ali je zastarela, to ostane vidno.",
+        "limits": "Stran ne izračuna priporočila in ne odda naročila. Odpiranje pomoči ne osveži podatkov."
+      },
+      "theses": {
+        "purpose": "Teze so tvoje zapisane trditve o instrumentu in dokazi, ki jih spremljajo.",
+        "actions": "Filtriraj po instrumentu in odpri tezo. Predloge za spremembo potrdi ali zavrni sam.",
+        "data": "Seznam pokaže aktivno različico, število trditev po stanju in čas zadnje spremembe. Vsaka trditev ima svoje stanje in dokaze, kadar so na voljo.",
+        "limits": "Čas zadnje spremembe ne pomeni, da so bili dokazi znova preverjeni. Strukturirane metrike še niso na voljo in so načrtovane."
+      },
+      "thesisDetail": {
+        "purpose": "Podrobnosti združujejo različice teze, trditve, dokazno zgodovino in predloge pregledov.",
+        "actions": "Preglej in shrani osnutek, preden ga aktiviraš. Spremembo stanja trditve podpri z razlogom in dokazom; agentov predlog posebej sprejmi ali zavrni.",
+        "data": "Vidiš veljavno stanje, dokaze z virom in datumom ter predloge, ki še niso sprejeti. Zastarel ali negotov dokaz ne postane potrjen sam.",
+        "limits": "Predlog ne spremeni teze brez tvoje izrecne potrditve. Merila glede na horizont še niso na voljo in so načrtovana."
+      },
+      "trackRecord": {
+        "purpose": "Uspešnost loči splošne izide signalov od študije izidov shranjenih signalov in končnih analiz.",
+        "actions": "Globalne izide filtriraj po horizontu in vrsti signala. V testiranju shranjenih mnenj posebej izberi obdobje, seje in stroške ter sproži izračun.",
+        "data": "Testiranje pokaže uporabljene cene, datume, vire in preskoke. Globalni pregled prikazuje že shranjene izide signalov ter alfo in kalibracijo, kadar so na voljo.",
+        "limits": "Splošni izidi in študija se lahko razlikujejo v vstopni ceni in stroških, zato ju ne beri kot isti izračun. Osebno spremljanje in lastne ideje še nista na voljo, sta pa načrtovana."
+      },
+      "settings": {
+        "purpose": "Nastavitve pokažejo, kaj je spremenjeno in katere možnosti so vklopljene.",
+        "actions": "Izberi proces, uredi način, omejitve ali časovna okna ter shrani. Glavno stikalo samodejnih modelov in globalna pavza imata ločena namena.",
+        "data": "Stanje povezave in zgodovina izvajanj kažeta zadnje shranjene ali preverjene izide. E-pošta potrebuje nastavljeno povezavo in izbrane prejemnike.",
+        "limits": "Sprememba urnika ne pomeni takojšnjega zagona. Vklop avtomatike lahko dovoli poznejše modelne klice znotraj izbranih pravil."
+      },
+      "options": {
+        "purpose": "Opcije so odložen modul in niso del trenutnega delovnega toka.",
+        "actions": "Preberi kratko pojasnilo predvidenega obsega. Trenutno ni dejanj za trgovanje z opcijami.",
+        "data": "Stran ne prikazuje navideznih pozicij ali cen. Kar še ni podprto, je jasno označeno.",
+        "limits": "Modul ne omogoča naročil ali ocen, ki jih še ni. Nič na strani se ne izvede samodejno."
+      },
+      "ux": {
+        "purpose": "UX je razvojna stran za pregled oblikovnih vzorcev in oznak.",
+        "actions": "Preglej primere komponent in pravil uporabe. Stran ni namenjena vsakodnevnemu delu s podatki.",
+        "data": "Prikaže razvojne primere in tehnične oznake, ne pa tvojih podatkov.",
+        "limits": "To ni uporabniško navodilo ali vir poslovnih podatkov. Oznake s te strani ne sodijo na produktne strani."
+      }
+    },
+    "pulseDetails": "Razlaga utripa Radarja",
+    "funnelDetails": "Razlaga lijaka signalov",
+    "portfolioDetails": "Razlaga prikaza portfelja",
+    "globalOutcomes": "Globalni izidi signalov",
+    "globalMethodLabel": "Metoda globalnih izidov",
+    "globalMethodNotice": "Drugačna metoda kot pri testiranju shranjenih mnenj.",
+    "globalMethod": "Shranjeni izidi uporabljajo prvo svečo na datum signala ali pozneje, brez stroškov; nevtralna smer se računa kot rast. Testiranje mnenj uporabi svečo po objavi, odšteje izbrane stroške in nevtralna mnenja preskoči."
   }
 }

@@ -7,7 +7,7 @@ export default async function UxPage() {
   const t = await getTranslations("ux");
   return (
     <>
-      <PageHeader title={t("title")} description={t("intro")} sample />
+      <PageHeader title={t("title")} description={t("intro")} sample helpKey="ux" />
       <UxDemos />
     </>
   );

@@ -6,7 +6,7 @@ export default async function Page() {
   const t = await getTranslations("thesis");
   return (
     <>
-      <PageHeader title={t("title")} description={t("subtitle")} kicker="SCR-09" />
+      <PageHeader title={t("title")} helpKey="theses" />
       <ThesisList />
     </>
   );

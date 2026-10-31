@@ -12,6 +12,7 @@ import { formatChange, formatNumber, formatShare } from "@/lib/format";
 import { useAppLocale } from "@/lib/use-app-locale";
 import { WeightProposal } from "./WeightProposal";
 import { BacktestPanel } from "./BacktestPanel";
+import { DataDetails } from "@/components/common/DataDetails";
 
 const HORIZONS = ["1", "5", "20", "60"] as const;
 type Horizon = (typeof HORIZONS)[number];
@@ -291,6 +292,7 @@ function Calibration({ data }: { data: TrackRecordOut }) {
 /** SCR-10 Track record (BL-102): how past signals turned out, by horizon. */
 export function TrackRecord() {
   const t = useTranslations("trackRecord");
+  const help = useTranslations("pageHelp");
   const ux = useTranslations("researchUx");
   const format = useFormatter();
   const params = useSearchParams();
@@ -315,6 +317,15 @@ export function TrackRecord() {
   return (
     <div className="flex flex-col gap-6">
       <BacktestPanel />
+      <section className="space-y-1">
+        <div className="flex flex-wrap items-center justify-between gap-x-3">
+          <h2 className="text-xl font-semibold">{help("globalOutcomes")}</h2>
+          <DataDetails label={help("globalMethodLabel")}>
+            <p>{help("globalMethod")}</p>
+          </DataDetails>
+        </div>
+        <p className="text-xs text-warn">{help("globalMethodNotice")}</p>
+      </section>
       <div className="flex flex-wrap items-center gap-3">
         <SegmentedButtons
           label={t("horizon")}

@@ -1,5 +1,7 @@
 /** Small stroke icon set (no emoji, no icon font). Decorative unless `label` is given. */
 const PATHS: Record<string, string> = {
+  help: "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM9.7 9a2.4 2.4 0 1 1 3.7 2c-1 .6-1.4 1-1.4 2M12 16h.01",
+  info: "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 11v6M12 7h.01",
   check: "M5 12l4 4L19 6",
   overview: "M3 3h7v7H3zM14 3h7v4h-7zM14 11h7v10h-7zM3 14h7v7H3z",
   radar: "M12 3a9 9 0 1 0 9 9M12 7.5a4.5 4.5 0 1 0 4.5 4.5M12 12l6-6",

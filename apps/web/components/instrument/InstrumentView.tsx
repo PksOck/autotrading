@@ -3,6 +3,7 @@ import { InstrumentFacts } from "@/components/instrument/InstrumentFacts";
 
 import { motion } from "motion/react";
 import { useTranslations } from "next-intl";
+import { PageHelp } from "@/components/common/PageHelp";
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { AnalysisRunList } from "@/components/analysis/AnalysisRunList";
@@ -83,7 +84,10 @@ export function InstrumentView({ symbol }: { symbol: string }) {
   if (instrument.error instanceof ApiError && instrument.error.status === 404) {
     return (
       <section className="card mx-auto mt-10 flex max-w-xl flex-col gap-3 p-8">
-        <h1 className="num text-2xl font-medium">{symbol}</h1>
+        <div className="flex items-center gap-2">
+          <h1 className="num text-2xl font-medium">{symbol}</h1>
+          <PageHelp pageKey="instrument" title={symbol} />
+        </div>
         <p className="text-text-2">{t("instrumentPage.notFound", { symbol })}</p>
         <p className="text-text-3">{t("instrumentPage.notFoundHint")}</p>
         <div className="flex gap-2">
@@ -147,6 +151,7 @@ export function InstrumentView({ symbol }: { symbol: string }) {
             >
               {symbol}
             </motion.h1>
+            <PageHelp pageKey="instrument" title={symbol} />
             <span className="text-text-2">{detail?.name}</span>
             {detail && (
               <span className="rounded-full bg-surface-2 px-2 text-xs leading-5 font-medium text-text-2">

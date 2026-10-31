@@ -8,8 +8,10 @@ export default async function TrackRecordPage() {
   const t = await getTranslations("trackRecord");
   return (
     <>
-      <PageHeader title={t("title")} kicker="SCR-10" description={t("subtitle")} />
-      <Suspense><TrackRecord /></Suspense>
+      <PageHeader title={t("title")} helpKey="trackRecord" />
+      <Suspense>
+        <TrackRecord />
+      </Suspense>
     </>
   );
 }

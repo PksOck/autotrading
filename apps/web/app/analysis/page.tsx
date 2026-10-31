@@ -10,10 +10,12 @@ export default async function AnalysesPage() {
   const t = await getTranslations("analysisPage");
   return (
     <>
-      <PageHeader title={t("title")} kicker="SCR-06" description={t("subtitle")} />
+      <PageHeader title={t("title")} helpKey="analysis" />
       <AnalysisQuotaLine />
       <section className="card overflow-hidden" aria-label={t("indexLabel")}>
-        <Suspense><AnalysisIndex /></Suspense>
+        <Suspense>
+          <AnalysisIndex />
+        </Suspense>
       </section>
       <p className="mt-4 text-[13px]">
         <Link href="/entries" className="text-accent">

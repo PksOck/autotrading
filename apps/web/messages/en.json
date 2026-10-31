@@ -1596,5 +1596,119 @@
     "neutral": "Neutral",
     "parameterScope": "Results use the submitted settings. Submit again after changing the form.",
     "completedAt": "Computed at"
+  },
+  "pageHelp": {
+    "open": "Help for {page}",
+    "title": "About {page}",
+    "close": "Close help",
+    "actions": "What can I do?",
+    "data": "Where do the data come from?",
+    "limits": "What should I know?",
+    "links": "Related pages",
+    "details": "Data details",
+    "today": "Today",
+    "marketUnavailable": "No verified market indicators",
+    "treemapKey": "Size: weight · color: daily change",
+    "pulseKey": "7 days · larger dot: higher score · dashed: rumor",
+    "extraCounts": "More about data coverage",
+    "pages": {
+      "overview": {
+        "purpose": "The overview brings together portfolio value, market context and the most important signals.",
+        "actions": "Open an instrument, signal or event for details. Chart legends and data sources are available beside each view.",
+        "data": "Every item shows its source and the time of the data. A missing market indicator is labelled as missing, not shown as zero.",
+        "limits": "Signal strength is not a probability of profit. The portfolio snapshot date may differ from the price date."
+      },
+      "radar": {
+        "purpose": "Radar groups news and filings into events with evidence and a score for further review.",
+        "actions": "Choose new candidates, your watchlist or portfolio, then open an event and its sources. Analysis starts through a separate action.",
+        "data": "Scores use saved events and price context. Sources have their own dates and a rumor label when official confirmation is missing.",
+        "limits": "A score is not a return forecast. Unconfirmed rumors remain separate from official evidence."
+      },
+      "entries": {
+        "purpose": "Entries shows candidates linked to a possible entry and their current state.",
+        "actions": "Filter the list and open a signal or instrument. Read warnings and evidence before deciding.",
+        "data": "It shows direction, zone and data time when available. A missing price or uncertain evidence stays marked.",
+        "limits": "An entry point is not a buy recommendation and does not place an order. If data is not fresh, the page does not present it as confirmed."
+      },
+      "signals": {
+        "purpose": "Signals collects opinions and warnings for you to review and sort.",
+        "actions": "Filter the list and open an individual signal. Accept, Watch or Dismiss changes its handling status.",
+        "data": "Each signal has a direction, strength, rationale and evidence with source and time. Rumor, staleness or missing evidence stays visible.",
+        "limits": "Accepting a signal is not a trade. A rumor without official confirmation cannot be accepted as a confirmed recommendation."
+      },
+      "proposals": {
+        "purpose": "Enter a symbol, your hypothesis or a news item and submit a proposal for analysis.",
+        "actions": "Choose the depth and save destination, then explicitly submit. If the response is lost, check the same submission before starting a new one.",
+        "data": "The list shows processing status, a validated verdict and linked signals or analyses when available.",
+        "limits": "A hypothesis verdict is not a measured return. Standard or deep processing may consume the configured model quota."
+      },
+      "analysis": {
+        "purpose": "Analysis shows how an opinion about an instrument was formed and which evidence supports it.",
+        "actions": "Open an analysis and read the opinion and evidence. From a finished analysis you can prepare a thesis draft.",
+        "data": "The list shows status, source opinion and completion date. Details reveal the source, time and evidence used.",
+        "limits": "Opening the page or help does not start a new analysis. A running or failed analysis is not shown as a final opinion."
+      },
+      "analysisDetail": {
+        "purpose": "The analysis detail explains the final opinion, its reasons and its evidence.",
+        "actions": "Read the decision, reasoning and evidence for and against it. A completed analysis can explicitly be used to prepare a thesis draft.",
+        "data": "It shows status, completion time, source and rationale. Missing or stale evidence stays visible.",
+        "limits": "A finished opinion does not guarantee a return. Starting another analysis is a separate action subject to the configured quota."
+      },
+      "portfolio": {
+        "purpose": "Portfolio brings together positions, watchlist, analyses and dividends for the selected accounts.",
+        "actions": "Choose an account and tab. Standard restores the basic columns; Columns lets you adjust the view and density.",
+        "data": "Value has a currency and snapshot time, while prices have their own source and time. A missing price or stale snapshot stays marked.",
+        "limits": "Account snapshots and market prices may have different dates. Dividend cash entries, open accruals and estimates are separate."
+      },
+      "instrument": {
+        "purpose": "The instrument page brings together identity, price and links to related signals, analyses and theses.",
+        "actions": "Open the chart, read data quality and follow links to related records. From here you can continue to a signal, analysis or thesis.",
+        "data": "Price has a source and data time, and identity shows a clear name and symbol. If price is missing or stale, this stays visible.",
+        "limits": "The page does not calculate a recommendation or place an order. Opening help does not refresh data."
+      },
+      "theses": {
+        "purpose": "Theses are your written claims about an instrument and the evidence that supports them.",
+        "actions": "Filter by instrument and open a thesis. Accept or reject proposed changes yourself.",
+        "data": "The list shows the active revision, claim counts by status and the last change time. Each claim has its own status and evidence when available.",
+        "limits": "The last change time does not mean the evidence was reviewed again. Structured metrics are not available yet and are planned."
+      },
+      "thesisDetail": {
+        "purpose": "The detail brings together thesis versions, claims, evidence history and review proposals.",
+        "actions": "Review and save a draft before activating it. Support a claim status change with a reason and evidence; separately accept or dismiss an agent proposal.",
+        "data": "You see the valid status, evidence with source and date, and proposals not yet accepted. Stale or uncertain evidence does not become confirmed on its own.",
+        "limits": "A proposal does not change the thesis without your explicit acceptance. Horizon-based criteria are not available yet and are planned."
+      },
+      "trackRecord": {
+        "purpose": "Track record separates global signal outcomes from the study you run on saved signals and final analyses.",
+        "actions": "Filter global outcomes by horizon and signal type. In saved-opinion testing, separately choose the period, sessions and costs, then run the calculation.",
+        "data": "Testing shows the prices, dates, sources and skipped records used. The global view shows stored signal outcomes, plus alpha and calibration when available.",
+        "limits": "Global outcomes and the study may differ in entry price and costs, so do not read them as one calculation. A personal collection and own ideas are not available yet and are planned."
+      },
+      "settings": {
+        "purpose": "Settings show what has changed and which options are enabled.",
+        "actions": "Choose a process, edit its mode, limits or time windows, and save. The automatic-model switch and global pause serve different purposes.",
+        "data": "Connection status and execution history show the latest saved or checked results. Email requires a configured connection and selected recipients.",
+        "limits": "Changing a schedule does not start a process immediately. Enabling automation can permit later model calls under the selected rules."
+      },
+      "options": {
+        "purpose": "Options is a deferred module and is not part of the current workflow.",
+        "actions": "Read the short note about its intended scope. There are no option trading actions yet.",
+        "data": "The page shows no imaginary positions or prices. Anything not supported yet is clearly marked.",
+        "limits": "The module does not allow orders or valuations that do not exist yet. Nothing on the page happens automatically."
+      },
+      "ux": {
+        "purpose": "UX is a development page for reviewing design patterns and labels.",
+        "actions": "Browse component examples and usage rules. It is not meant for everyday work with data.",
+        "data": "It shows development examples and technical labels, not your data.",
+        "limits": "It is not user guidance or a source of business data. Labels from this page do not belong on product pages."
+      }
+    },
+    "pulseDetails": "Radar pulse explanation",
+    "funnelDetails": "Signal funnel explanation",
+    "portfolioDetails": "Portfolio view explanation",
+    "globalOutcomes": "Global signal outcomes",
+    "globalMethodLabel": "Global outcome method",
+    "globalMethodNotice": "Uses a different method from saved-opinion testing.",
+    "globalMethod": "Stored outcomes use the first bar on the signal day or later, without costs; neutral direction is treated as long. Saved-opinion testing uses a bar after publication, deducts selected costs and skips neutral opinions."
   }
 }

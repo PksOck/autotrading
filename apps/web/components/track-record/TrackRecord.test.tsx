@@ -79,6 +79,15 @@ function renderRecord() {
 }
 
 describe("TrackRecord", () => {
+  it("separates stored global outcomes from the saved-opinion study without hiding the method warning", () => {
+    result({ data: record });
+    renderRecord();
+    expect(screen.getByRole("heading", { name: "Global signal outcomes" })).toBeVisible();
+    expect(screen.getByText("Uses a different method from saved-opinion testing.")).toBeVisible();
+    fireEvent.click(screen.getByLabelText("Global outcome method"));
+    expect(screen.getByText(/signal day or later/)).toBeVisible();
+  });
+
   it("shows hit rate, return, alpha vs benchmark and pending outcomes", () => {
     result({ data: record });
     renderRecord();

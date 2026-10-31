@@ -7,7 +7,7 @@ export default async function Page({ params }: { params: Promise<{ thesisId: str
   const t = await getTranslations("thesis");
   return (
     <>
-      <PageHeader title={t("title")} kicker="SCR-09" />
+      <PageHeader title={t("title")} helpKey="thesisDetail" />
       <ThesisDetail thesisId={thesisId} />
     </>
   );

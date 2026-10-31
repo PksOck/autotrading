@@ -8,7 +8,7 @@ export default async function SignalsPage() {
   const t = await getTranslations("signalsPage");
   return (
     <>
-      <PageHeader title={t("title")} kicker="SCR-04" description={t("subtitle")} />
+      <PageHeader title={t("title")} helpKey="signals" />
       <Suspense>
         <SignalsInbox />
       </Suspense>

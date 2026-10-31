@@ -307,3 +307,12 @@ Ideja ne pride samo iz Radarja. Uporabnik lahko **sam predlaga instrument ali te
 **Zaslon:** SCR-12 *Predlogi* (`/proposals`): seznam tvojih predlogov s stanjem (v vrsti, v analizi, končano) in izidom.
 
 **Trajna oddaja (BL-204, ADR-0024):** pred oddajo se poleg osnutka shrani zamrznjena namera. Po izgubljenem odgovoru/reload modal ponudi *Preveri oddajo* za isti ID in isto poslano vsebino. Urejena nova hipoteza ostane ločena in se ne pošlje namesto stare. Opozorilo pokaže, katero oddajo preverjamo; predlog po potrditvi/konfliktu zahteva izrecen *Začni nov predlog* za novo namero. Shramba brez varnega zapisa ustavi oddajo in ohrani vidno besedilo; opozorilo ne ugiba, ali je prejšnji POST že dosegel strežnik. Potrditev v enem zavihku ne izbriše novejših polj drugega. Nova dejanja imajo cilj dotika najmanj 48 px, SL/EN ter obstoječi Back/fokus.
+
+## 12. Skupna pomoč in hierarhija informacij (BL-224, S-026)
+
+- Ob naslovu vsake produktne strani je ena vizualno majhna ikona vprašaja s 48-px tarčo in imenom »Pomoč za …«. PageHeader dobi tipiziran helpKey; posebne glave uporabljajo isti PageHelp. Predogled dobi pomoč za svojo vrsto vsebine.
+- Dialog vsebuje namen, dejanja, izvor podatkov in omejitve ter običajne navigacijske povezave. SL/EN je uredniški zapis v messages; odpiranje ne sproži poizvedbe, osvežitve ali modela. Nazaj/Escape/Zapri ohranijo URL/filtre in vrnejo fokus.
+- DataDetails je native razkritje z ikono informacij, uporabno na tipkovnici in dotiku. Vanj sodijo polna razlaga, vir in čas; govorica, demo, napaka, zastarelost ali omejitev dejanja ostanejo vidni.
+- Današnji lokalni datum je v nogi navigacije oziroma na telefonu v Več, brez SSR ugibanja in z osvežitvijo ob polnoči/vrnitvi. To ni datum cene ali posnetka.
+- Povsem manjkajoči makro kazalniki so en strnjen razdelek z opozorilom in podrobnostmi štirih kazalnikov. Delni nabor ohrani vrednosti in vidne vrzeli; napaka osvežitve ne izbriše predpomnjenega podatka. Legende Treemap/Pulz/Lijak imajo kratek ključ in polno pojasnilo ob grafu.
+- Globalni izidi in testiranje mnenj ostanejo poimenovani ločeno, z vidnim opozorilom o metodi. Dolga razlaga je dosegljiva ob razdelku; ta rez ne spreminja izračunov. [Preverjanje in meje](./docs/implementation/2026-10-31-pomoc-in-hierarhija-podatkov.md).

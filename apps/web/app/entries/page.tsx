@@ -8,7 +8,7 @@ export default async function EntriesPage() {
   const t = await getTranslations("entriesPage");
   return (
     <>
-      <PageHeader title={t("title")} kicker="SCR-03" description={t("subtitle")} />
+      <PageHeader title={t("title")} helpKey="entries" />
       <Suspense>
         <EntriesView />
       </Suspense>

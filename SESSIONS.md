@@ -4,6 +4,20 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 
 ---
 
+## S-026 · 2026-10-31 · Skupna pomoč in jasnejši Pregled
+
+**Cilj:** Izvesti T1/BL-224 iz potrjenega UX plana; OpenCode samo za osnutke navodil, root za kodo in preverjanje.
+
+**Narejeno:** Pomoč na 15 vrstah strani in v predogledu, tipiziran register, SL/EN, ohranjen URL/fokus, 48-px tarče. Native podrobnosti ob grafih in viru. Datum v nogi menija/Več z lokalno polnočjo, brez server/client datuma. Strnjen manjkajoči makro kontekst, vidne delne vrzeli/napake in ohranitev predpomnjenih kazalnikov. Globalni izidi so poimenovani ločeno od testiranja mnenj. [Dokazi](./docs/implementation/2026-10-31-pomoc-in-hierarhija-podatkov.md).
+
+**Odločitve:** Po novem izrecnem dovoljenju je standalone OpenCode vrnil samo osnutke pomoči (izbran deepseek-v4.1-flash#max, efektivni effort ni razkrit). Root je popravil netočne opise tokov in sam izvedel kodo. Ni aplikacijskih modelnih klicev. Neodvisni končni pregled in ozki ponovni pregled testne sinhronizacije PASS.
+
+**Preverjanje:** Končni Linux build uspešen, TypeScript/ESLint/i18n 1382 čisti. Celotni brskalnik **90 passed / 10 namernih device-specific skipov**, 100 primerov; SL/EN, desktop/phone, gnezden predogled, osnutek, brez zapisov ob pomoči. Desktop 200-% ekvivalent preureditve in telefon 320 px; dejanska povečava telefonskega brskalnika ni bila izvedena. Celotni web **193 passed / 47 datotek**, z obstoječim opozorilom testnega timeZone; [dokazi](./docs/implementation/2026-10-31-pomoc-in-hierarhija-podatkov.md). Samo demo web :3100 posodobljen, demo API ostane isti, :3000 sliki potrjeno nespremenjeni. Brez migracije, reseeda, push/merge ali pošiljanja sporočil.
+
+**Odprto/naslednji korak:** T2/BL-228 karakterizacija metod, nato T3–T4/BL-225 osebno spremljanje in lastne ideje. BL-226/227 Teze/merila ostajata odprta; backup/Flex/SMTP/A3/A5 imajo svoje pogoje. Pripravljen plan in pomoč nista dokaz implementacije teh funkcij.
+
+---
+
 ## S-025 · 2026-10-30 · Kompaktni portfelj in plan spremljanja/pojasnil
 
 **Cilj:** Upoštevati nova označena posnetka: premakniti graf izpod identitete, poglobljeno pregledati Teze/Uspešnost ter pripraviti sklenjen UX plan za manj dodatnega besedila in pomoč po celotni aplikaciji.

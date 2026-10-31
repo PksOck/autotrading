@@ -8,7 +8,7 @@ export default async function RadarPage() {
   const t = await getTranslations("radar");
   return (
     <>
-      <PageHeader title={t("title")} kicker="SCR-02" description={t("subtitle")} />
+      <PageHeader title={t("title")} helpKey="radar" />
       <Suspense>
         <RadarView />
       </Suspense>

@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { Treemap, type TreemapItem } from "@/components/overview/Treemap";
 import { usePortfolio } from "@/lib/api/hooks";
+import { DataDetails } from "@/components/common/DataDetails";
 
 /** OV-01: API positions only; absence is never replaced with illustrative holdings. */
 export function PortfolioTreemapCard() {
@@ -34,8 +35,11 @@ export function PortfolioTreemapCard() {
             </span>
           )}
         </h2>
-        <p className="text-xs text-text-3">{t("overviewFeedback.portfolioHint")}</p>
+        <DataDetails label={t("pageHelp.portfolioDetails")}>
+          <p>{t("overviewFeedback.portfolioHint")}</p>
+        </DataDetails>
       </div>
+      <p className="mb-3 text-xs text-text-2">{t("pageHelp.treemapKey")}</p>
       {error ? (
         <p role="alert" className="text-warn">
           {t("table.loadFailed")}

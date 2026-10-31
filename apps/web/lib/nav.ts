@@ -19,7 +19,7 @@ export const NAV: NavItem[] = [
   { href: "/theses", key: "theses", screen: "SCR-09" },
   { href: "/options", key: "options", screen: "SCR-07", milestone: "M6" },
   { href: "/track-record", key: "trackRecord", screen: "SCR-10" },
-  { href: "/settings", key: "settings", screen: "SCR-11", milestone: "M1" },
+  { href: "/settings", key: "settings", screen: "SCR-11" },
 ];
 
 export function navItem(key: string): NavItem {

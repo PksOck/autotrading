@@ -9,9 +9,11 @@ import { useAppLocale } from "@/lib/use-app-locale";
 import { formatMoney } from "@/lib/format";
 import { EntityLink } from "@/components/common/EntityLink";
 import { TranslatedText } from "@/components/common/TranslatedText";
+import { DataDetails } from "@/components/common/DataDetails";
 import { InZoneCard } from "./InZoneCard";
 import { PortfolioTreemapCard } from "./PortfolioTreemapCard";
 import { PulseTimeline } from "./PulseTimeline";
+import { MarketStrip } from "./MarketStrip";
 import { cn } from "@/lib/cn";
 import { formatNumber } from "@/lib/format";
 
@@ -28,36 +30,14 @@ export function LiveOverview() {
   const data = overview.data;
   return (
     <div className="space-y-5">
-      {data && (
-        <p className="text-xs text-text-3">
-          {t("table.liveOverview")} · {data.source} ·{" "}
-          {format.dateTime(new Date(data.as_of), { dateStyle: "medium", timeStyle: "short" })}
-        </p>
-      )}
-      <section aria-label={t("overviewFeedback.market")} className="space-y-2">
-        <h2 className="label">{t("overviewFeedback.market")}</h2>
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          {(["spy", "vix", "us10y", "dxy"] as const).map((key) => {
-            const indicator = data?.market_strip.find((row) => row.key === key);
-            return (
-              <div key={key} className="card space-y-1 px-4 py-3">
-                <h3 className="label">{t(`overviewFeedback.${key}`)}</h3>
-                <p className="num text-xl">
-                  {indicator?.value != null
-                    ? `${formatNumber(locale, Number(indicator.value), 2)}${key === "spy" || key === "us10y" ? " %" : ""}`
-                    : "—"}
-                </p>
-                <p className="text-xs text-text-3">
-                  {indicator?.value != null
-                    ? `${indicator.source} · ${indicator.as_of}`
-                    : t("overviewFeedback.macroMissing")}
-                </p>
-              </div>
-            );
-          })}
-        </div>
-        <p className="text-xs text-text-3">{t("overviewFeedback.macroHint")}</p>
-      </section>
+      {data?.source === "demo" && <p className="text-xs text-warn">{t("provenance.demo")}</p>}
+      <MarketStrip
+        indicators={data?.market_strip ?? []}
+        source={data?.source}
+        asOf={data?.as_of}
+        failed={Boolean(overview.error)}
+        loading={overview.isLoading}
+      />
       <div className="grid gap-4 md:grid-cols-3">
         <section className="card space-y-2 p-5">
           <h2 className="label">{t("overview.portfolioValue")}</h2>
@@ -101,9 +81,14 @@ export function LiveOverview() {
           <PortfolioTreemapCard />
           <InZoneCard />
           <section className="card space-y-3 p-5">
-            <h2 className="text-base font-semibold">{t("overview.pulse")}</h2>
-            <p className="text-xs text-text-3">{t("overviewFeedback.pulseHint")}</p>
-            <p className="text-xs text-text-2">{t("overviewFeedback.pulseLegend")}</p>
+            <div className="flex flex-wrap items-center justify-between gap-x-3">
+              <h2 className="text-base font-semibold">{t("overview.pulse")}</h2>
+              <DataDetails label={t("pageHelp.pulseDetails")}>
+                <p>{t("overviewFeedback.pulseHint")}</p>
+                <p>{t("overviewFeedback.pulseLegend")}</p>
+              </DataDetails>
+            </div>
+            <p className="text-xs text-text-2">{t("pageHelp.pulseKey")}</p>
             {data?.timeline7d.events.length ? (
               <PulseTimeline
                 events={data.timeline7d.events.flatMap((event) =>
@@ -208,8 +193,12 @@ export function LiveOverview() {
           )}
           {data && (
             <section className="card space-y-3 p-4">
-              <h2 className="font-semibold">{t("overviewFeedback.funnel")}</h2>
-              <p className="text-xs text-text-3">{t("overviewFeedback.funnelHint")}</p>
+              <div className="flex flex-wrap items-center justify-between gap-x-3">
+                <h2 className="font-semibold">{t("overviewFeedback.funnel")}</h2>
+                <DataDetails label={t("pageHelp.funnelDetails")}>
+                  <p>{t("overviewFeedback.funnelHint")}</p>
+                </DataDetails>
+              </div>
               <ol className="space-y-3">
                 {(["news", "events", "triaged", "signalled"] as const).map((stage, index) => {
                   const colors = ["bg-surface-2", "bg-accent", "bg-warn", "bg-pos"];
@@ -241,16 +230,18 @@ export function LiveOverview() {
         </section>
       </div>
       {data && (
-        <section className="card flex flex-wrap gap-6 p-4 text-sm text-text-3">
-          <span>{t("overviewFeedback.lifetime")}</span>
-          <span>
-            {t("nav.radar")}: <strong className="num text-text">{data.event_count}</strong>
-          </span>
-          <span>
-            {t("table.source")}: <strong className="num text-text">{data.news_count}</strong> ·{" "}
-            {data.source}
-          </span>
-        </section>
+        <DataDetails label={t("pageHelp.extraCounts")}>
+          <p>{t("overviewFeedback.lifetime")}</p>
+          <p>
+            {t("nav.radar")}: {data.event_count}
+          </p>
+          <p>
+            {t("table.source")}: {data.news_count} · {data.source}
+          </p>
+          <time dateTime={data.as_of}>
+            {format.dateTime(new Date(data.as_of), { dateStyle: "medium", timeStyle: "short" })}
+          </time>
+        </DataDetails>
       )}
     </div>
   );

@@ -8,7 +8,7 @@ export default async function AnalysisPage({ params }: { params: Promise<{ runId
   const t = await getTranslations("analysisPage");
   return (
     <>
-      <PageHeader title={t("runTitle")} kicker="SCR-06" />
+      <PageHeader title={t("runTitle")} helpKey="analysisDetail" />
       <AnalysisView runId={runId} />
     </>
   );

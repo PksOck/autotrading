@@ -2,7 +2,7 @@
 
 > **For agentic workers:** uporabi superpowers:subagent-driven-development ali superpowers:executing-plans. Vsak spodnji rez ima lasten testni in pregledni izhod.
 
-**Status:** pregledni plan, produktna izvedba BL-224–228 še ni začeta. BL-223 ima svoj [ozki plan](./2026-10-30-kompaktni-portfelj-izvedba.md) in dejanski dokaz ločeno. Odgovora uporabnika sta vključena: tudi lastne ideje brez analize, več meril odvisno od ciljnega trajanja investicije.
+**Status:** T1/BL-224 izveden in preverjen v S-026, glej [dokaze](../../implementation/2026-10-31-pomoc-in-hierarhija-podatkov.md). T2–T6 so naslednji rezi, njihove funkcije še niso izvedene. BL-223 ima svoj [ozki plan](./2026-10-30-kompaktni-portfelj-izvedba.md) in dejanski dokaz ločeno. Odgovora uporabnika sta vključena: tudi lastne ideje brez analize, več meril odvisno od ciljnega trajanja investicije.
 
 **Goal:** Uporabnik iz vsake raziskovalne strani razume, kaj vidi, doda konkretno mnenje ali lastno idejo v spremljanje in pri Tezi vidi, kaj jo podpira ter kaj zahteva odločitev.
 
@@ -47,11 +47,11 @@
 
 **Vmesnik:** `PageHeader({title,actions,helpKey,...})` dobi tipizirani ključ iz uredniškega registra. `PageHelp({pageKey})` odpre obstoječim vzorcem skladen dialog/panel z `useBackToClose`; brez novega query/filter stanja in brez modela. `DataDetails({label,children})` je dostopen razkritveni vzorec za lokalno provenienco; error/stale/rumor ostanejo zunaj. Začrtana imena so predlog, ki ga preflight uskladi z obstoječimi izvozi.
 
-- [ ] Napiši vedenjske teste `opens_help_without_network`, `back_escape_restore_opener_and_preserve_filters`, `missing_macro_compact_is_distinct_from_error`, `data_warning_not_hidden_with_method`, `local_date_hydrates_and_rolls_over`; potrdi pričakovani RED. CSS razredov ne testiraj kot nadomestilo uporabnosti.
-- [ ] Uvedi eno pomoč ob naslovih in štiri kratke uredniške sklope UXH-02 za vse poti v matriki SPEC. Odstrani razvojne SCR kickerje s produktnih strani, dolge podvojene uvode prestavi v pomoč. Povezave v pomoč ne sprožijo dejanja brez izrecnega klika.
-- [ ] Premakni današnji lokalni datum v navigacijsko nogo; telefon dobi dostop v Več/pomoči. Ohrani datum vira ob podatku, demo trak in vidne vrzeli. Pokrij polnoč/DST s kontrolirano uro; brez server/client mismatch.
-- [ ] Pregled makro konteksta preuredi po UXH-04. Semantike in vsebine obstoječih vizualizacij ne odstrani; legende skrajšaj v kratek ključ, polna razlaga v pomoč.
-- [ ] Vitest/tsc/ESLint/i18n; E2E vsaka produktna pot SL/EN × desktop/phone, 200-% povečava in nested Peek/help. Preveri tudi ohranitev neoddanega predloga. Commit `feat(ux): add contextual page help and compact metadata [BL-224]`.
+- [x] Napiši vedenjske teste `opens_help_without_network`, `back_escape_restore_opener_and_preserve_filters`, `missing_macro_compact_is_distinct_from_error`, `data_warning_not_hidden_with_method`, `local_date_hydrates_and_rolls_over`; potrdi pričakovani RED. CSS razredov ne testiraj kot nadomestilo uporabnosti.
+- [x] Uvedi eno pomoč ob naslovih in štiri kratke uredniške sklope UXH-02 za vse poti v matriki SPEC. Odstrani razvojne SCR kickerje s produktnih strani, dolge podvojene uvode prestavi v pomoč. Povezave v pomoč ne sprožijo dejanja brez izrecnega klika.
+- [x] Premakni današnji lokalni datum v navigacijsko nogo; telefon dobi dostop v Več/pomoči. Ohrani datum vira ob podatku, demo trak in vidne vrzeli. Pokrij polnoč/DST s kontrolirano uro; brez server/client mismatch.
+- [x] Pregled makro konteksta preuredi po UXH-04. Semantike in vsebine obstoječih vizualizacij ne odstrani; legende skrajšaj v kratek ključ, polna razlaga v pomoč.
+- [x] Vitest/tsc/ESLint/i18n; E2E vsaka produktna pot SL/EN × desktop/phone, 200-% povečava in nested Peek/help. Preveri tudi ohranitev neoddanega predloga. Commit `feat(ux): add contextual page help and compact metadata [BL-224]`.
 
 ## T2: Metode Uspešnosti in statična razlika neutral [BL-228]
 
@@ -119,4 +119,4 @@
 
 ## Naslednji konkreten korak
 
-Zaključi dokaz malega BL-223, nato pripravi T1 preflight in izvedbo pomoči. Vzporedno se lahko izolirano reproducira T2; T3/T4 morata skupaj dobaviti ročne ideje in obstoječa mnenja, ker je uporabnik to izrecno zahteval. T5 uporabi današnje dokaze, T6 pa zahteva ločen natančen podatkovni SPEC. Dodatna uporabniška vprašanja niso potrebna za imena tabel/gumbov; dejansko zasebno konfiguracijo/namestitev se razreši šele ob aktivaciji.
+BL-223 in T1/BL-224 sta zaključena. Naslednji korak je dokaz T2 na izoliranih podatkih; T3/T4 morata skupaj dobaviti ročne ideje in obstoječa mnenja, ker je uporabnik to izrecno zahteval. T5 uporabi današnje dokaze, T6 pa zahteva ločen natančen podatkovni SPEC. Dodatna uporabniška vprašanja niso potrebna za imena tabel/gumbov; dejansko zasebno konfiguracijo/namestitev se razreši šele ob aktivaciji.

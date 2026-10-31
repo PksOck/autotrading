@@ -7,7 +7,7 @@ export default async function ProposalsPage() {
   const t = await getTranslations();
   return (
     <>
-      <PageHeader title={t("nav.proposals")} kicker="SCR-12" description={t("proposal.previewNote")} />
+      <PageHeader title={t("nav.proposals")} helpKey="proposals" />
       <ProposalList />
     </>
   );

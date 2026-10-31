@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { useTranslations } from "next-intl";
 import { Dialog } from "radix-ui";
 import { InstrumentPreview } from "@/components/common/InstrumentPreview";
+import { PageHelp } from "@/components/common/PageHelp";
 import { WatchButton } from "@/components/watchlist/WatchButton";
 import { SignalDetail } from "@/components/signals/SignalDetail";
 import { spring } from "@/lib/motion";
@@ -53,6 +54,12 @@ export function PeekPanel() {
                 <div className="flex items-center justify-between gap-2">
                   <Dialog.Title className="label">{t("peek.label")}</Dialog.Title>
                   <div className="flex gap-1">
+                    {(current.kind === "instrument" || current.kind === "signal") && (
+                      <PageHelp
+                        pageKey={current.kind === "instrument" ? "instrument" : "signals"}
+                        title={current.kind === "instrument" ? current.id : t("nav.signals")}
+                      />
+                    )}
                     <button
                       type="button"
                       onClick={close}

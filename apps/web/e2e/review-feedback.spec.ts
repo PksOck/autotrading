@@ -25,6 +25,8 @@ test("overview restores explanations and demo theses have real detail examples",
   await page.goto("/");
   await expect(page.getByRole("heading", { name: /Tržni dan/ })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Portfelj danes" })).toBeVisible();
+  await expect(page.getByText(/večja pika: višja ocena/)).toBeVisible();
+  await page.getByLabel("Razlaga utripa Radarja", { exact: true }).click();
   await expect(page.getByText(/Vsaka pika je dogodek/)).toBeVisible();
   await expect(page.getByRole("meter").first()).toBeVisible();
   await page.goto("/theses");
