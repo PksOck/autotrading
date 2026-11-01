@@ -4,6 +4,20 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 
 ---
 
+## S-027 · 2026-11-01 · Prostorne tabele, Predlogi in dividendni koledar
+
+**Cilj:** Odpraviti nepotrebno drsenje na velikem zaslonu, skrajšati kartice, dodati filtre in uporabne datume dividend ter načrtovati ločen laboratorij. Uporabnik želi zgodovinske kazalnike najprej, nato pravila nakupa/prodaje.
+
+**Narejeno:** BL-229/230: širina Analiz/Portfelja/Uspešnosti, privzete širine analiz, filtri/iskanje Predlogov pred omejitvijo, zaprta zaloga idej, nižja kartica portfelja s podpisano dnevno oceno, jasna stanja Tez, mesečni/letni koledar in dostopna razlaga. Root je izvedel kodo in teste; OpenCode ni bil uporabljen. [SPEC](./docs/superpowers/specs/2026-11-01-prostornost-in-dividendni-koledar-spec.md), [plan](./docs/superpowers/plans/2026-11-01-prostornost-in-dividendni-koledar.md), [dokazi](./docs/implementation/2026-11-01-prostornost-in-koledar-dokazi.md).
+
+**Odločitve:** ADR-0026: uvoz ne hrani ciljne valute FX, zato ni domnevne skupne dnevne ocene EUR; izvorne valute so prikazane ločeno, z vidnimi vrzelmi. Dnevna ocena ni donos celotnega računa. Koledar uporabi knjižbo/pay_date in ločene valute, brez annual/12 ali ex-date kot plačila. Neodvisni pregled je odkril FX in dostopnost mesecev; oboje odpravljeno in ponovni PASS. Vizualni telefon je razkril inline-flex kartic Novo/Spremljam, dodan browser RED/GREEN in popravek.
+
+**Preverjanje:** API 618 uspešnih + 1 pogojni Redis skip, 19 obstoječih opozoril; Ruff229/mypy137 čista. Web199/49, TypeScript/ESLint/i18n1436, reproducibilna OpenAPI/TS. Ciljni browser20/20 in končni celotni100 uspešnih +12 namernih device-specific skipov (112 primerov). Linux build in demo :3100, shema0020, brez reseeda. :3000 slike potrjeno nespremenjene, začasna lastna testna DB odstranjena. Celotni obstoječi E2E imajo sintetični CRUD samo na demu. Brez push/merge, pravih modelnih klicev, e-pošte ali naročil.
+
+**Odprto/naslednji korak:** BL-231 ima ločen [predlog laboratorija](./docs/superpowers/specs/2026-11-01-laboratorij-financnih-kazalnikov-spec.md), njegova implementacija ni narejena. Najprej inventura dejanskih zgodovinskih kazalnikov/časov objav. BL-225 osebne ideje, BL-226/227 celovite Teze/merila ter backup/Flex/SMTP imajo svoje odprte pogoje. Koledar ne obljublja polnega prihodnjega urnika; skupni EUR dnevni premik potrebuje preverjeno ciljno valuto FX.
+
+---
+
 ## S-026 · 2026-10-31 · Pomoč, jasnejši Pregled in metode Uspešnosti
 
 **Cilj:** Izvesti T1/BL-224 iz potrjenega UX plana; OpenCode samo za osnutke navodil, root za kodo in preverjanje.

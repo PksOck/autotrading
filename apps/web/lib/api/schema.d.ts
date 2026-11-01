@@ -1640,6 +1640,60 @@ export interface components {
             /** Implied Rating */
             implied_rating: string | null;
         };
+        /** CurrencyDailyMove */
+        CurrencyDailyMove: {
+            /** Amount */
+            amount?: number | null;
+            /** Percent */
+            percent?: number | null;
+            /** Market Date */
+            market_date?: string | null;
+            /** Previous Market Date */
+            previous_market_date?: string | null;
+            /** Holdings Dates */
+            holdings_dates?: string[];
+            /** Sources */
+            sources?: string[];
+            /**
+             * Basis
+             * @default held_positions_constant_reported_fx
+             */
+            basis: string;
+            /**
+             * Reason
+             * @default no_positions
+             */
+            reason: string | null;
+            /** Currency */
+            currency: string;
+            /** Position Count */
+            position_count: number;
+        };
+        /** DailyMove */
+        DailyMove: {
+            /** Amount */
+            amount?: number | null;
+            /** Percent */
+            percent?: number | null;
+            /** Market Date */
+            market_date?: string | null;
+            /** Previous Market Date */
+            previous_market_date?: string | null;
+            /** Holdings Dates */
+            holdings_dates?: string[];
+            /** Sources */
+            sources?: string[];
+            /**
+             * Basis
+             * @default held_positions_constant_reported_fx
+             */
+            basis: string;
+            /**
+             * Reason
+             * @default no_positions
+             */
+            reason: string | null;
+        };
         /** DataMeta */
         DataMeta: {
             /** Source */
@@ -1707,6 +1761,88 @@ export interface components {
             /** Reason */
             reason: string;
         };
+        /** DividendCalendar */
+        DividendCalendar: {
+            /** Months */
+            months?: components["schemas"]["DividendMonth"][];
+            /** Years */
+            years?: components["schemas"]["DividendYear"][];
+            /** Events */
+            events?: components["schemas"]["DividendCalendarEvent"][];
+            /** Issues */
+            issues?: components["schemas"]["DividendCalendarIssue"][];
+        };
+        /** DividendCalendarEvent */
+        DividendCalendarEvent: {
+            /** Id */
+            id: string;
+            /** Account Id */
+            account_id: string;
+            /** Symbol */
+            symbol: string | null;
+            /** Currency */
+            currency: string;
+            /**
+             * Payment Date
+             * Format: date
+             */
+            payment_date: string;
+            /** Gross */
+            gross: string | null;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "received" | "scheduled";
+            /** Source */
+            source: string;
+            /**
+             * As Of
+             * Format: date-time
+             */
+            as_of: string;
+        };
+        /** DividendCalendarIssue */
+        DividendCalendarIssue: {
+            /** Id */
+            id: string;
+            /** Account Id */
+            account_id: string;
+            /** Symbol */
+            symbol: string | null;
+            /** Currency */
+            currency: string;
+            /**
+             * Reason
+             * @enum {string}
+             */
+            reason: "missing_pay_date" | "cash_match_requires_reconciliation";
+        };
+        /** DividendMonth */
+        DividendMonth: {
+            /** Currency */
+            currency: string;
+            /** Received Gross */
+            received_gross?: string | null;
+            /** Received Net */
+            received_net?: string | null;
+            /** Scheduled Gross */
+            scheduled_gross?: string | null;
+            /** Scheduled Net */
+            scheduled_net?: string | null;
+            /**
+             * Received Count
+             * @default 0
+             */
+            received_count: number;
+            /**
+             * Scheduled Count
+             * @default 0
+             */
+            scheduled_count: number;
+            /** Month */
+            month: string;
+        };
         /** DividendProjection */
         DividendProjection: {
             /** Account Id */
@@ -1764,8 +1900,34 @@ export interface components {
              */
             as_of: string;
         };
+        /** DividendYear */
+        DividendYear: {
+            /** Currency */
+            currency: string;
+            /** Received Gross */
+            received_gross?: string | null;
+            /** Received Net */
+            received_net?: string | null;
+            /** Scheduled Gross */
+            scheduled_gross?: string | null;
+            /** Scheduled Net */
+            scheduled_net?: string | null;
+            /**
+             * Received Count
+             * @default 0
+             */
+            received_count: number;
+            /**
+             * Scheduled Count
+             * @default 0
+             */
+            scheduled_count: number;
+            /** Year */
+            year: number;
+        };
         /** DividendsOut */
         DividendsOut: {
+            calendar?: components["schemas"]["DividendCalendar"];
             /** Cash Events */
             cash_events: components["schemas"]["CashEvent"][];
             /** Received */
@@ -2521,6 +2683,9 @@ export interface components {
         };
         /** PortfolioOut */
         PortfolioOut: {
+            daily_move?: components["schemas"]["DailyMove"];
+            /** Daily Native */
+            daily_native?: components["schemas"]["CurrencyDailyMove"][];
             /** Accounts */
             accounts?: string[];
             /** Selected Account */
@@ -4523,7 +4688,11 @@ export interface operations {
     };
     list_all_proposals_get: {
         parameters: {
-            query?: never;
+            query?: {
+                status?: "all" | "pending" | "queued" | "running" | "done" | "failed" | "attention";
+                q?: string;
+                limit?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -4537,6 +4706,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ProposalOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

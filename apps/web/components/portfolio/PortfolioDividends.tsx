@@ -3,6 +3,7 @@
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { DataTable } from "@/components/table/DataTable";
+import { DividendCalendar } from "./DividendCalendar";
 import { SignedChange } from "./MarketContext";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useDividends } from "@/lib/api/dividends";
@@ -164,6 +165,7 @@ export function PortfolioDividends() {
                 </label>
               </div>
             </section>
+            <DividendCalendar calendar={data.calendar} asOf={data.as_of} />
             <section aria-label={t("received")} className="card min-w-0 p-5">
               <h2 className="font-semibold">{t("received")}</h2>
               <p className="mt-1 text-sm text-text-3">{t("cashNote")}</p>

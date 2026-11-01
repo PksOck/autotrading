@@ -69,6 +69,18 @@ beforeEach(() => {
 });
 
 describe("ThesisDetail", () => {
+  it("explains every active claim state including zero counts without hiding claims or review actions", () => {
+    setData({
+      ...thesis,
+      revisions: [{ ...revision, status: "active", claims: [{ ...claim, status: "open" }] }],
+    });
+    renderDetail();
+    const states = screen.getByLabelText("Active thesis states");
+    for (const label of ["Open", "Holds", "Weakening", "Broken", "Expired"])
+      expect(within(states).getByText(label)).toBeVisible();
+    expect(screen.getByText(claim.statement)).toBeVisible();
+    expect(change).not.toHaveBeenCalled();
+  });
   it("shows revision provenance, active claims and rumour evidence in event history", () => {
     setData({
       ...thesis,

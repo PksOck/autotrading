@@ -8,6 +8,7 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from preza.broker.dividends import parse_dividend_statement
+from preza.domain.dividend_calendar import dividend_calendar
 from preza.domain.dividends import (
     Accrual,
     CashEvent,
@@ -216,6 +217,7 @@ async def get_dividends(
         | {r.currency for r in projections}
     )
     return DividendsOut(
+        calendar=dividend_calendar(cash, accruals, cash_evidence=all_cash),
         cash_events=cash,
         received=summarize_cash(cash),
         accruals=accruals,

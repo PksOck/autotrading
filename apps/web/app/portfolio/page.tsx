@@ -8,7 +8,7 @@ export default async function PortfolioPage() {
   const t = await getTranslations("portfolio");
   return (
     <>
-      <PageHeader title={t("title")} helpKey="portfolio" />
+      <PageHeader title={t("title")} helpKey="portfolio" wide />
       <Suspense>
         <PortfolioView />
       </Suspense>

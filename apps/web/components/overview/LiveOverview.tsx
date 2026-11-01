@@ -6,7 +6,7 @@ import { api } from "@/lib/api/client";
 import type { components } from "@/lib/api/schema";
 import { usePortfolio } from "@/lib/api/hooks";
 import { useAppLocale } from "@/lib/use-app-locale";
-import { formatMoney } from "@/lib/format";
+import { PortfolioValueCard } from "./PortfolioValueCard";
 import { EntityLink } from "@/components/common/EntityLink";
 import { TranslatedText } from "@/components/common/TranslatedText";
 import { DataDetails } from "@/components/common/DataDetails";
@@ -39,31 +39,14 @@ export function LiveOverview() {
         loading={overview.isLoading}
       />
       <div className="grid gap-4 md:grid-cols-3">
-        <section className="card space-y-2 p-5">
-          <h2 className="label">{t("overview.portfolioValue")}</h2>
-          <p className="num text-2xl">
-            {portfolio.data?.total_value != null
-              ? formatMoney(
-                  locale,
-                  Number(portfolio.data.total_value),
-                  portfolio.data.base_currency,
-                )
-              : "—"}
-          </p>
-          <p className="text-xs text-text-3">
-            {portfolio.error
-              ? t("table.loadFailed")
-              : (portfolio.data?.as_of ?? t("table.missing"))}
-          </p>
-          <Link href="/portfolio" className="text-sm text-accent">
-            {t("nav.portfolio")} →
-          </Link>
-        </section>
+        <PortfolioValueCard data={portfolio.data} failed={Boolean(portfolio.error)} />
         {(["new", "watching"] as const).map((status) => (
-          <Link key={status} href={`/signals?status=${status}`} className="card space-y-2 p-5">
-            <h2 className="label">{t(`signal.status.${status}`)}</h2>
-            <p className="num text-2xl">{data ? (data.signal_counts[status] ?? 0) : "—"}</p>
-            <p className="text-xs text-text-3">{t("table.allSignals")} →</p>
+          <Link key={status} href={`/signals?status=${status}`} className="card p-4">
+            <div className="w-full space-y-1.5">
+              <h2 className="label">{t(`signal.status.${status}`)}</h2>
+              <p className="num text-2xl">{data ? (data.signal_counts[status] ?? 0) : "—"}</p>
+              <p className="text-xs text-text-3">{t("table.allSignals")} →</p>
+            </div>
           </Link>
         ))}
       </div>

@@ -116,16 +116,93 @@ function Table({ runs, held }: { runs: AnalysisSummary[]; held: (s: string) => n
   const format = useFormatter();
   const title = useHorizonTitle();
   const columns: ColumnDefinition<AnalysisSummary>[] = [
-    {id:"symbol", label:t("columns.instrument"),required:true,sortable:true,width:200,render:run => <Link href={`/analysis/${run.id}`} className="flex flex-col text-text no-underline"><span className="num font-medium">{run.symbol}</span><span className="text-xs text-text-2">{run.name}</span></Link>},
-    {id:"trade_date",label:t("columns.date"),sortable:true,render:run => format.dateTime(new Date(run.trade_date),{dateStyle:"medium"})},
-    {id:"agents",label:t("columns.agents"),required:true,render:run => <><Agents run={run}/>{(run.caveats ?? []).map(c => <span className="block text-xs text-warn" key={c}>{t.has(`caveats.${c}`) ? t(`caveats.${c}`) : t("loadFailed")}</span>)}</>},
-    ...HORIZONS.map(h => ({id:h,label:title(h).column,render:(run:AnalysisSummary) => run.outlook_brief ? <VerdictChip verdict={run.outlook_brief[h]}/> : "—"})),
-    {id:"evidence",label:t("columns.proContra"),render:run => <ProContra run={run}/>},
-    {id:"conviction",label:t("columns.conviction"),numeric:true,render:run => run.conviction != null ? t("card.convictionValue",{n:run.conviction}) : "—"},
-    {id:"position",label:t("columns.held"),render:run => held(run.symbol) != null ? t("position.shares",{qty:held(run.symbol)!}) : "—"},
-    {id:"created_at",label:t("columns.when"),sortable:true,render:run => <time dateTime={run.created_at}>{format.dateTime(new Date(run.created_at),{dateStyle:"medium",timeStyle:"short"})}</time>},
+    {
+      id: "symbol",
+      label: t("columns.instrument"),
+      required: true,
+      sortable: true,
+      width: 200,
+      render: (run) => (
+        <Link href={`/analysis/${run.id}`} className="flex flex-col text-text no-underline">
+          <span className="num font-medium">{run.symbol}</span>
+          <span className="text-xs text-text-2">{run.name}</span>
+        </Link>
+      ),
+    },
+    {
+      id: "trade_date",
+      width: 110,
+      label: t("columns.date"),
+      sortable: true,
+      render: (run) => format.dateTime(new Date(run.trade_date), { dateStyle: "medium" }),
+    },
+    {
+      id: "agents",
+      width: 200,
+      label: t("columns.agents"),
+      required: true,
+      render: (run) => (
+        <>
+          <Agents run={run} />
+          {(run.caveats ?? []).map((c) => (
+            <span className="block text-xs text-warn" key={c}>
+              {t.has(`caveats.${c}`) ? t(`caveats.${c}`) : t("loadFailed")}
+            </span>
+          ))}
+        </>
+      ),
+    },
+    ...HORIZONS.map((h) => ({
+      id: h,
+      width: h === "long" ? 145 : 115,
+      label: title(h).column,
+      render: (run: AnalysisSummary) =>
+        run.outlook_brief ? <VerdictChip verdict={run.outlook_brief[h]} /> : "—",
+    })),
+    {
+      id: "evidence",
+      width: 100,
+      label: t("columns.proContra"),
+      render: (run) => <ProContra run={run} />,
+    },
+    {
+      id: "conviction",
+      width: 100,
+      label: t("columns.conviction"),
+      numeric: true,
+      render: (run) =>
+        run.conviction != null ? t("card.convictionValue", { n: run.conviction }) : "—",
+    },
+    {
+      id: "position",
+      width: 110,
+      label: t("columns.held"),
+      render: (run) =>
+        held(run.symbol) != null ? t("position.shares", { qty: held(run.symbol)! }) : "—",
+    },
+    {
+      id: "created_at",
+      width: 155,
+      label: t("columns.when"),
+      sortable: true,
+      render: (run) => (
+        <time dateTime={run.created_at}>
+          {format.dateTime(new Date(run.created_at), { dateStyle: "medium", timeStyle: "short" })}
+        </time>
+      ),
+    },
   ];
-  return <div data-testid="analysis-table"><DataTable module="analyses" columns={columns} rows={runs} rowKey={run => run.id} label={t("indexLabel")}/></div>;
+  return (
+    <div data-testid="analysis-table">
+      <DataTable
+        module="analyses"
+        columns={columns}
+        rows={runs}
+        rowKey={(run) => run.id}
+        label={t("indexLabel")}
+      />
+    </div>
+  );
 }
 
 /** Recent deep-analysis runs; `limit` and `symbol` narrow it for the instrument page. */
@@ -143,7 +220,11 @@ export function AnalysisRunList({
   filters?: AnalysisFilters;
 }) {
   const t = useTranslations("analysisPage");
-  const { data, isLoading, error } = useResearchAnalyses({ ...filters, symbol, limit: limit ?? 100 });
+  const { data, isLoading, error } = useResearchAnalyses({
+    ...filters,
+    symbol,
+    limit: limit ?? 100,
+  });
   const held = useHeld();
   const runs = (data ?? []).slice(0, limit);
 
@@ -183,17 +264,33 @@ export function AnalysisIndex() {
     const next = new URLSearchParams(params.toString());
     next.set(key, value);
     next.delete("page");
-    router.replace(`${pathname}?${next}`, {scroll: false});
+    router.replace(`${pathname}?${next}`, { scroll: false });
   };
-  return <>
-    <div className="flex flex-wrap items-center gap-4 border-b border-border p-4">
-      <select aria-label={t("allStatuses")} value={filters.status ?? "all"} onChange={(e) => set("status", e.target.value)} className="h-10 rounded-md border border-border bg-surface px-3">
-        {["done", "all", "queued", "running", "failed"].map((s) => <option key={s} value={s}>{t(s === "all" ? "allStatuses" : s)}</option>)}
-      </select>
-      <label className="flex min-h-10 items-center gap-2 text-[13px]">
-        <input type="checkbox" checked={filters.latest_per_instrument} onChange={(e) => set("latest", String(e.target.checked))}/>{t("latest")}
-      </label>
-    </div>
-    <AnalysisRunList filters={filters}/>
-  </>;
+  return (
+    <>
+      <div className="flex flex-wrap items-center gap-4 border-b border-border p-4">
+        <select
+          aria-label={t("allStatuses")}
+          value={filters.status ?? "all"}
+          onChange={(e) => set("status", e.target.value)}
+          className="h-10 rounded-md border border-border bg-surface px-3"
+        >
+          {["done", "all", "queued", "running", "failed"].map((s) => (
+            <option key={s} value={s}>
+              {t(s === "all" ? "allStatuses" : s)}
+            </option>
+          ))}
+        </select>
+        <label className="flex min-h-10 items-center gap-2 text-[13px]">
+          <input
+            type="checkbox"
+            checked={filters.latest_per_instrument}
+            onChange={(e) => set("latest", String(e.target.checked))}
+          />
+          {t("latest")}
+        </label>
+      </div>
+      <AnalysisRunList filters={filters} />
+    </>
+  );
 }

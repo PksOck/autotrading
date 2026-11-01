@@ -1465,29 +1465,6 @@
       }
     },
     "/proposals": {
-      "get": {
-        "tags": [
-          "proposals"
-        ],
-        "summary": "List All",
-        "operationId": "list_all_proposals_get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/ProposalOut"
-                  },
-                  "type": "array",
-                  "title": "Response List All Proposals Get"
-                }
-              }
-            }
-          }
-        }
-      },
       "post": {
         "tags": [
           "proposals"
@@ -1495,14 +1472,14 @@
         "summary": "Create",
         "operationId": "create_proposals_post",
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/ProposalCreate"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "202": {
@@ -1511,6 +1488,83 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ProposalOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "proposals"
+        ],
+        "summary": "List All",
+        "operationId": "list_all_proposals_get",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "all",
+                "pending",
+                "queued",
+                "running",
+                "done",
+                "failed",
+                "attention"
+              ],
+              "type": "string",
+              "default": "all",
+              "title": "Status"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 100,
+              "default": "",
+              "title": "Q"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 200,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProposalOut"
+                  },
+                  "title": "Response List All Proposals Get"
                 }
               }
             }
@@ -5031,6 +5085,186 @@
         "title": "ControlScore",
         "description": "Deterministic composite next to the agents' rating (BL-089). Components in -1..1."
       },
+      "CurrencyDailyMove": {
+        "properties": {
+          "amount": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amount"
+          },
+          "percent": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Percent"
+          },
+          "market_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Market Date"
+          },
+          "previous_market_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Market Date"
+          },
+          "holdings_dates": {
+            "items": {
+              "type": "string",
+              "format": "date"
+            },
+            "type": "array",
+            "title": "Holdings Dates"
+          },
+          "sources": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Sources"
+          },
+          "basis": {
+            "type": "string",
+            "title": "Basis",
+            "default": "held_positions_constant_reported_fx"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason",
+            "default": "no_positions"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "position_count": {
+            "type": "integer",
+            "title": "Position Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "currency",
+          "position_count"
+        ],
+        "title": "CurrencyDailyMove"
+      },
+      "DailyMove": {
+        "properties": {
+          "amount": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amount"
+          },
+          "percent": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Percent"
+          },
+          "market_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Market Date"
+          },
+          "previous_market_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Market Date"
+          },
+          "holdings_dates": {
+            "items": {
+              "type": "string",
+              "format": "date"
+            },
+            "type": "array",
+            "title": "Holdings Dates"
+          },
+          "sources": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Sources"
+          },
+          "basis": {
+            "type": "string",
+            "title": "Basis",
+            "default": "held_positions_constant_reported_fx"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason",
+            "default": "no_positions"
+          }
+        },
+        "type": "object",
+        "title": "DailyMove"
+      },
       "DataMeta": {
         "properties": {
           "source": {
@@ -5252,6 +5486,229 @@
         ],
         "title": "DismissProposal"
       },
+      "DividendCalendar": {
+        "properties": {
+          "months": {
+            "items": {
+              "$ref": "#/components/schemas/DividendMonth"
+            },
+            "type": "array",
+            "title": "Months"
+          },
+          "years": {
+            "items": {
+              "$ref": "#/components/schemas/DividendYear"
+            },
+            "type": "array",
+            "title": "Years"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/DividendCalendarEvent"
+            },
+            "type": "array",
+            "title": "Events"
+          },
+          "issues": {
+            "items": {
+              "$ref": "#/components/schemas/DividendCalendarIssue"
+            },
+            "type": "array",
+            "title": "Issues"
+          }
+        },
+        "type": "object",
+        "title": "DividendCalendar"
+      },
+      "DividendCalendarEvent": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "account_id": {
+            "type": "string",
+            "title": "Account Id"
+          },
+          "symbol": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Symbol"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "payment_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Payment Date"
+          },
+          "gross": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gross"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "received",
+              "scheduled"
+            ],
+            "title": "State"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "as_of": {
+            "type": "string",
+            "format": "date-time",
+            "title": "As Of"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "account_id",
+          "symbol",
+          "currency",
+          "payment_date",
+          "gross",
+          "state",
+          "source",
+          "as_of"
+        ],
+        "title": "DividendCalendarEvent"
+      },
+      "DividendCalendarIssue": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "account_id": {
+            "type": "string",
+            "title": "Account Id"
+          },
+          "symbol": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Symbol"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "missing_pay_date",
+              "cash_match_requires_reconciliation"
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "account_id",
+          "symbol",
+          "currency",
+          "reason"
+        ],
+        "title": "DividendCalendarIssue"
+      },
+      "DividendMonth": {
+        "properties": {
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "received_gross": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Received Gross"
+          },
+          "received_net": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Received Net"
+          },
+          "scheduled_gross": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scheduled Gross"
+          },
+          "scheduled_net": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scheduled Net"
+          },
+          "received_count": {
+            "type": "integer",
+            "title": "Received Count",
+            "default": 0
+          },
+          "scheduled_count": {
+            "type": "integer",
+            "title": "Scheduled Count",
+            "default": 0
+          },
+          "month": {
+            "type": "string",
+            "title": "Month"
+          }
+        },
+        "type": "object",
+        "required": [
+          "currency",
+          "month"
+        ],
+        "title": "DividendMonth"
+      },
       "DividendProjection": {
         "properties": {
           "account_id": {
@@ -5456,8 +5913,83 @@
         ],
         "title": "DividendReconciliation"
       },
+      "DividendYear": {
+        "properties": {
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "received_gross": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Received Gross"
+          },
+          "received_net": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Received Net"
+          },
+          "scheduled_gross": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scheduled Gross"
+          },
+          "scheduled_net": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scheduled Net"
+          },
+          "received_count": {
+            "type": "integer",
+            "title": "Received Count",
+            "default": 0
+          },
+          "scheduled_count": {
+            "type": "integer",
+            "title": "Scheduled Count",
+            "default": 0
+          },
+          "year": {
+            "type": "integer",
+            "title": "Year"
+          }
+        },
+        "type": "object",
+        "required": [
+          "currency",
+          "year"
+        ],
+        "title": "DividendYear"
+      },
       "DividendsOut": {
         "properties": {
+          "calendar": {
+            "$ref": "#/components/schemas/DividendCalendar"
+          },
           "cash_events": {
             "items": {
               "$ref": "#/components/schemas/CashEvent"
@@ -7526,6 +8058,16 @@
       },
       "PortfolioOut": {
         "properties": {
+          "daily_move": {
+            "$ref": "#/components/schemas/DailyMove"
+          },
+          "daily_native": {
+            "items": {
+              "$ref": "#/components/schemas/CurrencyDailyMove"
+            },
+            "type": "array",
+            "title": "Daily Native"
+          },
           "accounts": {
             "items": {
               "type": "string"

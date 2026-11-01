@@ -290,48 +290,52 @@ export function WatchlistPanel() {
         </div>
       )}
       {data &&
-        (["active", "reserve"] as const).map((value) => (
-          <section key={value} className="min-w-0 space-y-2">
-            <h2 className="font-semibold">
-              {t(`tiers.${value}`)}{" "}
-              <span className="num text-text-3">
-                {data.filter((item) => item.tier === value).length}
-              </span>
-            </h2>
-            <DataTable
-              module={`watchlist-${value}`}
-              label={t(`tiers.${value}`)}
-              columns={columns}
-              rows={data.filter((item) => item.tier === value)}
-              rowKey={(item) => String(item.id)}
-              profiles={[
-                {
-                  label: labels("valuation"),
-                  columns: [
-                    "symbol",
-                    "last_close",
-                    "pe",
-                    "forward_pe",
-                    "ev_ebit",
-                    "fcf_yield",
-                    "actions",
-                  ],
-                },
-                {
-                  label: labels("dividends"),
-                  columns: [
-                    "symbol",
-                    "last_close",
-                    "dividend_yield_pct",
-                    "payout_ratio_pct",
-                    "dividend_per_share",
-                    "actions",
-                  ],
-                },
-              ]}
-            />
-          </section>
-        ))}
+        (["active", "reserve"] as const).map((value) => {
+          const Container = value === "reserve" ? "details" : "section";
+          const Heading = value === "reserve" ? "summary" : "h2";
+          return (
+            <Container key={value} className="min-w-0 space-y-2">
+              <Heading className="flex min-h-12 cursor-pointer items-center gap-2 font-semibold">
+                {t(`tiers.${value}`)}{" "}
+                <span className="num text-text-3">
+                  {data.filter((item) => item.tier === value).length}
+                </span>
+              </Heading>
+              <DataTable
+                module={`watchlist-${value}`}
+                label={t(`tiers.${value}`)}
+                columns={columns}
+                rows={data.filter((item) => item.tier === value)}
+                rowKey={(item) => String(item.id)}
+                profiles={[
+                  {
+                    label: labels("valuation"),
+                    columns: [
+                      "symbol",
+                      "last_close",
+                      "pe",
+                      "forward_pe",
+                      "ev_ebit",
+                      "fcf_yield",
+                      "actions",
+                    ],
+                  },
+                  {
+                    label: labels("dividends"),
+                    columns: [
+                      "symbol",
+                      "last_close",
+                      "dividend_yield_pct",
+                      "payout_ratio_pct",
+                      "dividend_per_share",
+                      "actions",
+                    ],
+                  },
+                ]}
+              />
+            </Container>
+          );
+        })}
     </div>
   );
 }

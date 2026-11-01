@@ -22,6 +22,7 @@ import { LocalTime } from "./LocalTime";
 import { ThesisCheck } from "./ThesisCheck";
 import { ThesisReviewProposals, ThesisReviewRun } from "./ThesisReviewProposals";
 import { thesisButton } from "./styles";
+import { DataDetails } from "@/components/common/DataDetails";
 
 const field = "min-h-11 w-full rounded-md border border-border bg-surface px-3 py-2 text-text";
 const userStatuses = ["open", "confirmed", "weakening", "broken"] as const;
@@ -121,7 +122,7 @@ function ClaimStatusForm({ thesisId, claim }: { thesisId: string; claim: ThesisC
     setRows((previous) => previous.map((row) => (row.key === key ? { ...row, ...patch } : row)));
   return (
     <details className="border-t border-border pt-3">
-      <summary className="min-h-11 cursor-pointer text-[13px] text-accent">
+      <summary className="flex min-h-12 w-fit cursor-pointer items-center rounded-md border border-border px-3 text-[13px] text-accent">
         {t("changeStatus")}
       </summary>
       <form
@@ -451,6 +452,7 @@ function DraftEditor({ revision }: { revision: ThesisRevisionOut }) {
 }
 
 export function ThesisDetail({ thesisId }: { thesisId: string }) {
+  const refined = useTranslations("screenRefinement");
   const t = useTranslations("thesis");
   const reviewT = useTranslations("theses.review");
   const format = useFormatter();
@@ -492,73 +494,113 @@ export function ThesisDetail({ thesisId }: { thesisId: string }) {
           {thesis.instrument.name}
         </h2>
         <Provenance source={thesis.source} asOf={thesis.as_of} />
+        {thesis.revisions.some((revision) => revision.status === "active") && (
+          <div>
+            <div className="flex items-center justify-between gap-2">
+              <h3 className="text-sm font-medium">{refined("thesisStates")}</h3>
+              <DataDetails compact label={refined("thesisStatesHelp")}>
+                <p>{refined("thesisStateHint")}</p>
+              </DataDetails>
+            </div>
+            <dl
+              aria-label={refined("thesisStates")}
+              className="grid grid-cols-2 gap-2 sm:grid-cols-5"
+            >
+              {(["open", "confirmed", "weakening", "broken", "expired"] as const).map((status) => (
+                <div
+                  key={status}
+                  className="flex items-center justify-between gap-2 rounded-md bg-surface-2 px-3 py-2"
+                >
+                  <dt>
+                    <ThesisCheck status={status} />
+                  </dt>
+                  <dd className="num font-medium">
+                    {format.number(
+                      thesis.revisions
+                        .find((revision) => revision.status === "active")
+                        ?.claims?.filter((claim) => claim.status === status).length ?? 0,
+                    )}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        )}
       </header>
       {!thesis.revisions.some((revision) => revision.status === "active") && (
         <p className="text-[13px] text-text-2">{t("noActiveHint")}</p>
       )}
-      {[...thesis.revisions].sort((a,b) => (a.status === "active" ? 0 : a.status === "draft" ? 1 : 2) - (b.status === "active" ? 0 : b.status === "draft" ? 1 : 2)).map((revision) => (
-        <section
-          key={revision.id}
-          className="card flex flex-col gap-4 p-4 sm:p-5"
-          aria-label={t("versionLabel", {
-            version: format.number(revision.version),
-            status: t(`revision.${revision.status}`),
-          })}
-        >
-          <h2 className="flex flex-wrap items-center gap-2 text-base font-semibold">
-            {t("version", { version: format.number(revision.version) })}
-            <span className="rounded-full bg-surface-2 px-2 py-1 text-xs font-medium text-text-2">
-              {t(`revision.${revision.status}`)}
-            </span>
-          </h2>
-          <Provenance source={revision.source} asOf={revision.as_of} />
-          <Link
-            href={`/analysis/${encodeURIComponent(revision.analysis_run_id)}`}
-            className="text-[13px] text-accent"
+      {[...thesis.revisions]
+        .sort(
+          (a, b) =>
+            (a.status === "active" ? 0 : a.status === "draft" ? 1 : 2) -
+            (b.status === "active" ? 0 : b.status === "draft" ? 1 : 2),
+        )
+        .map((revision) => (
+          <section
+            key={revision.id}
+            className="card flex flex-col gap-4 p-4 sm:p-5"
+            aria-label={t("versionLabel", {
+              version: format.number(revision.version),
+              status: t(`revision.${revision.status}`),
+            })}
           >
-            {t("analysis")}
-          </Link>
-          {revision.delta_note && <p className="text-[13px] text-text-2">{revision.delta_note}</p>}
-          {revision.status === "draft" ? (
-            <DraftEditor revision={revision} />
-          ) : (
-            <ul className="flex flex-col gap-4">
-              {(revision.claims ?? []).map((claim) => (
-                <li
-                  key={claim.id}
-                  className="flex flex-col gap-3 rounded-md border border-border p-3 [overflow-wrap:anywhere]"
-                >
-                  <ThesisCheck status={claim.status} />
-                  <p className="whitespace-pre-wrap">{claim.statement}</p>
-                  {claim.invalidated_if && (
-                    <p className="whitespace-pre-wrap text-[13px] text-text-2">
-                      {t("invalidatedIf")}: {claim.invalidated_if}
-                    </p>
-                  )}
-                  {claim.expires_at && (
-                    <p className="text-xs text-text-3">
-                      {t("expires")}: <LocalTime value={claim.expires_at} />
-                    </p>
-                  )}
-                  <Provenance source={claim.source} asOf={claim.as_of} />
-                  <ThesisReviewProposals
-                    thesisId={thesis.id}
-                    claim={claim}
-                    active={revision.status === "active"}
-                    proposals={proposals}
-                    reviews={reviews}
-                    refresh={refreshReviews}
-                  />
-                  {revision.status === "active" && (
-                    <ClaimStatusForm thesisId={thesis.id} claim={claim} />
-                  )}
-                  <EventHistory claim={claim} />
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-      ))}
+            <h2 className="flex flex-wrap items-center gap-2 text-base font-semibold">
+              {t("version", { version: format.number(revision.version) })}
+              <span className="rounded-full bg-surface-2 px-2 py-1 text-xs font-medium text-text-2">
+                {t(`revision.${revision.status}`)}
+              </span>
+            </h2>
+            <Provenance source={revision.source} asOf={revision.as_of} />
+            <Link
+              href={`/analysis/${encodeURIComponent(revision.analysis_run_id)}`}
+              className="text-[13px] text-accent"
+            >
+              {t("analysis")}
+            </Link>
+            {revision.delta_note && (
+              <p className="text-[13px] text-text-2">{revision.delta_note}</p>
+            )}
+            {revision.status === "draft" ? (
+              <DraftEditor revision={revision} />
+            ) : (
+              <ul className="flex flex-col gap-4">
+                {(revision.claims ?? []).map((claim) => (
+                  <li
+                    key={claim.id}
+                    className="flex flex-col gap-3 rounded-md border border-border p-3 [overflow-wrap:anywhere]"
+                  >
+                    <ThesisCheck status={claim.status} />
+                    <p className="whitespace-pre-wrap">{claim.statement}</p>
+                    {claim.invalidated_if && (
+                      <p className="whitespace-pre-wrap text-[13px] text-text-2">
+                        {t("invalidatedIf")}: {claim.invalidated_if}
+                      </p>
+                    )}
+                    {claim.expires_at && (
+                      <p className="text-xs text-text-3">
+                        {t("expires")}: <LocalTime value={claim.expires_at} />
+                      </p>
+                    )}
+                    <Provenance source={claim.source} asOf={claim.as_of} />
+                    <ThesisReviewProposals
+                      thesisId={thesis.id}
+                      claim={claim}
+                      active={revision.status === "active"}
+                      proposals={proposals}
+                      reviews={reviews}
+                      refresh={refreshReviews}
+                    />
+                    {revision.status === "active" && (
+                      <ClaimStatusForm thesisId={thesis.id} claim={claim} />
+                    )}
+                    <EventHistory claim={claim} />
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        ))}
       <section aria-label={reviewT("title")} className="card flex flex-col gap-3 p-4">
         <h2 className="text-base font-semibold">{reviewT("title")}</h2>
         {(reviewsQuery.isLoading || proposalsQuery.isLoading) && (
@@ -573,7 +615,16 @@ export function ThesisDetail({ thesisId }: { thesisId: string }) {
         {reviews.slice(0, 1).map((review) => (
           <ThesisReviewRun key={review.id} review={review} />
         ))}
-        {reviews.length > 1 && <details><summary className="min-h-10 cursor-pointer text-[13px] text-text-2">{t("history", {count: reviews.length - 1})}</summary>{reviews.slice(1).map((review) => <ThesisReviewRun key={review.id} review={review}/>)}</details>}
+        {reviews.length > 1 && (
+          <details>
+            <summary className="min-h-10 cursor-pointer text-[13px] text-text-2">
+              {t("history", { count: reviews.length - 1 })}
+            </summary>
+            {reviews.slice(1).map((review) => (
+              <ThesisReviewRun key={review.id} review={review} />
+            ))}
+          </details>
+        )}
         <button className={`${thesisButton} w-fit`} onClick={refreshReviews}>
           {reviewT("refresh")}
         </button>

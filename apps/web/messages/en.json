@@ -1638,8 +1638,8 @@
       },
       "proposals": {
         "purpose": "Enter a symbol, your hypothesis or a news item and submit a proposal for analysis.",
-        "actions": "Choose the depth and save destination, then explicitly submit. If the response is lost, check the same submission before starting a new one.",
-        "data": "The list shows processing status, a validated verdict and linked signals or analyses when available.",
+        "actions": "Filter proposal status and search for a symbol or hypothesis. New submissions and processing retries require a separate action.",
+        "data": "Shows up to 200 newest matching proposals and a validated verdict. Linked deep analyses have their own status.",
         "limits": "A hypothesis verdict is not a measured return. Standard or deep processing may consume the configured model quota."
       },
       "analysis": {
@@ -1713,5 +1713,62 @@
     "studyMethodLabel": "Saved-opinion testing method",
     "methodCode": "Method identifier",
     "methodMissing": "Method identifier unavailable"
+  },
+  "screenRefinement": {
+    "proposalStatus": "Proposal status",
+    "proposalSearch": "Symbol or hypothesis",
+    "search": "Search",
+    "proposalCount": "{count} shown (up to 200)",
+    "noMatchingProposals": "No proposals match these filters.",
+    "proposalStates": {
+      "all": "All",
+      "pending": "Not yet completed",
+      "queued": "Queued",
+      "running": "Processing",
+      "done": "Completed",
+      "attention": "Needs attention",
+      "failed": "Failed"
+    },
+    "dailyDetails": "Daily estimate details",
+    "dailyEstimate": "Held positions · last session estimate",
+    "dailyMissing": "Daily estimate unavailable",
+    "dailyDates": "Compared closes",
+    "holdingsDates": "Holding snapshot dates",
+    "dailyMethod": "Price-move estimate for the same imported quantities at the last two closes, excluding trades and cash. A base-currency total requires a verified FX target; otherwise estimates stay in their original currencies. The percentage applies to the displayed group of positions, not the entire account.",
+    "calendarTitle": "Dividend calendar",
+    "calendarYear": "Calendar year",
+    "calendarCurrency": "Calendar currency",
+    "calendarHelp": "How the dividend calendar works",
+    "calendarMethod": "Received amounts use booked cash; scheduled amounts use open accruals with payment dates. Gross, net and currencies stay separate; select a month for instruments and dates.",
+    "calendarNoSchedule": "Empty months have no verified schedule. Open accruals are the latest statement state, not guaranteed future payments; the annual estimate for current holdings below is not allocated to months.",
+    "received_gross": "Received gross",
+    "scheduled_gross": "Open accruals gross",
+    "received_net": "Received net",
+    "received": "Booked",
+    "scheduled": "Open accrual",
+    "paymentDates": "Dates and instruments",
+    "noDatedEvents": "No dated payments for this selection.",
+    "morePayments": "More payments",
+    "calendarIssues": "Unscheduled / reconcile",
+    "missing_pay_date": "Payment date unavailable",
+    "cash_match_requires_reconciliation": "Linked cash already exists; check reconciliation, without double counting.",
+    "thesisStates": "Active thesis states",
+    "thesisStateHint": "These are states of existing claims. Financial conditions are written in each claim; zero does not indicate a hidden criterion.",
+    "thesisStatesHelp": "Thesis state explanation",
+    "dailyReasons": {
+      "no_positions": "No imported positions.",
+      "mixed_market_dates": "Instrument closes are not aligned to the same trading days.",
+      "unresolved_identity": "At least one instrument identity is unresolved.",
+      "short_position": "This estimate does not yet support short positions.",
+      "stale_prices": "Stored prices are stale.",
+      "missing_price": "At least one instrument lacks two comparable closes.",
+      "invalid_price": "The price basis is invalid.",
+      "missing_fx": "A reported conversion rate is missing.",
+      "unverified_fx_target": "The reported FX target currency is unverified; no consolidated estimate is calculated."
+    },
+    "calendarAsOf": "Statement as of: {date}",
+    "calendarEntryCount": "{count} records",
+    "calendarUnscheduled": "No schedule",
+    "dailyNative": "Held positions by currency · estimate"
   }
 }

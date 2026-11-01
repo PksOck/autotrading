@@ -5,7 +5,15 @@ import { useTranslations } from "next-intl";
 import { Icon } from "./Icon";
 
 /** Native disclosure works on touch and keyboard; critical warnings stay outside. */
-export function DataDetails({ children, label }: { children: ReactNode; label?: string }) {
+export function DataDetails({
+  children,
+  label,
+  compact = false,
+}: {
+  children: ReactNode;
+  label?: string;
+  compact?: boolean;
+}) {
   const t = useTranslations("pageHelp");
   const name = label ?? t("details");
   return (
@@ -13,7 +21,7 @@ export function DataDetails({ children, label }: { children: ReactNode; label?: 
       <summary
         aria-label={name}
         title={name}
-        className="flex min-h-12 min-w-12 cursor-pointer list-none items-center justify-center rounded-full text-text-3 hover:bg-surface-2 focus-visible:outline-2 focus-visible:outline-accent [&::-webkit-details-marker]:hidden"
+        className={`flex ${compact ? "min-h-8 min-w-8" : "min-h-12 min-w-12"} cursor-pointer list-none items-center justify-center rounded-full text-text-3 hover:bg-surface-2 focus-visible:outline-2 focus-visible:outline-accent [&::-webkit-details-marker]:hidden`}
       >
         <Icon name="info" size={18} />
         <span className="sr-only">{name}</span>

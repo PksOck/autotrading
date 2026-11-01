@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from preza.domain.market import InstrumentKind
 from preza.domain.metadata import DataMeta
 from preza.domain.portfolio import CashIn, FlexStatement, PortfolioOut, PositionOut, SyncInfo
+from preza.domain.portfolio_daily import DailyHolding, daily_move, native_daily_moves
 from preza.models import AccountSnapshot, Bar, CashBalance, Position, SyncRun, Trade
 from preza.services.instruments import get_or_create
 from preza.services.market_context import identity_status, market_context
@@ -259,6 +260,26 @@ async def get_portfolio(
     missing_fx = None in values.values() or any(c.currency != base_currency for c in cash_rows)
     total = None if missing_fx else sum(known, Decimal(0)) + cash_base
     contexts = await market_context(session, [p.instrument_id for p in positions])
+    holdings = []
+    for position in positions:
+        context = contexts[position.instrument_id]
+        points = context["price_trend"].points
+        holdings.append(
+            DailyHolding(
+                quantity=position.quantity,
+                currency=position.currency,
+                fx=position.fx_rate_to_base,
+                close=points[-1].close if points else None,
+                previous=points[-2].close if len(points) >= 2 else None,
+                day=points[-1].market_date if points else None,
+                previous_day=points[-2].market_date if len(points) >= 2 else None,
+                report_date=position.report_date,
+                source=context["price_meta"].source,
+                resolved=identity_status(position.instrument) == "resolved"
+                and position.currency == position.instrument.currency,
+                stale=context["price_meta"].stale,
+            )
+        )
 
     out = []
     for p in sorted(positions, key=lambda p: values[p.id] or Decimal(0), reverse=True):
@@ -285,6 +306,8 @@ async def get_portfolio(
         )
     return PortfolioOut(
         as_of=latest,
+        daily_move=daily_move(holdings, base_currency),
+        daily_native=native_daily_moves(holdings),
         base_currency=base_currency,
         total_value=total,
         positions=out,

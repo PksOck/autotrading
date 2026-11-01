@@ -62,8 +62,9 @@ test("review proposals: actual status stays unchanged until explicit acceptance;
   });
   await page.goto(`/theses/${thesis.id}`);
   const proposal = page.getByRole("region", { name: "Review proposal", exact: true });
+  const activeRevision = page.getByRole("region", { name: "Version 1, Active", exact: true });
   await expect(proposal.getByText("Possible thesis break", { exact: true })).toBeVisible();
-  await expect(page.locator('[data-status="open"]')).toBeVisible();
+  await expect(activeRevision.locator('[data-status="open"]')).toBeVisible();
   await expect(proposal.locator("[data-status]")).toHaveCount(0);
   await expect(proposal.getByText("Rumour, unconfirmed", { exact: true })).toBeVisible();
   await expect(proposal.getByRole("link")).toHaveAttribute("href", "https://www.sec.gov/filing/1");
@@ -71,9 +72,9 @@ test("review proposals: actual status stays unchanged until explicit acceptance;
   expect(accepts).toBe(0);
   await proposal.getByRole("button", { name: "Accept proposal", exact: true }).click();
   expect(accepts).toBe(0);
-  await expect(page.locator('[data-status="open"]')).toBeVisible();
+  await expect(activeRevision.locator('[data-status="open"]')).toBeVisible();
   await proposal.getByRole("button", { name: "Confirm acceptance", exact: true }).click();
-  await expect(page.locator('[data-status="broken"]')).toBeVisible();
+  await expect(activeRevision.locator('[data-status="broken"]')).toBeVisible();
   await expect(
     proposal.getByText("Insufficient evidence to suggest a status.", { exact: true }),
   ).toBeVisible();

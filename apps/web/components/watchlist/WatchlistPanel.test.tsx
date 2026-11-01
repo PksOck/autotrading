@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import { vi } from "vitest";
 import messages from "@/messages/en.json";
@@ -69,5 +69,14 @@ it("restores watchlist trend and real entry context with signed daily and since-
   expect(screen.getByText("In zone")).toHaveClass("text-pos");
   expect(screen.getByText("In zone")).toHaveAttribute("title", "rules · 2026-10-28");
   expect(screen.getByText("2 sessions")).toBeInTheDocument();
+  const reserve = screen
+    .getAllByText(messages.watchlist.tiers.reserve)
+    .find((node) => node.tagName === "SUMMARY")
+    ?.closest("details");
+  expect(reserve).not.toBeNull();
+  expect(reserve).not.toHaveAttribute("open");
+  expect(within(reserve!).getByRole("button", { name: "Standard" })).not.toBeVisible();
+  fireEvent.click(reserve!.querySelector("summary")!);
   expect(screen.getAllByRole("button", { name: "Standard" })).toHaveLength(2);
+  expect(within(reserve!).getByRole("button", { name: "Standard" })).toBeVisible();
 });

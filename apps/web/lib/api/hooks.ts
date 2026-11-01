@@ -235,10 +235,10 @@ export function useSignalUpdate() {
   });
 }
 
-export const useProposalList = () =>
+export const useProposalList = (query = "") =>
   useQuery({
-    queryKey: keys.proposals,
-    queryFn: () => api.get<ProposalOut[]>("/proposals"),
+    queryKey: [...keys.proposals, query],
+    queryFn: () => api.get<ProposalOut[]>(`/proposals${query ? `?${query}` : ""}`),
     // Poll while something is still being analyzed.
     refetchInterval: (query) =>
       query.state.data?.some((p) => p.status === "queued" || p.status === "running")

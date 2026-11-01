@@ -320,3 +320,14 @@ Ideja ne pride samo iz Radarja. Uporabnik lahko **sam predlaga instrument ali te
 Pomoč nad predogledom ima izrecno lastništvo Escape tudi v času menjave Radix poslušalcev: označen odprti PageHelp prepreči zapiranje Peek, lasten capture pa zapre samo pomoč z obstoječim history hookom. Fokus ni uporabljen kot dokaz, da je menjava poslušalcev že končana. [Regresijski dokaz](./docs/implementation/2026-10-31-pomoc-escape-popravek.md).
 
 Metodni podatki Uspešnosti (BL-228, ADR-0025): globalni neoznačeni izidi imajo ločen naslov/opozorilo; podrobnosti razločijo sedanji stari producent od nepreverjene metode posamezne zgodovinske vrstice. Testiranje pokaže identiteto svoje metode po izračunu; starejši odgovor brez nje ostane izrecno neoznačen. Oznake niso nov cenovni posnetek ali pretvorba starih donosov.
+
+
+## S-027: prostornost, strnjene kartice in dividendni koledar
+
+- PageHeader wide označi tabelarične strani /analysis, /portfolio in /track-record; AppShell tam ne omeji širine na1440px. Bralne strani obdržijo omejitev. Privzete širine analiz sledijo vsebini; shranjene uporabnikove širine ostanejo. Na telefonu je dovoljeno lokalno drsenje tabele, ne celotne strani.
+- Kartica portfelja združi datum posnetka/povezavo v eno nogo. Dnevna ocena pozicij ima semantični znak/barvo ter izrecno osnovo. Neznana ciljna valuta FX prepreči konsolidiranje; izvorne valute so ločene, tudi neznane skupine ostanejo. Podrobnosti imajo vir, primerjane zaključke in datume količin (ADR-0026).
+- DataDetails compact je32px tarča na namizju za strnjene kartice; globalno pravilo coarse-pointer jo poveča na48px. PageHelp ostane48px. Dodatna razlaga ne odstrani opozorila o manjkajočem izračunu. Kartici Novo/Spremljam imata blok vsebine znotraj celotne povezave, da coarse-pointer inline-flex ne zlije vrstic.
+- Predlogi imajo URL stanje/iskanje, število prikazanih in razumljivo filtrirano prazno stanje. Neveljaven done je pozornost; povezana globoka analiza ima lastno stanje. Noben filter ne sproži ponovitve. Zaloga idej je native details/summary s številom, privzeto zaprta; odprta ohrani tabele/profile/opozorila.
+- Aktivna teza ima read-only pregled vseh petih stanj, tudi ničelnih. Razlaga loči stanje trditve od izbirnih finančnih pogojev. Odločanje/osnutki in agentovi predlogi ostanejo vidni, sprejem je izrecen.
+- Dividendni koledar v isti card/surface temi kot Pozicije: leto/valuta, letni bruto/neto/odprti povzetek,12 mesecev, ločeni barvi prejeto/odprto, seznam datuma/instrumenta in izvora. Gumb meseca ima izbirno stanje in dostopen opis zneskov/števila zapisov. Brez potrjenega razporeda je vrzel, ne0; neznan datum je nerazporejen. Letna projekcija trenutnih količin ostane ločena, brez izmišljenega mesečnega razreza.
+- /lab je šele predlog ločenega modula, ne dodana delujoča navigacija. Zgodovina kazalnikov je prva, testiranje pravil druga faza; /track-record še naprej prikazuje izide shranjenih signalov/mnenj.

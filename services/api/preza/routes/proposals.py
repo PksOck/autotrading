@@ -1,9 +1,9 @@
-from typing import Annotated
+from typing import Annotated, Literal
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import ValidationError
-from sqlalchemy import select, text
+from sqlalchemy import String, cast, or_, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from preza.config import Settings, get_settings
@@ -16,6 +16,20 @@ router = APIRouter(prefix="/proposals", tags=["proposals"])
 Session = Annotated[AsyncSession, Depends(get_session)]
 
 
+def verdict_data(
+    proposal: Proposal,
+) -> tuple[ProposalResult | None, Literal["analysis_failed", "invalid_result"] | None]:
+    error: Literal["analysis_failed", "invalid_result"] | None = (
+        "analysis_failed" if proposal.status == "failed" else None
+    )
+    if proposal.status == "done":
+        try:
+            return ProposalResult.model_validate_json(proposal.verdict or ""), None
+        except (ValidationError, ValueError):
+            return None, "invalid_result"
+    return None, error
+
+
 async def proposal_out(session: AsyncSession, proposal: Proposal) -> ProposalOut:
     signal_id = await session.scalar(select(Signal.id).where(Signal.proposal_id == proposal.id))
     analyses = list(
@@ -25,15 +39,7 @@ async def proposal_out(session: AsyncSession, proposal: Proposal) -> ProposalOut
             .order_by(AnalysisRun.created_at.desc(), AnalysisRun.id.desc())
         )
     )
-    result = None
-    error_code = "analysis_failed" if proposal.status == "failed" else None
-    if proposal.status == "done" and proposal.verdict:
-        try:
-            result = ProposalResult.model_validate_json(proposal.verdict)
-        except (ValidationError, ValueError):
-            error_code = "invalid_result"
-    elif proposal.status == "done":
-        error_code = "invalid_result"
+    result, error_code = verdict_data(proposal)
     return ProposalOut(
         id=proposal.id,
         symbols=list(proposal.symbols),
@@ -114,9 +120,40 @@ async def retry(
 
 
 @router.get("", response_model=list[ProposalOut])
-async def list_all(session: Session) -> list[ProposalOut]:
-    rows = await session.scalars(select(Proposal).order_by(Proposal.created_at.desc()).limit(200))
-    return [await proposal_out(session, p) for p in rows]
+async def list_all(
+    session: Session,
+    status: Literal["all", "pending", "queued", "running", "done", "failed", "attention"] = "all",
+    q: str = Query(default="", max_length=100),
+    limit: int = Query(default=200, ge=1, le=200),
+) -> list[ProposalOut]:
+    statement = select(Proposal).order_by(Proposal.created_at.desc(), Proposal.id.desc())
+    if status == "pending":
+        statement = statement.where(Proposal.status.in_(["queued", "running"]))
+    elif status == "attention":
+        statement = statement.where(Proposal.status.in_(["failed", "done"]))
+    elif status != "all":
+        statement = statement.where(Proposal.status == status)
+    if q.strip():
+        statement = statement.where(
+            or_(
+                Proposal.hypothesis.icontains(q.strip(), autoescape=True),
+                cast(Proposal.symbols, String).icontains(q.strip(), autoescape=True),
+            )
+        )
+    # Validate verdict text before the limit; never cast arbitrary JSON in SQL.
+    candidates = await session.stream_scalars(statement.execution_options(yield_per=200))
+    selected = []
+    try:
+        async for proposal in candidates:
+            _, error = verdict_data(proposal)
+            if (status == "done" and error) or (status == "attention" and not error):
+                continue
+            selected.append(proposal)
+            if len(selected) == limit:
+                break
+    finally:
+        await candidates.close()
+    return [await proposal_out(session, proposal) for proposal in selected]
 
 
 @router.get("/{proposal_id}", response_model=ProposalOut)

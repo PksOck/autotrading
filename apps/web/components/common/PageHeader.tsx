@@ -10,6 +10,7 @@ export async function PageHeader({
   sample,
   actions,
   helpKey,
+  wide = false,
 }: {
   title: string;
   kicker?: string;
@@ -17,10 +18,14 @@ export async function PageHeader({
   sample?: boolean;
   actions?: ReactNode;
   helpKey?: PageHelpKey;
+  wide?: boolean;
 }) {
   const t = await getTranslations("header");
   return (
-    <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+    <div
+      data-page-width={wide ? "wide" : undefined}
+      className="mb-4 flex flex-wrap items-center justify-between gap-3"
+    >
       <div>
         {kicker && <div className="label">{kicker}</div>}
         <div className="flex flex-wrap items-center gap-3">

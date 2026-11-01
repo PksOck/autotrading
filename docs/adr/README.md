@@ -32,6 +32,8 @@ Format: `ADR-xxxx-kratek-naslov.md`, statusi: `predlagano` · `sprejeto` · `zam
 
 | [ADR-0025](./ADR-0025-locene-metode-izidov.md) | Ločene metode izidov brez prepisovanja zgodovine | sprejeto v pregledni veji |
 
+| [ADR-0026](./ADR-0026-denarne-ocene-in-koledar.md) | Denarne ocene samo z dokazljivo valuto in datumom | sprejeto v pregledni veji |
+
 ## Predloga
 
 ```markdown

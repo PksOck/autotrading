@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test";
 
-test("watchlist profiles and density survive reload, warnings remain visible", async ({ page }) => {
+test("watchlist profiles survive reload and reserve warnings remain available on expansion", async ({
+  page,
+}) => {
   await page.goto("/portfolio?tab=watchlist");
   const active = page.getByRole("region", { name: "Aktivna", exact: true });
   await active.getByRole("button", { name: "Vrednotenje", exact: true }).click();
@@ -10,6 +12,11 @@ test("watchlist profiles and density survive reload, warnings remain visible", a
   await page.reload();
   await expect(active.getByLabel("Gostota", { exact: true })).toHaveValue("compact");
   await expect(active.getByRole("columnheader", { name: /P\/E TTM/ })).toBeVisible();
+  const reserve = page
+    .locator("details")
+    .filter({ has: page.locator("summary", { hasText: "Zaloga idej" }) });
+  await expect(reserve).not.toHaveAttribute("open");
+  await reserve.locator(":scope > summary").press("Enter");
   await expect(page.getByText("Nepopolna identiteta", { exact: true })).toBeVisible();
 });
 

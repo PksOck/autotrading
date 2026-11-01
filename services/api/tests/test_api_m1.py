@@ -73,6 +73,50 @@ async def test_bars_are_fetched_once_and_served_from_db(
     assert detail["change_pct"] == pytest.approx((last / prev - 1) * 100)
 
 
+async def test_daily_portfolio_move_does_not_assume_the_imported_fx_target(api) -> None:
+    from sqlalchemy import select
+
+    from preza.db import get_sessionmaker
+    from preza.models import Bar, Instrument
+
+    client, router = api
+    await store_fixture_statement()
+    day = date.today()
+    async with get_sessionmaker()() as session:
+        instruments = list(await session.scalars(select(Instrument)))
+        for instrument in instruments:
+            for offset, price in [(1, Decimal(100)), (0, Decimal(110))]:
+                session.add(
+                    Bar(
+                        instrument_id=instrument.id,
+                        interval="1d",
+                        day=day - timedelta(days=offset),
+                        open=price,
+                        high=price,
+                        low=price,
+                        close=price,
+                        volume=100,
+                        source="synthetic",
+                    )
+                )
+        await session.commit()
+    body = (await client.get("/portfolio")).json()
+    assert body["base_currency"] == "EUR"
+    assert body["daily_move"]["amount"] is None
+    assert body["daily_move"]["reason"] == "unverified_fx_target"
+    (native,) = body["daily_native"]
+    assert native["currency"] == "USD" and native["amount"] == 2050
+    assert native["percent"] == 10 and native["position_count"] == 2
+    assert router.calls == [], "rendering may only read stored bars"
+    async with get_sessionmaker()() as session:
+        instrument = await session.scalar(select(Instrument).where(Instrument.symbol == "MSFT"))
+        instrument.currency = "GBP"
+        await session.commit()
+    body = (await client.get("/portfolio")).json()
+    assert body["daily_native"][0]["amount"] is None
+    assert body["daily_native"][0]["reason"] == "unresolved_identity"
+
+
 async def test_failed_refresh_still_answers_and_is_audited(
     api: tuple[httpx.AsyncClient, FakeRouter],
 ) -> None:

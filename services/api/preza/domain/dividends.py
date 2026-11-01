@@ -7,6 +7,8 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from preza.domain.dividend_calendar import DividendCalendar
+
 
 class CashEvent(BaseModel):
     broker: str = "ibkr"
@@ -200,6 +202,7 @@ class DividendReconciliation(BaseModel):
 
 
 class DividendsOut(BaseModel):
+    calendar: DividendCalendar = Field(default_factory=DividendCalendar)
     cash_events: list[CashEvent]
     received: list[CashSummary]
     accruals: list[Accrual]

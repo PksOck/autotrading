@@ -1638,8 +1638,8 @@
       },
       "proposals": {
         "purpose": "Tu lahko zapišeš simbol, svojo hipotezo ali novico in pošlješ predlog v analizo.",
-        "actions": "Izberi globino in način shranjevanja ter predlog izrecno oddaj. Ob izgubljenem odgovoru preveri isto oddajo, preden začneš novo.",
-        "data": "Seznam pokaže stanje in preverjen izid presoje ter povezane signale ali analize, ko obstajajo.",
+        "actions": "Filtriraj po stanju predloga in poišči simbol ali hipotezo. Nov predlog ali ponovitev obdelave sprožiš z ločenim dejanjem.",
+        "data": "Seznam pokaže do 200 najnovejših ujemajočih predlogov in preverjen sklep. Povezane globoke analize imajo lastno stanje.",
         "limits": "Presoja hipoteze ni izračunan donos. Standardna ali globoka obdelava lahko porabita nastavljeno modelno kvoto."
       },
       "analysis": {
@@ -1713,5 +1713,62 @@
     "studyMethodLabel": "Metoda testiranja shranjenih mnenj",
     "methodCode": "Oznaka metode",
     "methodMissing": "Oznaka metode ni na voljo"
+  },
+  "screenRefinement": {
+    "proposalStatus": "Stanje predloga",
+    "proposalSearch": "Simbol ali hipoteza",
+    "search": "Poišči",
+    "proposalCount": "{count} prikazanih (največ 200)",
+    "noMatchingProposals": "Ni predlogov za izbrani filter.",
+    "proposalStates": {
+      "all": "Vsi",
+      "pending": "Še za izvedbo",
+      "queued": "V čakalni vrsti",
+      "running": "V obdelavi",
+      "done": "Izvedeni",
+      "attention": "Potrebna pozornost",
+      "failed": "Neuspešni"
+    },
+    "dailyDetails": "Podrobnosti dnevne ocene",
+    "dailyEstimate": "Pozicije · ocena zadnje seje",
+    "dailyMissing": "Dnevna ocena ni na voljo",
+    "dailyDates": "Primerjana zaključka",
+    "holdingsDates": "Datumi količin",
+    "dailyMethod": "Ocena cenovnega premika istih uvoženih količin pri zadnjih dveh zaključkih, brez poslov ali gotovine. Seštevek v osnovni valuti je mogoč le s preverjeno ciljno valuto tečaja; sicer so ocene ločene po izvornih valutah. Odstotek velja za prikazano skupino pozicij, ne za celoten račun.",
+    "calendarTitle": "Dividendni koledar",
+    "calendarYear": "Leto koledarja",
+    "calendarCurrency": "Valuta koledarja",
+    "calendarHelp": "Kako nastane dividendni koledar",
+    "calendarMethod": "Prejeto temelji na knjižbah, odprto na obračunih z navedenim datumom plačila. Bruto in neto sta ločena, valute se ne seštevajo; klikni mesec za instrumente in datume.",
+    "calendarNoSchedule": "Prazni meseci nimajo potrjenega razporeda. Odprto je stanje zadnjega izpisa, ne zagotovljeno prihodnje nakazilo; letna ocena trenutnih pozicij spodaj ni razdeljena po mesecih.",
+    "received_gross": "Prejeto bruto",
+    "scheduled_gross": "Odprti obračuni bruto",
+    "received_net": "Prejeto neto",
+    "received": "Knjiženo",
+    "scheduled": "Odprti obračun",
+    "paymentDates": "Datumi in instrumenti",
+    "noDatedEvents": "Ni izplačil z znanim datumom za izbrani prikaz.",
+    "morePayments": "Več izplačil",
+    "calendarIssues": "Nerazporejeno / za uskladitev",
+    "missing_pay_date": "Datum plačila ni na voljo",
+    "cash_match_requires_reconciliation": "Povezana knjižba že obstaja; preveri uskladitev, brez dvojnega štetja.",
+    "thesisStates": "Stanja aktivne teze",
+    "thesisStateHint": "To so stanja že zapisanih trditev. Finančni pogoji so zapisani v posamezni trditvi; ničla ne pomeni skritega merila.",
+    "thesisStatesHelp": "Razlaga stanj teze",
+    "dailyReasons": {
+      "no_positions": "Ni uvoženih pozicij.",
+      "mixed_market_dates": "Zaključki instrumentov niso z istih trgovalnih dni.",
+      "unresolved_identity": "Identiteta vsaj enega instrumenta še ni potrjena.",
+      "short_position": "Ta ocena še ne podpira kratkih pozicij.",
+      "stale_prices": "Shranjene cene so zastarele.",
+      "missing_price": "Za vsaj en instrument manjkata primerljiva zaključka.",
+      "invalid_price": "Cenovna osnova ni veljavna.",
+      "missing_fx": "Manjka potrjen tečaj za preračun.",
+      "unverified_fx_target": "Ciljna valuta uvoženega tečaja ni preverjena; skupna ocena ni izračunana."
+    },
+    "calendarAsOf": "Stanje izpisa: {date}",
+    "calendarEntryCount": "{count} zapisov",
+    "calendarUnscheduled": "Ni razporeda",
+    "dailyNative": "Pozicije po valuti · ocena"
   }
 }
