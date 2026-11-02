@@ -32,3 +32,7 @@ Končni bralni pregled: PASS, brez preostalih P1/P2. Noben živ vdor, resnična 
 GitHub master push je uporabnik odobril. Končni remote SHA in CI se preverita ob objavi; to ne dovoljuje zamenjave obstoječega3000. Tailscale pravilo je pripravljeno, dejanski Save/validator in test S26 še nista avtomatsko potrjena. Serve443→8090 ostane. Šele po lokalnem geslu in pravilih se omogoči8443 na ločeni zasebni namestitvi.
 
 Odprti ostajajo BL-225/226/227/231, pravi razširjeni Flex, podatkovni FX, dejanska SMTP dostava in produktni backup/restore. Ta predaja jih ne označuje kot dokončane in ne zagotavlja »hackproof« ali pravne skladnosti javne storitve.
+
+## Potrjena GitHub objava
+
+Koda [d859fce](https://github.com/PksOck/autotrading/commit/d859fce1f43fe2ca102cc03f1bae309c34365cdb) objavljena fast-forward na master in feat/uxui-demo-upgrade. [CI41477710171](https://github.com/PksOck/autotrading/actions/runs/41477710171) je success za vse štiri jobe in izolirano browser prijavo. Obe remote veji sta bili preverjeni s celotnim SHA. Lokalno drevo kode čisto,3000 sliki isti kot pred delom. Lastna testna baza in auth-test sklad odstranjena. Priprava konfiguracije/slik zasebnega sklada še ni aktivacija telefonskega dostopa.

@@ -31,4 +31,6 @@
 - [x] Sveži API/agents/web suite, Ruff/mypy/TS/ESLint/i18n/generacija, migracija/check/restore na sintetični bazi.
 - [x] CI E2E z delujočim demom, Docker build, browser SL/EN/phone, vizualni pregled.
 - [x] Neodvisni pregled in odprava, SESSIONS/BACKLOG/DESIGN/ADR/navodila testiranja.
-- [ ] Commit, fetch/preveri fast-forward, push GitHub master in pregledna veja; potrdi remote SHA in CI brez spremembe3000.
+- [x] Commit, fetch/preveri fast-forward, push GitHub master in pregledna veja; potrdi remote SHA in CI brez spremembe3000.
+
+Predaja kode: d859fce1f43fe2ca102cc03f1bae309c34365cdb na Autotrading/master in feat/uxui-demo-upgrade; remote SHA preverjena. GitHub CI41477710171 success (API/agents/web/compose, tudi izolirana prijava).3000 nespremenjen. Operativni BL239 ostaja odprt.

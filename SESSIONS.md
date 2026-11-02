@@ -14,7 +14,9 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 
 **Odločitve:** GitHub push odobren, brez force; tuji master checkout in3000 ostaneta. YTD ni NAV donos, valute niso tiho seštete. Lastniško geslo nastavi uporabnik lokalno, ne v pogovoru. Pripravljena Tailscale politika odstrani splošni dostop samo za TCP8443 tega gostitelja v obeh naslovnih družinah; SSH/drugi servisi ostanejo. Politika in konkretni IP so samo v ignorirani lokalni datoteki.
 
-**Odprto:** BL-236 potrditev remote SHA/CI po push. BL-239 Save/validator v Tailscale, lokalno geslo, ločeni zasebni sklad3300, šele nato Serve8443 in test iz S26 ter zavrnitev drugih naprav. Brskalniška avtomatizacija Chrome se je ustavila zaradi nezanesljivo ugotovljenega URL; uporabnik nadaljuje shranitev pripravljene konfiguracije. BL-225/226/227/231 ter dejanski Flex/FX/SMTP/backup niso zaključeni s tem krogom.
+**Predaja:** d859fce na master in pregledni veji, oba remote SHA preverjena. [GitHub CI41477710171](https://github.com/PksOck/autotrading/actions/runs/41477710171) je success za API/agents/web/compose ter izolirano prijavo. Lastna testna DB in auth-test3200 odstranjena. Lokalno pripravljeni zasebna konfiguracija in sliki, brez začetega zasebnega sklada ali Serve8443.
+
+**Odprto:** BL-239 Save/validator v Tailscale, lokalno geslo, ločeni zasebni sklad3300, šele nato Serve8443 in test iz S26 ter zavrnitev drugih naprav. Brskalniška avtomatizacija Chrome se je ustavila zaradi nezanesljivo ugotovljenega URL; uporabnik nadaljuje shranitev pripravljene konfiguracije. BL-225/226/227/231 ter dejanski Flex/FX/SMTP/backup niso zaključeni s tem krogom.
 
 ---
 
