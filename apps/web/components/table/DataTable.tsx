@@ -25,6 +25,7 @@ export function DataTable<T>({
   rowKey,
   label,
   profiles = [],
+  compactRows = false,
 }: {
   module: string;
   columns: ColumnDefinition<T>[];
@@ -32,6 +33,7 @@ export function DataTable<T>({
   rowKey: (row: T) => string;
   label: string;
   profiles?: { label: string; columns: string[] }[];
+  compactRows?: boolean;
 }) {
   const t = useTranslations("table");
   const params = useSearchParams();
@@ -116,23 +118,25 @@ export function DataTable<T>({
         >
           {t("standard")}
         </button>
-        <label className="text-xs text-text-3">
-          {t("density")}{" "}
-          <select
-            aria-label={t("density")}
-            value={preferences.density}
-            onChange={(event) =>
-              save({
-                ...preferences,
-                density: event.target.value as TableViewPreferences["density"],
-              })
-            }
-            className="h-12 rounded-md border border-border bg-surface px-2"
-          >
-            <option value="comfortable">{t("comfortable")}</option>
-            <option value="compact">{t("compact")}</option>
-          </select>
-        </label>
+        {!compactRows && (
+          <label className="text-xs text-text-3">
+            {t("density")}{" "}
+            <select
+              aria-label={t("density")}
+              value={preferences.density}
+              onChange={(event) =>
+                save({
+                  ...preferences,
+                  density: event.target.value as TableViewPreferences["density"],
+                })
+              }
+              className="h-12 rounded-md border border-border bg-surface px-2"
+            >
+              <option value="comfortable">{t("comfortable")}</option>
+              <option value="compact">{t("compact")}</option>
+            </select>
+          </label>
+        )}
         <details className="relative">
           <summary className="flex min-h-12 cursor-pointer items-center rounded-md border border-border px-3 text-sm">
             {t("columns")}
@@ -292,8 +296,9 @@ export function DataTable<T>({
                   <td
                     key={column.id}
                     className={cn(
-                      "px-3 align-top",
-                      preferences.density === "compact" ? "py-2" : "py-4",
+                      "px-3",
+                      compactRows ? "align-middle" : "align-top",
+                      compactRows || preferences.density === "compact" ? "py-2" : "py-4",
                       column.numeric && "num text-right",
                       preferences.pinned_columns.includes(column.id) && "sticky z-10 bg-surface",
                     )}

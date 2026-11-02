@@ -2686,6 +2686,9 @@ export interface components {
             daily_move?: components["schemas"]["DailyMove"];
             /** Daily Native */
             daily_native?: components["schemas"]["CurrencyDailyMove"][];
+            ytd_move?: components["schemas"]["DailyMove"];
+            /** Ytd Native */
+            ytd_native?: components["schemas"]["CurrencyDailyMove"][];
             /** Accounts */
             accounts?: string[];
             /** Selected Account */

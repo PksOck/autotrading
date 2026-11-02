@@ -8068,6 +8068,16 @@
             "type": "array",
             "title": "Daily Native"
           },
+          "ytd_move": {
+            "$ref": "#/components/schemas/DailyMove"
+          },
+          "ytd_native": {
+            "items": {
+              "$ref": "#/components/schemas/CurrencyDailyMove"
+            },
+            "type": "array",
+            "title": "Ytd Native"
+          },
           "accounts": {
             "items": {
               "type": "string"

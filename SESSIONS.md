@@ -4,6 +4,20 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 
 ---
 
+## S-028 · 2026-11-02 · Hitra avtomatika in strnjen portfelj, odprava Astra ugotovitev
+
+**Cilj:** Nadaljevati delo2026-11-01, poenostaviti Procesi in urniki, strniti tabele ter dodati Dan/YTD s preverljivimi osnovami. Uporabnik je zahteval Astro in odpravo ugotovitev.
+
+**Narejeno:** BL-232/233: globalno/modulska stikala, postopni urejevalnik, zaščita osnutkov/tokeni pri zakasnjenih odgovorih, kompaktne in navpično poravnane vrstice obeh tabel, razkritje vira v običajnem toku ter dnevni/YTD izbor. [Dokazi in meje](./docs/implementation/2026-11-02-zakljucek-avtomatika-portfelj.md), [Astra pregled](./docs/implementation/2026-11-02-astra-review-avtomatika-portfelj.md).
+
+**Odločitve:** ADR-0026 dopolnjen: isti ponudnik ni dokaz split-prilagoditve, zato številčni produkcijski YTD do dokazljivega vira ostane neznan (BL-234). Odprta dokazila lahko povečajo vrstico, zaprte ostanejo kompaktne. Za ročne zagone brez avtomatike uporabiti urnik Samo ročno; disabled modul blokira tudi ročni proces.
+
+**Preverjanje:** API620 +1 pogojni Redis skip/19 obstoječih opozoril; Ruff229/mypy137. Web213/51, TS/ESLint/Prettier/i18n1474 in reproducibilna OpenAPI/TS. Ciljni browser10/10 in končni celotni106 uspešnih +12 namernih device-specific skipov (118 primerov). Astra po popravkih brez novih pomembnih ugotovitev. Samo3100, shema0020 brez reseeda;3000 slike ohranjene. Namenska testna DB odstranjena. Brez push/merge, pošiljanja ali modelnih klicev.
+
+**Odprto/naslednji korak:** BL-234 preverljiva zgodovina za številčni YTD. BL-235 predlog razčlenitve opozorila Zastarelo. BL-225/226/227 in Flex/FX/SMTP/backup ostajajo ločeni; ta UI rez jih ne zapre.
+
+---
+
 ## S-027 · 2026-11-01 · Prostorne tabele, Predlogi in dividendni koledar
 
 **Cilj:** Odpraviti nepotrebno drsenje na velikem zaslonu, skrajšati kartice, dodati filtre in uporabne datume dividend ter načrtovati ločen laboratorij. Uporabnik želi zgodovinske kazalnike najprej, nato pravila nakupa/prodaje.

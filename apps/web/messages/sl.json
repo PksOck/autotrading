@@ -1544,9 +1544,9 @@
       "uncertain": "{count} dostav ima negotov izid. Ne pošljejo se samodejno znova; preveri poštni strežnik."
     },
     "processHelp": {
-      "radar": "Pridobi novice in išče dogodke. Analize in prevodi uporabljajo model; glavno stikalo jih ustavi, zbiranje novic pa ostane aktivno.",
-      "entries": "Preveri vstopne točke in razloge za padec. Samodejne analize upoštevajo glavno stikalo.",
-      "discover_thesis_reviews": "Poišče in pregleda teze. Pregledi uporabljajo model in upoštevajo glavno stikalo.",
+      "radar": "Pridobi novice in išče dogodke. Analize in prevodi uporabljajo model; stikalo samodejnih analiz jih ustavi, zbiranje novic pa ostane aktivno.",
+      "entries": "Preveri vstopne točke in razloge za padec. Samodejne analize upoštevajo stikalo samodejnih analiz.",
+      "discover_thesis_reviews": "Poišče in pregleda teze. Pregledi uporabljajo model in upoštevajo stikalo samodejnih analiz.",
       "batch_analyses": "Pripravi omejen paket analiz portfelja ali watchliste. Pred začetkom prikaže predogled in preveri kvoto.",
       "sync_flex": "Prebere portfelj in posle iz IBKR. Ne uporablja jezikovnega modela.",
       "refresh_bars": "Osveži dnevne cene instrumentov. Ne uporablja jezikovnega modela.",
@@ -1686,7 +1686,7 @@
       },
       "settings": {
         "purpose": "Nastavitve pokažejo, kaj je spremenjeno in katere možnosti so vklopljene.",
-        "actions": "Izberi proces, uredi način, omejitve ali časovna okna ter shrani. Glavno stikalo samodejnih modelov in globalna pavza imata ločena namena.",
+        "actions": "Glavno stikalo upravlja vse samodejne začetke, stikalo analiz pa samo samodejno delo z modeli. Modul vklopiš neposredno v seznamu; urnik in omejitve odpreš ob njem ter shraniš.",
         "data": "Stanje povezave in zgodovina izvajanj kažeta zadnje shranjene ali preverjene izide. E-pošta potrebuje nastavljeno povezavo in izbrane prejemnike.",
         "limits": "Sprememba urnika ne pomeni takojšnjega zagona. Vklop avtomatike lahko dovoli poznejše modelne klice znotraj izbranih pravil."
       },
@@ -1764,11 +1764,57 @@
       "missing_price": "Za vsaj en instrument manjkata primerljiva zaključka.",
       "invalid_price": "Cenovna osnova ni veljavna.",
       "missing_fx": "Manjka potrjen tečaj za preračun.",
-      "unverified_fx_target": "Ciljna valuta uvoženega tečaja ni preverjena; skupna ocena ni izračunana."
+      "unverified_fx_target": "Ciljna valuta uvoženega tečaja ni preverjena; skupna ocena ni izračunana.",
+      "missing_year_start": "Ni primerljive zaključne cene pred začetkom tega leta.",
+      "mixed_price_sources": "Cenovni osnovi nimata istega vira.",
+      "missing_period_price": "Za izbrano leto še ni primerljive zadnje cene.",
+      "unverified_price_basis": "Usklajenost cen ob delitvah delnic še ni potrjena."
     },
     "calendarAsOf": "Stanje izpisa: {date}",
     "calendarEntryCount": "{count} zapisov",
     "calendarUnscheduled": "Ni razporeda",
     "dailyNative": "Pozicije po valuti · ocena"
+  },
+  "automationSimple": {
+    "all": "Vsa avtomatika",
+    "allOff": "Samodejni začetki so ustavljeni",
+    "allOn": "Samodejni začetki so dovoljeni",
+    "enableModule": "Omogoči modul {name}",
+    "editModule": "Uredi urnik: {name}",
+    "reloadModule": "Osveži modul {name}",
+    "edit": "Urnik in možnosti",
+    "closeEditor": "Zapri urejanje",
+    "advanced": "Dodatne omejitve",
+    "manualRun": "Ročni zagon",
+    "draftHelp": "Najprej shrani ali zavrzi osnutek, nato preklopi modul ali odpri drugega.",
+    "reloadControls": "Osveži nastavitve",
+    "minutes": "vsakih {count, number} min",
+    "helpTitle": "Kako upravljam avtomatiko?",
+    "moduleHelp": "Glavno stikalo ohrani vse urnike in posamezne izbire. Izklop posameznega modula prepreči tudi ročni zagon tega procesa; za ohranitev ročnih zagonov izberi urnik »Samo ročno«. Vklop ne odda opravila takoj.",
+    "statusHelp": "Prikazana so shranjena dovoljenja in urniki. Izvedba je odvisna še od dovoljenega časa, povezav, kvot in delavca.",
+    "groups": {
+      "data": "Podatki",
+      "research": "Analize in spremljanje",
+      "notifications": "Obvestila",
+      "other": "Drugi moduli"
+    },
+    "states": {
+      "off": "Izklopljeno",
+      "manual": "Samo ročno",
+      "paused": "Globalno ustavljeno",
+      "modelOff": "Samodejne analize izklopljene",
+      "scheduled": "Urnik omogočen",
+      "unavailable": "Stanje ni dosegljivo"
+    }
+  },
+  "portfolioChange": {
+    "title": "Cenovni premik pozicij",
+    "period": "Obdobje premika",
+    "day": "Dan",
+    "ytd": "Od začetka leta",
+    "native": "Ločeno po izvornih valutah",
+    "help": "Osnova cenovnega premika",
+    "dayMethod": "Primerjava zadnjih dveh shranjenih zaključkov trenutnih količin. To ni dnevna sprememba celotnega računa.",
+    "ytdMethod": "Trenutne uvožene količine pri zadnji ceni glede na primerljiv zaključek pred 1. januarjem tekočega leta. To je cenovna ocena brez dividend in poslov, ne dejanski donos računa od začetka leta; morebitna korporativna dejanja zahtevajo preverjanje osnove."
   }
 }

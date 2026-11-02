@@ -2,7 +2,11 @@
 
 Povzetek sprejetega načrta. Podrobna utemeljitev je v [`docs/research/2026-10-22-zasnova-resitve.md`](./docs/research/2026-10-22-zasnova-resitve.md), primerjava kandidatov v [`docs/research/2026-10-22-analiza-kandidatov.md`](./docs/research/2026-10-22-analiza-kandidatov.md), izkušnje iz starega projekta v [`docs/research/2026-10-22-trading-list-prevzem.md`](./docs/research/2026-10-22-trading-list-prevzem.md).
 
-## Trenutno: prostornost, Predlogi in dividendni koledar (S-027)
+## Trenutno: poenostavljena avtomatika in strnjen portfelj (S-028)
+
+[Plan BL-232/233](./docs/superpowers/plans/2026-11-01-enostavna-avtomatika.md) vključuje popravke SOL/Astra pregleda. [Dokazi](./docs/implementation/2026-11-02-zakljucek-avtomatika-portfelj.md) ločijo izvedeno UI/varovala od še nedostopnega številčnega produkcijskega YTD. BL-234 potrebuje dokazljivo prilagojeno zgodovino cen; isti ponudnik ni dokaz. BL-235 je ločen predlog jasnejših opozoril o zastarelosti. Samo3100,3000 ostane nespremenjen.
+
+## Predhodno: prostornost, Predlogi in dividendni koledar (S-027)
 
 [SPEC](./docs/superpowers/specs/2026-11-01-prostornost-in-dividendni-koledar-spec.md) in [plan](./docs/superpowers/plans/2026-11-01-prostornost-in-dividendni-koledar.md) pokrivata BL-229/230: široke tabele, filtre Predlogov, zložljivo zalogo, dnevno oceno s preverljivo valuto in mesečni/letni dividendni koledar. [Dokazi in meje](./docs/implementation/2026-11-01-prostornost-in-koledar-dokazi.md). Samo demo :3100, :3000 ostane nespremenjen. [Laboratorij SPEC](./docs/superpowers/specs/2026-11-01-laboratorij-financnih-kazalnikov-spec.md) je pripravljen za naslednji modul: uporabnik želi oboje, najprej zgodovinske kazalnike in potem testiranje pravil. BL-231 je pripravljena specifikacija, implementacija je še next. BL-225/226/227 in spodnji pogoji backup/Flex/SMTP ostajajo odprti.
 

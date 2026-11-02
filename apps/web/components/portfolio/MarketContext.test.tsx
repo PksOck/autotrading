@@ -76,7 +76,7 @@ it("keeps the actual compact trend sample, dates and provenance readable without
   expect(screen.getByText("2 sessions")).toBeVisible();
   expect(screen.getByText("2026-10-27 – 2026-10-28")).toBeVisible();
   expect(screen.queryByText("Up to 30 trading sessions")).not.toBeInTheDocument();
-  fireEvent.click(screen.getByText("2 sessions"));
+  fireEvent.click(screen.getByLabelText("2 sessions"));
   expect(screen.getByText("yahoo")).toBeVisible();
   expect(screen.getByText("2026-10-29T08:00:00Z")).toBeVisible();
 });

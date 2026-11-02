@@ -42,7 +42,10 @@ test("settings expose master switch and SMTP; saved-record testing requires expl
   await expect(
     page.getByRole("switch", { name: "Dovoli samodejne analize z modeli" }),
   ).toBeVisible();
-  await expect(page.getByLabel("Izberi proces za urejanje")).toHaveValue("radar");
+  await expect(page.getByRole("switch", { name: "Vsa avtomatika", exact: true })).toBeVisible();
+  await expect(
+    page.getByRole("switch", { name: "Omogoči modul Radar", exact: true }),
+  ).toBeVisible();
   await page.locator("summary").filter({ hasText: "E-poštna obvestila" }).click();
   await expect(page.getByRole("textbox", { name: /^Prejemniki/ })).toBeVisible();
   await expect(page.getByRole("checkbox", { name: "Omogoči e-poštna obvestila" })).toBeDisabled();

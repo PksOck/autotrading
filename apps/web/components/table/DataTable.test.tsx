@@ -65,3 +65,30 @@ it("always exposes standard after profiles and restores default columns and orde
     buttons.findIndex((b) => b.textContent === "Dividends"),
   );
 });
+
+it("uses fixed compact centered rows without rewriting stored column preferences", () => {
+  const saved = JSON.stringify({
+    version: 1,
+    columns: ["symbol"],
+    column_order: ["symbol"],
+    column_widths: { symbol: 220 },
+    pinned_columns: [],
+    density: "comfortable",
+  });
+  localStorage.setItem("preza.view.dense-test.v1", saved);
+  render(
+    <NextIntlClientProvider locale="en" messages={messages}>
+      <DataTable
+        compactRows
+        module="dense-test"
+        label="Dense"
+        rows={[{}]}
+        rowKey={() => "one"}
+        columns={[{ id: "symbol", label: "Instrument", required: true, render: () => "ABC" }]}
+      />
+    </NextIntlClientProvider>,
+  );
+  expect(screen.getByRole("cell")).toHaveClass("align-middle", "py-2");
+  expect(screen.queryByRole("combobox", { name: "Density" })).not.toBeInTheDocument();
+  expect(localStorage.getItem("preza.view.dense-test.v1")).toBe(saved);
+});

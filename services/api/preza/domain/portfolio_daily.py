@@ -1,7 +1,7 @@
 """Price-only estimate for unchanged imported holdings, never account NAV performance."""
 
-from dataclasses import dataclass
-from datetime import date
+from dataclasses import dataclass, replace
+from datetime import date, timedelta
 from decimal import Decimal
 
 from pydantic import BaseModel, Field
@@ -23,6 +23,46 @@ class DailyHolding:
     resolved: bool
     stale: bool = False
     fx_base_currency: str | None = None
+    baseline_reason: str | None = None
+
+
+YTD_BASIS = "held_positions_ytd_constant_reported_fx"
+
+
+@dataclass(frozen=True)
+class YearStartPrice:
+    day: date
+    close: Decimal
+    source: str
+    basis_verified: bool = False
+
+
+def year_to_date_holdings(
+    rows: list[tuple[DailyHolding, YearStartPrice | None]], year: int
+) -> list[DailyHolding]:
+    start = date(year, 1, 1)
+    result = []
+    for holding, baseline in rows:
+        reason = (
+            "missing_year_start"
+            if baseline is None or not start - timedelta(days=7) <= baseline.day < start
+            else "mixed_price_sources"
+            if baseline.source != holding.source
+            else "unverified_price_basis"
+            if not baseline.basis_verified
+            else "missing_period_price"
+            if holding.day is not None and holding.day.year != year
+            else None
+        )
+        result.append(
+            replace(
+                holding,
+                previous=baseline.close if baseline else None,
+                previous_day=baseline.day if baseline else None,
+                baseline_reason=reason,
+            )
+        )
+    return result
 
 
 class DailyMove(BaseModel):
@@ -41,14 +81,16 @@ class CurrencyDailyMove(DailyMove):
     position_count: int
 
 
-def native_daily_moves(holdings: list[DailyHolding]) -> list[CurrencyDailyMove]:
+def native_daily_moves(
+    holdings: list[DailyHolding], *, basis: str = "held_positions_constant_reported_fx"
+) -> list[CurrencyDailyMove]:
     currencies = sorted({row.currency for row in holdings if row.quantity != 0})
     result = []
     for currency in currencies:
         rows = [row for row in holdings if row.currency == currency and row.quantity != 0]
         result.append(
             CurrencyDailyMove(
-                **daily_move(rows, currency).model_dump(),
+                **daily_move(rows, currency, basis=basis).model_dump(),
                 currency=currency,
                 position_count=len(rows),
             )
@@ -56,14 +98,24 @@ def native_daily_moves(holdings: list[DailyHolding]) -> list[CurrencyDailyMove]:
     return result
 
 
-def daily_move(holdings: list[DailyHolding], base_currency: str) -> DailyMove:
+def daily_move(
+    holdings: list[DailyHolding],
+    base_currency: str,
+    *,
+    basis: str = "held_positions_constant_reported_fx",
+) -> DailyMove:
     rows = [row for row in holdings if not row.quantity.is_finite() or row.quantity != 0]
     result = DailyMove(
+        basis=basis,
         holdings_dates=sorted({row.report_date for row in rows}),
         sources=sorted({row.source for row in rows if row.source}),
     )
     if not rows:
         return result
+    for row in rows:
+        if row.baseline_reason:
+            result.reason = row.baseline_reason
+            return result
     dates = {(row.day, row.previous_day) for row in rows}
     if len(dates) != 1:
         result.reason = "mixed_market_dates"
@@ -84,6 +136,8 @@ def daily_move(holdings: list[DailyHolding], base_currency: str) -> DailyMove:
             if row.quantity < 0
             else "stale_prices"
             if row.stale
+            else row.baseline_reason
+            if row.baseline_reason
             else "missing_price"
             if row.close is None
             or row.previous is None

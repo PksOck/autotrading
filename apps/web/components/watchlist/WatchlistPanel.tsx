@@ -48,12 +48,12 @@ function Actions({ item }: { item: WatchlistOut }) {
         type="button"
         disabled={pending}
         onClick={() => update.mutate({ id: item.id, data: { tier: other } }, { onError: fail })}
-        className="min-h-12 rounded border border-border px-2 disabled:opacity-50"
+        className="min-h-8 rounded border border-border px-2 disabled:opacity-50"
       >
         {t("moveTo", { tier: t(`tiers.${other}`) })}
       </button>
       <details>
-        <summary className="flex min-h-12 cursor-pointer items-center rounded px-2 text-text-3">
+        <summary className="flex min-h-8 cursor-pointer items-center rounded px-2 text-text-3">
           {labels("actions")}
         </summary>
         <div className="flex flex-col items-start gap-1 py-1">
@@ -114,8 +114,8 @@ export function WatchlistPanel() {
       sortable: true,
       width: 400,
       render: (item) => (
-        <div className="grid w-[376px] grid-cols-[minmax(0,1fr)_160px] items-start gap-4">
-          <div className="min-w-0 space-y-0.5 break-words">
+        <div className="grid w-[376px] grid-cols-[minmax(0,1fr)_160px] items-center gap-4">
+          <div className="min-w-0 space-y-0.5 break-words leading-4">
             <div className="flex items-center gap-2">
               <EntityLink entity={{ kind: "instrument", id: item.symbol }} />
               {!item.reviewed_at && (
@@ -302,6 +302,7 @@ export function WatchlistPanel() {
                 </span>
               </Heading>
               <DataTable
+                compactRows
                 module={`watchlist-${value}`}
                 label={t(`tiers.${value}`)}
                 columns={columns}

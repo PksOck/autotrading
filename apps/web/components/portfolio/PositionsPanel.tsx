@@ -15,6 +15,7 @@ import type { PositionOut } from "@/lib/api/types";
 import { formatMoney, formatNumber } from "@/lib/format";
 import { EntryZoneBadge, PriceTrend, SignedChange, type StoredPriceTrend } from "./MarketContext";
 import { useAppLocale } from "@/lib/use-app-locale";
+import { PortfolioChangeSummary } from "./PortfolioChangeSummary";
 
 export function PositionsPanel() {
   const t = useTranslations();
@@ -43,8 +44,8 @@ export function PositionsPanel() {
       sortable: true,
       width: 400,
       render: (row) => (
-        <div className="grid w-[376px] grid-cols-[minmax(0,1fr)_160px] items-start gap-4">
-          <div className="min-w-0 space-y-0.5 break-words">
+        <div className="grid w-[376px] grid-cols-[minmax(0,1fr)_160px] items-center gap-4">
+          <div className="min-w-0 space-y-0.5 break-words leading-4">
             <EntityLink entity={{ kind: "instrument", id: row.symbol }} />
             <div className="text-xs text-text-3">{row.name}</div>
             <div className="text-[11px] text-text-3">
@@ -200,7 +201,7 @@ export function PositionsPanel() {
     );
   return (
     <div className="flex min-w-0 flex-col gap-5">
-      <div className="flex flex-wrap items-end justify-between gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <div className="label">{t("portfolio.total")}</div>
           <div className="num text-[28px] font-medium">
@@ -218,6 +219,7 @@ export function PositionsPanel() {
             <span className="text-xs text-warn">{t("provenance.demo")}</span>
           )}
         </div>
+        <PortfolioChangeSummary data={data} />
         <div className="flex flex-wrap items-center gap-2">
           <label className="text-xs">
             {labels("account")}{" "}
@@ -301,6 +303,7 @@ export function PositionsPanel() {
         </details>
       )}
       <DataTable
+        compactRows
         module="positions"
         label={t("portfolio.tabPositions")}
         columns={columns}

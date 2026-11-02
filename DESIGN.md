@@ -331,3 +331,12 @@ Metodni podatki Uspešnosti (BL-228, ADR-0025): globalni neoznačeni izidi imajo
 - Aktivna teza ima read-only pregled vseh petih stanj, tudi ničelnih. Razlaga loči stanje trditve od izbirnih finančnih pogojev. Odločanje/osnutki in agentovi predlogi ostanejo vidni, sprejem je izrecen.
 - Dividendni koledar v isti card/surface temi kot Pozicije: leto/valuta, letni bruto/neto/odprti povzetek,12 mesecev, ločeni barvi prejeto/odprto, seznam datuma/instrumenta in izvora. Gumb meseca ima izbirno stanje in dostopen opis zneskov/števila zapisov. Brez potrjenega razporeda je vrzel, ne0; neznan datum je nerazporejen. Letna projekcija trenutnih količin ostane ločena, brez izmišljenega mesečnega razreza.
 - /lab je šele predlog ločenega modula, ne dodana delujoča navigacija. Zgodovina kazalnikov je prva, testiranje pravil druga faza; /track-record še naprej prikazuje izide shranjenih signalov/mnenj.
+
+
+## S-028: hitra avtomatika in kompaktne vrstice
+
+- Procesi in urniki so na vrhu vsebine nastavitev. Vsa avtomatika je vidna pavza novih samodejnih začetkov, ločena od modelnih analiz in shranjene modulske omogočenosti. Status ob modulu je dovoljenje, ne trditev, da delavec teče. Urnik/omejitve in ročni zagon se razkrijejo ob modulu; sledi/batch ostaneta ločena.
+- Urejevalnik varuje instance token: refetch,409 ali zakasnjen A→B→A odgovor ne prepiše osnutka. Opozorilo zahteva Shrani/Zavrzi pred menjavo umazanega urejevalnika. Glavno stikalo ne prepiše modulskih izbir ali urnikov.
+- compactRows omeji vedno kompaktno gostoto in align-middle samo na Pozicije/Watchlisto. Numerika ostane desno, uporabnikove širine/stolpci ohranjeni. Zaprte kontrolne tarče Watchliste32px na namizju,48px na dotik. Dolga imena/opozorila se ne režejo.
+- Native summary mini grafa vsebuje črto, datumski razpon in število sej; vir/čas se razkrije v normalnem toku. Izrecno odprta vrstica se lahko poveča, zato zadnja vrstica ni odrezana z overflow scrollerjem.
+- Dan/YTD ob vrednosti prikazuje cenovne ocene trenutnih količin, ne NAV donosov. Neznan FX cilj prepreči konsolidacijo tujih valut; nepreverjena split osnova onemogoči številčni YTD. Vrzeli imajo razlago namesto0. ADR-0026 in BL-234 določata podatkovno mejo.

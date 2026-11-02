@@ -8,9 +8,9 @@ test("watchlist profiles survive reload and reserve warnings remain available on
   await active.getByRole("button", { name: "Vrednotenje", exact: true }).click();
   await expect(active.getByRole("columnheader", { name: /P\/E TTM/ })).toBeVisible();
   await expect(active.getByRole("columnheader", { name: /Forward P\/E/ })).toBeVisible();
-  await active.getByLabel("Gostota", { exact: true }).selectOption("compact");
+  await expect(active.getByLabel("Gostota", { exact: true })).toHaveCount(0);
   await page.reload();
-  await expect(active.getByLabel("Gostota", { exact: true })).toHaveValue("compact");
+  await expect(active.locator("tbody td").first()).toHaveCSS("vertical-align", "middle");
   await expect(active.getByRole("columnheader", { name: /P\/E TTM/ })).toBeVisible();
   const reserve = page
     .locator("details")
@@ -56,7 +56,8 @@ test("settings expose individual processes and portfolio analysis filters restor
   await page.goto("/settings");
   await expect(page.getByRole("heading", { name: "Nastavitve", exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Procesi in urniki", exact: true })).toBeVisible();
-  await page.locator("summary").filter({ hasText: "Radar" }).click();
+  await page.getByRole("button", { name: "Uredi urnik: Radar", exact: true }).click();
+  await page.locator("summary").filter({ hasText: "Dodatne omejitve" }).click();
   await expect(page.getByLabel("Časovni pas IANA").first()).toHaveValue("UTC");
   await page.goto("/analysis?status=done&latest=true");
   await expect(page.getByRole("checkbox", { name: /Zadnja za vsak instrument/ })).toBeChecked();

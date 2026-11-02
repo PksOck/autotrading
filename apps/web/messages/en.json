@@ -1544,9 +1544,9 @@
       "uncertain": "{count} deliveries have an uncertain result. They are not retried automatically; check the mail server."
     },
     "processHelp": {
-      "radar": "Collects news and finds events. Model analysis and translations follow the master switch; news collection continues.",
-      "entries": "Checks entry points and reasons for declines. Automatic model work follows the master switch.",
-      "discover_thesis_reviews": "Discovers and reviews theses. Model reviews follow the master switch.",
+      "radar": "Collects news and finds events. Model analysis and translations follow the automatic model analyses switch; news collection continues.",
+      "entries": "Checks entry points and reasons for declines. Automatic model work follows the automatic model analyses switch.",
+      "discover_thesis_reviews": "Discovers and reviews theses. Model reviews follow the automatic model analyses switch.",
       "batch_analyses": "Prepares a limited batch for the portfolio or watchlist. Preview and quota checks precede starting.",
       "sync_flex": "Reads portfolio and trades from IBKR. Uses no language model.",
       "refresh_bars": "Refreshes daily instrument prices. Uses no language model.",
@@ -1686,7 +1686,7 @@
       },
       "settings": {
         "purpose": "Settings show what has changed and which options are enabled.",
-        "actions": "Choose a process, edit its mode, limits or time windows, and save. The automatic-model switch and global pause serve different purposes.",
+        "actions": "The master switch controls all automatic starts; the analyses switch controls automatic model work. Toggle a module directly in the list, or open its schedule and restrictions, then save.",
         "data": "Connection status and execution history show the latest saved or checked results. Email requires a configured connection and selected recipients.",
         "limits": "Changing a schedule does not start a process immediately. Enabling automation can permit later model calls under the selected rules."
       },
@@ -1764,11 +1764,57 @@
       "missing_price": "At least one instrument lacks two comparable closes.",
       "invalid_price": "The price basis is invalid.",
       "missing_fx": "A reported conversion rate is missing.",
-      "unverified_fx_target": "The reported FX target currency is unverified; no consolidated estimate is calculated."
+      "unverified_fx_target": "The reported FX target currency is unverified; no consolidated estimate is calculated.",
+      "missing_year_start": "No comparable close before the start of this year.",
+      "mixed_price_sources": "The price bases do not share the same source.",
+      "missing_period_price": "No comparable latest close for the selected year.",
+      "unverified_price_basis": "Price adjustment consistency across stock splits is not yet verified."
     },
     "calendarAsOf": "Statement as of: {date}",
     "calendarEntryCount": "{count} records",
     "calendarUnscheduled": "No schedule",
     "dailyNative": "Held positions by currency · estimate"
+  },
+  "automationSimple": {
+    "all": "All automation",
+    "allOff": "Automatic starts are paused",
+    "allOn": "Automatic starts are allowed",
+    "enableModule": "Enable module {name}",
+    "editModule": "Edit schedule for {name}",
+    "reloadModule": "Reload module {name}",
+    "edit": "Schedule and options",
+    "closeEditor": "Close editor",
+    "advanced": "Additional restrictions",
+    "manualRun": "Manual run",
+    "draftHelp": "Save or discard the draft before toggling this module or opening another editor.",
+    "reloadControls": "Reload settings",
+    "minutes": "every {count, number} min",
+    "helpTitle": "How do I manage automation?",
+    "moduleHelp": "The master switch preserves all schedules and module choices. Disabling a module also blocks manual runs of that process; choose a Manual only schedule to keep manual runs. Enabling does not submit a job immediately.",
+    "statusHelp": "These are saved permissions and schedules. Execution also depends on permitted times, connections, quotas and the worker.",
+    "groups": {
+      "data": "Data",
+      "research": "Analysis and monitoring",
+      "notifications": "Notifications",
+      "other": "Other modules"
+    },
+    "states": {
+      "off": "Off",
+      "manual": "Manual only",
+      "paused": "Globally paused",
+      "modelOff": "Automatic analyses off",
+      "scheduled": "Schedule enabled",
+      "unavailable": "Status unavailable"
+    }
+  },
+  "portfolioChange": {
+    "title": "Position price move",
+    "period": "Change period",
+    "day": "Day",
+    "ytd": "Year to date",
+    "native": "By original currency",
+    "help": "Price move basis",
+    "dayMethod": "Compares the last two stored closes for the current quantities. This is not the daily change of the entire account.",
+    "ytdMethod": "Current imported quantities at the latest price compared with a comparable close before 1 January of the current year. This is a price estimate excluding dividends and trades, not actual account YTD performance; corporate actions require checking the basis."
   }
 }

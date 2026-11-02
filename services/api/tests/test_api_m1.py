@@ -107,6 +107,29 @@ async def test_daily_portfolio_move_does_not_assume_the_imported_fx_target(api) 
     (native,) = body["daily_native"]
     assert native["currency"] == "USD" and native["amount"] == 2050
     assert native["percent"] == 10 and native["position_count"] == 2
+    assert body["ytd_native"][0]["amount"] is None
+    assert body["ytd_native"][0]["reason"] == "missing_year_start"
+    async with get_sessionmaker()() as session:
+        for instrument in await session.scalars(select(Instrument)):
+            session.add(
+                Bar(
+                    instrument_id=instrument.id,
+                    interval="1d",
+                    day=date(day.year - 1, 12, 31),
+                    open=Decimal(80),
+                    high=Decimal(80),
+                    low=Decimal(80),
+                    close=Decimal(80),
+                    volume=100,
+                    source="synthetic",
+                )
+            )
+        await session.commit()
+    ytd = (await client.get("/portfolio")).json()
+    assert ytd["ytd_move"]["amount"] is None
+    assert ytd["ytd_native"][0]["amount"] is None
+    assert ytd["ytd_native"][0]["reason"] == "unverified_price_basis"
+    assert ytd["ytd_native"][0]["basis"] == "held_positions_ytd_constant_reported_fx"
     assert router.calls == [], "rendering may only read stored bars"
     async with get_sessionmaker()() as session:
         instrument = await session.scalar(select(Instrument).where(Instrument.symbol == "MSFT"))

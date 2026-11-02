@@ -8,7 +8,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from preza.domain.dividends import DividendStatement
 from preza.domain.market import InstrumentKind
 from preza.domain.metadata import DataMeta, MetricValue
-from preza.domain.portfolio_daily import CurrencyDailyMove, DailyMove
+from preza.domain.portfolio_daily import YTD_BASIS, CurrencyDailyMove, DailyMove
 from preza.domain.types import Num
 
 
@@ -111,6 +111,8 @@ class SyncInfo(BaseModel):
 class PortfolioOut(BaseModel):
     daily_move: DailyMove = Field(default_factory=DailyMove)
     daily_native: list[CurrencyDailyMove] = Field(default_factory=list)
+    ytd_move: DailyMove = Field(default_factory=lambda: DailyMove(basis=YTD_BASIS))
+    ytd_native: list[CurrencyDailyMove] = Field(default_factory=list)
     accounts: list[str] = Field(default_factory=list)
     selected_account: str | None = None
     valuation_meta: DataMeta = Field(default_factory=DataMeta)

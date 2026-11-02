@@ -5,6 +5,7 @@ import { Sparkline } from "@/components/overview/Sparkline";
 import type { EntryOut } from "@/lib/api/types";
 import { formatChange, formatMoney } from "@/lib/format";
 import { useAppLocale } from "@/lib/use-app-locale";
+import { Icon } from "@/components/common/Icon";
 
 export type StoredPriceTrend = {
   points: { close: string | number; market_date: string }[];
@@ -42,26 +43,40 @@ export function PriceTrend({
     trend?.points.filter((point) => Number.isFinite(Number(point.close))).slice(-30) ?? [];
   if (points.length < 2)
     return <span className="text-[11px] text-text-3">{t("trendUnknown")}</span>;
+  if (compact)
+    return (
+      <details className="w-40 space-y-1 text-[10px] leading-3 text-text-3">
+        <summary
+          aria-label={t("trendSamples", { count: points.length })}
+          className="min-h-12 cursor-pointer list-none rounded focus-visible:outline-2 focus-visible:outline-accent [&::-webkit-details-marker]:hidden"
+        >
+          <span className="mb-1 flex items-center gap-2">
+            <Sparkline
+              values={points.map((point) => Number(point.close))}
+              width={104}
+              height={26}
+            />
+            <Icon name="info" size={14} />
+          </span>
+          <span className="block">
+            {points[0]!.market_date} – {points.at(-1)!.market_date}
+          </span>
+          <span className="block">{t("trendSamples", { count: points.length })}</span>
+        </summary>
+        <div className="space-y-1 break-words rounded border border-border bg-surface p-2 text-xs">
+          {trend?.source && <div>{trend.source}</div>}
+          {trend?.as_of && <div>{trend.as_of}</div>}
+        </div>
+      </details>
+    );
   return (
     <div
-      className={`space-y-1 text-[10px] text-text-3 ${compact ? "leading-[14px]" : ""}`}
+      className="space-y-1 text-[10px] text-text-3"
       title={[trend?.source, trend?.as_of].filter(Boolean).join(" · ")}
     >
       <Sparkline values={points.map((point) => Number(point.close))} width={104} height={26} />
-      {!compact && <div>{t("trendPeriod")}</div>}
-      {compact ? (
-        <details>
-          <summary className="min-h-12 cursor-pointer content-center rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
-            {t("trendSamples", { count: points.length })}
-          </summary>
-          <div className="space-y-1 break-words">
-            {trend?.source && <div>{trend.source}</div>}
-            {trend?.as_of && <div>{trend.as_of}</div>}
-          </div>
-        </details>
-      ) : (
-        <div>{t("trendSamples", { count: points.length })}</div>
-      )}
+      <div>{t("trendPeriod")}</div>
+      <div>{t("trendSamples", { count: points.length })}</div>
       <div>
         {points[0]!.market_date} – {points.at(-1)!.market_date}
       </div>
