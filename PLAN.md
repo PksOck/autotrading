@@ -4,7 +4,7 @@ Povzetek sprejetega načrta. Podrobna utemeljitev je v [`docs/research/2026-10-2
 
 ## Trenutno: različica0.2.0 in zasebni dostop (S-030)
 
-[Plan različic/bcrypt](./docs/superpowers/plans/2026-11-02-razlicice-in-bcrypt.md), [CHANGELOG](./CHANGELOG.md) in [navodila izdaj](./CONTRIBUTING.md) povezujejo VERSION, pakete, UI/health in preverjanje tagov. Zasebna namestitev3300 z HTTPS8443 je zagnana in anonimni dostop zaklenjen. Lastnik ohrani trenutna pravila Tailscale, zato omrežni dostop ni omejen samo na en telefon. Dejanska prijava in prvi uvoz podatkov sta uporabnikov sprejemni korak.
+[Objavljena predizdaja v0.2.0](https://github.com/PksOck/autotrading/releases/tag/v0.2.0) ima uspešen celotni CI in preverjanje taga. [Plan različic/bcrypt](./docs/superpowers/plans/2026-11-02-razlicice-in-bcrypt.md), [CHANGELOG](./CHANGELOG.md) in [navodila izdaj](./CONTRIBUTING.md) povezujejo VERSION, pakete, UI/health in preverjanje tagov. Zasebna namestitev3300 z HTTPS8443 je zagnana in anonimni dostop zaklenjen. Lastnik ohrani trenutna pravila Tailscale, zato omrežni dostop ni omejen samo na en telefon. Dejanska prijava in prvi uvoz podatkov sta uporabnikov sprejemni korak.
 
 ## Predhodno: YTD, lastniška prijava in GitHub predaja (S-029)
 

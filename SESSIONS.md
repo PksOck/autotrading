@@ -16,7 +16,9 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 
 **Okolje:** Prvi testni DB start je odpovedal zaradi tmpfs UID; zavrženi samo lastni testni podatki, popravljenaUID1000, nato celotna suita uspešna. Samodejni pregled je zavrnil sklic na tuji venv pri namestitvi, zato ustvarjeno lastno services/api/.venv z globalnim Python3.12 in cache znotraj te veje. Tuji venv ni spremenjen.
 
-**Odprto:** Dokončati GitHub izdajo/tag po CI. Browser prikaz verzije in bcrypt login na sintetičnem računu potrjena s6 testi (SL/EN, desktop/phone). Uporabnik nato opravi dejansko prijavo s telefona in izbere uvoz podatkov v novo zasebno bazo. Makro/Flex/FX/SMTP/backup in BL225/226/227/231 ostajajo ločeni.
+**Predaja različice:** [v0.2.0](https://github.com/PksOck/autotrading/releases/tag/v0.2.0) objavljena kot razvojna predizdaja. Annotated tag kaže na0ca8615; [celotni CI41486663845](https://github.com/PksOck/autotrading/actions/runs/41486663845) in [tag-check41487841802](https://github.com/PksOck/autotrading/actions/runs/41487841802) sta success. Browser prikaz verzije in bcrypt login na sintetičnem računu potrjena s6 testi (SL/EN, desktop/phone). Lastna začasna testna DB, auth-test3200 in čarovnik gesla odstranjeni; zasebna namestitev in demo ostaneta.3000 sliki ponovno potrjeni nespremenjeni.
+
+**Odprto:** Uporabnik nato opravi dejansko prijavo s telefona in izbere uvoz podatkov v novo zasebno bazo. Makro/Flex/FX/SMTP/backup in BL225/226/227/231 ostajajo ločeni.
 
 ---
 

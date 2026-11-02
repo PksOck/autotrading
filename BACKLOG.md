@@ -230,6 +230,6 @@ Opusov dokument je prevzet iz Claudove veje pri `28f2990`. Izvedbena veja `fix/s
 | BL-239 | Ločeni zasebni sklad3300 in Tailscale Serve8443 z lastniškim loginom zagnana; HTTPS200, preusmeritev na login in API401 preverjeni. Pravila ostanejo po izrecni izbiri uporabnika. Fizični login/uvoz podatkov še uporabnikov sprejemni korak;443→8090 in3000 ohranjena | S-030, navodila zasebnega dostopa | doing |
 
 | BL-240 | Bcrypt združljivost ob lokalnem uporabnikovem hashu:2a/2b/2y, cost10–16, brez krajšanja nad72UTF8 bajti, fail-closed;649API testi, Astra PASS. Po potrditvi hash preseljen iz osnovne.env.example v ignorirano.env | S-030 | done |
-| BL-241 | GitHub About/teme, posodobljen README/CHANGELOG/SECURITY/CONTRIBUTING, enotna0.2.0 v paketih/UI/health, CI preverjanje različic/tagov ter annotated tag in predizdaja po zelenem CI | S-030, plan različic/bcrypt | doing |
+| BL-241 | GitHub About/teme, README/CHANGELOG/SECURITY/CONTRIBUTING, enotna0.2.0 v paketih/UI/health, CI preverjanje različic/tagov; annotated v0.2.0 in GitHub predizdaja objavljena na0ca8615, oba CI uspešna | S-030, plan različic/bcrypt | done |
 
 S-017: pregledna veja vključuje Val −1 in nadaljnje nadgradnje, objavljene samo v ločenem demu :3100. Claudova veja in okolje :3000 nista posodobljena; uporabnik zahteva pregled pred prenosom. ADR-0017–0020 so zapisani za izvedeno pregledno vejo. Podatkovne vrzeli in nedokončani deli celotnega načrta so v docs/implementation/2026-10-29-pregled-sprememb.md. Status done pomeni izvedeno v pregledni veji, ne odobrene objave na :3000.
