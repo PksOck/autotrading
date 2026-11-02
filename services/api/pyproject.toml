@@ -1,6 +1,6 @@
 [project]
 name = "preza-api"
-version = "0.1.0"
+version = "0.2.0"
 description = "Preža API: domain, data, signals and system status"
 requires-python = ">=3.12,<3.13"
 dependencies = [
@@ -19,6 +19,7 @@ dependencies = [
   "ib-async>=2.1",
   "ta-lib>=0.6.5",
   "numpy>=2.1",
+  "bcrypt>=5,<6",
 ]
 
 [dependency-groups]

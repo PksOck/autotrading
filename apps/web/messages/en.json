@@ -35,9 +35,10 @@
     },
     "security": {
       "title": "Security",
-      "intro": "The intended deployment uses HTTPS through Tailscale Serve, device-specific access rules and a separate owner login. Tailscale Funnel is not part of this deployment.",
+      "intro": "The intended deployment uses HTTPS through Tailscale Serve and an owner login. Network access follows the current Tailscale rules; single-device access requires an additional policy restriction. Tailscale Funnel is not part of this deployment.",
       "detail": "Use a unique long password and a phone lock. Changing locally configured credentials revokes old sessions. Do not include passwords, tokens or private Flex statements in issue reports. Report concerns to the owner through a known private channel with a sanitized example. Protection against every attack cannot be guaranteed."
-    }
+    },
+    "version": "Version {version}: changelog"
   },
   "app": {
     "name": "Preža",

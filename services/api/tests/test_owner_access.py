@@ -1,5 +1,6 @@
 from datetime import UTC, datetime, timedelta
 
+import bcrypt
 import pytest
 from sqlalchemy import select, update
 
@@ -13,16 +14,22 @@ ORIGIN = "https://preza.example.test"
 PASSWORD = "synthetic owner testing password"
 
 
-def configure(monkeypatch):
+def configure(monkeypatch, algorithm="scrypt"):
     monkeypatch.setenv("APP_ENV", "production")
     monkeypatch.setenv("APP_BASE_URL", ORIGIN)
-    monkeypatch.setenv("OWNER_PASSWORD_HASH", hash_password(PASSWORD))
+    encoded = (
+        bcrypt.hashpw(PASSWORD.encode(), bcrypt.gensalt(rounds=12)).decode()
+        if algorithm == "bcrypt"
+        else hash_password(PASSWORD)
+    )
+    monkeypatch.setenv("OWNER_PASSWORD_HASH", encoded)
     get_settings.cache_clear()
 
 
-async def test_direct_api_login_origin_logout_and_opaque_storage(api, monkeypatch):
+@pytest.mark.parametrize("algorithm", ["scrypt", "bcrypt"])
+async def test_direct_api_login_origin_logout_and_opaque_storage(api, monkeypatch, algorithm):
     client, _ = api
-    configure(monkeypatch)
+    configure(monkeypatch, algorithm)
     assert (await client.get("/portfolio")).status_code == 401
     assert (await client.get("/docs")).status_code == 401
     assert (

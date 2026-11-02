@@ -1,6 +1,6 @@
 [project]
 name = "preza-agents"
-version = "0.1.0"
+version = "0.2.0"
 description = "Preža agents: deep analysis on TradingAgents with data from our database"
 requires-python = ">=3.12,<3.13"
 dependencies = [

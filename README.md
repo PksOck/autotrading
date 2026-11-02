@@ -4,23 +4,23 @@
 
 Interna platforma za **zaznavanje naložbenih priložnosti** v ameriških delnicah in ETF-jih. Spremlja novice, filinge in špekulacije, prepoznava dobre (ponovne) vstopne točke za dolgoročne pozicije in s pomočjo AI agentov pripravi utemeljeno analizo. Odločitev in naročilo pri Interactive Brokers ostaneta vedno tvoja.
 
-**Stanje:** mejnika **M0** in **M1** sta zgrajena (portfelj iz IBKR Flex, dnevne sveče, watchlista, stran instrumenta). Naslednji je M2 Radar. Podrobnosti v [SESSIONS.md](./SESSIONS.md).
+[![CI](https://github.com/PksOck/autotrading/actions/workflows/ci.yml/badge.svg)](https://github.com/PksOck/autotrading/actions/workflows/ci.yml)
 
-M0: : lupina UI z gibanjem, ⌘K, kukalom in ročnimi predlogi, FastAPI s stanjem servisov, Docker Compose, LiteLLM vloge, CI. Podatki na Pregledu so še vzorčni (M1). Prejšnja Next.js aplikacija je na veji [`legacy`](https://github.com/PksOck/autotrading/tree/legacy).
+**Različica: 0.2.0 — razvojna izdaja za testiranje.** [Izdaje](https://github.com/PksOck/autotrading/releases) · [Spremembe](CHANGELOG.md) · [Varnost](SECURITY.md) · [Razvoj in verzioniranje](CONTRIBUTING.md)
 
-## Hiter zagon
+## Kaj je na voljo
 
-```bash
-# celoten sklad (Docker)
-cp .env.example .env              # izpolni POSTGRES_PASSWORD, LITELLM_MASTER_KEY, OLLAMA_BASE_URL ...
-docker compose -f infra/docker-compose.yml --env-file .env up -d --build
-docker compose -f infra/docker-compose.yml --env-file .env exec api python -m preza.cli.load_universe
-# → http://127.0.0.1:3000 (prek Tailscale: http://<ime-strežnika>:3000 z WEB_BIND=0.0.0.0 samo na tailnet vmesniku)
+Radar, vstopne cone, signali in predlogi, globoke analize, portfelj/watchlista z nastavljivimi stolpci, dividendni koledar, teze, študija shranjenih signalov, procesni urniki in lastniška prijava. UI je slovenski/angleški s svetlo/temno temo. IBKR povezava ostaja read-only; naročil ne oddajamo samodejno.
 
-# razvoj brez Dockerja
-cd services/api && uv sync && uv run uvicorn preza.main:app --reload    # :8000
-pnpm install && pnpm dev                                                # :3000
-```
+YTD prikazuje cenovni premik trenutnih količin iz enega preverljivega zajema, ne celotnega donosa računa. Sintetični demo in dejanski podatki so ločeni; vrzeli ostanejo vidne. Še odprti so razširjeno spremljanje lastnih idej, merila tez, laboratorij finančne zgodovine ter dejanska dokazila Flex/FX/SMTP/backup. Trenutno stanje določata [PLAN](PLAN.md) in [BACKLOG](BACKLOG.md), ne oznaka izdaje sama.
+
+## Zagon in dostop
+
+- **Pregledni demo:** ločen sklad na127.0.0.1:3100 s sintetičnimi podatki. [Navodila](infra/README.md). `seed_demo` briše demo zapise; nikoli ga ne uporabi na zasebni bazi.
+- **Zasebna namestitev:** [koraki prijave, Docker in HTTPS/Tailscale](docs/implementation/2026-11-02-zasebni-dostop-navodila.md). Ločen overlay3300 ohrani že zagnani3000. Geslo/hash sodi v lokalno ignorirano konfiguracijo. Produkcija brez nastavljenega lastnika in HTTPS izvora ostane zaklenjena.
+- **Razvoj:** v services/api `uv sync --frozen` in `uv run uvicorn preza.main:app --reload`; v korenu `pnpm install --frozen-lockfile` in `pnpm dev`. Podrobnosti imajo README posameznih storitev.
+
+Tailscale Serve naj posreduje na loopback; ne odpiraj WEB_BIND=0.0.0.0 kot nadomestila za pravilno zaščito. Objavljena GitHub koda ne zamenja že zagnanega dema ali zasebne baze.
 
 ---
 
@@ -43,15 +43,14 @@ pnpm install && pnpm dev                                                # :3000
 - [`docs/adr/`](./docs/adr/): arhitekturne odločitve `ADR-xxxx` (zakaj je nekaj tako, kot je)
 - [`docs/research/`](./docs/research/): analize odprtokodnih kandidatov in podrobna zasnova (vir za PLAN)
 
-### Koda (struktura je pripravljena, vsebina pride po mejnikih)
+### Koda
 
 ```text
 apps/web/              Next.js frontend (SCR-xx zasloni, i18n sl/en, svetla/temna tema)
 services/api/          FastAPI: domena, podatki, Radar, vstopi, signali, opcije, portfelj
 services/agents/       agentski cevovodi (TradingAgents adapter, ETF, padec, opcije, teze)
-services/claude_runner/ Claude Agent SDK servis (naročniški kredit)
-services/broker/       IBKR: ib_async + Flex, varovala
-services/notify/       Telegram bot
+services/api/preza/broker/  IBKR Flex read-only uvoz
+services/api/preza/notify/  obvestila in Telegram
 infra/                 Docker Compose, LiteLLM, IB Gateway, Postgres
 design/                povezave na UI prototipe (Artifact platno) in izvozi
 ```

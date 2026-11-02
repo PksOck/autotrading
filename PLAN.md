@@ -2,9 +2,13 @@
 
 Povzetek sprejetega načrta. Podrobna utemeljitev je v [`docs/research/2026-10-22-zasnova-resitve.md`](./docs/research/2026-10-22-zasnova-resitve.md), primerjava kandidatov v [`docs/research/2026-10-22-analiza-kandidatov.md`](./docs/research/2026-10-22-analiza-kandidatov.md), izkušnje iz starega projekta v [`docs/research/2026-10-22-trading-list-prevzem.md`](./docs/research/2026-10-22-trading-list-prevzem.md).
 
-## Trenutno: YTD, lastniška prijava in GitHub predaja (S-029)
+## Trenutno: različica0.2.0 in zasebni dostop (S-030)
 
-Izvedeni BL-234/235/237/238: [YTD SPEC](./docs/superpowers/specs/2026-11-02-ytd-podatki-in-predaja-spec.md), [varnostni SPEC](./docs/superpowers/specs/2026-11-02-zasebni-dostop-design.md), [dokazi in sprejemni pregled](./docs/implementation/2026-11-02-ytd-varnost-predaja.md). Številčni demo YTD ima izrecen sintetični vir. Živi IBKR zajem ni potrjen, potrebuje read-only Gateway in pravice; FX ostaja dokazna omejitev. GitHub master push je odobren; :3000 ni. BL-239 ostaja operativno odprt do lokalnega gesla, potrjene Tailscale politike in testa S26 FE; obstoječi Serve443→8090 se ohrani.
+[Plan različic/bcrypt](./docs/superpowers/plans/2026-11-02-razlicice-in-bcrypt.md), [CHANGELOG](./CHANGELOG.md) in [navodila izdaj](./CONTRIBUTING.md) povezujejo VERSION, pakete, UI/health in preverjanje tagov. Zasebna namestitev3300 z HTTPS8443 je zagnana in anonimni dostop zaklenjen. Lastnik ohrani trenutna pravila Tailscale, zato omrežni dostop ni omejen samo na en telefon. Dejanska prijava in prvi uvoz podatkov sta uporabnikov sprejemni korak.
+
+## Predhodno: YTD, lastniška prijava in GitHub predaja (S-029)
+
+Izvedeni BL-234/235/237/238: [YTD SPEC](./docs/superpowers/specs/2026-11-02-ytd-podatki-in-predaja-spec.md), [varnostni SPEC](./docs/superpowers/specs/2026-11-02-zasebni-dostop-design.md), [dokazi in sprejemni pregled](./docs/implementation/2026-11-02-ytd-varnost-predaja.md). Številčni demo YTD ima izrecen sintetični vir. Živi IBKR zajem ni potrjen, potrebuje read-only Gateway in pravice; FX ostaja dokazna omejitev. GitHub master push je odobren; :3000 ni. BL-239 ostaja operativno odprt do priklopa lokalne konfiguracije gesla in testa dostopa. V S-030 uporabnik za zdaj ohrani trenutna Tailscale pravila, zato se ozka politika S26 ne uveljavi; obstoječi Serve443→8090 se ohrani.
 
 ## Predhodno: poenostavljena avtomatika in strnjen portfelj (S-028)
 

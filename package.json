@@ -8,5 +8,6 @@
     "lint": "pnpm --filter web lint",
     "typecheck": "pnpm --filter web typecheck",
     "test": "pnpm --filter web test"
-  }
+  },
+  "version": "0.2.0"
 }

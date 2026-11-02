@@ -35,9 +35,10 @@
     },
     "security": {
       "title": "Varnost",
-      "intro": "Predvidena postavitev uporablja HTTPS prek Tailscale Serve, pravila dostopa za dovoljeno napravo in ločeno lastniško prijavo. Tailscale Funnel ni del postavitve.",
+      "intro": "Predvidena postavitev uporablja HTTPS prek Tailscale Serve in lastniško prijavo. Omrežni dostop določajo trenutna pravila Tailscale; dostop samo z ene naprave zahteva dodatno omejitev pravil. Tailscale Funnel ni del postavitve.",
       "detail": "Uporabi edinstveno dolgo geslo in zaklep telefona. Menjava lokalno nastavljenega gesla prekliče stare seje. Gesel, žetonov in zasebnih Flex izpisov ne dodajaj v prijavo napake. Težavo sporoči lastniku po znanem zasebnem kanalu z očiščenim primerom. Zaščite pred vsemi napadi ni mogoče zagotoviti."
-    }
+    },
+    "version": "Različica {version}: dnevnik sprememb"
   },
   "app": {
     "name": "Preža",

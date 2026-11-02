@@ -4,6 +4,22 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 
 ---
 
+## S-030 · 2026-11-02 · Lokalna nastavitev dostopa po GitHub predaji
+
+**Cilj:** Nadaljevati zasebni dostop s pripravljenimi slikami in lokalno nastavljenim hashom.
+
+**Odločitev uporabnika:** Tailscale za zdaj ostane nespremenjen; ozka politika samo S26 FE se ne uveljavi. Dostop ostane dovoljen napravam glede na trenutna Tailscale pravila, zasebne podatke pa mora varovati lastniška prijava. Prejšnja zahteva Save ozke politike ni več pogoj za to postavitev. Serve443→8090 in3000 se ohranita.
+
+**Izvedeno:** Uporabnikov bcrypt hash je bil v sledeni .env.example osnovnega checkouta; po izrecni potrditvi preseljena samo nastavitev v ignorirano .env in očiščen vzorec, drugi bajti ohranjeni. Hash ni v prejšnjem HEAD in ni bil izpisan. Lastna ignorirana konfiguracija poganja ločeni preza-private s svojo prazno bazo in loopback3300. Serve8443 je aktiven,443→8090 in3000 ohranjena. HTTPS preverjanje s certifikati: login200, portfolio307 na/login, zasebniAPI401, authenabledtrue. Dejanske prijave z uporabnikovim geslom ne izvajamo.
+
+**Koda:** BL-240 podpira bcrypt ob privzetem scrypt; obe zaklenjeni odvisnosti usklajeni, testni RED/GREEN, brez krajšanja dolgih UTF8 gesel, Astra brezP1/P2. API649+1pogojni Redis skip, Ruff/mypy in Alembiccheck brez razlik. Web219/53 in i18n1509. BL-241 pripravlja0.2.0 v VERSION/paketih/lockih/health/UI, checker preverja tudi tag; novi README, CHANGELOG, SECURITY in CONTRIBUTING. GitHub opis/teme posodobljeni. [Plan](./docs/superpowers/plans/2026-11-02-razlicice-in-bcrypt.md).
+
+**Okolje:** Prvi testni DB start je odpovedal zaradi tmpfs UID; zavrženi samo lastni testni podatki, popravljenaUID1000, nato celotna suita uspešna. Samodejni pregled je zavrnil sklic na tuji venv pri namestitvi, zato ustvarjeno lastno services/api/.venv z globalnim Python3.12 in cache znotraj te veje. Tuji venv ni spremenjen.
+
+**Odprto:** Dokončati GitHub izdajo/tag po CI. Browser prikaz verzije in bcrypt login na sintetičnem računu potrjena s6 testi (SL/EN, desktop/phone). Uporabnik nato opravi dejansko prijavo s telefona in izbere uvoz podatkov v novo zasebno bazo. Makro/Flex/FX/SMTP/backup in BL225/226/227/231 ostajajo ločeni.
+
+---
+
 ## S-029 · 2026-11-02 · Koherentni YTD, lastniška prijava in varnostna predaja
 
 **Cilj:** Uporabnik je izbral polno podatkovno nadgradnjo YTD pred odobrenim GitHub master push. Dodal je lastniški login, spremljevalne povezave in Astra varnostni pregled; zadnja usmeritev je Docker/HTTPS prek Tailscale samo za S26 FE.

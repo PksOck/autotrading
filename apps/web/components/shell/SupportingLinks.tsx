@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { version } from "@/package.json";
 
 export function SupportingLinks() {
   const t = useTranslations("supporting");
@@ -15,6 +16,15 @@ export function SupportingLinks() {
           {t(`${key}.title`)}
         </Link>
       ))}
+      <a
+        href={`https://github.com/PksOck/autotrading/releases/tag/v${version}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex min-h-8 items-center"
+        aria-label={t("version", { version })}
+      >
+        v{version}
+      </a>
     </nav>
   );
 }

@@ -11,3 +11,7 @@ Vsi nevarni zahtevki preverijo točen nastavljeni Origin, tudi login/logout/acti
 Proxy omejuje telo pred dekodiranjem, potrdi pot, ne sledi redirectom in ne posreduje poljubnih internih glav. CSP prepove okvirjanje/objekte in tuje obrazce, a ni polna nonce CSP za vse Next skripte. Secret build konteksti so izključeni, občutljivi HTTP dnevniki očiščeni, Flex traceback nima verige z žetonom.
 
 Končni namen uporabnika je Docker + Tailscale Serve HTTPS samo s telefona S26 FE; Funnel in javni WAN port nista dovoljena postavitev. Privzeti all→all je treba nadomestiti z izjemo za TCP8443 tudi za IPv6. Druge storitve/SSH ostanejo. Dejansko varnost pravil potrdita Tailscale validator in preizkus naprave. Produkcijsko geslo nastavi uporabnik lokalno; samo testne sintetične poverilnice so v testih.
+
+## Dopolnitev S-030
+
+Za obstoječo uporabnikovo lokalno nastavitev sprejmemo tudi bcrypt2a/2b/2y, cost10–16. Knjižnica bcrypt5 preveri hash; več kot72 UTF8 bajtov se zavrne, ne krajša. Privzeto generiranje ostane scrypt. Uporabnik za zdaj ohrani trenutna Tailscale pravila; omejitev samo S26 se ne uveljavi. S tem dostop ni omejen na en telefon, lastniški API guard pa ostane obvezen.

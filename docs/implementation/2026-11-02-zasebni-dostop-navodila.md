@@ -18,3 +18,7 @@ Seja velja8h, mirovanje30min; statusna osveževanja mirovanja ne podaljšujejo. 
 Lastniška namestitev nima javne registracije ali poštne obnove gesla. Za obnovo je potreben lokalni dostop do konfiguracije. Izgubljen telefon odstrani iz Tailscale ter zamenjaj geslo. Tailscale pravila varujejo ta dostop; druga naprava z že dovoljenim SSH/upravnim dostopom do gostitelja ni izločena iz njegovega operacijskega sistema. Prijava ne odstrani datotek, ki jih je lastnik že prenesel.
 
 Referenčna navodila: [Tailscale Serve](https://tailscale.com/docs/features/tailscale-serve), [grants](https://tailscale.com/docs/reference/syntax/grants), [IP sets](https://tailscale.com/docs/features/tailnet-policy-file/ip-sets), [OWASP seje](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html).
+
+## Aktualna izbira S-030
+
+Uporabnik ohrani obstoječa Tailscale pravila, zato ozka politika samo S26 ni pogoj za aktivacijo; omrežni dostop imajo tudi druge trenutno dovoljene naprave. Owner login ostane obvezen. Obstoječi bcrypt2a/2b/2y hash cost10–16 je podprt; ni potreben ponovni vnos gesla v čarovnik. Nastavitev je lahko neposredno v ignorirani .env ali ločenem owner.env, nikoli v sledeni .env.example.

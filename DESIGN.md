@@ -346,3 +346,7 @@ Metodni podatki Uspešnosti (BL-228, ADR-0025): globalni neoznačeni izidi imajo
 - Zasebna ovojnica preveri sejo pred prikazom. Ozadje/vrnitev začasno skrijeta nameščeno drevo, zato osnutki ostanejo. Potek/odjava drevo odstrani in počisti query cache; odjava se prenese med zavihki. Nujni piškotek ostane HttpOnly, nikoli v localStorage.
 - YTD ob Dan uporablja en letni zajem, v podrobnostih sta čas pridobitve in ID zajema. Izvorne valute ostanejo ločene, manjkajoča zgodovina ima razlago in ne0. Sintetični demo je označen in ni dokaz živega vira.
 - Opozorilo Zastarelo razkrije konkretno ceno/kazalnik, vir, obdobje in lokalni čas pridobitve; ohrani partial/identity tudi v skritih stolpcih. Razkritje je v toku, ne odrezan popover.
+
+## Dopolnitev S-030: sledljivost različice
+
+Skupna noga javnih in zasebnih strani vsebuje različico paketa (v0.2.0) kot povezavo na GitHub izdajo. Dostopno ime je prevedeno, zunanja povezava uporablja noopener/noreferrer. /health kaže enako runtime različico. Prikaz ne pomeni, da je izveden celoten backlog ali da je podatkovni vir potrjen.

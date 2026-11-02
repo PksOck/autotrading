@@ -2,10 +2,12 @@
 
 import hashlib
 import hmac
+import re
 import secrets
 from datetime import UTC, datetime, timedelta
 from urllib.parse import urlsplit
 
+import bcrypt
 from sqlalchemy import delete, text
 
 from preza.config import Settings
@@ -22,6 +24,8 @@ def hash_password(password: str) -> str:
 
 
 def valid_hash(value: str) -> bool:
+    if re.fullmatch(r"\$2[aby]\$(?:1[0-6])\$[./A-Za-z0-9]{53}", value):
+        return True
     parts = value.split("$")
     return (
         len(parts) == 3
@@ -35,6 +39,14 @@ def valid_hash(value: str) -> bool:
 def verify_password(password: str, encoded: str) -> bool:
     if not valid_hash(encoded) or len(password) > 256:
         return False
+    if encoded.startswith(("$2a$", "$2b$", "$2y$")):
+        raw = password.encode()
+        if len(raw) > 72:
+            return False
+        try:
+            return bcrypt.checkpw(raw, encoded.encode("ascii"))
+        except ValueError:
+            return False
     _, salt, expected = encoded.split("$")
     digest = hashlib.scrypt(password.encode(), salt=bytes.fromhex(salt), n=16384, r=8, p=5)
     return hmac.compare_digest(digest.hex(), expected)
