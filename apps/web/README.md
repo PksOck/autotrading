@@ -1,5 +1,7 @@
 # apps/web: frontend
 
+Zasebni dostop: javne `/login`, `/about`, `/privacy`, `/terms`, `/security`; zasebne strani uporabljajo SessionGuard, API pa neodvisno potrdi FastAPI. [Namestitev in sprejem](../../docs/implementation/2026-11-02-zasebni-dostop-navodila.md). Browser test `owner-auth.spec.ts` teče samo ob AUTH_TEST_BASE_URL na izoliranem testnem skladu.
+
 Next.js 16 (App Router) · React 19 · Tailwind 4 · Motion · Radix · cmdk · sonner · TanStack Query · Zustand · d3 (izračun) · next-intl.
 
 ## Zagon

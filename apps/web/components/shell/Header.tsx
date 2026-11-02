@@ -6,6 +6,7 @@ import { openCommandPalette } from "@/components/shell/CommandPalette";
 import { LocaleSwitch } from "@/components/shell/LocaleSwitch";
 import { SystemStatus } from "@/components/shell/SystemStatus";
 import { ThemeToggle } from "@/components/shell/ThemeToggle";
+import { LogoutButton } from "./LogoutButton";
 import type { ThemePreference } from "@/lib/theme";
 import { useShortcutLabel } from "@/lib/platform";
 import { openProposalComposer } from "@/stores/proposals";
@@ -36,6 +37,7 @@ export function Header({ themePreference }: { themePreference: ThemePreference }
       </button>
       <LocaleSwitch />
       <ThemeToggle initial={themePreference} />
+      <LogoutButton />
     </header>
   );
 }

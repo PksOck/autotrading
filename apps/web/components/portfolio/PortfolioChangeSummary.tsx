@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import type { PortfolioOut } from "@/lib/api/types";
 import { DataDetails } from "@/components/common/DataDetails";
 import { SignedChange } from "./MarketContext";
@@ -13,6 +13,7 @@ type Summary = Pick<
 
 export function PortfolioChangeSummary({ data }: { data: Summary }) {
   const t = useTranslations("portfolioChange");
+  const format = useFormatter();
   const details = useTranslations("screenRefinement");
   const [period, setPeriod] = useState("day");
   const move = period === "day" ? data.daily_move : data.ytd_move;
@@ -42,6 +43,24 @@ export function PortfolioChangeSummary({ data }: { data: Summary }) {
               <p key={row.currency}>
                 {row.currency} · {row.previous_market_date ?? "—"} → {row.market_date ?? "—"} ·{" "}
                 {row.sources?.join(", ") || "—"} · {row.holdings_dates?.join(", ") || "—"}
+                {!!row.captured_at?.length && (
+                  <span className="block">
+                    {t("captured")}:{" "}
+                    {row.captured_at
+                      .map((value) =>
+                        format.dateTime(new Date(value), {
+                          dateStyle: "medium",
+                          timeStyle: "short",
+                        }),
+                      )
+                      .join(" · ")}
+                  </span>
+                )}
+                {!!row.capture_ids?.length && (
+                  <span className="block">
+                    {t("captureId")}: {row.capture_ids.join(", ")}
+                  </span>
+                )}
               </p>
             ),
           )}

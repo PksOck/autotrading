@@ -22,7 +22,7 @@ for (const tab of ["positions", "watchlist"] as const) {
     expect(period.y - graph.y - graph.height).toBeLessThanOrEqual(18);
     await expect(row.locator("td").nth(1)).toHaveCSS("vertical-align", "middle");
     await expect(cell.getByText(/\d{4}-\d{2}-\d{2} – \d{4}-\d{2}-\d{2}/)).toBeVisible();
-    const disclosure = cell.locator("details");
+    const disclosure = cell.locator("details").filter({ has: page.locator("summary[aria-label]") });
     await disclosure.locator("summary").press("Enter");
     await expect(disclosure).toHaveAttribute("open", "");
     await expect(disclosure.getByText("demo", { exact: true })).toBeVisible();
@@ -36,7 +36,8 @@ for (const tab of ["positions", "watchlist"] as const) {
       .last()
       .locator("td")
       .first()
-      .locator("details");
+      .locator("details")
+      .filter({ has: page.locator("summary[aria-label]") });
     await last.locator("summary").press("Enter");
     await expect(last).toHaveAttribute("open", "");
     expect(

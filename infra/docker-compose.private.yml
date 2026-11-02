@@ -1,0 +1,6 @@
+# Overlay: a separate private installation without replacing the existing :3000 stack.
+# Use -p preza-private and a dedicated local env file, never the demo database.
+services:
+  web:
+    ports: !override
+      - "127.0.0.1:3300:3000"

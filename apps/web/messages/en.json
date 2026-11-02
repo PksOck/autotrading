@@ -1,4 +1,44 @@
 {
+  "ownerLogin": {
+    "brand": "Preža",
+    "title": "Private sign in",
+    "description": "Access your personal investment workspace.",
+    "username": "Username",
+    "password": "Password",
+    "signIn": "Sign in",
+    "signingIn": "Signing in …",
+    "logout": "Sign out",
+    "logoutFailed": "Sign out failed. Please retry.",
+    "private": "Owner access only. No public registration.",
+    "invalid": "Sign in failed. Check your username and password.",
+    "throttled": "Too many attempts. Wait up to 15 minutes.",
+    "notConfigured": "Sign in is not configured. The owner must set credentials and the HTTPS address locally.",
+    "unavailable": "Connection unavailable. Please retry."
+  },
+  "supporting": {
+    "links": "Application information",
+    "back": "Back to sign in",
+    "about": {
+      "title": "About",
+      "intro": "Preža is a private workspace for portfolio review, research and investment ideas. Access is intended for its owner.",
+      "detail": "Data carries a source and timestamp. Missing or stale data is not a verified fact. Analyses may use language models according to settings. No analysis or signal places an order automatically."
+    },
+    "privacy": {
+      "title": "Privacy and cookies",
+      "intro": "Portfolio records, imports, theses, settings and activity are stored in this installation’s database. Sign in uses an essential session cookie; language and theme use preference cookies.",
+      "detail": "The browser uses local storage for layout and selected drafts. Advertising analytics is not built in. Enabled market data providers, models, SMTP or Telegram may receive data needed for selected functions. Recipients and retention depend on local configuration, hosting and backups. The owner is responsible for deletion. Sign out revokes the session; it does not delete records or local drafts."
+    },
+    "terms": {
+      "title": "Terms of use",
+      "intro": "This tool supports private research. Displays and model outputs do not guarantee returns or constitute personal investment advice.",
+      "detail": "Verify original data, dates, currency and risks before deciding. Every order requires your explicit decision. Data use depends on provider permissions and terms. This text describes private use; a public service needs additional terms and operator details."
+    },
+    "security": {
+      "title": "Security",
+      "intro": "The intended deployment uses HTTPS through Tailscale Serve, device-specific access rules and a separate owner login. Tailscale Funnel is not part of this deployment.",
+      "detail": "Use a unique long password and a phone lock. Changing locally configured credentials revokes old sessions. Do not include passwords, tokens or private Flex statements in issue reports. Report concerns to the owner through a known private channel with a sanitized example. Protection against every attack cannot be guaranteed."
+    }
+  },
   "app": {
     "name": "Preža",
     "tagline": "Opportunity radar for long-term investors"
@@ -1427,7 +1467,10 @@
     "trendUnknown": "Trend unavailable",
     "zoneUnknown": "Entry zone unknown",
     "inZone": "In zone",
-    "outsideZone": "Outside zone"
+    "outsideZone": "Outside zone",
+    "otherMetric": "Other metric",
+    "qualityPeriod": "Market date / period",
+    "qualityFetched": "Retrieved"
   },
   "identityFacts": {
     "title": "Identity and source facts",
@@ -1549,7 +1592,7 @@
       "discover_thesis_reviews": "Discovers and reviews theses. Model reviews follow the automatic model analyses switch.",
       "batch_analyses": "Prepares a limited batch for the portfolio or watchlist. Preview and quota checks precede starting.",
       "sync_flex": "Reads portfolio and trades from IBKR. Uses no language model.",
-      "refresh_bars": "Refreshes daily instrument prices. Uses no language model.",
+      "refresh_bars": "Refreshes daily prices and coherent IBKR YTD history. YTD requires an available Gateway and historical data permission. Uses no language model.",
       "fundamentals": "Refreshes company fundamentals from the data provider.",
       "outcomes": "Calculates saved signal outcomes from prices. Requires no new analysis.",
       "notify": "Sends existing signal notifications through Telegram.",
@@ -1768,7 +1811,8 @@
       "missing_year_start": "No comparable close before the start of this year.",
       "mixed_price_sources": "The price bases do not share the same source.",
       "missing_period_price": "No comparable latest close for the selected year.",
-      "unverified_price_basis": "Price adjustment consistency across stock splits is not yet verified."
+      "unverified_price_basis": "Price adjustment consistency across stock splits is not yet verified.",
+      "missing_year_history": "Verified year history is missing. Refresh prices and YTD in Settings."
     },
     "calendarAsOf": "Statement as of: {date}",
     "calendarEntryCount": "{count} records",
@@ -1815,6 +1859,8 @@
     "native": "By original currency",
     "help": "Price move basis",
     "dayMethod": "Compares the last two stored closes for the current quantities. This is not the daily change of the entire account.",
-    "ytdMethod": "Current imported quantities at the latest price compared with a comparable close before 1 January of the current year. This is a price estimate excluding dividends and trades, not actual account YTD performance; corporate actions require checking the basis."
+    "ytdMethod": "Current imported quantities at two prices from the same split-adjusted IBKR TRADES capture. The start precedes 1 January; the end is the last completed day before today’s UTC date. This is a price move excluding dividends, cash and trades, not actual account performance. Demo uses an explicitly synthetic capture.",
+    "captured": "Captured",
+    "captureId": "Capture reference"
   }
 }

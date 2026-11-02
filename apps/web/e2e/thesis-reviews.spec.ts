@@ -28,6 +28,8 @@ test("review proposals: actual status stays unchanged until explicit acceptance;
   let dismissals = 0;
   await page.context().addCookies([{ name: "locale", value: "en", url: baseURL! }]);
   await page.route("**/api/**", async (route) => {
+    // Session validation uses the isolated demo API, independently of business fixtures.
+    if (new URL(route.request().url()).pathname === "/api/auth/session") return route.continue();
     const request = route.request();
     const path = new URL(request.url()).pathname;
     if (path.endsWith("/reviews")) await route.fulfill({ json: [review] });
@@ -100,6 +102,8 @@ test("review conflicts offer a friendly refresh and stale revisions cannot be ac
   let conflicted = false;
   await page.context().addCookies([{ name: "locale", value: "en", url: baseURL! }]);
   await page.route("**/api/**", async (route) => {
+    // Session validation uses the isolated demo API, independently of business fixtures.
+    if (new URL(route.request().url()).pathname === "/api/auth/session") return route.continue();
     const path = new URL(route.request().url()).pathname;
     if (path.endsWith("/reviews")) await route.fulfill({ json: [review] });
     else if (path.endsWith("/review-proposals")) await route.fulfill({ json: [reviewProposal] });

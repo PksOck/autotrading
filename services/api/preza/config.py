@@ -11,6 +11,15 @@ class Settings(BaseSettings):
 
     app_env: str = "development"
     default_locale: str = "sl"
+    auth_enabled: bool = False
+    owner_username: str = "owner"
+    owner_password_hash: SecretStr | None = None
+    auth_session_hours: int = Field(default=8, ge=1, le=24)
+    auth_idle_minutes: int = Field(default=30, ge=5, le=120)
+
+    @property
+    def requires_auth(self) -> bool:
+        return self.app_env == "production" or self.auth_enabled
 
     database_url: str = "postgresql+asyncpg://preza:preza@localhost:5432/preza"
     redis_url: str = "redis://localhost:6379/0"

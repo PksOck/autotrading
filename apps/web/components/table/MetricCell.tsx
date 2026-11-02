@@ -1,5 +1,5 @@
 "use client";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { useAppLocale } from "@/lib/use-app-locale";
 import { formatNumber } from "@/lib/format";
 import type { components } from "@/lib/api/schema";
@@ -56,17 +56,62 @@ export function DataQualityBadges({
   metrics?: Record<string, Metric>;
 }) {
   const t = useTranslations("table");
-  const stale = price?.stale || Object.values(metrics ?? {}).some((metric) => metric.meta?.stale);
+  const format = useFormatter();
+  const stamp = (meta?: components["schemas"]["DataMeta"]) => {
+    const fetched = meta?.fetched_at ?? meta?.as_of;
+    return (
+      <span className="block">
+        {meta?.market_date && (
+          <span className="block">
+            {t("qualityPeriod")}: {meta.market_date}
+          </span>
+        )}
+        {fetched ? (
+          <span>
+            {t("qualityFetched")}:{" "}
+            <time dateTime={fetched}>
+              {format.dateTime(new Date(fetched), { dateStyle: "medium", timeStyle: "short" })}
+            </time>
+          </span>
+        ) : (
+          <span>
+            {t("qualityFetched")}: {t("missing")}
+          </span>
+        )}
+      </span>
+    );
+  };
+  const staleMetrics = Object.entries(metrics ?? {}).filter(([, metric]) => metric.meta?.stale);
+  const stale = price?.stale || staleMetrics.length > 0;
   const partial = Object.values(metrics ?? {}).some(
     (metric) => metric.meta?.availability === "partial",
   );
   return (
-    <span className="flex flex-wrap gap-1 text-[11px] font-normal">
+    <div className="flex flex-wrap gap-1 text-[11px] font-normal">
       {identity === "unresolved" && (
         <span className="rounded bg-warn-soft px-1 text-warn">{t("identityUnresolved")}</span>
       )}
-      {stale && <span className="rounded bg-warn-soft px-1 text-warn">{t("stale")}</span>}
+      {stale && (
+        <details className="max-w-full">
+          <summary className="min-h-8 cursor-pointer content-center rounded bg-warn-soft px-1 text-warn">
+            {t("stale")}
+          </summary>
+          <ul className="mt-1 space-y-1 break-words rounded border border-border bg-surface p-2 text-xs">
+            {price?.stale && (
+              <li>
+                {t("close")} · {price.source ?? t("missing")} · {stamp(price)}
+              </li>
+            )}
+            {staleMetrics.map(([key, metric]) => (
+              <li key={key}>
+                {t.has(`metric.${key}`) ? t(`metric.${key}`) : t("otherMetric")} ·{" "}
+                {metric.meta?.source ?? t("missing")} · {stamp(metric.meta)}
+              </li>
+            ))}
+          </ul>
+        </details>
+      )}
       {partial && <span className="rounded bg-warn-soft px-1 text-warn">{t("partial")}</span>}
-    </span>
+    </div>
   );
 }

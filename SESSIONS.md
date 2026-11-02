@@ -4,6 +4,20 @@ Najnovejša seja je na vrhu. Vsaka seja ima ID `S-xxx`, datum, cilj, rezultat, o
 
 ---
 
+## S-029 · 2026-11-02 · Koherentni YTD, lastniška prijava in varnostna predaja
+
+**Cilj:** Uporabnik je izbral polno podatkovno nadgradnjo YTD pred odobrenim GitHub master push. Dodal je lastniški login, spremljevalne povezave in Astra varnostni pregled; zadnja usmeritev je Docker/HTTPS prek Tailscale samo za S26 FE.
+
+**Narejeno:** BL-234/235/237/238: nespremenljivi koherentni split-only zajemi in numerični YTD z dokazili, jasna zastarelost, API-wide prijava, seje/idle/revocation/SSE, Origin in omejitev prijav/teles, varni dnevniki/build konteksti, login/logout, cross-tab zaklep in SL/EN podporne strani. [Dokazi](./docs/implementation/2026-11-02-ytd-varnost-predaja.md), ADR-0027/0028. Demo3100 je aditivno nadgrajen na0022: pred testi ohranjeno21 predlogov/5 analiz/3 tez, dodanih12 sintetičnih zajemov, brez reseeda.
+
+**Preverjanje:** API643 uspešnih +1 pogojni Redis skip, agents229, web219/53, celotni browser110 +12 namernih device skipov; Ruff/mypy/TS/ESLint/i18n1508, Docker build, Alembic check brez razlik. Sintetična obnova2 zajemov v ločeno bazo ohrani prstne odtise in immutable sprožilec. Astra končni pregled PASS, brez P1/P2. Vmesne browser regresije so odpravljene: /auth/session ni poslovna fixture, demo ne pošilja aktivnosti, skrit zavihek ohrani osnutek.
+
+**Odločitve:** GitHub push odobren, brez force; tuji master checkout in3000 ostaneta. YTD ni NAV donos, valute niso tiho seštete. Lastniško geslo nastavi uporabnik lokalno, ne v pogovoru. Pripravljena Tailscale politika odstrani splošni dostop samo za TCP8443 tega gostitelja v obeh naslovnih družinah; SSH/drugi servisi ostanejo. Politika in konkretni IP so samo v ignorirani lokalni datoteki.
+
+**Odprto:** BL-236 potrditev remote SHA/CI po push. BL-239 Save/validator v Tailscale, lokalno geslo, ločeni zasebni sklad3300, šele nato Serve8443 in test iz S26 ter zavrnitev drugih naprav. Brskalniška avtomatizacija Chrome se je ustavila zaradi nezanesljivo ugotovljenega URL; uporabnik nadaljuje shranitev pripravljene konfiguracije. BL-225/226/227/231 ter dejanski Flex/FX/SMTP/backup niso zaključeni s tem krogom.
+
+---
+
 ## S-028 · 2026-11-02 · Hitra avtomatika in strnjen portfelj, odprava Astra ugotovitev
 
 **Cilj:** Nadaljevati delo2026-11-01, poenostaviti Procesi in urniki, strniti tabele ter dodati Dan/YTD s preverljivimi osnovami. Uporabnik je zahteval Astro in odpravo ugotovitev.

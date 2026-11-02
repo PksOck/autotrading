@@ -340,3 +340,9 @@ Metodni podatki Uspešnosti (BL-228, ADR-0025): globalni neoznačeni izidi imajo
 - compactRows omeji vedno kompaktno gostoto in align-middle samo na Pozicije/Watchlisto. Numerika ostane desno, uporabnikove širine/stolpci ohranjeni. Zaprte kontrolne tarče Watchliste32px na namizju,48px na dotik. Dolga imena/opozorila se ne režejo.
 - Native summary mini grafa vsebuje črto, datumski razpon in število sej; vir/čas se razkrije v normalnem toku. Izrecno odprta vrstica se lahko poveča, zato zadnja vrstica ni odrezana z overflow scrollerjem.
 - Dan/YTD ob vrednosti prikazuje cenovne ocene trenutnih količin, ne NAV donosov. Neznan FX cilj prepreči konsolidacijo tujih valut; nepreverjena split osnova onemogoči številčni YTD. Vrzeli imajo razlago namesto0. ADR-0026 in BL-234 določata podatkovno mejo.
+# Dopolnitev S-029: prijava in dokazila YTD
+
+- /login ter /about, /privacy, /terms, /security imajo javno, mirno ovojnico brez zasebne navigacije/statusa/predlogov. Povezave so v skupni nogi; vse besedilo je v SL/EN messages. Prijavne kontrole so najmanj48px, napake imajo role=alert in ne razkrivajo obstoja uporabnika.
+- Zasebna ovojnica preveri sejo pred prikazom. Ozadje/vrnitev začasno skrijeta nameščeno drevo, zato osnutki ostanejo. Potek/odjava drevo odstrani in počisti query cache; odjava se prenese med zavihki. Nujni piškotek ostane HttpOnly, nikoli v localStorage.
+- YTD ob Dan uporablja en letni zajem, v podrobnostih sta čas pridobitve in ID zajema. Izvorne valute ostanejo ločene, manjkajoča zgodovina ima razlago in ne0. Sintetični demo je označen in ni dokaz živega vira.
+- Opozorilo Zastarelo razkrije konkretno ceno/kazalnik, vir, obdobje in lokalni čas pridobitve; ohrani partial/identity tudi v skritih stolpcih. Razkritje je v toku, ne odrezan popover.

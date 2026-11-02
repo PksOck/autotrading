@@ -122,3 +122,35 @@ async def test_ibkr_unknown_contract_is_not_found() -> None:
 def test_duration_strings() -> None:
     assert duration_for(date(2026, 10, 1), date(2026, 10, 22)) == "22 D"
     assert duration_for(date(2021, 10, 22), date(2026, 10, 22)) == "6 Y"
+
+
+async def test_split_history_has_qualified_identity_and_explicit_trades_basis():
+    class QualifiedIB(FakeIB):
+        async def qualifyContractsAsync(self, *contracts):
+            return [SimpleNamespace(conId=272093, currency="USD", secType="STK")]
+
+    ib = QualifiedIB(
+        [
+            bar(date(2025, 12, 31), 80, 80, 80, 80, 100),
+            bar(date(2026, 10, 30), 120, 120, 120, 120, 100),
+        ]
+    )
+    result = await IbkrProvider(ib, "gw", 4003).split_history(
+        InstrumentRef("MSFT", "NASDAQ", "USD", 272093), date(2025, 12, 25)
+    )
+    assert result.con_id == 272093 and result.currency == "USD"
+    assert result.price_basis == "ibkr-trades-split-only-v1"
+    assert ib.kwargs["whatToShow"] == "TRADES" and ib.kwargs["useRTH"] is True
+    with pytest.raises(ProviderUnavailableError):
+        await IbkrProvider(ib, "gw", 4003).split_history(
+            InstrumentRef("MSFT", "NASDAQ", "EUR", 272093), date(2025, 12, 25)
+        )
+
+
+async def test_split_history_requires_known_contract_before_connecting():
+    ib = FakeIB([])
+    with pytest.raises(ProviderUnavailableError):
+        await IbkrProvider(ib, "gw", 4003).split_history(
+            InstrumentRef("MSFT", "NASDAQ", "USD"), date(2025, 12, 25)
+        )
+    assert not ib.connected

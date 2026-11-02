@@ -1,0 +1,15 @@
+# Overlay for a disposable authentication test stack; never use a real owner password.
+# docker compose -p preza-auth-test -f infra/docker-compose.demo.yml -f infra/docker-compose.auth-test.yml up -d --no-build --wait
+services:
+  api:
+    image: preza-demo-api:latest
+    environment:
+      AUTH_ENABLED: "true"
+      OWNER_PASSWORD_HASH: ${DEMO_OWNER_PASSWORD_HASH:?generate synthetic test hash}
+      APP_BASE_URL: http://127.0.0.1:3200
+  web:
+    image: preza-demo-web:latest
+    environment:
+      APP_BASE_URL: http://127.0.0.1:3200
+    ports: !override
+      - "127.0.0.1:3200:3000"

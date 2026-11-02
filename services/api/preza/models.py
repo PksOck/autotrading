@@ -12,6 +12,7 @@ from sqlalchemy import (
     DateTime,
     Float,
     ForeignKey,
+    Identity,
     Index,
     Integer,
     Numeric,
@@ -76,6 +77,26 @@ class Bar(Base):
     volume: Mapped[int | None] = mapped_column(BigInteger)
     source: Mapped[str] = mapped_column(String(32))
     fetched_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class PriceHistoryCapture(Base):
+    """Append-only coherent split-adjusted history used by versioned price estimates."""
+
+    __tablename__ = "price_history_capture"
+    __table_args__ = (Index("ix_price_history_latest", "instrument_id", "year", "fetched_at"),)
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
+    instrument_id: Mapped[int] = mapped_column(ForeignKey("instrument.id", ondelete="CASCADE"))
+    year: Mapped[int] = mapped_column(Integer)
+    currency: Mapped[str] = mapped_column(String(8))
+    resolved_con_id: Mapped[int] = mapped_column(BigInteger)
+    identity: Mapped[dict[str, Any]] = mapped_column(JSONB)
+    source: Mapped[str] = mapped_column(String(32))
+    price_basis: Mapped[str] = mapped_column(String(64))
+    first_day: Mapped[date] = mapped_column(Date)
+    last_day: Mapped[date] = mapped_column(Date)
+    bars: Mapped[list[dict[str, str]]] = mapped_column(JSONB)
+    fingerprint: Mapped[str] = mapped_column(String(64))
+    fetched_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 
 
 class Position(Base):
@@ -630,6 +651,14 @@ class SignalWeightSet(Base):
     a `proposed` set becomes active only on explicit user confirmation (ADR-0015)."""
 
     __tablename__ = "signal_weight_set"
+    __table_args__ = (
+        Index(
+            "uq_signal_weight_set_active",
+            "status",
+            unique=True,
+            postgresql_where=text("status = 'active'"),
+        ),
+    )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     status: Mapped[str] = mapped_column(String(12), index=True)

@@ -9,7 +9,8 @@ from datetime import date
 from decimal import Decimal
 from typing import Any, Protocol
 
-from preza.data.contract import InstrumentRef, NotFoundError, ProviderUnavailableError
+from preza.data.contract import InstrumentRef, NotFoundError, ProviderUnavailableError, SplitHistory
+from preza.domain.history import IBKR_SPLIT_BASIS
 from preza.domain.market import BarIn
 
 DELAYED = 3  # reqMarketDataType: 15-minute delayed data, free (no subscription needed)
@@ -61,11 +62,32 @@ class IbkrProvider:
         self._ib.reqMarketDataType(DELAYED)
 
     async def daily_bars(self, ref: InstrumentRef, start: date) -> list[BarIn]:
+        bars, _ = await self._history(ref, start, strict=False)
+        return bars
+
+    async def split_history(self, ref: InstrumentRef, start: date) -> SplitHistory:
+        bars, contract = await self._history(ref, start, strict=True)
+        return SplitHistory(bars, str(contract.currency), int(contract.conId), IBKR_SPLIT_BASIS)
+
+    async def _history(
+        self, ref: InstrumentRef, start: date, *, strict: bool
+    ) -> tuple[list[BarIn], Any]:
+        if strict and (ref.con_id is None or ref.con_id <= 0):
+            raise ProviderUnavailableError("history_requires_confirmed_con_id")
         async with self._lock:
             await self._ensure_connected()
             qualified = await self._ib.qualifyContractsAsync(make_contract(ref))
             if not qualified or qualified[0] is None:
                 raise NotFoundError(ref.symbol)
+            contract = qualified[0]
+            if strict and (
+                getattr(contract, "secType", None) != "STK"
+                or not ref.currency
+                or getattr(contract, "currency", None) != ref.currency
+                or not getattr(contract, "conId", 0)
+                or (ref.con_id is not None and contract.conId != ref.con_id)
+            ):
+                raise ProviderUnavailableError("history_identity_mismatch")
             rows = await self._ib.reqHistoricalDataAsync(
                 qualified[0],
                 endDateTime="",
@@ -85,4 +107,4 @@ class IbkrProvider:
                 volume=int(row.volume) if row.volume and row.volume > 0 else None,
             )
             for row in rows
-        ]
+        ], contract

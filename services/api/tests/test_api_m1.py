@@ -108,7 +108,7 @@ async def test_daily_portfolio_move_does_not_assume_the_imported_fx_target(api) 
     assert native["currency"] == "USD" and native["amount"] == 2050
     assert native["percent"] == 10 and native["position_count"] == 2
     assert body["ytd_native"][0]["amount"] is None
-    assert body["ytd_native"][0]["reason"] == "missing_year_start"
+    assert body["ytd_native"][0]["reason"] == "missing_year_history"
     async with get_sessionmaker()() as session:
         for instrument in await session.scalars(select(Instrument)):
             session.add(
@@ -128,7 +128,7 @@ async def test_daily_portfolio_move_does_not_assume_the_imported_fx_target(api) 
     ytd = (await client.get("/portfolio")).json()
     assert ytd["ytd_move"]["amount"] is None
     assert ytd["ytd_native"][0]["amount"] is None
-    assert ytd["ytd_native"][0]["reason"] == "unverified_price_basis"
+    assert ytd["ytd_native"][0]["reason"] == "missing_year_history"
     assert ytd["ytd_native"][0]["basis"] == "held_positions_ytd_constant_reported_fx"
     assert router.calls == [], "rendering may only read stored bars"
     async with get_sessionmaker()() as session:

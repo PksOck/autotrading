@@ -23,6 +23,14 @@ class ProviderError(Exception):
     """Base error; the router tries the next provider."""
 
 
+@dataclass(frozen=True)
+class SplitHistory:
+    bars: list[BarIn]
+    currency: str
+    con_id: int
+    price_basis: str
+
+
 class NotFoundError(ProviderError):
     """The provider does not know this instrument."""
 

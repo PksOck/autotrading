@@ -10,6 +10,7 @@ from preza.data.contract import (
     NotFoundError,
     ProviderError,
     QuotaExceededError,
+    SplitHistory,
     normalize_bars,
 )
 from preza.data.quota import Quota
@@ -43,6 +44,25 @@ class BarsRouter:
 
     def __init__(self, routes: list[Route]):
         self.routes = routes
+
+    async def split_history(self, ref: InstrumentRef, start: date) -> tuple[str, SplitHistory]:
+        errors: dict[str, str] = {}
+        for route in self.routes:
+            fetch = getattr(route.provider, "split_history", None)
+            if fetch is None:
+                continue
+            name = route.provider.name
+            if not route.quota.try_acquire():
+                errors[name] = "quota"
+                continue
+            try:
+                result = await fetch(ref, start)
+                if not isinstance(result, SplitHistory):
+                    raise ProviderError("invalid_history_contract")
+                return name, result
+            except ProviderError as exc:
+                errors[name] = str(exc)
+        raise AllProvidersFailedError(errors)
 
     async def daily_bars(self, ref: InstrumentRef, start: date) -> RoutedBars:
         errors: dict[str, str] = {}

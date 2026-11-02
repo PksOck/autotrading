@@ -1,7 +1,7 @@
 """Price-only estimate for unchanged imported holdings, never account NAV performance."""
 
 from dataclasses import dataclass, replace
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from decimal import Decimal
 
 from pydantic import BaseModel, Field
@@ -24,6 +24,9 @@ class DailyHolding:
     stale: bool = False
     fx_base_currency: str | None = None
     baseline_reason: str | None = None
+    capture_id: str | None = None
+    captured_at: datetime | None = None
+    adjustment_basis: str | None = None
 
 
 YTD_BASIS = "held_positions_ytd_constant_reported_fx"
@@ -74,6 +77,9 @@ class DailyMove(BaseModel):
     sources: list[str] = Field(default_factory=list)
     basis: str = "held_positions_constant_reported_fx"
     reason: str | None = "no_positions"
+    capture_ids: list[str] = Field(default_factory=list)
+    captured_at: list[datetime] = Field(default_factory=list)
+    adjustment_bases: list[str] = Field(default_factory=list)
 
 
 class CurrencyDailyMove(DailyMove):
@@ -109,6 +115,9 @@ def daily_move(
         basis=basis,
         holdings_dates=sorted({row.report_date for row in rows}),
         sources=sorted({row.source for row in rows if row.source}),
+        capture_ids=sorted({row.capture_id for row in rows if row.capture_id}),
+        captured_at=sorted({row.captured_at for row in rows if row.captured_at}),
+        adjustment_bases=sorted({row.adjustment_basis for row in rows if row.adjustment_basis}),
     )
     if not rows:
         return result

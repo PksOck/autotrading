@@ -111,3 +111,19 @@ async def test_network_failure_is_a_flex_error() -> None:
     with pytest.raises(FlexError) as info:
         await client.fetch()
     assert info.value.code == "network"
+
+
+async def test_http_failure_never_logs_or_chains_flex_token(caplog):
+    import logging
+    import traceback
+
+    token = "synthetic-secret-flex-123"
+    client = FlexClient(
+        token,
+        "synthetic-query",
+        httpx.AsyncClient(transport=httpx.MockTransport(lambda r: httpx.Response(403, request=r))),
+    )
+    with caplog.at_level(logging.INFO, logger="httpx"), pytest.raises(FlexError) as info:
+        await client.fetch()
+    trace = "".join(traceback.format_exception(info.type, info.value, info.tb))
+    assert token not in trace and token not in caplog.text

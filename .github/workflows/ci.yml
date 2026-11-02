@@ -94,9 +94,24 @@ jobs:
         working-directory: apps/web
         run: |
           pnpm exec playwright install --with-deps chromium
-          (pnpm start &)
-          for i in $(seq 1 60); do curl -sf http://localhost:3000 >/dev/null && break; sleep 1; done
-          pnpm exec playwright test
+          docker compose -f ../../infra/docker-compose.demo.yml up -d --build --wait api web
+          docker compose -f ../../infra/docker-compose.demo.yml exec -T -e PREZA_DEMO_DB=1 api python -m preza.cli.seed_demo
+          docker compose -f ../../infra/docker-compose.demo.yml exec -T -e PREZA_DEMO_DB=1 api python -m preza.cli.seed_ytd_demo
+          BASE_URL=http://127.0.0.1:3100 pnpm exec playwright test
+      - name: Owner authentication in an isolated stack
+        working-directory: apps/web
+        run: |
+          export DEMO_OWNER_PASSWORD_HASH="$(docker compose -f ../../infra/docker-compose.demo.yml exec -T api python -c "from preza.services.owner_access import hash_password; print(hash_password('synthetic owner browser test password'))")"
+          docker compose -p preza-auth-test -f ../../infra/docker-compose.demo.yml -f ../../infra/docker-compose.auth-test.yml up -d --no-build --wait
+          AUTH_TEST_BASE_URL=http://127.0.0.1:3200 BASE_URL=http://127.0.0.1:3100 pnpm exec playwright test owner-auth.spec.ts
+      - name: Demo logs on failure
+        if: failure()
+        run: docker compose -f infra/docker-compose.demo.yml logs --tail=100 api web
+      - name: Stop test demo
+        if: always()
+        run: |
+          DEMO_OWNER_PASSWORD_HASH=unused docker compose -p preza-auth-test -f infra/docker-compose.demo.yml -f infra/docker-compose.auth-test.yml down -v
+          docker compose -f infra/docker-compose.demo.yml down -v
 
   compose:
     runs-on: ubuntu-latest

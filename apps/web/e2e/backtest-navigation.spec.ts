@@ -86,6 +86,8 @@ for (const locale of ["sl", "en"] as const) {
     ]);
     // Context routes cover popups as well: no real analysis, provider, SMTP or write endpoint is called.
     await context.route("**/api/**", async (route) => {
+      // Session validation uses the isolated demo API, independently of business fixtures.
+      if (new URL(route.request().url()).pathname === "/api/auth/session") return route.continue();
       const request = route.request();
       const path = new URL(request.url()).pathname;
       if (path === "/api/backtest" && request.method() === "POST") {

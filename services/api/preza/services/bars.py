@@ -72,6 +72,52 @@ class BarsService:
         self.router = router
         self.lookback_days = lookback_days
 
+    async def refresh_year_history(
+        self, session: AsyncSession, instrument: Instrument, today: date | None = None
+    ) -> bool:
+        from preza.services.market_context import identity_status
+        from preza.services.price_history import identity_key, latest_captures, store_capture
+
+        today = today or datetime.now(UTC).date()
+        fetch = getattr(self.router, "split_history", None)
+        if (
+            fetch is None
+            or instrument.kind not in {"stock", "etf"}
+            or identity_status(instrument) != "resolved"
+            or instrument.ib_con_id is None
+            or instrument.ib_con_id <= 0
+        ):
+            return False
+        latest = (await latest_captures(session, [instrument.id], today.year)).get(instrument.id)
+        if (
+            latest is not None
+            and latest.identity == identity_key(instrument)
+            and latest.source == "ibkr"
+            and latest.fetched_at <= datetime.now(UTC)
+            and latest.last_day >= last_trading_day(today - timedelta(days=1))
+        ):
+            return True
+        run = SyncRun(kind="ytd_history", status="running", detail=instrument.symbol)
+        session.add(run)
+        try:
+            source, history = await fetch(
+                InstrumentRef(
+                    instrument.symbol,
+                    instrument.exchange,
+                    instrument.currency,
+                    instrument.ib_con_id,
+                ),
+                date(today.year, 1, 1) - timedelta(days=7),
+            )
+            row = await store_capture(session, instrument, source, history)
+            run.status, run.detail = "ok", f"{instrument.symbol}: {row.id} {row.price_basis}"
+            return True
+        except (ProviderError, ValueError, TimeoutError, OSError) as exc:
+            run.status, run.detail = "failed", f"{instrument.symbol}: {type(exc).__name__}"
+            return False
+        finally:
+            run.finished_at = datetime.now(UTC)
+
     async def refresh(
         self, session: AsyncSession, instrument: Instrument, today: date | None = None
     ) -> bool:

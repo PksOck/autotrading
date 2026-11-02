@@ -1,4 +1,44 @@
 {
+  "ownerLogin": {
+    "brand": "Preža",
+    "title": "Zasebna prijava",
+    "description": "Dostop do osebnega naložbenega delovnega prostora.",
+    "username": "Uporabniško ime",
+    "password": "Geslo",
+    "signIn": "Prijavi se",
+    "signingIn": "Prijavljam …",
+    "logout": "Odjava",
+    "logoutFailed": "Odjava ni uspela. Poskusi ponovno.",
+    "private": "Samo za lastnika. Javne registracije ni.",
+    "invalid": "Prijava ni uspela. Preveri uporabniško ime in geslo.",
+    "throttled": "Preveč poskusov. Počakaj do 15 minut.",
+    "notConfigured": "Prijava še ni nastavljena. Lastnik mora lokalno nastaviti poverilnice in naslov HTTPS.",
+    "unavailable": "Povezava ni dosegljiva. Poskusi ponovno."
+  },
+  "supporting": {
+    "links": "Informacije o aplikaciji",
+    "back": "Na prijavo",
+    "about": {
+      "title": "O aplikaciji",
+      "intro": "Preža je zasebno orodje za pregled portfelja, raziskovanje in spremljanje naložbenih idej. Dostop je namenjen lastniku.",
+      "detail": "Podatki imajo vir in čas. Manjkajoči ali zastareli podatki niso potrjena dejstva. Analize lahko uporabljajo jezikovne modele glede na nastavitve. Nobena analiza ali signal samodejno ne odda naročila."
+    },
+    "privacy": {
+      "title": "Zasebnost in piškotki",
+      "intro": "Portfelj, uvozi, teze, nastavitve in dejavnosti se hranijo v bazi te namestitve. Prijava uporablja nujni sejni piškotek; jezik in tema uporabljata piškotka nastavitev.",
+      "detail": "Brskalnik uporablja lokalno shrambo za postavitev in izbrane osnutke. Oglaševalska analitika ni vgrajena. Omogočeni ponudniki tržnih podatkov, modeli, SMTP ali Telegram lahko prejmejo podatke za izbrano funkcijo. Prejemniki in hramba so odvisni od lokalne konfiguracije, gostovanja in varnostnih kopij. Za izbris je odgovoren lastnik. Odjava prekliče sejo, ne izbriše zapisov ali lokalnih osnutkov."
+    },
+    "terms": {
+      "title": "Pogoji uporabe",
+      "intro": "Orodje je namenjeno zasebnemu raziskovanju. Prikazi in izhodi modelov niso jamstvo donosnosti ali osebno naložbeno svetovanje.",
+      "detail": "Pred odločitvijo preveri izvorne podatke, čas, valuto in tveganja. Vsako naročilo zahteva tvojo izrecno odločitev. Uporaba podatkov je odvisna od pravic in pogojev ponudnika. To besedilo opisuje zasebno uporabo; javna storitev potrebuje dodatne pogoje in podatke upravljavca."
+    },
+    "security": {
+      "title": "Varnost",
+      "intro": "Predvidena postavitev uporablja HTTPS prek Tailscale Serve, pravila dostopa za dovoljeno napravo in ločeno lastniško prijavo. Tailscale Funnel ni del postavitve.",
+      "detail": "Uporabi edinstveno dolgo geslo in zaklep telefona. Menjava lokalno nastavljenega gesla prekliče stare seje. Gesel, žetonov in zasebnih Flex izpisov ne dodajaj v prijavo napake. Težavo sporoči lastniku po znanem zasebnem kanalu z očiščenim primerom. Zaščite pred vsemi napadi ni mogoče zagotoviti."
+    }
+  },
   "app": {
     "name": "Preža",
     "tagline": "Na preži za priložnostmi"
@@ -1427,7 +1467,10 @@
     "trendUnknown": "Trend ni na voljo",
     "zoneUnknown": "Vstopna cona ni znana",
     "inZone": "V coni",
-    "outsideZone": "Izven cone"
+    "outsideZone": "Izven cone",
+    "otherMetric": "Drugi kazalnik",
+    "qualityPeriod": "Tržni datum / obdobje",
+    "qualityFetched": "Pridobljeno"
   },
   "identityFacts": {
     "title": "Identiteta in podatki z virom",
@@ -1549,7 +1592,7 @@
       "discover_thesis_reviews": "Poišče in pregleda teze. Pregledi uporabljajo model in upoštevajo stikalo samodejnih analiz.",
       "batch_analyses": "Pripravi omejen paket analiz portfelja ali watchliste. Pred začetkom prikaže predogled in preveri kvoto.",
       "sync_flex": "Prebere portfelj in posle iz IBKR. Ne uporablja jezikovnega modela.",
-      "refresh_bars": "Osveži dnevne cene instrumentov. Ne uporablja jezikovnega modela.",
+      "refresh_bars": "Osveži dnevne cene in koherentno zgodovino YTD iz IBKR. Za YTD potrebuje dosegljiv Gateway in dovoljenje za zgodovinske podatke. Ne uporablja jezikovnega modela.",
       "fundamentals": "Osveži poslovne podatke podjetij iz podatkovnega vira.",
       "outcomes": "Izračuna izide shranjenih signalov iz cen. Ne potrebuje nove analize.",
       "notify": "Pošlje obvestila o obstoječih signalih prek Telegrama.",
@@ -1768,7 +1811,8 @@
       "missing_year_start": "Ni primerljive zaključne cene pred začetkom tega leta.",
       "mixed_price_sources": "Cenovni osnovi nimata istega vira.",
       "missing_period_price": "Za izbrano leto še ni primerljive zadnje cene.",
-      "unverified_price_basis": "Usklajenost cen ob delitvah delnic še ni potrjena."
+      "unverified_price_basis": "Usklajenost cen ob delitvah delnic še ni potrjena.",
+      "missing_year_history": "Manjka preverjena letna zgodovina. Osveži cene in YTD v Nastavitvah."
     },
     "calendarAsOf": "Stanje izpisa: {date}",
     "calendarEntryCount": "{count} zapisov",
@@ -1815,6 +1859,8 @@
     "native": "Ločeno po izvornih valutah",
     "help": "Osnova cenovnega premika",
     "dayMethod": "Primerjava zadnjih dveh shranjenih zaključkov trenutnih količin. To ni dnevna sprememba celotnega računa.",
-    "ytdMethod": "Trenutne uvožene količine pri zadnji ceni glede na primerljiv zaključek pred 1. januarjem tekočega leta. To je cenovna ocena brez dividend in poslov, ne dejanski donos računa od začetka leta; morebitna korporativna dejanja zahtevajo preverjanje osnove."
+    "ytdMethod": "Trenutne uvožene količine pri dveh cenah iz istega split-prilagojenega zajema IBKR TRADES. Začetek je pred 1. januarjem, konec zadnji zaključeni dan pred današnjim UTC datumom. To je cenovni premik brez dividend, gotovine in poslov, ne dejanski donos računa. Demo uporablja izrecno sintetični zajem.",
+    "captured": "Zajem",
+    "captureId": "Sled zajema"
   }
 }

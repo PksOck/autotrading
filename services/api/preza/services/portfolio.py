@@ -1,6 +1,6 @@
 """IBKR portfolio: Flex sync into snapshots and the portfolio view (BL-022, BL-028)."""
 
-from datetime import UTC, date, datetime, timedelta
+from datetime import UTC, datetime
 from decimal import Decimal
 
 from sqlalchemy import delete, func, select, union_all
@@ -13,10 +13,8 @@ from preza.domain.portfolio import CashIn, FlexStatement, PortfolioOut, Position
 from preza.domain.portfolio_daily import (
     YTD_BASIS,
     DailyHolding,
-    YearStartPrice,
     daily_move,
     native_daily_moves,
-    year_to_date_holdings,
 )
 from preza.models import AccountSnapshot, Bar, CashBalance, Position, SyncRun, Trade
 from preza.services.instruments import get_or_create
@@ -288,30 +286,9 @@ async def get_portfolio(
             )
         )
 
-    year = datetime.now(UTC).year
-    year_start = date(year, 1, 1)
-    baseline_rows = await session.scalars(
-        select(Bar)
-        .where(
-            Bar.instrument_id.in_([p.instrument_id for p in positions]),
-            Bar.interval == "1d",
-            Bar.day < year_start,
-            Bar.day >= year_start - timedelta(days=7),
-        )
-        .order_by(Bar.day.desc())
-    )
-    baselines: dict[int, YearStartPrice] = {}
-    for bar in baseline_rows:
-        baselines.setdefault(
-            bar.instrument_id, YearStartPrice(day=bar.day, close=bar.close, source=bar.source)
-        )
-    ytd_holdings = year_to_date_holdings(
-        [
-            (holding, baselines.get(position.instrument_id))
-            for holding, position in zip(holdings, positions, strict=True)
-        ],
-        year,
-    )
+    from preza.services.price_history import portfolio_ytd_holdings
+
+    ytd_holdings = await portfolio_ytd_holdings(session, positions, holdings)
     out = []
     for p in sorted(positions, key=lambda p: values[p.id] or Decimal(0), reverse=True):
         value = values[p.id]

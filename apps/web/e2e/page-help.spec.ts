@@ -12,6 +12,8 @@ for (const locale of ["sl", "en"] as const) {
     ]);
     const writes: string[] = [];
     await context.route("**/api/**", async (route) => {
+      // Session validation uses the isolated demo API, independently of business fixtures.
+      if (new URL(route.request().url()).pathname === "/api/auth/session") return route.continue();
       if (route.request().method() !== "GET") {
         writes.push(route.request().url());
         return route.abort();
@@ -136,6 +138,8 @@ test("opening help preserves an unsubmitted proposal without a write", async ({
 }) => {
   const writes: string[] = [];
   await context.route("**/api/**", async (route) => {
+    // Session validation uses the isolated demo API, independently of business fixtures.
+    if (new URL(route.request().url()).pathname === "/api/auth/session") return route.continue();
     if (route.request().method() !== "GET") {
       writes.push(route.request().url());
       return route.abort();

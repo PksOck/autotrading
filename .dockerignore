@@ -9,6 +9,8 @@
 **/.env.*
 data/
 infra/secrets/
+**/*.pem
+**/*.key
 .superpowers/
 **/.pytest_cache
 **/.mypy_cache

@@ -28,7 +28,9 @@ test("theses: list, explicit draft save and confirm, claim evidence and history 
   };
   let statusBody: ThesisClaimStatusChange | undefined;
   await page.route("**/api/**", (route) =>
-    route.fulfill({ json: shellResponse(route.request().url()) }),
+    new URL(route.request().url()).pathname === "/api/auth/session"
+      ? route.continue()
+      : route.fulfill({ json: shellResponse(route.request().url()) }),
   );
   await page.context().addCookies([{ name: "locale", value: "en", url: baseURL! }]);
   await page.route("**/api/theses**", async (route) => {
@@ -125,6 +127,8 @@ test("analysis: draft creation is an explicit action and also accepts an existin
   let creations = 0;
   await page.context().addCookies([{ name: "locale", value: "en", url: baseURL! }]);
   await page.route("**/api/**", async (route) => {
+    // Session validation uses the isolated demo API, independently of business fixtures.
+    if (new URL(route.request().url()).pathname === "/api/auth/session") return route.continue();
     const path = new URL(route.request().url()).pathname;
     if (path === "/api/theses/drafts") {
       creations += 1;

@@ -2,7 +2,11 @@
 
 Povzetek sprejetega načrta. Podrobna utemeljitev je v [`docs/research/2026-10-22-zasnova-resitve.md`](./docs/research/2026-10-22-zasnova-resitve.md), primerjava kandidatov v [`docs/research/2026-10-22-analiza-kandidatov.md`](./docs/research/2026-10-22-analiza-kandidatov.md), izkušnje iz starega projekta v [`docs/research/2026-10-22-trading-list-prevzem.md`](./docs/research/2026-10-22-trading-list-prevzem.md).
 
-## Trenutno: poenostavljena avtomatika in strnjen portfelj (S-028)
+## Trenutno: YTD, lastniška prijava in GitHub predaja (S-029)
+
+Izvedeni BL-234/235/237/238: [YTD SPEC](./docs/superpowers/specs/2026-11-02-ytd-podatki-in-predaja-spec.md), [varnostni SPEC](./docs/superpowers/specs/2026-11-02-zasebni-dostop-design.md), [dokazi in sprejemni pregled](./docs/implementation/2026-11-02-ytd-varnost-predaja.md). Številčni demo YTD ima izrecen sintetični vir. Živi IBKR zajem ni potrjen, potrebuje read-only Gateway in pravice; FX ostaja dokazna omejitev. GitHub master push je odobren; :3000 ni. BL-239 ostaja operativno odprt do lokalnega gesla, potrjene Tailscale politike in testa S26 FE; obstoječi Serve443→8090 se ohrani.
+
+## Predhodno: poenostavljena avtomatika in strnjen portfelj (S-028)
 
 [Plan BL-232/233](./docs/superpowers/plans/2026-11-01-enostavna-avtomatika.md) vključuje popravke SOL/Astra pregleda. [Dokazi](./docs/implementation/2026-11-02-zakljucek-avtomatika-portfelj.md) ločijo izvedeno UI/varovala od še nedostopnega številčnega produkcijskega YTD. BL-234 potrebuje dokazljivo prilagojeno zgodovino cen; isti ponudnik ni dokaz. BL-235 je ločen predlog jasnejših opozoril o zastarelosti. Samo3100,3000 ostane nespremenjen.
 

@@ -19,6 +19,8 @@ for (const locale of ["sl", "en"] as const) {
     );
     const writes: { path: string; method: string; body: Record<string, unknown> }[] = [];
     await context.route("**/api/**", async (route) => {
+      // Session validation uses the isolated demo API, independently of business fixtures.
+      if (new URL(route.request().url()).pathname === "/api/auth/session") return route.continue();
       const req = route.request();
       const path = new URL(req.url()).pathname;
       if (req.method() !== "GET") {

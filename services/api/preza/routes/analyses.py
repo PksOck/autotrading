@@ -197,11 +197,13 @@ def _event(name: str, data: str, event_id: int | None = None) -> str:
 
 
 async def run_events(
-    run_id: uuid.UUID, after: int, is_disconnected: object = None
+    run_id: uuid.UUID, after: int, is_disconnected: object = None, authorized: object = None
 ) -> AsyncIterator[str]:
     """Steps after `after`, then `end` once the run is finished. One short session per poll."""
     idle = 0.0
     while True:
+        if callable(authorized) and not await authorized():
+            return
         async with get_sessionmaker()() as session:
             run = await session.get(AnalysisRun, run_id)
             if run is None:
@@ -216,6 +218,8 @@ async def run_events(
             )
             status = run.status
         for step in steps:
+            if callable(authorized) and not await authorized():
+                return
             after = step.seq
             yield _event("step", step_out(step).model_dump_json(), step.seq)
         if status in FINISHED:
@@ -243,8 +247,17 @@ async def analysis_events(
 ) -> StreamingResponse:
     await _get(session, run_id)
     start = int(last_event_id) if last_event_id and last_event_id.isdigit() else after
+    from preza.config import get_settings
+    from preza.services import owner_access as access
+
+    async def authorized() -> bool:
+        settings = get_settings()
+        return not settings.requires_auth or await access.authenticated(
+            request.cookies.get(access.cookie_name(settings)), settings
+        )
+
     return StreamingResponse(
-        run_events(run_id, start, request.is_disconnected),
+        run_events(run_id, start, request.is_disconnected, authorized),
         media_type="text/event-stream",
-        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+        headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no"},
     )

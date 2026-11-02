@@ -189,6 +189,9 @@ class FlexClient:
         base_url: str = BASE_URL,
         sleep: Callable[[float], Awaitable[None]] = asyncio.sleep,
     ):
+        from preza.security_logging import configure_network_logging
+
+        configure_network_logging()
         self._token = token
         self._query_id = query_id
         self._client = client or httpx.AsyncClient(timeout=30, headers={"User-Agent": "Preza/0.1"})
@@ -203,7 +206,7 @@ class FlexClient:
             )
             response.raise_for_status()
         except httpx.HTTPError as exc:
-            raise FlexError("network", type(exc).__name__) from exc
+            raise FlexError("network", type(exc).__name__) from None
         return response.text
 
     async def fetch(self, attempts: int = 8, first_wait: float = 5.0) -> FlexStatement:

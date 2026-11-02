@@ -29,6 +29,7 @@ from preza.notify.service import morning_digest, notify_new_signals
 from preza.notify.telegram import TelegramClient
 from preza.proposals.analyze import analyze_proposal
 from preza.radar.pipeline import run_radar
+from preza.security_logging import configure_network_logging
 from preza.services.analyses import limit_reached, new_run, queue_run
 from preza.services.automation import automatic_analyses_allowed
 from preza.services.fundamentals import refresh_fundamentals
@@ -41,6 +42,7 @@ from preza.services.watchlist import fill_added_price
 SEC_TICKERS_URL = "https://www.sec.gov/files/company_tickers.json"
 
 log = logging.getLogger(__name__)
+configure_network_logging()
 
 
 async def email_notifications(ctx: dict[str, Any]) -> str:
@@ -146,10 +148,12 @@ async def refresh_bars(ctx: dict[str, Any]) -> str:
             await session.scalars(select(Instrument).where(Instrument.id.in_(held.union(watched))))
         )
         ok = 0
+        history_ok = 0
         for instrument in targets:
             ok += await service.refresh(session, instrument)
+            history_ok += await service.refresh_year_history(session, instrument)
             await session.commit()
-    return f"{ok}/{len(targets)}"
+    return f"bars {ok}/{len(targets)}; ytd {history_ok}/{len(targets)}"
 
 
 async def refresh_instrument_bars(ctx: dict[str, Any], instrument_id: int) -> str:
@@ -159,6 +163,7 @@ async def refresh_instrument_bars(ctx: dict[str, Any], instrument_id: int) -> st
         if instrument is None:
             return "missing"
         ok = await get_bars_service().refresh(session, instrument)
+        await get_bars_service().refresh_year_history(session, instrument)
         await fill_added_price(session, instrument_id)
         await session.commit()
     return "ok" if ok else "failed"

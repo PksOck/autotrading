@@ -68,3 +68,23 @@ async def test_router_reports_every_failure() -> None:
     with pytest.raises(AllProvidersFailedError) as info:
         await router.daily_bars(REF, date(2026, 1, 1))
     assert info.value.errors == {"ibkr": "down", "yahoo": "empty"}
+
+
+async def test_history_does_not_use_unverified_fallback_or_bypass_quota():
+    from preza.data.contract import SplitHistory
+    from preza.domain.history import IBKR_SPLIT_BASIS
+
+    class Capable(Fake):
+        async def split_history(self, ref, start):
+            self.calls += 1
+            return SplitHistory([BAR], "USD", 1, IBKR_SPLIT_BASIS)
+
+    capable = Capable("ibkr", [])
+    fallback = Fake("yahoo", [BAR])
+    quota = Quota(1, 60)
+    router = BarsRouter([Route(capable, quota), Route(fallback, Quota(10, 60))])
+    name, history = await router.split_history(REF, date(2025, 12, 25))
+    assert name == "ibkr" and history.price_basis == IBKR_SPLIT_BASIS
+    with pytest.raises(AllProvidersFailedError):
+        await router.split_history(REF, date(2025, 12, 25))
+    assert capable.calls == 1 and fallback.calls == 0

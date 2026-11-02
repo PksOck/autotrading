@@ -5,6 +5,84 @@
     "version": "0.1.0"
   },
   "paths": {
+    "/auth/activity": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Activity",
+        "operationId": "activity_auth_activity_post",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
+    "/auth/session": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Session State",
+        "operationId": "session_state_auth_session_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "boolean"
+                  },
+                  "type": "object",
+                  "title": "Response Session State Auth Session Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Login",
+        "operationId": "login_auth_login_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "boolean"
+                  },
+                  "type": "object",
+                  "title": "Response Login Auth Login Post"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Logout",
+        "operationId": "logout_auth_logout_post",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "tags": [
@@ -5165,6 +5243,28 @@
             "title": "Reason",
             "default": "no_positions"
           },
+          "capture_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Capture Ids"
+          },
+          "captured_at": {
+            "items": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "type": "array",
+            "title": "Captured At"
+          },
+          "adjustment_bases": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Adjustment Bases"
+          },
           "currency": {
             "type": "string",
             "title": "Currency"
@@ -5260,6 +5360,28 @@
             ],
             "title": "Reason",
             "default": "no_positions"
+          },
+          "capture_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Capture Ids"
+          },
+          "captured_at": {
+            "items": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "type": "array",
+            "title": "Captured At"
+          },
+          "adjustment_bases": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Adjustment Bases"
           }
         },
         "type": "object",

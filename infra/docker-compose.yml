@@ -4,6 +4,9 @@ name: preza
 
 x-api-env: &api-env
   APP_ENV: ${APP_ENV:-production}
+  AUTH_ENABLED: ${AUTH_ENABLED:-true}
+  OWNER_USERNAME: ${OWNER_USERNAME:-owner}
+  OWNER_PASSWORD_HASH: ${OWNER_PASSWORD_HASH:-}
   DATABASE_URL: postgresql+asyncpg://preza:${POSTGRES_PASSWORD:?nastavi POSTGRES_PASSWORD v .env}@postgres:5432/preza
   REDIS_URL: redis://redis:6379/0
   LITELLM_BASE_URL: http://litellm:4000
@@ -138,6 +141,7 @@ services:
       dockerfile: apps/web/Dockerfile
     environment:
       API_URL: http://api:8000
+      APP_BASE_URL: ${APP_BASE_URL:-http://127.0.0.1:3000}
     ports:
       # Samo lokalno in prek Tailscale (ADR-0001). Nikoli 0.0.0.0 na javnem omrežju.
       - "${WEB_BIND:-127.0.0.1}:3000:3000"

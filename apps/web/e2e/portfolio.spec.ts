@@ -18,7 +18,13 @@ test("watchlist: add and remove a symbol", async ({ page, request }, info) => {
   expect(res.ok()).toBeTruthy();
   const items: { id: number; symbol: string }[] = await res.json();
   for (const it of items.filter((i) => i.symbol === "NVDA")) {
-    expect((await request.delete(`/api/watchlist/${it.id}`)).ok()).toBeTruthy();
+    expect(
+      (
+        await request.delete(`/api/watchlist/${it.id}`, {
+          headers: { origin: new URL(process.env.BASE_URL ?? "http://localhost:3000").origin },
+        })
+      ).ok(),
+    ).toBeTruthy();
   }
 
   await page.goto("/portfolio?tab=watchlist", { waitUntil: "networkidle" });

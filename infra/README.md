@@ -1,5 +1,7 @@
 # infra: Docker Compose in konfiguracija
 
+Ločen zasebni sklad brez zamenjave :3000, prijava in Tailscale Serve8443: [navodila](../docs/implementation/2026-11-02-zasebni-dostop-navodila.md). `docker-compose.private.yml` objavi samo loopback3300; `docker-compose.auth-test.yml` je disposable test3200 in nikoli produkcija. Pred objavo je treba potrditi ozka Tailscale pravila in lokalne poverilnice.
+
 ```bash
 cp ../.env.example ../.env                                   # izpolni vrednosti
 docker compose --env-file ../.env up -d --build              # jedro: postgres, redis, litellm, api, worker, web

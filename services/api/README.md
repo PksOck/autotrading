@@ -1,5 +1,7 @@
 # services/api: FastAPI
 
+Lastniška prijava in produkcijski dostop: [navodila](../../docs/implementation/2026-11-02-zasebni-dostop-navodila.md). Produkcija zahteva HTTPS in lokalno nastavljeno geslo; `/health` ostane za healthcheck. YTD uporablja immutable zajeme iz ADR-0027, ne inkrementalnega Bar cachea.
+
 Domena, podatki in deterministična logika. **Brez LLM klicev v request poti** (ti tečejo v workerju).
 
 ## Zagon

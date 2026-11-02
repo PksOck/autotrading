@@ -1,4 +1,5 @@
 /** Browser-side API calls through the same-origin proxy (`app/api/[...path]`). */
+import { signalSessionEnd } from "@/lib/client-access";
 export class ApiError extends Error {
   constructor(
     readonly status: number,
@@ -11,6 +12,7 @@ export class ApiError extends Error {
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`/api${path}`, { cache: "no-store", ...init });
   if (!response.ok) {
+    if (response.status === 401 && typeof window !== "undefined") signalSessionEnd();
     const body = await response.json().catch(() => ({}));
     throw new ApiError(response.status, typeof body.detail === "string" ? body.detail : "error");
   }

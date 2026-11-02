@@ -4,7 +4,7 @@ import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import { cookies } from "next/headers";
 import type { ReactNode } from "react";
 import { Providers } from "@/components/providers";
-import { AppShell } from "@/components/shell/AppShell";
+import { AccessShell } from "@/components/shell/AccessShell";
 import { THEME_COOKIE, isThemePreference } from "@/lib/theme";
 import "./globals.css";
 
@@ -34,7 +34,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       data-theme={theme === "system" ? undefined : theme}
       suppressHydrationWarning
     >
-      <body>
+      <body className="flex min-h-dvh flex-col">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <Providers>
             {process.env.PREZA_DEMO === "1" && (
@@ -45,7 +45,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
                 {t("demo")}
               </div>
             )}
-            <AppShell themePreference={theme}>{children}</AppShell>
+            <AccessShell themePreference={theme}>{children}</AccessShell>
           </Providers>
         </NextIntlClientProvider>
       </body>

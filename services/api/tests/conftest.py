@@ -73,7 +73,8 @@ async def api(
     async with db.get_engine().begin() as conn:
         await conn.execute(
             text(
-                "TRUNCATE notification, signal, proposal, news_item, event, watchlist_item, "
+                "TRUNCATE owner_session, login_throttle, notification, signal, proposal, "
+                "news_item, event, watchlist_item, "
                 "position, trade, cash_balance, bar, sync_run, instrument, signal_weight_set, "
                 "account_snapshot, automation_control, automation_outbox_cursor, "
                 "process_policy, process_execution, "

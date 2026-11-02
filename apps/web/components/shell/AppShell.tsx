@@ -7,6 +7,7 @@ import { Header } from "@/components/shell/Header";
 import { Shortcuts } from "@/components/shell/Shortcuts";
 import { Sidebar } from "@/components/shell/Sidebar";
 import type { ThemePreference } from "@/lib/theme";
+import { SupportingLinks } from "./SupportingLinks";
 
 /** CMP-01. Peek, palette and composer are global so every screen can open them. */
 export function AppShell({
@@ -27,6 +28,7 @@ export function AppShell({
         >
           {children}
         </main>
+        <SupportingLinks />
       </div>
       <BottomNav />
       <Suspense>

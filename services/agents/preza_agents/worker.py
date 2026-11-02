@@ -42,6 +42,7 @@ from preza.models import (
 )
 from preza.models_automation import ProcessExecution
 from preza.queue import AGENTS_QUEUE
+from preza.security_logging import configure_network_logging
 from preza.services.automation import analysis_is_automatic
 from preza.services.fundamentals import refresh_fundamentals
 from preza.services.thesis_reviews import week_start
@@ -64,6 +65,7 @@ from preza_agents.stock_analyst.analyst import StockResult, run_stock
 from preza_agents.thesis_tracker.runner import thesis_review
 
 log = logging.getLogger(__name__)
+configure_network_logging()
 
 FLUSH_S = 0.5
 MAX_CONTENT = 20_000

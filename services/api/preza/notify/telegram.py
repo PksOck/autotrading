@@ -20,6 +20,9 @@ class TelegramError(Exception):
 
 class TelegramClient:
     def __init__(self, token: str, client: httpx.AsyncClient | None = None):
+        from preza.security_logging import configure_network_logging
+
+        configure_network_logging()
         self._token = token
         self._owns_client = client is None
         self._client = client or httpx.AsyncClient(timeout=15)
